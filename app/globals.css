@@ -1,0 +1,494 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=Alexandria:wght@300;400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   ZALINA ARABIAN VILLAGE - DESIGN SYSTEM
+   Midnight Arabian Luxury Visual Foundation
+   ============================================ */
+
+:root {
+  /* Background Colors */
+  --bg-main: #0d0b0a;
+  --bg-section: #171312;
+  --bg-surface: #1e1816;
+  /* Text Colors */
+  --text-primary: #f3ebdd;
+  --text-secondary: #c8b8a4;
+  --text-muted: #a8937a;
+  /* Accent Colors */
+  --accent-gold: #c7a36a;
+  --accent-gold-hover: #d7b47d;
+  --accent-sand: #dcc7a3;
+  --accent-bronze: #9b6a4a;
+  /* Border Colors */
+  --border-subtle: #342a24;
+  --border-gold-soft: rgba(199, 163, 106, 0.32);
+  /* Status Colors */
+  --status-success: #7a9b6a;
+  --status-warning: #b88a4a;
+  --status-error: #a85a4a;
+  /* Shadows */
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --shadow-glow-gold: 0 0 40px rgba(199, 163, 106, 0.15);
+  /* Border Radius */
+  --radius-card: 22px;
+  --radius-button: 14px;
+  /* Typography */
+  --font-display: "Cormorant Garamond", serif;
+  --font-heading-ar: "Alexandria", sans-serif;
+  --font-body: "Inter", sans-serif;
+  /* Spacing Scale */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 8rem;
+  /* Transitions */
+  --transition-fast: 200ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+  --transition-premium: 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html[dir="rtl"] {
+  font-family: var(--font-heading-ar), var(--font-body), sans-serif;
+}
+
+html[dir="ltr"] {
+  font-family: var(--font-body), sans-serif;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 500;
+}
+
+h4 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 500;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
+  line-height: 1.7;
+}
+
+/* Arabic Typography */
+
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[lang="ar"] h4,
+[lang="ar"] h5,
+[lang="ar"] h6 {
+  font-family: var(--font-heading-ar);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+::selection {
+  background-color: var(--accent-gold);
+  color: var(--bg-main);
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-section);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-bronze);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+  /* Text Utilities */
+  .text-gradient-gold {
+    background: linear-gradient(
+      135deg,
+      var(--accent-sand) 0%,
+      var(--accent-gold) 50%,
+      var(--accent-bronze) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  /* Arch Motif */
+  .arch-frame {
+    position: relative;
+  }
+  .arch-frame::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--accent-gold),
+      transparent
+    );
+    opacity: 0.4;
+  }
+  .arch-frame::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 80px;
+    border-left: 1px solid var(--border-gold-soft);
+    border-right: 1px solid var(--border-gold-soft);
+    border-top: 1px solid var(--border-gold-soft);
+    border-radius: 100px 100px 0 0;
+    pointer-events: none;
+  }
+  /* Ornamental Divider */
+  .ornamental-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .ornamental-divider::before,
+  .ornamental-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--border-gold-soft),
+      transparent
+    );
+  }
+  .ornamental-divider-center {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--accent-gold);
+    transform: rotate(45deg);
+  }
+  /* Glass Effect */
+  .glass-dark {
+    background: rgba(13, 11, 10, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .glass-surface {
+    background: rgba(30, 24, 22, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  /* Gold Border Accent */
+  .border-glow {
+    border: 1px solid var(--border-gold-soft);
+    box-shadow: var(--shadow-glow-gold);
+  }
+  /* Cinematic Overlay */
+  .cinematic-overlay {
+    position: relative;
+  }
+  .cinematic-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(13, 11, 10, 0.3) 0%,
+      rgba(13, 11, 10, 0.1) 30%,
+      rgba(13, 11, 10, 0.1) 70%,
+      rgba(13, 11, 10, 0.6) 100%
+    );
+    pointer-events: none;
+  }
+  /* Premium Hover */
+  .hover-lift {
+    transition:
+      transform var(--transition-slow),
+      box-shadow var(--transition-slow);
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-premium);
+  }
+  /* Section Spacing */
+  .section-padding {
+    padding-top: var(--space-4xl);
+    padding-bottom: var(--space-4xl);
+  }
+  /* Container */
+  .container-premium {
+    width: 100%;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1rem, 4vw, 3rem);
+    padding-right: clamp(1rem, 4vw, 3rem);
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+/* Animation Delays */
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+/* Slow Bounce Animation */
+
+@keyframes bounceSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 2s ease-in-out infinite;
+}
+
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+
+/* Primary Button */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background-color: var(--accent-gold);
+  color: var(--bg-main);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-button);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-gold-hover);
+  box-shadow: 0 4px 20px rgba(199, 163, 106, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Secondary Button */
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-button);
+  border: 1px solid var(--border-gold-soft);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(199, 163, 106, 0.08);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* Ghost Button */
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-ghost:hover {
+  color: var(--accent-gold);
+}
+
+/* Luxury Card */
+
+.luxury-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition: all var(--transition-slow);
+}
+
+.luxury-card:hover {
+  border-color: var(--border-gold-soft);
+  box-shadow: var(--shadow-premium);
+}
+
+/* Focus Styles */
+
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+/* Link Styles */
+
+a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent-gold);
+}
