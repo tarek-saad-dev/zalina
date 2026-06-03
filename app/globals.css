@@ -747,3 +747,171 @@ a:hover {
     transparent 70%
   );
 }
+
+/* ============================================
+   ZONES & WEDDINGS PAGE - LUXURY RESORT
+   ============================================ */
+
+:root {
+  /* Zones Color System */
+  --zones-bg: #11151c;
+  --zones-surface: #171b23;
+  --zones-surface-alt: #1d2330;
+  --zones-gold: #c89b52;
+  --zones-gold-hover: #d9ae66;
+  --zones-text-light: #f4e7d4;
+  --zones-text-secondary: #d2c4b0;
+  --zones-text-muted: #a69886;
+  --zones-border: rgba(255, 255, 255, 0.08);
+  --zones-card-glow: rgba(200, 155, 82, 0.15);
+}
+
+/* Main Container */
+
+.zones-container {
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* Section Spacing */
+
+.zones-section {
+  padding-top: 96px;
+  padding-bottom: 96px;
+}
+
+.zones-section-md {
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+
+/* Typography - Cinzel/Cormorant + Inter */
+
+.zones-hero-title {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  color: var(--zones-text-light);
+}
+
+.zones-section-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--zones-text-light);
+}
+
+.zones-card-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--zones-text-light);
+}
+
+.zones-body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--zones-text-secondary);
+}
+
+.zones-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--zones-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.zones-nav {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--zones-text-secondary);
+}
+
+/* Border Radius */
+
+.zones-radius-sm {
+  border-radius: 8px;
+}
+
+.zones-radius-md {
+  border-radius: 12px;
+}
+
+.zones-radius-lg {
+  border-radius: 16px;
+}
+
+.zones-radius-xl {
+  border-radius: 20px;
+}
+
+.zones-radius-pill {
+  border-radius: 999px;
+}
+
+/* Shadows */
+
+.zones-shadow-soft {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.zones-shadow-medium {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.zones-shadow-luxury {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* Card Glow */
+
+.zones-card-glow {
+  box-shadow: 0 0 40px var(--zones-card-glow);
+}
+
+/* Glass Effect */
+
+.zones-glass {
+  background: rgba(18, 18, 20, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--zones-border);
+}
+
+/* Gold Button */
+
+.zones-btn-gold {
+  background: var(--zones-gold);
+  color: #11151c;
+  transition: all 200ms ease;
+}
+
+.zones-btn-gold:hover {
+  background: var(--zones-gold-hover);
+  transform: translateY(-1px);
+}
+
+/* Hover Effects */
+
+.zones-hover-lift {
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.zones-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.zones-img-hover {
+  transition: transform 400ms ease;
+}
+
+.zones-img-hover:hover {
+  transform: scale(1.03);
+}

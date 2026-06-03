@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
 
 export const metadata: Metadata = {
   title: "Zalina Arabian Village | Luxury Heritage Experience",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="antialiased min-h-screen bg-bg-main">
+        <LuxuryNavbar />
         {children}
       </body>
     </html>
