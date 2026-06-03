@@ -12,9 +12,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "The Village", href: "/village" },
+  { label: "About", href: "/about" },
   { label: "Experiences", href: "/experiences" },
   { label: "Zones", href: "/zones" },
+  { label: "Weddings", href: "/weddings" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ];
@@ -228,11 +229,10 @@ export function LuxuryNavbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`lg:hidden fixed inset-0 z-[9998] transition-all duration-500 ${
-          isMobileMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
+        className={`lg:hidden fixed inset-0 z-[9998] transition-all duration-500 ${isMobileMenuOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+          }`}
         style={{
           background:
             "linear-gradient(180deg, rgba(20,20,22,0.98) 0%, rgba(14,14,18,0.98) 100%)",
@@ -241,11 +241,10 @@ export function LuxuryNavbar() {
         }}
       >
         <div
-          className={`flex flex-col items-center justify-center h-full px-8 transition-all duration-500 ${
-            isMobileMenuOpen
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-8"
-          }`}
+          className={`flex flex-col items-center justify-center h-full px-8 transition-all duration-500 ${isMobileMenuOpen
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-8"
+            }`}
         >
           {/* Mobile Navigation Links */}
           <nav className="flex flex-col items-center gap-8 mb-12">
@@ -334,8 +333,6 @@ export function LuxuryNavbar() {
         </div>
       </div>
 
-      {/* Spacer for fixed header */}
-      <div style={{ height: "80px" }} />
     </>
   );
 }
