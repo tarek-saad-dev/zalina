@@ -1,0 +1,11 @@
+export { AboutHero } from "./AboutHero";
+export { AboutVillage } from "./AboutVillage";
+export { BrandPurpose } from "./BrandPurpose";
+export { BrandMission } from "./BrandMission";
+export { BrandPersonality } from "./BrandPersonality";
+export { BrandValues } from "./BrandValues";
+export { BrandPromise } from "./BrandPromise";
+export { ImmersiveStorytelling } from "./ImmersiveStorytelling";
+export { SignatureBrandEssence } from "./SignatureBrandEssence";
+export { AboutCTA } from "./AboutCTA";
+export { AboutFooter } from "./AboutFooter";
