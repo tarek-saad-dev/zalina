@@ -1,0 +1,12 @@
+export { Navbar } from "./Navbar";
+export { Hero } from "./Hero";
+export { FilterTabs } from "./FilterTabs";
+export { ExperienceCard } from "./ExperienceCard";
+export { ExperiencesCatalog } from "./ExperiencesCatalog";
+export { EditorialSpotlight } from "./EditorialSpotlight";
+export { WhyChooseZalina } from "./WhyChooseZalina";
+export { ExperienceJourney } from "./ExperienceJourney";
+export { MicroInfoPreview } from "./MicroInfoPreview";
+export { FuturePackages } from "./FuturePackages";
+export { CTASection } from "./CTASection";
+export { Footer } from "./Footer";
