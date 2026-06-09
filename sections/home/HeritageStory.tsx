@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 export function HeritageStory() {
   return (
     <section
-      className="lux-section relative overflow-hidden"
-      style={{ background: "var(--lux-bg)" }}
+      className="relative overflow-hidden"
+      style={{ background: "var(--lux-bg)", paddingTop: "40px", paddingBottom: "30px" }}
     >
       {/* Subtle Pattern Background */}
       <div className="absolute inset-0 lux-pattern opacity-50" />
@@ -20,11 +20,11 @@ export function HeritageStory() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center mb-12"
+            className="flex justify-center mb-4"
           >
             <svg
-              width="120"
-              height="40"
+              width="100"
+              height="32"
               viewBox="0 0 120 40"
               fill="none"
               className="opacity-60"
@@ -58,17 +58,14 @@ export function HeritageStory() {
 
           {/* Main Heading */}
           <motion.h2
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="lux-heading-xl mb-8"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lux-heading-xl mb-4"
+            style={{ fontSize: "clamp(28px, 4vw, 48px)", lineHeight: 1.2 }}
           >
-            A Heritage.
-            <br />
-            A Feeling.
-            <br />
-            <span style={{ color: "var(--lux-gold)" }}>A Story.</span>
+            A Heritage. A Feeling. <span style={{ color: "var(--lux-gold)" }}>A Story.</span>
           </motion.h2>
 
           {/* Luxury Divider */}
@@ -76,44 +73,31 @@ export function HeritageStory() {
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="lux-divider mx-auto mb-10"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="lux-divider mx-auto mb-4"
           />
 
-          {/* Story Text */}
+          {/* Story Text - Single Compact Paragraph */}
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="lux-body-lg mb-8"
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="lux-body"
+            style={{ maxWidth: "650px", margin: "0 auto", fontSize: "0.95rem" }}
           >
             Nestled within the golden dunes, Zalina Arabian Village is more than
-            a destination—it is a journey through time. Here, the whispers of
-            ancient caravans blend with the gentle rustle of palm fronds, creating
-            an atmosphere of profound tranquility and timeless elegance.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="lux-body-lg"
-          >
-            Every corner tells a story of Arabian hospitality, where guests are
-            not merely visitors, but honored members of an extended family. This
-            is where memories are woven into the fabric of tradition, where every
-            sunset paints a new chapter of your personal legacy.
+            a destination—it is a journey through time, where ancient caravans blend
+            with Arabian hospitality and every corner tells a story of timeless elegance.
           </motion.p>
 
           {/* Decorative Bottom Ornament */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="flex justify-center mt-16"
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex justify-center mt-5"
           >
             <div className="lux-ornament">
               <svg

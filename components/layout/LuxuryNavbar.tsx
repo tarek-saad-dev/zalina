@@ -65,10 +65,11 @@ export function LuxuryNavbar() {
         style={{
           height: "80px",
           background: isScrolled
-            ? "linear-gradient(180deg, rgba(20,20,22,0.98) 0%, rgba(14,14,18,0.95) 100%)"
-            : "linear-gradient(180deg, rgba(20,20,22,0.85) 0%, rgba(14,14,18,0.75) 100%)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          backdropFilter: isScrolled ? "blur(12px)" : "blur(8px)",
+            ? "rgba(20,20,22,0.15)"
+            : "rgba(20,20,22,0.08)",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          backdropFilter: isScrolled ? "blur(24px) saturate(200%)" : "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: isScrolled ? "blur(24px) saturate(200%)" : "blur(20px) saturate(180%)",
         }}
       >
         {/* Blue Glow Bottom */}
