@@ -5,28 +5,28 @@ import { ExperienceCard } from "./ExperienceCard";
 
 const experiences = [
   {
-    image: "/images/exp-dining-1.jpg",
+    image: "/assets/Flavors.png",
     category: "Signature",
     title: "Arabian Feast",
     description: "Traditional flavors in an elegant setting",
     tags: ["Dinner", "Popular"],
   },
   {
-    image: "/images/exp-sunset-1.jpg",
+    image: "/assets/Twilight Gatherings.png",
     category: "Sunset",
     title: "Golden Hour",
     description: "Watch the sunset over the dunes",
     tags: ["Romantic"],
   },
   {
-    image: "/images/exp-private-1.jpg",
+    image: "/assets/Moments to Remember.png",
     category: "Private",
     title: "Intimate Dining",
     description: "Exclusive experience for two",
     tags: ["Couples"],
   },
   {
-    image: "/images/exp-cooking-1.jpg",
+    image: "/assets/Cultural Performances.png",
     category: "Cooking",
     title: "Chef's Table",
     description: "Learn from our master chefs",

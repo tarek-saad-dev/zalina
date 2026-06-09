@@ -19,7 +19,7 @@ export function FinalCTA() {
           {/* Luxury Background Texture */}
           <div className="absolute inset-0">
             <Image
-              src="/images/cta-texture.jpg"
+              src="/assets/zalina-hero-bg.png"
               alt=""
               fill
               className="object-cover opacity-30"

@@ -6,27 +6,27 @@ import { motion } from "framer-motion";
 
 const moments = [
   {
-    image: "/images/moment-twilight.jpg",
+    image: "/assets/Twilight Gatherings.png",
     title: "Twilight Gatherings",
     description: "Where golden hour meets Arabian hospitality",
   },
   {
-    image: "/images/moment-cultural.jpg",
+    image: "/assets/Cultural Performances.png",
     title: "Cultural Performances",
     description: "Ancient arts brought to life under starlit skies",
   },
   {
-    image: "/images/moment-flavors.jpg",
+    image: "/assets/Flavors.png",
     title: "Flavors of Arabia",
     description: "A culinary journey through centuries of tradition",
   },
   {
-    image: "/images/moment-starlit.jpg",
+    image: "/assets/Starlit.png",
     title: "Starlit Celebrations",
     description: "Magical evenings beneath the desert constellation",
   },
   {
-    image: "/images/moment-memories.jpg",
+    image: "/assets/Moments to Remember.png",
     title: "Moments to Remember",
     description: "Creating legacies that transcend generations",
   },
@@ -78,12 +78,14 @@ export function SignatureMoments() {
               }}
             >
               {/* Image */}
-              <div className="absolute inset-0 lux-img-frame">
+              <div className="absolute inset-0 lux-img-frame" style={{ width: '100%', height: '100%' }}>
                 <Image
                   src={moment.image}
                   alt={moment.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                  onError={(e) => console.error('Image failed:', moment.image, e)}
                 />
               </div>
 

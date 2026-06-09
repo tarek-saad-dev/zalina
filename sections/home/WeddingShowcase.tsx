@@ -11,7 +11,7 @@ export function WeddingShowcase() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/wedding-showcase.jpg"
+          src="/assets/Moments to Remember.png"
           alt="Luxury Arabian Wedding at Zalina"
           fill
           className="object-cover"

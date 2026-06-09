@@ -6,25 +6,25 @@ import Link from "next/link";
 
 const zones = [
   {
-    image: "/images/zone-exhibition.jpg",
+    image: "/assets/zalina-hero-bg.png",
     title: "Exhibition Court",
     description:
       "A grand, open-air plaza inspired by traditional Arabian courtyards, perfect for large gatherings and celebrations under the stars.",
   },
   {
-    image: "/images/zone-desert.jpg",
+    image: "/assets/Starlit.png",
     title: "Desert Lounge",
     description:
       "An intimate sandy retreat offering cozy seating areas surrounded by desert palms and ambient fire pits.",
   },
   {
-    image: "/images/zone-pool.jpg",
+    image: "/assets/Twilight Gatherings.png",
     title: "Poolside Pavilion",
     description:
       "A serene oasis featuring a stunning infinity pool, luxury cabanas, and breathtaking sunset views.",
   },
   {
-    image: "/images/zone-royal.jpg",
+    image: "/assets/Cultural Performances.png",
     title: "Royal Banquet Hall",
     description:
       "An opulent indoor venue designed for elegant weddings, galas, and milestone celebrations.",

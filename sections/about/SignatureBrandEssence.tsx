@@ -26,7 +26,7 @@ export function SignatureBrandEssence() {
               style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.35)" }}
             >
               <Image
-                src="/images/essence-main.jpg"
+                src="/assets/zalina-hero-bg.png"
                 alt="Zalina luxury experience"
                 fill
                 className="object-cover"
@@ -39,7 +39,7 @@ export function SignatureBrandEssence() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/images/essence-secondary.jpg"
+                src="/assets/Flavors.png"
                 alt="Arabian architectural detail"
                 fill
                 className="object-cover"

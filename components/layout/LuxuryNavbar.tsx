@@ -94,7 +94,7 @@ export function LuxuryNavbar() {
             href="/"
             className="flex-shrink-0 transition-transform duration-300 hover:scale-105"
           >
-            <span
+            {/* <span
               className="text-2xl font-medium tracking-wider"
               style={{
                 fontFamily: "var(--font-display)",
@@ -105,7 +105,8 @@ export function LuxuryNavbar() {
               }}
             >
               Zalina
-            </span>
+            </span> */}
+            <img src="/assets/zalina-logo-full.png" alt="Zalina" className="h-30" />
           </Link>
 
           {/* Navigation Center */}
@@ -156,33 +157,7 @@ export function LuxuryNavbar() {
           {/* Right: Language + CTA */}
           <div className="hidden lg:flex items-center gap-5">
             {/* Language Switch */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setLanguage("EN")}
-                className="transition-colors duration-300"
-                style={{
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  color: language === "EN" ? "#FFFFFF" : "rgba(255,255,255,0.5)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                EN
-              </button>
-              <span style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
-              <button
-                onClick={() => setLanguage("AR")}
-                className="transition-colors duration-300"
-                style={{
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  color: language === "AR" ? "#FFFFFF" : "rgba(255,255,255,0.5)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                AR
-              </button>
-            </div>
+
 
             {/* Book Now Button */}
             <Link

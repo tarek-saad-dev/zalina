@@ -5,14 +5,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const galleryImages = [
-  { src: "/images/gallery-1.jpg", alt: "Arabian Architecture", size: "tall" },
-  { src: "/images/gallery-2.jpg", alt: "Desert Sunset", size: "wide" },
-  { src: "/images/gallery-3.jpg", alt: "Traditional Courtyard", size: "arch" },
-  { src: "/images/gallery-4.jpg", alt: "Luxury Interior", size: "normal" },
-  { src: "/images/gallery-5.jpg", alt: "Night Ambiance", size: "tall" },
-  { src: "/images/gallery-6.jpg", alt: "Culinary Art", size: "normal" },
-  { src: "/images/gallery-7.jpg", alt: "Cultural Performance", size: "wide" },
-  { src: "/images/gallery-8.jpg", alt: "Palm Gardens", size: "arch" },
+  { src: "/assets/zalina-hero-bg.png", alt: "Arabian Architecture", size: "tall" },
+  { src: "/assets/Twilight Gatherings.png", alt: "Desert Sunset", size: "wide" },
+  { src: "/assets/Cultural Performances.png", alt: "Traditional Courtyard", size: "arch" },
+  { src: "/assets/Flavors.png", alt: "Luxury Interior", size: "normal" },
+  { src: "/assets/Starlit.png", alt: "Night Ambiance", size: "tall" },
+  { src: "/assets/Moments to Remember.png", alt: "Culinary Art", size: "normal" },
+  { src: "/assets/Twilight Gatherings.png", alt: "Cultural Performance", size: "wide" },
+  { src: "/assets/Cultural Performances.png", alt: "Palm Gardens", size: "arch" },
 ];
 
 export function ImmersiveGallery() {

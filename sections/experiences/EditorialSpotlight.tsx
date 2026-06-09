@@ -45,7 +45,7 @@ export function EditorialSpotlight() {
             }}
           >
             <Image
-              src="/images/exp-spotlight-1.jpg"
+              src="/assets/Flavors.png"
               alt="Signature dinner experience"
               fill
               className="object-cover"
@@ -125,7 +125,7 @@ export function EditorialSpotlight() {
             }}
           >
             <Image
-              src="/images/exp-spotlight-2.jpg"
+              src="/assets/Twilight Gatherings.png"
               alt="Exclusive dining setting"
               fill
               className="object-cover"

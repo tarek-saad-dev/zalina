@@ -13,7 +13,7 @@ export function Hero() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/zones-hero.jpg"
+          src="/assets/zalina-hero-bg.png"
           alt="Zalina luxury resort at night"
           fill
           className="object-cover"

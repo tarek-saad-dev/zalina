@@ -4,10 +4,10 @@ import React from "react";
 import Image from "next/image";
 
 const journeySteps = [
-  { image: "/images/journey-arrival.jpg", caption: "Arrival & Welcome" },
-  { image: "/images/journey-explore.jpg", caption: "Explore the Zones" },
-  { image: "/images/journey-experience.jpg", caption: "Live the Experience" },
-  { image: "/images/journey-depart.jpg", caption: "Depart with Memories" },
+  { image: "/assets/zalina-hero-bg.png", caption: "Arrival & Welcome" },
+  { image: "/assets/Twilight Gatherings.png", caption: "Explore the Zones" },
+  { image: "/assets/Cultural Performances.png", caption: "Live the Experience" },
+  { image: "/assets/Moments to Remember.png", caption: "Depart with Memories" },
 ];
 
 export function ImmersiveJourney() {

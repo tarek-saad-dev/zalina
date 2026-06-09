@@ -24,7 +24,7 @@ export function DestinationOverview() {
           style={{ height: "500px" }}
         >
           <Image
-            src="/images/zones-map.jpg"
+            src="/assets/zalina-hero-bg.png"
             alt="Zalina resort map overview"
             fill
             className="object-cover"

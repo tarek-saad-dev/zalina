@@ -82,7 +82,7 @@ export function FeaturedZone() {
           {/* Image - 55% */}
           <div className="relative w-full lg:w-[55%] h-[250px] lg:h-full">
             <Image
-              src="/images/zone-royal-wedding.jpg"
+              src="/assets/Moments to Remember.png"
               alt="Royal Wedding Court venue"
               fill
               className="object-cover zones-img-hover"

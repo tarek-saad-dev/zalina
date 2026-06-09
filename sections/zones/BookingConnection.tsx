@@ -6,17 +6,17 @@ import Link from "next/link";
 
 const bookingOptions = [
   {
-    image: "/images/booking-wedding.jpg",
+    image: "/assets/Moments to Remember.png",
     title: "Wedding Packages",
     description: "Comprehensive wedding planning and execution",
   },
   {
-    image: "/images/booking-events.jpg",
+    image: "/assets/Cultural Performances.png",
     title: "Corporate Events",
     description: "Professional business gathering solutions",
   },
   {
-    image: "/images/booking-private.jpg",
+    image: "/assets/Starlit.png",
     title: "Private Celebrations",
     description: "Intimate moments for special occasions",
   },

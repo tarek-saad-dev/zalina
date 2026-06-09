@@ -16,7 +16,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/images/storytelling-main.jpg"
+                src="/assets/zalina-hero-bg.png"
                 alt="Immersive Arabian storytelling experience"
                 fill
                 className="object-cover"
@@ -48,7 +48,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/images/story-overlay-1.jpg"
+                src="/assets/Twilight Gatherings.png"
                 alt="Arabian cultural experience"
                 fill
                 className="object-cover"
@@ -61,7 +61,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/images/story-overlay-2.jpg"
+                src="/assets/Cultural Performances.png"
                 alt="Traditional Arabian hospitality"
                 fill
                 className="object-cover"
@@ -74,7 +74,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/images/story-overlay-3.jpg"
+                src="/assets/Flavors.png"
                 alt="Luxury desert retreat detail"
                 fill
                 className="object-cover"

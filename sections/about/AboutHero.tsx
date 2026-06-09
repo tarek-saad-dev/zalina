@@ -9,7 +9,7 @@ export function AboutHero() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/about-hero.jpg"
+          src="/assets/zalina-hero-bg.png"
           alt="Zalina Arabian Village - Luxury Desert Hospitality"
           fill
           className="object-cover"

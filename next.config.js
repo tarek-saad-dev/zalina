@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: [],
+    unoptimized: true,
   },
   i18n: {
     locales: ['en', 'ar'],

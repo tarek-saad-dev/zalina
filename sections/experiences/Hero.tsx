@@ -12,7 +12,7 @@ export function Hero() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/exp-hero-sunset-dining.jpg"
+          src="/assets/Twilight Gatherings.png"
           alt="Luxury sunset dining with palm trees and lanterns"
           fill
           className="object-cover"

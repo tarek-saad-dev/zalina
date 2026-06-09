@@ -25,7 +25,7 @@ export function AboutVillage() {
               style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.4)" }}
             >
               <Image
-                src="/images/village-dining.jpg"
+                src="/assets/Flavors.png"
                 alt="Luxury Arabian dining experience"
                 fill
                 className="object-cover"
@@ -38,7 +38,7 @@ export function AboutVillage() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.35)" }}
             >
               <Image
-                src="/images/village-detail.jpg"
+                src="/assets/Cultural Performances.png"
                 alt="Arabian hospitality detail"
                 fill
                 className="object-cover"
@@ -51,7 +51,7 @@ export function AboutVillage() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.35)" }}
             >
               <Image
-                src="/images/village-lantern.jpg"
+                src="/assets/Starlit.png"
                 alt="Traditional Arabian lantern"
                 fill
                 className="object-cover"

@@ -24,7 +24,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src="/images/experience-day.jpg"
+              src="/assets/Twilight Gatherings.png"
               alt="Day Experience at Zalina"
               fill
               className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"
@@ -126,7 +126,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src="/images/experience-night.jpg"
+              src="/assets/Starlit.png"
               alt="Night Experience at Zalina"
               fill
               className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"

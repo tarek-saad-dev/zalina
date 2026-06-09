@@ -9,7 +9,7 @@ import { Users, Building2, PartyPopper } from "lucide-react";
 const occasions = [
   {
     icon: Users,
-    image: "/images/occasion-private.jpg",
+    image: "/assets/Moments to Remember.png",
     title: "Private Gatherings",
     subtitle: "Intimate Celebrations",
     description:
@@ -18,7 +18,7 @@ const occasions = [
   },
   {
     icon: Building2,
-    image: "/images/occasion-corporate.jpg",
+    image: "/assets/Cultural Performances.png",
     title: "Corporate Experiences",
     subtitle: "Business Excellence",
     description:
@@ -27,7 +27,7 @@ const occasions = [
   },
   {
     icon: PartyPopper,
-    image: "/images/occasion-social.jpg",
+    image: "/assets/Starlit.png",
     title: "Social Celebrations",
     subtitle: "Grand Festivities",
     description:
