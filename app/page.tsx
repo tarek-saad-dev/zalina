@@ -27,7 +27,7 @@ export default function Home() {
       <DayNightExperience />
 
       {/* Section 5: Memorable Occasions - 3 Luxury Cards */}
-      <MemorableOccasions />
+      {/* <MemorableOccasions /> */}
 
       {/* Section 6: Immersive Gallery - Masonry */}
       <ImmersiveGallery />
