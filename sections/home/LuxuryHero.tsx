@@ -91,7 +91,7 @@ export function LuxuryHero() {
 
       {/* Layer 5: Hero Content */}
       <motion.div
-        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6"
+        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 pt-24"
         style={{ opacity }}
       >
         <div className="max-w-4xl">
@@ -100,7 +100,7 @@ export function LuxuryHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="lux-eyebrow mb-8"
+            className="lux-eyebrow mb-10"
           >
             Midnight Arabian Luxury
           </motion.p>
@@ -110,7 +110,7 @@ export function LuxuryHero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="lux-display mb-8"
+            className="lux-display mb-12"
           >
             Timeless Heritage.
             <br />
@@ -122,7 +122,7 @@ export function LuxuryHero() {
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="lux-divider mx-auto mb-8"
+            className="lux-divider mx-auto mb-10"
           />
 
           {/* Description */}
@@ -130,7 +130,7 @@ export function LuxuryHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="lux-body-lg max-w-xl mx-auto mb-12"
+            className="lux-body-lg max-w-xl mx-auto mb-14"
           >
             An immersive Arabian sanctuary where ancient traditions meet
             contemporary luxury. Experience the magic of desert nights and
@@ -165,7 +165,16 @@ export function LuxuryHero() {
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="flex flex-col items-center gap-3"
           >
-            <span className="lux-eyebrow text-[10px]">Discover</span>
+            <span
+              className="text-[8px] tracking-[0.3em] uppercase"
+              style={{
+                color: "var(--lux-muted)",
+                fontFamily: "var(--font-display, serif)",
+                opacity: 0.6,
+              }}
+            >
+              Discover
+            </span>
             <div className="lux-divider-vertical h-10" />
           </motion.div>
         </motion.div>
