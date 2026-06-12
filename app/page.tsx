@@ -1,10 +1,9 @@
 import {
   LuxuryHero,
   HeritageStory,
+  GlimpseGallery,
   SignatureMoments,
   DayNightExperience,
-  MemorableOccasions,
-  ImmersiveGallery,
   ZalinaPromise,
   WeddingShowcase,
   FinalCTA,
@@ -26,22 +25,19 @@ export default function Home() {
       {/* Section 4: Day vs Night Experience */}
       <DayNightExperience />
 
-      {/* Section 5: Memorable Occasions - 3 Luxury Cards */}
-      {/* <MemorableOccasions /> */}
+      {/* Section 5: A Glimpse Into Zalina - Cinematic Gallery */}
+      <GlimpseGallery />
 
-      {/* Section 6: Immersive Gallery - Masonry */}
-      <ImmersiveGallery />
-
-      {/* Section 7: The Zalina Promise - 5 Features */}
+      {/* Section 6: The Zalina Promise - Slim Trust Strip */}
       <ZalinaPromise />
 
-      {/* Section 8: Wedding Showcase - Cinematic Banner */}
+      {/* Section 7: Weddings at Zalina - Premium Hero */}
       <WeddingShowcase />
 
-      {/* Section 9: Final CTA */}
+      {/* Section 8: Final Conversion CTA */}
       <FinalCTA />
 
-      {/* Section 10: Luxury Footer */}
+      {/* Section 9: Luxury Footer */}
       <LuxuryFooter />
     </main>
   );

@@ -7,28 +7,26 @@ import { Instagram, Facebook, Twitter, Linkedin, Youtube } from "lucide-react";
 
 const footerLinks = {
   explore: [
-    { label: "The Village", href: "/village" },
-    { label: "Our Story", href: "/about" },
+    { label: "About", href: "/about" },
+    { label: "Experiences", href: "/experiences" },
+    { label: "Zones", href: "/zones" },
     { label: "Gallery", href: "/gallery" },
-    { label: "Virtual Tour", href: "/tour" },
   ],
-  experiences: [
+  occasions: [
+    { label: "Weddings", href: "/weddings" },
+    { label: "Private Events", href: "/events/private" },
+    { label: "Celebrations", href: "/events/celebrations" },
+  ],
+  discover: [
     { label: "Day Experiences", href: "/experiences/day" },
     { label: "Night Experiences", href: "/experiences/night" },
     { label: "Dining", href: "/dining" },
     { label: "Wellness", href: "/wellness" },
   ],
-  occasions: [
-    { label: "Weddings", href: "/weddings" },
-    { label: "Private Events", href: "/events/private" },
-    { label: "Corporate", href: "/events/corporate" },
-    { label: "Celebrations", href: "/events/celebrations" },
-  ],
   information: [
     { label: "Contact Us", href: "/contact" },
     { label: "Reservations", href: "/book" },
     { label: "FAQs", href: "/faq" },
-    { label: "Careers", href: "/careers" },
   ],
 };
 
@@ -60,7 +58,7 @@ export function LuxuryFooter() {
 
       <div className="lux-container relative z-10">
         {/* Main Footer Content */}
-        <div className="py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
+        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <motion.div
@@ -70,9 +68,9 @@ export function LuxuryFooter() {
               transition={{ duration: 0.6 }}
             >
               {/* Logo */}
-              <Link href="/" className="inline-block mb-6">
+              <Link href="/" className="inline-block mb-4">
                 <span
-                  className="text-3xl font-medium tracking-wider"
+                  className="text-2xl font-medium tracking-wider"
                   style={{
                     fontFamily: "var(--font-display)",
                     background:
@@ -82,28 +80,35 @@ export function LuxuryFooter() {
                     backgroundClip: "text",
                   }}
                 >
-                  Zalina
+                  Zalina Arabian Village
                 </span>
               </Link>
 
-              <p className="lux-body mb-8 max-w-sm">
-                An immersive Arabian sanctuary where ancient traditions meet
-                contemporary luxury. Experience the magic of timeless hospitality.
+              {/* Tagline */}
+              <p
+                className="text-sm mb-4 tracking-wide"
+                style={{ color: "var(--lux-gold)", fontFamily: "var(--font-display, serif)" }}
+              >
+                Where Ancient Egypt Meets Modern Luxury
+              </p>
+
+              <p className="lux-body mb-6 max-w-sm text-sm" style={{ lineHeight: 1.6 }}>
+                An immersive destination inspired by the legends, beauty, and timeless grandeur of Ancient Egypt.
               </p>
 
               {/* Contact Info */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <p className="text-sm" style={{ color: "var(--lux-muted)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Location:</span>{" "}
-                  Arabian Desert, UAE
+                  Egypt
                 </p>
                 <p className="text-sm" style={{ color: "var(--lux-muted)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Email:</span>{" "}
-                  concierge@zalina.com
+                  hanan.freestyledevelopmentllc@gmail.com
                 </p>
                 <p className="text-sm" style={{ color: "var(--lux-muted)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Phone:</span>{" "}
-                  +971 4 XXX XXXX
+                  +1 623 204 1074
                 </p>
               </div>
             </motion.div>
@@ -137,40 +142,12 @@ export function LuxuryFooter() {
             </ul>
           </motion.div>
 
-          {/* Experiences */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h4
-              className="text-sm font-medium mb-6 tracking-wider"
-              style={{ color: "var(--lux-gold)" }}
-            >
-              EXPERIENCES
-            </h4>
-            <ul className="space-y-3">
-              {footerLinks.experiences.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
-                    style={{ color: "var(--lux-muted)" }}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
           {/* Occasions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h4
               className="text-sm font-medium mb-6 tracking-wider"
@@ -193,12 +170,40 @@ export function LuxuryFooter() {
             </ul>
           </motion.div>
 
+          {/* Discover */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+          >
+            <h4
+              className="text-sm font-medium mb-6 tracking-wider"
+              style={{ color: "var(--lux-gold)" }}
+            >
+              DISCOVER
+            </h4>
+            <ul className="space-y-3">
+              {footerLinks.discover.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
+                    style={{ color: "var(--lux-muted)" }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
           {/* Information */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
             <h4
               className="text-sm font-medium mb-6 tracking-wider"
@@ -235,7 +240,7 @@ export function LuxuryFooter() {
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Copyright */}
           <p className="text-xs" style={{ color: "var(--lux-muted)" }}>
-            © 2024 Zalina Arabian Village. All rights reserved.
+            © 2026 Zalina Arabian Village. All rights reserved.
           </p>
 
           {/* Social Links */}
