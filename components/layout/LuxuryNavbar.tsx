@@ -162,7 +162,7 @@ export function LuxuryNavbar() {
 
             {/* Book Now Button */}
             <Link
-              href="/book"
+              href="/book-now"
               className="inline-flex items-center justify-center font-medium transition-all duration-300"
               style={{
                 height: "48px",
@@ -289,7 +289,7 @@ export function LuxuryNavbar() {
 
           {/* Mobile Book Now Button */}
           <Link
-            href="/book"
+            href="/book-now"
             className="inline-flex items-center justify-center font-medium transition-all duration-300"
             style={{
               height: "56px",

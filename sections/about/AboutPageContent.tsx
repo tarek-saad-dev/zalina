@@ -169,12 +169,12 @@ function BrandStorySection() {
           >
             {/* Back image */}
             <div className="absolute" style={{ top: 0, left: "10%", width: "72%", height: "380px", border: "1px solid rgba(212,175,55,0.2)", boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
-              <Image src="/assets/Twilight Gatherings.png" alt="Twilight Gatherings at Zalina" fill className="object-cover" />
+              <Image src="/assets/about1.png" alt="Twilight Gatherings at Zalina" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.35) 0%, transparent 60%)" }} />
             </div>
             {/* Front image */}
             <div className="absolute" style={{ bottom: 0, right: 0, width: "58%", height: "280px", border: "1px solid rgba(212,175,55,0.25)", boxShadow: "0 32px 64px rgba(0,0,0,0.7)", zIndex: 2 }}>
-              <Image src="/assets/Flavors.png" alt="Arabian Flavors at Zalina" fill className="object-cover" />
+              <Image src="/assets/about2.png" alt="Arabian Flavors at Zalina" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.25) 0%, transparent 70%)" }} />
             </div>
             {/* Gold accent dot */}
