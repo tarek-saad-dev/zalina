@@ -1,4 +1,5 @@
 export { AboutHero } from "./AboutHero";
+export { AboutPageContent } from "./AboutPageContent";
 export { AboutVillage } from "./AboutVillage";
 export { BrandPurpose } from "./BrandPurpose";
 export { BrandMission } from "./BrandMission";

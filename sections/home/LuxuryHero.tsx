@@ -55,7 +55,7 @@ export function LuxuryHero() {
       {/* ── LAYER 1: Background Image ─────────────────── */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
-          src="/assets/zalina-hero-bg.png"
+          src="/assets/aboutHero.png"
           alt="Zalina Arabian Village at Night"
           fill
           className="object-cover object-center"
