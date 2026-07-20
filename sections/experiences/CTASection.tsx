@@ -1,84 +1,90 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { BOOK_NOW_HREF, CONTACT_HREF } from "./data";
+import { useExpMotion } from "./useExpMotion";
 
 export function CTASection() {
+  const { fadeUp, transition } = useExpMotion();
+
   return (
-    <section className="section-spacing-mobile">
-      <div className="mobile-container">
+    <section
+      className="exp-section relative overflow-hidden"
+      style={{
+        background: "var(--exp-bg-primary)",
+        paddingBottom: "clamp(4.5rem, 8vw, 7.5rem)",
+      }}
+      aria-labelledby="final-cta-heading"
+    >
+      <div className="absolute inset-0" aria-hidden="true">
+        <Image
+          src="/assets/Starlit.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-35"
+        />
         <div
-          className="relative flex flex-col items-center justify-center text-center p-6 overflow-hidden"
+          className="absolute inset-0"
           style={{
-            height: "220px",
             background:
-              "linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba(33, 26, 22, 0.98) 100%)",
-            borderRadius: "18px",
-            border: "1px solid var(--exp-border)",
+              "linear-gradient(180deg, rgba(5,5,5,0.8) 0%, rgba(8,11,18,0.9) 45%, rgba(5,5,5,0.96) 100%)",
           }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(212,175,55,0.12) 0%, transparent 70%)",
+          }}
+        />
+      </div>
+
+      <div className="exp-container relative z-10">
+        <motion.div
+          className="exp-glass exp-pattern relative mx-auto max-w-3xl overflow-hidden rounded-sm px-6 py-12 text-center sm:px-10 sm:py-14 md:px-16 md:py-[4.5rem]"
+          style={{
+            boxShadow:
+              "0 28px 70px rgba(0,0,0,0.5), 0 0 60px rgba(212,175,55,0.08)",
+            borderColor: "rgba(212,175,55,0.32)",
+          }}
+          initial={fadeUp.initial}
+          whileInView={fadeUp.animate}
+          viewport={{ once: true }}
+          transition={transition(0, 0.9)}
         >
-          {/* Radial Gold Glow Background */}
           <div
-            className="absolute inset-0 radial-gold-glow"
+            className="pointer-events-none absolute inset-0"
             style={{
-              opacity: 0.4,
+              background:
+                "radial-gradient(ellipse at center, rgba(212,175,55,0.1) 0%, transparent 65%)",
             }}
+            aria-hidden="true"
           />
 
-          {/* Content */}
           <div className="relative z-10">
-            <span
-              className="text-[10px] tracking-widest uppercase mb-3 block"
-              style={{ color: "var(--exp-gold)" }}
-            >
-              Begin Your Journey
-            </span>
+            <p className="exp-eyebrow mb-4 sm:mb-5">Begin Your Journey</p>
 
             <h2
-              className="text-lg font-medium mb-4"
-              style={{
-                color: "var(--exp-text-primary)",
-                fontFamily: "var(--font-display)",
-                lineHeight: "24px",
-              }}
+              id="final-cta-heading"
+              className="exp-section-heading-lg mb-8 sm:mb-10"
             >
-              Choose Your Next
-              <br />
-              Signature Experience
+              Choose Your Next Signature Experience
             </h2>
 
-            {/* Buttons */}
-            <div className="flex items-center justify-center gap-3">
-              <Link
-                href="/book"
-                className="flex items-center justify-center text-xs font-medium transition-all duration-200 hover:opacity-90"
-                style={{
-                  height: "36px",
-                  padding: "0 20px",
-                  background: "var(--exp-gold)",
-                  color: "#1A120B",
-                  borderRadius: "999px",
-                }}
-              >
+            <div className="flex w-full max-w-xs flex-col items-stretch justify-center gap-2.5 mx-auto sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-3.5">
+              <Link href={BOOK_NOW_HREF} className="exp-btn-primary">
                 Book Now
               </Link>
-              <Link
-                href="/contact"
-                className="flex items-center justify-center text-xs font-medium transition-all duration-200 hover:bg-[var(--exp-gold)]/10"
-                style={{
-                  height: "36px",
-                  padding: "0 20px",
-                  background: "transparent",
-                  color: "var(--exp-text-primary)",
-                  borderRadius: "999px",
-                  border: "1px solid var(--exp-border)",
-                }}
-              >
+              <Link href={CONTACT_HREF} className="exp-btn-secondary">
                 Contact Us
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

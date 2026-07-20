@@ -1,91 +1,125 @@
 "use client";
 
 import React from "react";
-import { Award, Users, Palette, Gem } from "lucide-react";
+import { motion } from "framer-motion";
+import { Award, Users, Landmark, Gem } from "lucide-react";
+import { useExpMotion } from "./useExpMotion";
 
-const features = [
+const FEATURES = [
   {
     icon: Award,
     title: "Curated Excellence",
-    description: "Every experience is thoughtfully designed",
+    description: "Every experience is thoughtfully designed.",
   },
   {
     icon: Users,
     title: "Personalized Service",
-    description: "Attentive care tailored to you",
+    description: "Attentive care tailored to you.",
   },
   {
-    icon: Palette,
+    icon: Landmark,
     title: "Authentic Atmosphere",
-    description: "Immersive Arabian ambiance",
+    description: "Immersive Arabian ambience.",
   },
   {
     icon: Gem,
     title: "Unforgettable Moments",
-    description: "Creating memories that last forever",
+    description: "Creating memories that last forever.",
   },
-];
+] as const;
 
 export function WhyChooseZalina() {
+  const { prefersReducedMotion, fadeUp, transition, stagger } = useExpMotion();
+
   return (
     <section
-      className="section-spacing-mobile"
-      style={{ background: "var(--exp-bg-surface)" }}
+      className="exp-section relative"
+      style={{ background: "var(--exp-bg-navy)" }}
+      aria-labelledby="why-choose-heading"
     >
-      <div className="mobile-container">
-        {/* Section Header */}
-        <h2 className="exp-section-heading text-center mb-6">
-          Why Choose Zalina Experiences
-        </h2>
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.1) 0%, transparent 55%)",
+        }}
+        aria-hidden="true"
+      />
 
-        {/* 4 Cards Grid - 2 Columns */}
-        <div className="grid grid-cols-2 gap-3">
-          {features.map((feature, index) => {
+      <div className="exp-container relative z-10">
+        <motion.div
+          className="exp-section-header"
+          initial={fadeUp.initial}
+          whileInView={fadeUp.animate}
+          viewport={{ once: true }}
+          transition={transition(0)}
+        >
+          <h2 id="why-choose-heading" className="exp-section-heading">
+            Why Choose Zalina Experiences
+          </h2>
+          <div className="mx-auto mt-4 exp-editorial-line-long" aria-hidden="true" />
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-5">
+          {FEATURES.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div
-                key={index}
-                className="flex flex-col items-center text-center p-4 hover-lift-luxury"
+              <motion.article
+                key={feature.title}
+                className="group relative overflow-hidden rounded-sm p-6 text-center sm:p-7"
                 style={{
-                  height: "120px",
                   background: "var(--exp-bg-card)",
                   border: "1px solid var(--exp-border)",
-                  borderRadius: "12px",
+                  backdropFilter: "blur(16px)",
                 }}
+                initial={fadeUp.initial}
+                whileInView={fadeUp.animate}
+                viewport={{ once: true }}
+                transition={transition(stagger(index))}
+                whileHover={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        y: -3,
+                        borderColor: "rgba(212,175,55,0.38)",
+                      }
+                }
               >
-                {/* Gold Outlined Icon */}
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center mb-2"
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   style={{
-                    border: "1px solid var(--exp-gold)",
+                    background:
+                      "radial-gradient(ellipse at top, rgba(212,175,55,0.07) 0%, transparent 60%)",
+                  }}
+                  aria-hidden="true"
+                />
+
+                <div
+                  className="relative mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full sm:mb-5 sm:h-14 sm:w-14"
+                  style={{
+                    border: "1px solid var(--exp-border)",
+                    background: "rgba(212,175,55,0.06)",
                   }}
                 >
                   <Icon
-                    size={14}
+                    size={20}
                     style={{ color: "var(--exp-gold)" }}
-                    strokeWidth={1.5}
+                    strokeWidth={1.4}
+                    aria-hidden="true"
                   />
                 </div>
 
-                {/* Title */}
                 <h3
-                  className="text-[11px] font-semibold mb-1"
-                  style={{ color: "var(--exp-text-primary)" }}
+                  className="relative mb-2 text-lg sm:mb-3"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    color: "var(--exp-text-primary)",
+                  }}
                 >
                   {feature.title}
                 </h3>
-
-                {/* Description */}
-                <p
-                  className="text-[9px]"
-                  style={{
-                    color: "var(--exp-text-secondary)",
-                    lineHeight: "12px",
-                  }}
-                >
-                  {feature.description}
-                </p>
-              </div>
+                <p className="relative exp-body text-sm">{feature.description}</p>
+              </motion.article>
             );
           })}
         </div>

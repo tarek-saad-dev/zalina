@@ -1,186 +1,198 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Sparkles, Heart } from "lucide-react";
-
-const highlights = [
-  { icon: Star, text: "Award-winning culinary team" },
-  { icon: Sparkles, text: "Bespoke atmosphere design" },
-  { icon: Heart, text: "Personalized service excellence" },
-];
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Check } from "lucide-react";
+import { BOOK_NOW_HREF, FEATURED_DINNER_HIGHLIGHTS } from "./data";
+import { useExpMotion } from "./useExpMotion";
 
 export function EditorialSpotlight() {
+  const { prefersReducedMotion, isMobile, fadeUp, transition } = useExpMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const imageY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    prefersReducedMotion || isMobile ? [0, 0] : [28, -28]
+  );
+
   return (
-    <section className="section-spacing-mobile">
-      <div className="mobile-container">
-        {/* Section Label */}
-        <span
-          className="text-[10px] tracking-widest uppercase mb-2 block text-center"
-          style={{ color: "var(--exp-gold)" }}
+    <section
+      ref={sectionRef}
+      className="exp-section overflow-hidden"
+      style={{
+        background: "var(--exp-bg-primary)",
+        paddingTop: "clamp(2.5rem, 4.5vw, 4.75rem)",
+      }}
+      aria-labelledby="featured-heading"
+    >
+      <div className="exp-container">
+        <motion.div
+          className="exp-section-header"
+          initial={fadeUp.initial}
+          whileInView={fadeUp.animate}
+          viewport={{ once: true }}
+          transition={transition(0)}
         >
-          Featured
-        </span>
-        <h2 className="exp-section-heading text-center mb-6">
-          Signature Dinner Experience
-        </h2>
+          <p className="exp-eyebrow mb-3">Featured</p>
+          <h2 id="featured-heading" className="exp-section-heading-lg">
+            Signature Dinner Experience
+          </h2>
+        </motion.div>
 
-        {/* Version 1: Dark Background - Image Left, Content Right */}
-        <div
-          className="flex gap-4 mb-6 p-4"
-          style={{
-            background: "var(--exp-bg-card)",
-            border: "1px solid var(--exp-border)",
-            borderRadius: "16px",
-          }}
-        >
-          {/* Image */}
-          <div
-            className="relative flex-shrink-0 overflow-hidden"
-            style={{
-              width: "150px",
-              height: "220px",
-              borderRadius: "12px",
-            }}
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14 xl:gap-16">
+          <motion.div
+            className="relative"
+            initial={fadeUp.initial}
+            whileInView={fadeUp.animate}
+            viewport={{ once: true }}
+            transition={transition(0.08)}
           >
-            <Image
-              src="/assets/Flavors.png"
-              alt="Signature dinner experience"
-              fill
-              className="object-cover"
+            <div
+              className="pointer-events-none absolute -inset-4 md:-inset-8"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(212,175,55,0.14) 0%, transparent 65%)",
+              }}
+              aria-hidden="true"
             />
-          </div>
 
-          {/* Content */}
-          <div className="flex flex-col justify-center">
-            <h3
-              className="text-sm font-semibold mb-2"
+            <div
+              className="relative overflow-hidden rounded-sm"
               style={{
-                color: "var(--exp-text-primary)",
-                fontFamily: "var(--font-display)",
+                border: "1px solid var(--exp-border)",
+                boxShadow: "0 28px 70px rgba(0,0,0,0.48)",
               }}
             >
-              An Evening to Remember
-            </h3>
-            <p
-              className="text-[11px] mb-3"
-              style={{
-                color: "var(--exp-text-secondary)",
-                lineHeight: "16px",
-              }}
-            >
-              Indulge in a curated dining experience where every detail speaks of
-              luxury and Arabian heritage.
-            </p>
+              <motion.div
+                className="relative aspect-[4/5] w-full sm:aspect-[3/4]"
+                style={{ y: imageY }}
+              >
+                <Image
+                  src="/assets/Flavors.png"
+                  alt="Signature dinner experience in a lantern-lit majlis"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover scale-[1.08]"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, transparent 45%, rgba(5,5,5,0.5) 100%)",
+                  }}
+                  aria-hidden="true"
+                />
+              </motion.div>
 
-            {/* Premium Highlights */}
-            <div className="space-y-2 mb-3">
-              {highlights.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <div key={index} className="flex items-center gap-2">
-                    <Icon
-                      size={12}
-                      style={{ color: "var(--exp-gold)" }}
-                      strokeWidth={1.5}
-                    />
-                    <span
-                      className="text-[10px]"
-                      style={{ color: "var(--exp-text-secondary)" }}
-                    >
-                      {item.text}
-                    </span>
-                  </div>
-                );
-              })}
+              <motion.div
+                className="absolute bottom-5 left-5 right-5 sm:left-auto sm:right-5 sm:w-52"
+                animate={
+                  prefersReducedMotion || isMobile
+                    ? undefined
+                    : { y: [0, -4, 0] }
+                }
+                transition={
+                  prefersReducedMotion || isMobile
+                    ? undefined
+                    : { duration: 6, repeat: Infinity, ease: "easeInOut" }
+                }
+                style={{
+                  background: "rgba(15,12,10,0.84)",
+                  backdropFilter: "blur(14px)",
+                  border: "1px solid var(--exp-border)",
+                  padding: "0.875rem 1.125rem",
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
+                }}
+              >
+                <p
+                  className="text-sm"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    color: "var(--exp-gold-soft)",
+                  }}
+                >
+                  From sunset to starlight
+                </p>
+              </motion.div>
             </div>
 
-            <Link
-              href="#"
-              className="inline-flex items-center justify-center text-[11px] font-medium transition-all duration-200 hover:opacity-90 mt-auto"
-              style={{
-                height: "32px",
-                padding: "0 16px",
-                background: "var(--exp-gold)",
-                color: "#1A120B",
-                borderRadius: "999px",
-                width: "fit-content",
-              }}
-            >
-              Reserve Now
-            </Link>
-          </div>
-        </div>
-
-        {/* Version 2: Champagne Card */}
-        <div className="flex gap-4">
-          {/* Image */}
-          <div
-            className="relative flex-shrink-0 overflow-hidden"
-            style={{
-              width: "150px",
-              height: "220px",
-              borderRadius: "12px",
-            }}
-          >
-            <Image
-              src="/assets/Twilight Gatherings.png"
-              alt="Exclusive dining setting"
-              fill
-              className="object-cover"
+            <div
+              className="pointer-events-none absolute -left-3 top-10 hidden h-24 w-px lg:block"
+              style={{ background: "var(--exp-border)" }}
+              aria-hidden="true"
             />
-          </div>
+            <div
+              className="pointer-events-none absolute -bottom-3 left-10 hidden h-px w-24 lg:block"
+              style={{ background: "var(--exp-border)" }}
+              aria-hidden="true"
+            />
+          </motion.div>
 
-          {/* Champagne Content Card */}
-          <div
-            className="flex flex-col justify-center p-5"
-            style={{
-              background: "#E5D1AD",
-              borderRadius: "12px",
-              flex: 1,
-            }}
+          <motion.div
+            className="relative"
+            initial={fadeUp.initial}
+            whileInView={fadeUp.animate}
+            viewport={{ once: true }}
+            transition={transition(0.16)}
           >
-            <span
-              className="text-[10px] tracking-wider uppercase mb-2"
-              style={{ color: "rgba(26, 18, 11, 0.7)" }}
+            <div
+              className="exp-glass rounded-sm p-7 sm:p-8 md:p-10"
+              style={{ boxShadow: "0 22px 55px rgba(0,0,0,0.35)" }}
             >
-              Exclusive Offer
-            </span>
-            <h3
-              className="text-sm font-semibold mb-2"
-              style={{
-                color: "#1A120B",
-                fontFamily: "var(--font-display)",
-              }}
-            >
-              Sunset & Dine Package
-            </h3>
-            <p
-              className="text-[11px] mb-4"
-              style={{
-                color: "rgba(26, 18, 11, 0.8)",
-                lineHeight: "16px",
-              }}
-            >
-              Experience the magic of golden hour followed by an intimate dinner
-              under the stars.
-            </p>
-            <Link
-              href="#"
-              className="inline-flex items-center justify-center text-[11px] font-medium transition-all duration-200 hover:bg-[#1A120B]/10 mt-auto"
-              style={{
-                height: "32px",
-                padding: "0 16px",
-                background: "#1A120B",
-                color: "#E5D1AD",
-                borderRadius: "999px",
-                width: "fit-content",
-              }}
-            >
-              Learn More
-            </Link>
-          </div>
+              <h3
+                className="mb-4 text-[1.75rem] leading-tight sm:mb-5 sm:text-3xl md:text-4xl"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  color: "var(--exp-text-primary)",
+                  fontWeight: 400,
+                }}
+              >
+                An Evening to Remember
+              </h3>
+
+              <p className="exp-body mb-7 sm:mb-8">
+                Indulge in a curated dining experience where every detail speaks
+                of luxury, warmth, and Arabian heritage.
+              </p>
+
+              <ul className="mb-8 space-y-3.5 sm:mb-9 sm:space-y-4">
+                {FEATURED_DINNER_HIGHLIGHTS.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                      style={{
+                        border: "1px solid var(--exp-border)",
+                        background: "rgba(212,175,55,0.08)",
+                      }}
+                      aria-hidden="true"
+                    >
+                      <Check
+                        size={11}
+                        style={{ color: "var(--exp-gold)" }}
+                        strokeWidth={2}
+                      />
+                    </span>
+                    <span
+                      className="text-sm leading-relaxed"
+                      style={{ color: "var(--exp-text-muted)" }}
+                    >
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link href={BOOK_NOW_HREF} className="exp-btn-primary">
+                Reserve Now
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

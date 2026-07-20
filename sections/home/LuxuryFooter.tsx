@@ -98,15 +98,15 @@ export function LuxuryFooter() {
 
               {/* Contact Info */}
               <div className="space-y-2">
-                <p className="text-sm" style={{ color: "var(--lux-muted)" }}>
+                <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Location:</span>{" "}
                   Egypt
                 </p>
-                <p className="text-sm" style={{ color: "var(--lux-muted)" }}>
+                <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Email:</span>{" "}
                   hanan.freestyledevelopmentllc@gmail.com
                 </p>
-                <p className="text-sm" style={{ color: "var(--lux-muted)" }}>
+                <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Phone:</span>{" "}
                   +1 623 204 1074
                 </p>
@@ -133,7 +133,7 @@ export function LuxuryFooter() {
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
-                    style={{ color: "var(--lux-muted)" }}
+                    style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
                     {link.label}
                   </Link>
@@ -161,7 +161,7 @@ export function LuxuryFooter() {
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
-                    style={{ color: "var(--lux-muted)" }}
+                    style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
                     {link.label}
                   </Link>
@@ -189,7 +189,7 @@ export function LuxuryFooter() {
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
-                    style={{ color: "var(--lux-muted)" }}
+                    style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
                     {link.label}
                   </Link>
@@ -217,7 +217,7 @@ export function LuxuryFooter() {
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
-                    style={{ color: "var(--lux-muted)" }}
+                    style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
                     {link.label}
                   </Link>
@@ -239,7 +239,7 @@ export function LuxuryFooter() {
         {/* Bottom Bar */}
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Copyright */}
-          <p className="text-xs" style={{ color: "var(--lux-muted)" }}>
+          <p className="text-xs" style={{ color: "rgba(246, 240, 232, 0.58)" }}>
             © 2026 Zalina Arabian Village. All rights reserved.
           </p>
 
@@ -259,7 +259,7 @@ export function LuxuryFooter() {
                 >
                   <Icon
                     size={16}
-                    style={{ color: "var(--lux-muted)" }}
+                    style={{ color: "rgba(246, 240, 232, 0.8)" }}
                     strokeWidth={1.5}
                   />
                 </Link>
@@ -272,14 +272,14 @@ export function LuxuryFooter() {
             <Link
               href="/privacy"
               className="text-xs transition-colors duration-300 hover:text-[var(--lux-gold)]"
-              style={{ color: "var(--lux-muted)" }}
+              style={{ color: "rgba(246, 240, 232, 0.58)" }}
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms"
               className="text-xs transition-colors duration-300 hover:text-[var(--lux-gold)]"
-              style={{ color: "var(--lux-muted)" }}
+              style={{ color: "rgba(246, 240, 232, 0.58)" }}
             >
               Terms of Service
             </Link>

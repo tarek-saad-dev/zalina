@@ -1,61 +1,99 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FilterTabs } from "./FilterTabs";
 import { ExperienceCard } from "./ExperienceCard";
+import { filterExperiences, getDefaultCategory } from "./data";
+import {
+  getCategoryHeading,
+  parseExperienceCategory,
+  type ExperienceCategory,
+} from "./types";
+import { useExpMotion } from "./useExpMotion";
+import { cn } from "@/lib/utils";
 
-const experiences = [
-  {
-    image: "/assets/Flavors.png",
-    category: "Signature",
-    title: "Arabian Feast",
-    description: "Traditional flavors in an elegant setting",
-    tags: ["Dinner", "Popular"],
-  },
-  {
-    image: "/assets/Twilight Gatherings.png",
-    category: "Sunset",
-    title: "Golden Hour",
-    description: "Watch the sunset over the dunes",
-    tags: ["Romantic"],
-  },
-  {
-    image: "/assets/Moments to Remember.png",
-    category: "Private",
-    title: "Intimate Dining",
-    description: "Exclusive experience for two",
-    tags: ["Couples"],
-  },
-  {
-    image: "/assets/Cultural Performances.png",
-    category: "Cooking",
-    title: "Chef's Table",
-    description: "Learn from our master chefs",
-    tags: ["Interactive"],
-  },
-];
+function gridClassForCount(count: number): string {
+  if (count <= 0) return "";
+  if (count === 1) {
+    return "mx-auto grid max-w-md grid-cols-1 gap-5";
+  }
+  if (count === 2) {
+    return "mx-auto grid max-w-3xl grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6";
+  }
+  return "grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7";
+}
 
 export function ExperiencesCatalog() {
-  return (
-    <section className="py-8" id="experiences">
-      <div className="mobile-container">
-        {/* Section Header */}
-        <div className="text-center mb-6">
-          <span
-            className="text-[10px] tracking-widest uppercase mb-2 block"
-            style={{ color: "var(--exp-gold)" }}
-          >
-            Explore
-          </span>
-          <h2 className="exp-section-heading">Our Experiences</h2>
-        </div>
+  const [activeCategory, setActiveCategory] = useState<ExperienceCategory>(
+    getDefaultCategory()
+  );
+  const { fadeUp, transition } = useExpMotion();
 
-        {/* Horizontal Scroll Cards */}
-        <div className="overflow-x-auto hide-scrollbar -mx-5 px-5">
-          <div className="flex gap-3" style={{ width: "max-content" }}>
-            {experiences.map((exp, index) => (
-              <ExperienceCard key={index} {...exp} />
-            ))}
-          </div>
+  const handleCategoryChange = (category: ExperienceCategory) => {
+    setActiveCategory(parseExperienceCategory(category));
+  };
+
+  const filtered = filterExperiences(activeCategory);
+  const heading = getCategoryHeading(activeCategory);
+
+  return (
+    <section
+      id="experiences"
+      className="exp-catalog relative"
+      style={{ background: "var(--exp-bg-deep)" }}
+      aria-labelledby="experiences-heading"
+    >
+      <FilterTabs
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
+      />
+
+      <div className="exp-container exp-catalog-body">
+        <motion.div
+          className="exp-section-header exp-catalog-header"
+          initial={fadeUp.initial}
+          whileInView={fadeUp.animate}
+          viewport={{ once: true }}
+          transition={transition(0)}
+        >
+          <p className="exp-eyebrow mb-3">Explore</p>
+          <h2 id="experiences-heading" className="exp-section-heading">
+            {heading}
+          </h2>
+          <div
+            className="mx-auto mt-4 exp-editorial-line-long"
+            aria-hidden="true"
+          />
+        </motion.div>
+
+        <div
+          id="experiences-panel"
+          role="tabpanel"
+          aria-labelledby="experiences-heading"
+          aria-live="polite"
+        >
+          {filtered.length === 0 ? (
+            <div className="exp-empty-state">
+              <p className="exp-eyebrow mb-4">Coming Soon</p>
+              <p className="exp-body">
+                No experiences available in this category yet.
+              </p>
+            </div>
+          ) : (
+            <div
+              key={activeCategory}
+              className={cn("exp-catalog-grid", gridClassForCount(filtered.length))}
+            >
+              {filtered.map((experience, index) => (
+                <ExperienceCard
+                  key={experience.id}
+                  experience={experience}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
