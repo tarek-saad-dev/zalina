@@ -67,7 +67,7 @@ export function Step1Journey({ state, onSetJourneyType }: Step1JourneyProps) {
           return (
             <motion.button
               key={option.id}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0.01, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.48, ease: "easeOut", delay: index * 0.09 }}
               onClick={() => onSetJourneyType(option.id as JourneyType)}

@@ -3,10 +3,16 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.zalinaarabianvillage.com",
+      },
+    ],
   },
   i18n: {
-    locales: ['en', 'ar'],
-    defaultLocale: 'en',
+    locales: ["en", "ar"],
+    defaultLocale: "en",
     localeDetection: false,
   },
 };

@@ -1,16 +1,25 @@
 "use client";
 
-import { useBookingState } from "./useBookingState";
+import { useBookingState, type BookingCatalog } from "./useBookingState";
 import { BookingHero } from "./BookingHero";
 import { BookingProgress } from "./BookingProgress";
 import { BookingSummary } from "./BookingSummary";
 import { MobileBookingBar } from "./MobileBookingBar";
 import { StepPlaceholder } from "./StepPlaceholder";
 import { BookingConfirmation } from "./BookingConfirmation";
-import type { JourneyType, DateSelection, PreferredPeriod, GuestContactDetails } from "./types";
+import type {
+  JourneyType,
+  DateSelection,
+  PreferredPeriod,
+  GuestContactDetails,
+} from "./types";
 import { BOOKING_STEPS } from "./mockData";
 
-export function BookNowPage() {
+interface BookNowPageProps {
+  catalog: BookingCatalog;
+}
+
+export function BookNowPage({ catalog }: BookNowPageProps) {
   const {
     state,
     nextStep,
@@ -26,14 +35,15 @@ export function BookNowPage() {
     setPreferredPeriod,
     toggleEnhancement,
     setGuestDetails,
-    submitMockBooking,
+    submitBooking,
     resetBooking,
     canProceed,
-  } = useBookingState();
+  } = useBookingState(catalog);
 
   const isConfirmed = state.bookingStatus === "submitted";
   const isLastStep = state.currentStep === BOOKING_STEPS.length;
   const proceed = canProceed(state.currentStep);
+  const isSubmitting = state.bookingStatus === "submitting";
 
   const handleNext = () => {
     if (proceed) nextStep();
@@ -41,29 +51,28 @@ export function BookNowPage() {
 
   const handleSummaryContinue = () => {
     if (isLastStep) {
-      submitMockBooking();
+      void submitBooking();
     } else if (proceed) {
       nextStep();
     }
   };
 
-  const summaryCTALabel = isLastStep
-    ? state.isPrivateCustom
-      ? "Send Request"
-      : "Confirm"
-    : "Continue";
+  const summaryCTALabel = isSubmitting
+    ? "Processing…"
+    : isLastStep
+      ? state.isPrivateCustom
+        ? "Confirm & Pay"
+        : "Confirm & Pay"
+      : "Continue";
 
   return (
     <main style={{ background: "#050403", minHeight: "100vh" }}>
-      {/* Hero */}
       <BookingHero />
 
-      {/* Progress stepper — dimmed after confirmation */}
       {!isConfirmed && (
         <BookingProgress currentStep={state.currentStep} onStepClick={goToStep} />
       )}
 
-      {/* Main body */}
       <section
         style={{
           background:
@@ -74,10 +83,12 @@ export function BookNowPage() {
       >
         <div
           className="mx-auto"
-          style={{ maxWidth: isConfirmed ? "760px" : "1280px", padding: "48px 24px 0" }}
+          style={{
+            maxWidth: isConfirmed ? "760px" : "1280px",
+            padding: "48px 24px 0",
+          }}
         >
           {isConfirmed ? (
-            /* ── Confirmation screen ── */
             <div
               style={{
                 background: "rgba(255,255,255,0.022)",
@@ -89,9 +100,7 @@ export function BookNowPage() {
               <BookingConfirmation state={state} onReset={resetBooking} />
             </div>
           ) : (
-            /* ── Wizard ── */
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-              {/* LEFT: Wizard content */}
               <div className="flex-1 min-w-0">
                 <div
                   style={{
@@ -103,25 +112,46 @@ export function BookNowPage() {
                 >
                   <StepPlaceholder
                     state={state}
+                    stays={catalog.stays}
+                    experiences={catalog.experiences}
                     onNext={handleNext}
                     onBack={prevStep}
-                    canProceed={proceed}
+                    canProceed={proceed && !isSubmitting}
                     onSetJourneyType={(type: JourneyType) => setJourneyType(type)}
                     onSelectItem={setSelectedItem}
                     onSelectOccasion={setSelectedOccasion}
-                    onSetDateSelection={(patch: Partial<DateSelection>) => setDateSelection(patch)}
+                    onSetDateSelection={(patch: Partial<DateSelection>) =>
+                      setDateSelection(patch)
+                    }
                     onSetGuests={setGuests}
                     onSetParticipants={setParticipants}
                     onSetEstimatedGuests={setEstimatedGuests}
-                    onSetPreferredPeriod={(p: PreferredPeriod) => setPreferredPeriod(p)}
+                    onSetPreferredPeriod={(p: PreferredPeriod) =>
+                      setPreferredPeriod(p)
+                    }
                     onToggleEnhancement={toggleEnhancement}
-                    onSetGuestDetails={(patch: Partial<GuestContactDetails>) => setGuestDetails(patch)}
-                    onSubmit={submitMockBooking}
+                    onSetGuestDetails={(patch: Partial<GuestContactDetails>) =>
+                      setGuestDetails(patch)
+                    }
+                    onSubmit={() => void submitBooking()}
                   />
+                  {state.submissionError && (
+                    <p
+                      style={{
+                        marginTop: "16px",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "13px",
+                        color: "rgba(220,160,100,0.95)",
+                        lineHeight: 1.6,
+                      }}
+                      role="alert"
+                    >
+                      {state.submissionError}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* RIGHT: Sticky summary (desktop only) */}
               <div
                 className="hidden lg:block"
                 style={{
@@ -136,7 +166,7 @@ export function BookNowPage() {
                   state={state}
                   onContinue={handleSummaryContinue}
                   isLastStep={isLastStep}
-                  canProceed={proceed}
+                  canProceed={proceed && !isSubmitting}
                   ctaLabel={summaryCTALabel}
                 />
               </div>
@@ -145,12 +175,13 @@ export function BookNowPage() {
         </div>
       </section>
 
-      {/* Mobile sticky bar — hidden after confirmation */}
       {!isConfirmed && (
         <MobileBookingBar
           state={state}
-          onContinue={isLastStep ? submitMockBooking : handleNext}
-          canProceed={isLastStep ? true : proceed}
+          onContinue={
+            isLastStep ? () => void submitBooking() : handleNext
+          }
+          canProceed={isLastStep ? !isSubmitting : proceed && !isSubmitting}
         />
       )}
     </main>

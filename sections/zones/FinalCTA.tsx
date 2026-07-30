@@ -3,71 +3,113 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 
 export function FinalCTA() {
+  const prefersReduced = useReducedMotion();
+
   return (
-    <section className="zones-section-md" style={{ background: "var(--zones-bg)" }}>
-      <div className="zones-container">
-        <div
-          className="relative overflow-hidden zones-radius-xl flex flex-col items-center justify-center text-center p-8"
+    <section
+      className="zones-section relative overflow-hidden"
+      style={{ background: "var(--zones-bg)" }}
+      aria-labelledby="final-cta-title"
+    >
+      <div className="zones-container relative z-10">
+        <motion.div
+          className="relative overflow-hidden rounded-2xl flex flex-col items-center justify-center text-center px-6 py-14 md:py-16"
           style={{
-            height: "320px",
-            background: "var(--zones-surface)",
-            border: "1px solid var(--zones-border)",
+            background: "rgba(23,27,35,0.8)",
+            border: "1px solid rgba(200,155,82,0.2)",
+            backdropFilter: "blur(12px)",
+            boxShadow:
+              "0 30px 80px rgba(0,0,0,0.4), 0 0 60px rgba(200,155,82,0.05)",
           }}
+          initial={!prefersReduced ? { opacity: 0, y: 40 } : undefined}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.8 }}
         >
-          {/* Luxury Background Texture */}
-          <div className="absolute inset-0">
+          {/* Background image layer */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <Image
-              src="/assets/zalina-hero-bg.png"
+              src="/assets/night.png"
               alt=""
               fill
-              className="object-cover opacity-30"
+              className="object-cover opacity-20"
+              sizes="100vw"
             />
-            {/* Dark Overlay */}
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(17,21,28,0.7) 0%, rgba(17,21,28,0.9) 100%)",
+                  "linear-gradient(180deg, rgba(17,21,28,0.8) 0%, rgba(17,21,28,0.85) 100%)",
               }}
             />
           </div>
 
+          {/* Warm amber glow behind panel */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            aria-hidden="true"
+            style={{
+              background:
+                "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,155,82,0.08) 0%, transparent 70%)",
+            }}
+          />
+
+          {/* Ornamental pattern */}
+          <div
+            className="absolute inset-0 pointer-events-none exp-pattern opacity-20"
+            aria-hidden="true"
+          />
+
           {/* Content */}
-          <div className="relative z-10" style={{ maxWidth: "600px" }}>
+          <div className="relative z-10 max-w-[620px]">
             <span
-              className="zones-label uppercase tracking-widest mb-4 block"
+              className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-5"
               style={{ color: "var(--zones-gold)" }}
             >
-              Begin Your Journey
+              BEGIN YOUR JOURNEY
             </span>
 
             <h2
-              className="text-4xl font-medium mb-6"
+              id="final-cta-title"
+              className="mb-4"
               style={{
                 fontFamily: "var(--font-display)",
+                fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                fontWeight: 500,
                 color: "var(--zones-text-light)",
-                lineHeight: "48px",
+                lineHeight: "1.2",
               }}
             >
-              Find the Space That
-              <br />
-              Matches Your Moment
+              Find the Space That Matches Your Moment
             </h2>
 
+            <p
+              className="mb-6 mx-auto max-w-[500px]"
+              style={{
+                fontSize: "15px",
+                lineHeight: "1.7",
+                color: "var(--zones-text-secondary)",
+              }}
+            >
+              From intimate private gatherings to grand celebrations, Zalina offers
+              a setting designed around your occasion.
+            </p>
+
             {/* Buttons */}
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/book"
-                className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium"
+                href="/book-now"
+                className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
                 style={{ height: "44px", paddingInline: "28px" }}
               >
                 Book a Consultation
               </Link>
               <Link
-                href="/zones"
-                className="flex items-center justify-center text-sm font-medium transition-all duration-200 hover:bg-white/10"
+                href="#main-zones"
+                className="flex items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[rgba(200,155,82,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
                 style={{
                   height: "44px",
                   paddingInline: "28px",
@@ -81,7 +123,7 @@ export function FinalCTA() {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

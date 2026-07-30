@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
 import type { BookingState, EnhancementAddOn, EnhancementCategory } from "./types";
-import { ENHANCEMENT_ADDONS } from "./mockData";
 
 interface Step4EnhancementsProps {
   state: BookingState;

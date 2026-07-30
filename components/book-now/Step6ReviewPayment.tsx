@@ -380,7 +380,7 @@ function PaymentPanel({
               Secure Online Payment
             </p>
             <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: TEXT_DIM, lineHeight: 1.6 }}>
-              Payment gateway will be connected in the backend integration phase.
+              You will be redirected to a secure checkout to complete payment after confirming.
             </p>
           </div>
         </div>
@@ -452,8 +452,8 @@ function PaymentPanel({
         }}
       >
         {isPrivate
-          ? "No payment is required at this stage. The concierge team will contact you."
-          : "This is a mock preview. No payment will be charged in this phase."}
+          ? "A stay hold is created first. Payment confirms your reservation; our team may follow up on event details."
+          : "Confirming creates a booking hold, then redirects you to secure checkout."}
       </p>
     </div>
   );

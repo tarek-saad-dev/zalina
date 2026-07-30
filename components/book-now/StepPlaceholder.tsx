@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { BookingState, JourneyType, DateSelection, PreferredPeriod, GuestContactDetails } from "./types";
 import { BOOKING_STEPS } from "./mockData";
@@ -13,11 +12,19 @@ import { Step6ReviewPayment } from "./Step6ReviewPayment";
 
 interface StepPlaceholderProps {
   state: BookingState;
+  stays: import("./types").StayOption[];
+  experiences: import("./types").ExperienceOption[];
   onNext: () => void;
   onBack: () => void;
   canProceed: boolean;
   onSetJourneyType: (type: JourneyType) => void;
-  onSelectItem: (id: string, title: string, price: number, maxGuests?: number) => void;
+  onSelectItem: (
+    id: string,
+    title: string,
+    price: number,
+    maxGuests?: number,
+    meta?: import("./Step2Selection").SelectItemMeta
+  ) => void;
   onSelectOccasion: (id: string) => void;
   onSetDateSelection: (patch: Partial<DateSelection>) => void;
   onSetGuests: (n: number) => void;
@@ -126,6 +133,8 @@ function GenericStepPlaceholder({ step }: { step: (typeof BOOKING_STEPS)[number]
 
 export function StepPlaceholder({
   state,
+  stays,
+  experiences,
   onNext,
   onBack,
   canProceed,
@@ -147,21 +156,16 @@ export function StepPlaceholder({
 
   return (
     <div>
-      {/* Step content with slide transition */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={state.currentStep}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.32, ease: "easeInOut" }}
-        >
+      {/* Step content */}
+      <div key={state.currentStep}>
           {state.currentStep === 1 && (
             <Step1Journey state={state} onSetJourneyType={onSetJourneyType} />
           )}
           {state.currentStep === 2 && (
             <Step2Selection
               state={state}
+              stays={stays}
+              experiences={experiences}
               onSelectItem={onSelectItem}
               onSelectOccasion={onSelectOccasion}
             />
@@ -197,8 +201,7 @@ export function StepPlaceholder({
           {state.currentStep > 6 && (
             <GenericStepPlaceholder step={currentStepData} />
           )}
-        </motion.div>
-      </AnimatePresence>
+      </div>
 
       {/* Navigation row — hidden on step 6 (submit CTA is inside Step6ReviewPayment) */}
       {state.currentStep !== 6 && <div

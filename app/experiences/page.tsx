@@ -11,6 +11,9 @@ import {
   FuturePackages,
   CTASection,
 } from "@/sections/experiences";
+import { getExperiences, mapExperienceToCatalogItem } from "@/lib/api";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Experiences | Zalina Arabian Village",
@@ -33,11 +36,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ExperiencesPage() {
+export default async function ExperiencesPage() {
+  const apiExperiences = await getExperiences();
+  const experiences = apiExperiences
+    .filter((e) => e.is_active)
+    .map((e) => mapExperienceToCatalogItem(e));
+
   return (
     <main className="exp-page min-h-screen w-full">
       <Hero />
-      <ExperiencesCatalog />
+      <ExperiencesCatalog experiences={experiences} />
       <EditorialSpotlight />
       <ExclusiveOffer />
       <WhyChooseZalina />

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Info, CalendarDays, Moon } from "lucide-react";
 import type { BookingState, DateSelection, PreferredPeriod } from "./types";
-import { TIME_SLOTS, PREFERRED_PERIODS, getMockUnavailableDates } from "./mockData";
+import { TIME_SLOTS, PREFERRED_PERIODS } from "./mockData";
 import { BookingCalendar } from "./BookingCalendar";
 import { GuestSelector } from "./GuestSelector";
 
@@ -35,31 +35,58 @@ function formatDisplayDate(iso: string): string {
 }
 
 /* ─── Availability Notice ─────────────────────────────────── */
-function AvailabilityNotice({ status }: { status: "available" | "incomplete" | "unavailable" }) {
+function AvailabilityNotice({
+  status,
+  message,
+}: {
+  status: "available" | "incomplete" | "unavailable" | "loading" | "error" | "idle";
+  message?: string | null;
+}) {
   const configs = {
     available: {
       icon: "✦",
-      text: "Selected window is available in this mock preview.",
+      text: message || "Selected window is available.",
       color: GOLD,
       bg: "rgba(212,175,55,0.05)",
       border: "rgba(212,175,55,0.18)",
     },
     incomplete: {
       icon: "◌",
-      text: "Choose your date details to preview availability.",
+      text: message || "Choose your date details to preview availability.",
       color: TEXT_DIM,
       bg: "rgba(255,255,255,0.02)",
       border: "rgba(255,255,255,0.07)",
     },
     unavailable: {
       icon: "✕",
-      text: "This date is unavailable. Please choose another day.",
+      text: message || "This date is unavailable. Please choose another day.",
       color: "rgba(212,140,55,0.85)",
       bg: "rgba(212,140,55,0.05)",
       border: "rgba(212,140,55,0.20)",
     },
+    loading: {
+      icon: "◌",
+      text: message || "Checking availability…",
+      color: GOLD_SOFT,
+      bg: "rgba(212,175,55,0.04)",
+      border: "rgba(212,175,55,0.14)",
+    },
+    error: {
+      icon: "!",
+      text: message || "Could not verify availability.",
+      color: "rgba(212,140,55,0.85)",
+      bg: "rgba(212,140,55,0.05)",
+      border: "rgba(212,140,55,0.20)",
+    },
+    idle: {
+      icon: "◌",
+      text: message || "Choose your date details to preview availability.",
+      color: TEXT_DIM,
+      bg: "rgba(255,255,255,0.02)",
+      border: "rgba(255,255,255,0.07)",
+    },
   };
-  const c = configs[status];
+  const c = configs[status] ?? configs.incomplete;
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -91,17 +118,16 @@ function StayDateCase({
   onSetDateSelection,
   onSetGuests,
 }: Pick<Step3DateGuestsProps, "state" | "onSetDateSelection" | "onSetGuests">) {
-  const { dateSelection, guests, selectedItemMaxGuests } = state;
+  const { dateSelection, guests, selectedItemMaxGuests, availability } = state;
   const today = toLocalISO(new Date());
-  const unavailable = getMockUnavailableDates();
 
-  const availStatus: "available" | "incomplete" | "unavailable" = (() => {
-    if (!dateSelection.checkIn) return "incomplete";
-    if (unavailable.has(dateSelection.checkIn) || (dateSelection.checkOut && unavailable.has(dateSelection.checkOut))) {
-      return "unavailable";
-    }
-    if (dateSelection.checkIn && dateSelection.checkOut) return "available";
-    return "incomplete";
+  const availStatus = (() => {
+    if (!dateSelection.checkIn || !dateSelection.checkOut) return "incomplete" as const;
+    if (availability.status === "loading") return "loading" as const;
+    if (availability.status === "available") return "available" as const;
+    if (availability.status === "unavailable") return "unavailable" as const;
+    if (availability.status === "error") return "error" as const;
+    return "incomplete" as const;
   })();
 
   return (
@@ -116,7 +142,6 @@ function StayDateCase({
         }}
       />
 
-      {/* Nights info strip */}
       {dateSelection.checkIn && dateSelection.checkOut && dateSelection.nights > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 6 }}
@@ -155,7 +180,7 @@ function StayDateCase({
         onChange={onSetGuests}
       />
 
-      <AvailabilityNotice status={availStatus} />
+      <AvailabilityNotice status={availStatus} message={availability.message} />
     </div>
   );
 }
@@ -168,11 +193,9 @@ function EveningDateCase({
 }: Pick<Step3DateGuestsProps, "state" | "onSetDateSelection" | "onSetParticipants">) {
   const { dateSelection, participants } = state;
   const today = toLocalISO(new Date());
-  const unavailable = getMockUnavailableDates();
 
-  const availStatus: "available" | "incomplete" | "unavailable" = (() => {
+  const availStatus: "available" | "incomplete" = (() => {
     if (!dateSelection.date) return "incomplete";
-    if (unavailable.has(dateSelection.date)) return "unavailable";
     if (dateSelection.timeSlot) return "available";
     return "incomplete";
   })();
@@ -186,7 +209,6 @@ function EveningDateCase({
         onSelectDate={(iso) => onSetDateSelection({ date: iso })}
       />
 
-      {/* Time slot selector */}
       <div>
         <p
           style={{
@@ -221,8 +243,6 @@ function EveningDateCase({
                   cursor: "pointer",
                   outline: "none",
                   textAlign: "left",
-                  transition: "all 0.2s ease",
-                  boxShadow: isSelected ? "0 2px 16px rgba(212,175,55,0.08)" : "none",
                 }}
                 aria-pressed={isSelected}
               >
@@ -242,7 +262,6 @@ function EveningDateCase({
                     fontFamily: "var(--font-body)",
                     fontSize: "11px",
                     color: isSelected ? GOLD : TEXT_DIM,
-                    letterSpacing: "0.04em",
                   }}
                 >
                   {slot.time}
@@ -260,7 +279,14 @@ function EveningDateCase({
         onChange={onSetParticipants}
       />
 
-      <AvailabilityNotice status={availStatus} />
+      <AvailabilityNotice
+        status={availStatus}
+        message={
+          availStatus === "available"
+            ? "Experience date ready. A matching stay night will be reserved at checkout."
+            : undefined
+        }
+      />
     </div>
   );
 }
@@ -476,12 +502,64 @@ export function Step3DateGuests({
           />
         )}
         {isPrivate && (
-          <PrivateDateCase
-            state={state}
-            onSetDateSelection={onSetDateSelection}
-            onSetEstimatedGuests={onSetEstimatedGuests}
-            onSetPreferredPeriod={onSetPreferredPeriod}
-          />
+          <div className="flex flex-col gap-5">
+            <StayDateCase
+              state={state}
+              onSetDateSelection={onSetDateSelection}
+              onSetGuests={onSetGuests}
+            />
+            <div>
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "11px",
+                  letterSpacing: "0.16em",
+                  textTransform: "uppercase",
+                  color: TEXT_DIM,
+                  fontWeight: 500,
+                  marginBottom: "10px",
+                }}
+              >
+                Preferred Period
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {PREFERRED_PERIODS.map((period) => {
+                  const isSelected = state.dateSelection.preferredPeriod === period;
+                  return (
+                    <button
+                      key={period}
+                      onClick={() => onSetPreferredPeriod(period as PreferredPeriod)}
+                      style={{
+                        padding: "11px 22px",
+                        borderRadius: "10px",
+                        border: isSelected
+                          ? "1px solid rgba(212,175,55,0.42)"
+                          : "1px solid rgba(255,255,255,0.07)",
+                        background: isSelected
+                          ? "rgba(212,175,55,0.07)"
+                          : "rgba(255,255,255,0.022)",
+                        cursor: "pointer",
+                        outline: "none",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "13px",
+                        color: isSelected ? TEXT_PRIMARY : "rgba(248,242,231,0.60)",
+                      }}
+                      aria-pressed={isSelected}
+                    >
+                      {period}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <GuestSelector
+              value={state.estimatedGuests}
+              min={1}
+              label="Estimated Guest Count"
+              sublabel="Approximate number of attendees"
+              onChange={onSetEstimatedGuests}
+            />
+          </div>
         )}
       </motion.div>
     </div>

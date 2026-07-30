@@ -1,4 +1,3 @@
-export { Navbar } from "./Navbar";
 export { Hero } from "./Hero";
 export { DestinationOverview } from "./DestinationOverview";
 export { MainZones } from "./MainZones";
@@ -8,4 +7,3 @@ export { ImmersiveJourney } from "./ImmersiveJourney";
 export { WhyZonesMatter } from "./WhyZonesMatter";
 export { BookingConnection } from "./BookingConnection";
 export { FinalCTA } from "./FinalCTA";
-export { Footer } from "./Footer";

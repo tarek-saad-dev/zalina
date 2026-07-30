@@ -1,13 +1,8 @@
 export const EXPERIENCE_CATEGORIES = [
   "All Experiences",
   "Dinner",
-  "Sunset",
-  "Private",
-  "Cooking",
-  "Party",
-  "Most Popular",
-  "Signature",
-  "Romantic",
+  "Show",
+  "Ritual",
 ] as const;
 
 export type ExperienceCategory = (typeof EXPERIENCE_CATEGORIES)[number];
@@ -23,6 +18,8 @@ export interface ExperienceItem {
   categories: ExperienceCategory[];
   tags: string[];
   href: string;
+  type?: string;
+  price?: number;
 }
 
 export function isExperienceCategory(
@@ -43,13 +40,8 @@ export function parseExperienceCategory(
 const CATEGORY_HEADINGS: Record<ExperienceCategory, string> = {
   "All Experiences": "Our Experiences",
   Dinner: "Dinner Experiences",
-  Sunset: "Sunset Experiences",
-  Private: "Private Experiences",
-  Cooking: "Culinary Experiences",
-  Party: "Celebration Experiences",
-  "Most Popular": "Most Popular Experiences",
-  Signature: "Signature Experiences",
-  Romantic: "Romantic Experiences",
+  Show: "Show Experiences",
+  Ritual: "Ritual Experiences",
 };
 
 export function getCategoryHeading(

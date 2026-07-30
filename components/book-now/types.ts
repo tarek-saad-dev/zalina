@@ -41,6 +41,7 @@ export interface GuestContactDetails {
 
 export interface EnhancementAddOn {
   id: string;
+  apiId?: number;
   category: EnhancementCategory;
   name: string;
   description: string;
@@ -51,8 +52,12 @@ export interface EnhancementAddOn {
 
 export interface StayOption {
   id: string;
+  apiId: number;
+  slug: string;
   title: string;
   zone: string;
+  zoneId?: number;
+  zoneType?: string;
   price: number;
   priceLabel: string;
   maxGuests: number;
@@ -60,12 +65,17 @@ export interface StayOption {
   description: string;
   gradientFrom: string;
   gradientTo: string;
+  image?: string;
 }
 
 export interface ExperienceOption {
   id: string;
+  apiId: number;
   title: string;
   zone: string;
+  zoneId?: number;
+  zoneSlug?: string;
+  zoneType?: string;
   price: number;
   priceLabel: string;
   minGuests: number;
@@ -73,6 +83,7 @@ export interface ExperienceOption {
   description: string;
   gradientFrom: string;
   gradientTo: string;
+  image?: string;
 }
 
 export interface OccasionOption {
@@ -86,6 +97,13 @@ export type BookingStatus = "idle" | "submitting" | "submitted" | "failed";
 
 export type PaymentMode = "pay-now" | "concierge-confirmation";
 
+export interface AvailabilityState {
+  status: "idle" | "loading" | "available" | "unavailable" | "error";
+  message: string | null;
+  totalEstimate: number | null;
+  pricePerNight: number | null;
+}
+
 export interface BookingState {
   currentStep: number;
   journeyType: JourneyType;
@@ -93,6 +111,10 @@ export interface BookingState {
   selectedItemTitle: string | null;
   selectedItemPrice: number;
   selectedItemMaxGuests: number | null;
+  selectedItemSlug: string | null;
+  selectedItemApiId: number | null;
+  selectedExperienceApiId: number | null;
+  selectedExperienceZoneId: number | null;
   selectedOccasionId: string | null;
   selectedOccasionTitle: string | null;
   isPrivateCustom: boolean;
@@ -109,6 +131,7 @@ export interface BookingState {
   bookingReference: string | null;
   paymentMode: PaymentMode;
   submissionError: string | null;
+  availability: AvailabilityState;
 }
 
 export interface BookingStep {

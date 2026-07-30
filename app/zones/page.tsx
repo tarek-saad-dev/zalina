@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import {
-  Navbar,
   Hero,
   DestinationOverview,
   MainZones,
@@ -10,8 +9,11 @@ import {
   WhyZonesMatter,
   BookingConnection,
   FinalCTA,
-  Footer,
 } from "@/sections/zones";
+import { Footer } from "@/components/layout/Footer";
+import { getZones, mapZoneToUi } from "@/lib/api";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Zones & Venues | Zalina Arabian Village",
@@ -33,43 +35,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ZonesPage() {
+export default async function ZonesPage() {
+  const apiZones = await getZones();
+  const zones = apiZones.map((z) => mapZoneToUi(z));
+  const featured =
+    zones.find((z) => z.isBookableOnline) ?? zones[0] ?? null;
+
   return (
     <main
-      className="min-h-screen"
+      className="min-h-screen overflow-x-hidden"
       style={{ background: "var(--zones-bg)" }}
     >
-      {/* Sticky Navbar */}
-      <Navbar />
-
-      {/* Hero Section */}
       <Hero />
-
-      {/* Destination Overview */}
       <DestinationOverview />
-
-      {/* Main Zones */}
-      <MainZones />
-
-      {/* Featured Zone Spotlight */}
-      <FeaturedZone />
-
-      {/* Zone Differentiation */}
+      <MainZones zones={zones} />
+      <FeaturedZone zone={featured} />
       <ZoneDifferentiation />
-
-      {/* Immersive Journey */}
       <ImmersiveJourney />
-
-      {/* Why Each Zone Matters */}
       <WhyZonesMatter />
-
-      {/* Booking Connection */}
       <BookingConnection />
-
-      {/* Final CTA */}
       <FinalCTA />
-
-      {/* Footer */}
       <Footer />
     </main>
   );

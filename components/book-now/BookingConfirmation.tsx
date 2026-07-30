@@ -190,8 +190,11 @@ function StayEveningConfirmation({ state, onReset }: BookingConfirmationProps) {
           marginBottom: "36px",
         }}
       >
-        Your reservation preview has been prepared. Payment integration will
-        complete this flow in the next phase.
+        Your booking hold has been created
+        {state.bookingReference ? ` (${state.bookingReference})` : ""}.
+        {state.submissionError
+          ? " Payment redirect could not be completed — please contact concierge with your reference."
+          : " Complete payment when redirected, or keep your reference for follow-up."}
       </p>
 
       {/* QR + ref */}

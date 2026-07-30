@@ -9,6 +9,7 @@ import {
   getCategoryHeading,
   parseExperienceCategory,
   type ExperienceCategory,
+  type ExperienceItem,
 } from "./types";
 import { useExpMotion } from "./useExpMotion";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,11 @@ function gridClassForCount(count: number): string {
   return "grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7";
 }
 
-export function ExperiencesCatalog() {
+interface ExperiencesCatalogProps {
+  experiences: ExperienceItem[];
+}
+
+export function ExperiencesCatalog({ experiences }: ExperiencesCatalogProps) {
   const [activeCategory, setActiveCategory] = useState<ExperienceCategory>(
     getDefaultCategory()
   );
@@ -34,7 +39,7 @@ export function ExperiencesCatalog() {
     setActiveCategory(parseExperienceCategory(category));
   };
 
-  const filtered = filterExperiences(activeCategory);
+  const filtered = filterExperiences(experiences, activeCategory);
   const heading = getCategoryHeading(activeCategory);
 
   return (
