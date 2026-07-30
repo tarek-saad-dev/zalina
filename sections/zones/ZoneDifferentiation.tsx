@@ -20,7 +20,7 @@ export function ZoneDifferentiation() {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: "var(--zones-bg)", paddingTop: "72px", paddingBottom: "72px" }}
+      style={{ background: "transparent", paddingTop: "72px", paddingBottom: "72px" }}
       aria-labelledby="zone-differentiation-title"
     >
       <div className="zones-container relative z-10">
@@ -56,7 +56,7 @@ export function ZoneDifferentiation() {
                 key={occasion.id}
                 className="group relative flex flex-col items-center text-center p-6 md:p-7 rounded-xl transition-all duration-500 cursor-default"
                 style={{
-                  background: "rgba(23,27,35,0.7)",
+                  background: "rgba(9,12,20,0.7)",
                   border: "1px solid var(--zones-border)",
                   backdropFilter: "blur(8px)",
                 }}

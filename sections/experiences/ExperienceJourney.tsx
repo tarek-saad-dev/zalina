@@ -39,7 +39,7 @@ export function ExperienceJourney() {
   return (
     <section
       className="exp-section overflow-hidden"
-      style={{ background: "var(--exp-bg-deep)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="journey-heading"
     >
       <div className="exp-container">

@@ -10,7 +10,7 @@ export function DayNightExperience() {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: "var(--lux-bg)" }}
+      style={{ background: "transparent" }}
     >
       <div className="flex flex-col lg:flex-row" style={{ height: "auto" }}>
         {/* Day Experience - Left */}

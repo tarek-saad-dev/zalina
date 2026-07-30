@@ -11,7 +11,7 @@ export function WeddingGallery() {
     <section
       className="relative overflow-hidden"
       style={{
-        background: "var(--zones-bg)",
+        background: "transparent",
         paddingTop: "72px",
         paddingBottom: "72px",
       }}

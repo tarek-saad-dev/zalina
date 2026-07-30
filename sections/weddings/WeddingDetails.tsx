@@ -13,7 +13,7 @@ export function WeddingDetails() {
   return (
     <section
       className="zones-section-md relative overflow-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="wedding-details-title"
     >
       {/* Ornamental pattern */}

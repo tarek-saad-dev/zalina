@@ -147,14 +147,14 @@ export function Hero() {
         >
           <Link
             href="#main-zones"
-            className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+            className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
             style={{ height: "44px", paddingInline: "28px" }}
           >
             Explore Zones
           </Link>
           <Link
             href="/book-now"
-            className="flex items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[var(--zones-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+            className="flex items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[var(--zones-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
             style={{
               height: "44px",
               paddingInline: "28px",

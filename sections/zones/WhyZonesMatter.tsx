@@ -14,7 +14,7 @@ export function WhyZonesMatter() {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: "var(--zones-bg)", paddingTop: "72px", paddingBottom: "72px" }}
+      style={{ background: "transparent", paddingTop: "72px", paddingBottom: "72px" }}
       aria-labelledby="why-zones-title"
     >
       <div className="zones-container relative z-10">
@@ -50,7 +50,7 @@ export function WhyZonesMatter() {
                 key={card.title}
                 className="group relative flex flex-col items-center text-center p-7 rounded-xl transition-all duration-500"
                 style={{
-                  background: "rgba(23,27,35,0.6)",
+                  background: "rgba(9,12,20,0.6)",
                   border: "1px solid var(--zones-border)",
                   backdropFilter: "blur(6px)",
                 }}

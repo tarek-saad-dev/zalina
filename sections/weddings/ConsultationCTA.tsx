@@ -11,14 +11,14 @@ export function ConsultationCTA() {
   return (
     <section
       className="zones-section relative overflow-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="consultation-cta-title"
     >
       <div className="zones-container relative z-10">
         <motion.div
           className="relative overflow-hidden rounded-2xl flex flex-col items-center justify-center text-center px-6 py-14 md:py-16"
           style={{
-            background: "rgba(23,27,35,0.8)",
+            background: "rgba(9,12,20,0.8)",
             border: "1px solid rgba(200,155,82,0.2)",
             backdropFilter: "blur(12px)",
             boxShadow:
@@ -43,7 +43,7 @@ export function ConsultationCTA() {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(17,21,28,0.82) 0%, rgba(17,21,28,0.74) 100%)",
+                  "linear-gradient(180deg, rgba(5,7,12,0.82) 0%, rgba(5,7,12,0.74) 100%)",
               }}
             />
           </div>
@@ -103,14 +103,14 @@ export function ConsultationCTA() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/book-now"
-                className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+                className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{ height: "44px", paddingInline: "28px" }}
               >
                 Request Wedding Consultation
               </Link>
               <Link
                 href="/zones"
-                className="flex items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[rgba(200,155,82,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+                className="flex items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[rgba(200,155,82,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{
                   height: "44px",
                   paddingInline: "28px",

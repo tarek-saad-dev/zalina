@@ -13,7 +13,7 @@ export function ExclusiveOffer() {
   return (
     <section
       className="exp-section"
-      style={{ background: "var(--exp-bg-primary)", paddingTop: 0 }}
+      style={{ background: "transparent", paddingTop: 0 }}
       aria-labelledby="exclusive-offer-heading"
     >
       <div className="exp-container">

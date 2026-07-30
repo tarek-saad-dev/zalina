@@ -7,7 +7,7 @@ export function HeritageStory() {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: "var(--lux-bg)", paddingTop: "40px", paddingBottom: "30px" }}
+      style={{ background: "transparent", paddingTop: "40px", paddingBottom: "30px" }}
     >
       {/* Subtle Pattern Background */}
       <div className="absolute inset-0 lux-pattern opacity-50" />

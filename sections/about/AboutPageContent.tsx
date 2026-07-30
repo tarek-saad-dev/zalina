@@ -87,7 +87,7 @@ function AboutHeroSection() {
   const fadeOut = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
-    <section ref={ref} className="relative w-full overflow-hidden" style={{ minHeight: "100vh", background: "#050505" }}>
+    <section ref={ref} className="relative w-full overflow-hidden" style={{ minHeight: "100vh", background: "transparent" }}>
       {/* BG */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image src="/assets/zalina-hero-bg.png" alt="Zalina Arabian Village" fill className="object-cover object-center" priority quality={100} />
@@ -154,7 +154,7 @@ function AboutHeroSection() {
 /* ─── Section: Brand Story ───────────────────────────────── */
 function BrandStorySection() {
   return (
-    <section className="w-full" style={{ background: "#050505", paddingTop: "120px", paddingBottom: "120px" }}>
+    <section className="w-full" style={{ background: "transparent", paddingTop: "120px", paddingBottom: "120px" }}>
       {/* top gold line */}
       <div style={{ height: "1px", background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)", marginBottom: "0" }} />
 
@@ -231,7 +231,7 @@ function BrandStorySection() {
 /* ─── Section: Manifesto ─────────────────────────────────── */
 function ManifestoSection() {
   return (
-    <section className="w-full relative" style={{ background: "#08080a", paddingTop: "120px", paddingBottom: "120px", overflow: "hidden" }}>
+    <section className="w-full relative" style={{ background: "var(--lux-surface)", paddingTop: "120px", paddingBottom: "120px", overflow: "hidden" }}>
       {/* Subtle bg pattern */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, #D4AF37 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
       {/* Gold glow */}
@@ -282,7 +282,7 @@ function ManifestoSection() {
 /* ─── Section: Signature Pillars ─────────────────────────── */
 function PillarsSection() {
   return (
-    <section className="w-full" style={{ background: "#050505", paddingTop: "120px", paddingBottom: "120px" }}>
+    <section className="w-full" style={{ background: "transparent", paddingTop: "120px", paddingBottom: "120px" }}>
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ duration: 0.9 }} className="text-center mb-16">
           <p className="lux-eyebrow mb-5">What Defines Us</p>
@@ -329,7 +329,7 @@ function PillarsSection() {
 /* ─── Section: Immersive Stories ─────────────────────────── */
 function ImmersiveStoriesSection() {
   return (
-    <section className="w-full" style={{ background: "#08080a", paddingTop: "120px", paddingBottom: "120px" }}>
+    <section className="w-full" style={{ background: "var(--lux-surface)", paddingTop: "120px", paddingBottom: "120px" }}>
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
 
@@ -396,7 +396,7 @@ function ImmersiveStoriesSection() {
 /* ─── Section: The Zalina Difference ─────────────────────── */
 function DifferenceSection() {
   return (
-    <section className="w-full" style={{ background: "#050505", paddingTop: "120px", paddingBottom: "120px" }}>
+    <section className="w-full" style={{ background: "transparent", paddingTop: "120px", paddingBottom: "120px" }}>
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
         <div className="flex flex-col lg:flex-row items-start gap-16 lg:gap-24">
 
@@ -522,7 +522,7 @@ function AboutCTASection() {
 /* ─── Main Export ────────────────────────────────────────── */
 export function AboutPageContent() {
   return (
-    <div className="w-full" style={{ background: "#050505" }}>
+    <div className="lux-page w-full">
       <AboutHeroSection />
       <BrandStorySection />
       <ManifestoSection />

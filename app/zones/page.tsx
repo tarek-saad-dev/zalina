@@ -43,8 +43,7 @@ export default async function ZonesPage() {
 
   return (
     <main
-      className="min-h-screen overflow-x-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      className="zones-page min-h-screen overflow-x-hidden"
     >
       <Hero />
       <DestinationOverview />

@@ -35,10 +35,7 @@ export const metadata: Metadata = {
 
 export default function WeddingsPage() {
   return (
-    <main
-      className="min-h-screen overflow-x-hidden"
-      style={{ background: "var(--zones-bg)" }}
-    >
+    <main className="zones-page min-h-screen overflow-x-hidden">
       {/* 1. Wedding Hero */}
       <WeddingHero />
 

@@ -8,7 +8,7 @@ export function FinalCTA() {
   return (
     <section
       className="lux-section relative overflow-hidden"
-      style={{ background: "var(--lux-bg)" }}
+      style={{ background: "transparent" }}
     >
       {/* Decorative Pattern */}
       <div className="absolute inset-0 lux-pattern opacity-30" />

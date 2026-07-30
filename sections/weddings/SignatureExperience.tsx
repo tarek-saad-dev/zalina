@@ -12,7 +12,7 @@ export function SignatureExperience() {
   return (
     <section
       className="zones-section relative overflow-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="signature-experience-title"
     >
       {/* Subtle backlight */}
@@ -117,7 +117,7 @@ export function SignatureExperience() {
               aria-hidden="true"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(23,27,35,0.95) 0%, rgba(29,35,48,0.9) 100%)",
+                  "linear-gradient(135deg, rgba(9,12,20,0.95) 0%, rgba(29,35,48,0.9) 100%)",
               }}
             />
 
@@ -164,7 +164,7 @@ export function SignatureExperience() {
 
               <Link
                 href="/book-now"
-                className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+                className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{ height: "42px", paddingInline: "26px" }}
               >
                 Plan This Experience

@@ -50,7 +50,7 @@ export function LuxuryHero() {
     <section
       ref={containerRef}
       className="relative w-full overflow-hidden"
-      style={{ minHeight: "100vh", background: "#050505" }}
+      style={{ minHeight: "100vh", background: "transparent" }}
     >
       {/* ── LAYER 1: Background Image ─────────────────── */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>

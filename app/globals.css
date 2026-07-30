@@ -9,13 +9,18 @@
    ============================================ */
 
 :root {
-  /* Background Colors */
-  --bg-main: #0d0b0a;
-  --bg-section: #171312;
-  --bg-surface: #1e1816;
-  /* Primary Backgrounds */
-  --bg-primary: #0e1525;
-  --bg-secondary: #131c2f;
+  /* Background Colors — deep like Home, with warm gold atmosphere */
+  --bg-main: #050505;
+  --bg-section: #0a0908;
+  --bg-surface: #100e0c;
+  /* Primary Backgrounds (darker navy / كحلي أغمق) */
+  --bg-primary: #06080f;
+  --bg-secondary: #0a0e18;
+  --page-bg: #050505;
+  --page-bg-navy: #06080f;
+  --page-gold-glow: rgba(212, 175, 55, 0.11);
+  --page-gold-glow-soft: rgba(199, 163, 106, 0.06);
+  --page-bronze-glow: rgba(139, 90, 47, 0.07);
   /* Text Colors */
   --text-primary: #f3ebdd;
   --text-secondary: #c8b8a4;
@@ -91,13 +96,62 @@ html[dir="ltr"] {
 }
 
 body {
-  background-color: var(--bg-main);
+  background-color: var(--page-bg);
+  background-image:
+    radial-gradient(
+      ellipse 95% 58% at 50% -8%,
+      var(--page-gold-glow) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 42% at 100% 35%,
+      var(--page-gold-glow-soft) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 38% at 0% 78%,
+      var(--page-bronze-glow) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 50% 110%,
+      rgba(212, 175, 55, 0.05) 0%,
+      transparent 55%
+    );
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Shared page shell: dark base + warm golden wash (matches Home depth) */
+.page-atmosphere {
+  background-color: var(--page-bg);
+  background-image:
+    radial-gradient(
+      ellipse 95% 58% at 50% -8%,
+      var(--page-gold-glow) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 42% at 100% 35%,
+      var(--page-gold-glow-soft) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 38% at 0% 78%,
+      var(--page-bronze-glow) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 50% 110%,
+      rgba(212, 175, 55, 0.05) 0%,
+      transparent 55%
+    );
+  background-attachment: fixed;
 }
 
 /* ============================================
@@ -490,11 +544,16 @@ p {
 .about-page-bg {
   background:
     radial-gradient(
+      ellipse 90% 55% at 50% 0%,
+      rgba(212, 175, 55, 0.12) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
       circle at center,
-      rgba(196, 145, 77, 0.18),
+      rgba(196, 145, 77, 0.1),
       transparent 60%
     ),
-    #090d16;
+    #050505;
   min-height: 100vh;
 }
 
@@ -631,11 +690,11 @@ a:hover {
 
 :root {
   --exp-bg-primary: #050505;
-  --exp-bg-deep: #080b12;
-  --exp-bg-navy: #101018;
-  --exp-bg-card: rgba(15, 12, 10, 0.72);
-  --exp-bg-surface: rgba(15, 12, 10, 0.85);
-  --exp-bg-bronze: #1a1410;
+  --exp-bg-deep: #06080e;
+  --exp-bg-navy: rgba(8, 10, 18, 0.9);
+  --exp-bg-card: rgba(10, 9, 8, 0.78);
+  --exp-bg-surface: rgba(10, 9, 8, 0.88);
+  --exp-bg-bronze: #12100e;
   --exp-gold: #d4af37;
   --exp-gold-soft: #e8c66a;
   --exp-warm-brown: #2a1812;
@@ -650,7 +709,24 @@ a:hover {
 }
 
 .exp-page {
-  background: var(--exp-bg-primary);
+  background-color: var(--exp-bg-primary);
+  background-image:
+    radial-gradient(
+      ellipse 95% 58% at 50% -8%,
+      rgba(212, 175, 55, 0.11) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 42% at 100% 35%,
+      rgba(199, 163, 106, 0.06) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 38% at 0% 78%,
+      rgba(139, 90, 47, 0.07) 0%,
+      transparent 52%
+    );
+  background-attachment: fixed;
   color: var(--exp-text-primary);
   /* Keep sticky section-scoped; overflow here would trap sticky for the full page */
   overflow-x: visible;
@@ -1141,10 +1217,10 @@ a:hover {
    ============================================ */
 
 :root {
-  /* Zones Color System */
-  --zones-bg: #11151c;
-  --zones-surface: #171b23;
-  --zones-surface-alt: #1d2330;
+  /* Zones Color System — darker navy, aligned with Home */
+  --zones-bg: #05070c;
+  --zones-surface: rgba(9, 12, 20, 0.88);
+  --zones-surface-alt: rgba(14, 18, 28, 0.92);
   --zones-gold: #c89b52;
   --zones-gold-hover: #d9ae66;
   --zones-text-light: #f4e7d4;
@@ -1152,6 +1228,33 @@ a:hover {
   --zones-text-muted: #a69886;
   --zones-border: rgba(255, 255, 255, 0.08);
   --zones-card-glow: rgba(200, 155, 82, 0.15);
+}
+
+/* Zones / Weddings / Gallery page shell with warm gold light */
+.zones-page {
+  background-color: var(--zones-bg);
+  background-image:
+    radial-gradient(
+      ellipse 95% 58% at 50% -8%,
+      rgba(212, 175, 55, 0.11) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 42% at 100% 35%,
+      rgba(200, 155, 82, 0.06) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 38% at 0% 78%,
+      rgba(139, 90, 47, 0.07) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 50% 110%,
+      rgba(212, 175, 55, 0.045) 0%,
+      transparent 55%
+    );
+  background-attachment: fixed;
 }
 
 /* Main Container */
@@ -1274,7 +1377,7 @@ a:hover {
 
 .zones-btn-gold {
   background: var(--zones-gold);
-  color: #11151c;
+  color: var(--zones-bg);
   transition: all 200ms ease;
 }
 
@@ -1332,7 +1435,7 @@ a:hover {
 /* Focus Visible - Zones gold ring */
 .zones-btn-gold:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #11151c, 0 0 0 4px var(--zones-gold);
+  box-shadow: 0 0 0 2px var(--zones-bg), 0 0 0 4px var(--zones-gold);
 }
 
 /* Hide scrollbar for gallery strips */
@@ -1347,13 +1450,39 @@ a:hover {
 :root {
   /* Luxury Color Palette */
   --lux-bg: #050505;
-  --lux-surface: #0a0a0a;
+  --lux-surface: rgba(8, 8, 8, 0.88);
   --lux-border: rgba(201, 163, 92, 0.25);
   --lux-gold: #c9a35c;
   --lux-gold-light: #d4b06a;
   --lux-text: #f6f0e8;
   --lux-muted: #c4beb6;
   --lux-overlay: rgba(5, 5, 5, 0.6);
+}
+
+.lux-page {
+  background-color: var(--lux-bg);
+  background-image:
+    radial-gradient(
+      ellipse 95% 58% at 50% -8%,
+      rgba(212, 175, 55, 0.11) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 42% at 100% 35%,
+      rgba(201, 163, 92, 0.06) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 38% at 0% 78%,
+      rgba(139, 90, 47, 0.07) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 50% 110%,
+      rgba(212, 175, 55, 0.045) 0%,
+      transparent 55%
+    );
+  background-attachment: fixed;
 }
 
 /* Luxury Container */

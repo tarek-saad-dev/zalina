@@ -34,7 +34,7 @@ export function MicroInfoPreview() {
   return (
     <section
       className="exp-section"
-      style={{ background: "var(--exp-bg-primary)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="info-heading"
     >
       <div className="exp-container">

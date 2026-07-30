@@ -14,7 +14,7 @@ export function CTASection() {
     <section
       className="exp-section relative overflow-hidden"
       style={{
-        background: "var(--exp-bg-primary)",
+        background: "transparent",
         paddingBottom: "clamp(4.5rem, 8vw, 7.5rem)",
       }}
       aria-labelledby="final-cta-heading"

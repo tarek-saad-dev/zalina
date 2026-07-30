@@ -17,7 +17,7 @@ export function DestinationOverview() {
   return (
     <section
       className="relative zones-section overflow-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="destination-overview-title"
     >
       {/* Ornamental pattern background */}

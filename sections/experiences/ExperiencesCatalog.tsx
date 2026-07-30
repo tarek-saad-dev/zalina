@@ -46,7 +46,7 @@ export function ExperiencesCatalog({ experiences }: ExperiencesCatalogProps) {
     <section
       id="experiences"
       className="exp-catalog relative"
-      style={{ background: "var(--exp-bg-deep)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="experiences-heading"
     >
       <FilterTabs

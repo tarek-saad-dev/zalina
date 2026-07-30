@@ -66,7 +66,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
       : "Continue";
 
   return (
-    <main style={{ background: "#050403", minHeight: "100vh" }}>
+    <main style={{ minHeight: "100vh" }} className="page-atmosphere">
       <BookingHero />
 
       {!isConfirmed && (
@@ -75,8 +75,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
 
       <section
         style={{
-          background:
-            "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,175,55,0.05) 0%, transparent 60%), #050403",
+          background: "transparent",
           minHeight: "60vh",
           paddingBottom: "140px",
         }}

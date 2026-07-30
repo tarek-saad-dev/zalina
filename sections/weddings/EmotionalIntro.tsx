@@ -10,7 +10,7 @@ export function EmotionalIntro() {
   return (
     <section
       className="zones-section relative overflow-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      style={{ background: "transparent" }}
       aria-labelledby="emotional-intro-title"
     >
       {/* Ornamental pattern */}
@@ -117,7 +117,7 @@ export function EmotionalIntro() {
             <motion.blockquote
               className="relative p-6 md:p-8 rounded-xl"
               style={{
-                background: "rgba(23,27,35,0.75)",
+                background: "rgba(9,12,20,0.75)",
                 border: "1px solid rgba(200,155,82,0.2)",
                 backdropFilter: "blur(12px)",
                 boxShadow: "0 20px 50px rgba(0,0,0,0.3)",

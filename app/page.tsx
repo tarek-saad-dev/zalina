@@ -12,7 +12,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="min-h-screen" style={{ background: "var(--lux-bg)" }}>
+    <main className="lux-page min-h-screen">
       {/* Section 1: Cinematic Hero - 100vh */}
       <LuxuryHero />
 

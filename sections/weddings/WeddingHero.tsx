@@ -154,14 +154,14 @@ export function WeddingHero() {
         >
           <Link
             href="/book-now"
-            className="zones-btn-gold zones-radius-pill flex w-full sm:w-auto items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+            className="zones-btn-gold zones-radius-pill flex w-full sm:w-auto items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
             style={{ height: "44px", paddingInline: "28px" }}
           >
             Begin Your Wedding Journey
           </Link>
           <Link
             href="/zones"
-            className="flex w-full sm:w-auto items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[var(--zones-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+            className="flex w-full sm:w-auto items-center justify-center text-sm font-medium transition-all duration-300 hover:bg-white/10 hover:border-[var(--zones-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
             style={{
               height: "44px",
               paddingInline: "28px",

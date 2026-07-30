@@ -26,7 +26,7 @@ export function EditorialSpotlight() {
       ref={sectionRef}
       className="exp-section overflow-hidden"
       style={{
-        background: "var(--exp-bg-primary)",
+        background: "transparent",
         paddingTop: "clamp(2.5rem, 4.5vw, 4.75rem)",
       }}
       aria-labelledby="featured-heading"

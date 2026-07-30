@@ -19,7 +19,7 @@ export function ImmersiveGallery() {
   return (
     <section
       className="lux-section relative overflow-hidden"
-      style={{ background: "var(--lux-bg)" }}
+      style={{ background: "transparent" }}
     >
       <div className="lux-container">
         {/* Section Header */}

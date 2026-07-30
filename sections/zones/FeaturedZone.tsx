@@ -129,7 +129,7 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
 
               <Link
                 href="/book-now"
-                className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+                className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{ height: "42px", paddingInline: "26px" }}
               >
                 {zone.isBookableOnline ? "Book This Zone" : "Inquire About This Zone"}

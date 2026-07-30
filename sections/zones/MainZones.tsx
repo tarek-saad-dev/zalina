@@ -23,7 +23,7 @@ export function MainZones({ zones }: MainZonesProps) {
     return (
       <section
         className="zones-section relative overflow-hidden"
-        style={{ background: "var(--zones-bg)" }}
+        style={{ background: "transparent" }}
         id="main-zones"
       >
         <div className="zones-container relative z-10 text-center py-20">
@@ -36,7 +36,7 @@ export function MainZones({ zones }: MainZonesProps) {
   return (
     <section
       className="zones-section relative overflow-hidden"
-      style={{ background: "var(--zones-bg)" }}
+      style={{ background: "transparent" }}
       id="main-zones"
       aria-labelledby="main-zones-title"
     >
@@ -89,7 +89,7 @@ export function MainZones({ zones }: MainZonesProps) {
                 <button
                   type="button"
                   onClick={() => handleZoneClick(zone.id)}
-                  className="w-full text-left group relative rounded-2xl overflow-hidden transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11151c]"
+                  className="w-full text-left group relative rounded-2xl overflow-hidden transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                   style={{
                     background: "var(--zones-surface)",
                     border: isActive
@@ -119,8 +119,8 @@ export function MainZones({ zones }: MainZonesProps) {
                         aria-hidden="true"
                         style={{
                           background: isReversed
-                            ? "linear-gradient(270deg, rgba(23,27,35,0.5) 0%, transparent 55%)"
-                            : "linear-gradient(90deg, rgba(23,27,35,0.5) 0%, transparent 55%)",
+                            ? "linear-gradient(270deg, rgba(9,12,20,0.5) 0%, transparent 55%)"
+                            : "linear-gradient(90deg, rgba(9,12,20,0.5) 0%, transparent 55%)",
                         }}
                       />
                       <div
