@@ -1,142 +1,130 @@
-export type JourneyType = "stay" | "evening" | "private" | null;
+import type { BookingProductType } from "@/lib/api";
 
-export type PreferredPeriod = "Sunset" | "Evening" | "Full Night" | null;
+/** Semantic wizard step IDs (product-specific flows). */
+export type BookingStepId =
+  | "product"
+  | "date_guests"
+  | "dates_guests"
+  | "bubbles"
+  | "guest_details"
+  | "review";
 
-export type EnhancementCategory = "Arrival" | "Dining" | "Atmosphere" | "Memories";
+export type AssignmentMode = "manual" | "random";
 
-export type PricingType = "fixed" | "per-guest";
+export type BookingUiStatus = "idle" | "submitting" | "submitted" | "failed";
 
-export type OccasionType =
-  | "none"
-  | "birthday"
-  | "anniversary"
-  | "honeymoon"
-  | "proposal"
-  | "family"
-  | "corporate"
-  | "other";
-
-export interface DateRange {
-  from: string | null;
-  to: string | null;
+/**
+ * One line in a multi-bubble Bubble Stay booking.
+ * Catalog names/prices/capacity live in API metadata — not duplicated here.
+ */
+export interface BubbleSelection {
+  key: string;
+  accommodationTypeId: number;
+  accommodationSlug: string;
+  /** Required when assignmentMode === "manual"; must be absent for random. */
+  bubbleId?: number;
+  guests: number;
+  assignmentMode: AssignmentMode;
 }
 
-export interface DateSelection {
+export interface DayUseState {
+  visitDate: string | null;
+  guests: number;
+}
+
+export interface BubbleStayState {
   checkIn: string | null;
   checkOut: string | null;
-  date: string | null;
-  timeSlot: string | null;
-  preferredPeriod: PreferredPeriod;
-  nights: number;
+  totalGuests: number;
+  selections: BubbleSelection[];
 }
 
-export interface GuestContactDetails {
-  fullName: string;
-  phone: string;
-  email: string;
-  country: string;
-  occasion: OccasionType;
-  specialRequests: string;
-}
-
-export interface EnhancementAddOn {
-  id: string;
-  apiId?: number;
-  category: EnhancementCategory;
+export interface GuestDetailsState {
   name: string;
-  description: string;
-  price: number;
-  pricingType: PricingType;
-  selected: boolean;
+  email: string;
+  phone: string;
 }
 
-export interface StayOption {
-  id: string;
-  apiId: number;
-  slug: string;
-  title: string;
-  zone: string;
-  zoneId?: number;
-  zoneType?: string;
-  price: number;
-  priceLabel: string;
-  maxGuests: number;
-  badge: string;
-  description: string;
-  gradientFrom: string;
-  gradientTo: string;
-  image?: string;
-}
-
-export interface ExperienceOption {
-  id: string;
-  apiId: number;
-  title: string;
-  zone: string;
-  zoneId?: number;
-  zoneSlug?: string;
-  zoneType?: string;
-  price: number;
-  priceLabel: string;
-  minGuests: number;
-  badge: string;
-  description: string;
-  gradientFrom: string;
-  gradientTo: string;
-  image?: string;
-}
-
-export interface OccasionOption {
-  id: string;
-  title: string;
-  icon: string;
-  description: string;
-}
-
-export type BookingStatus = "idle" | "submitting" | "submitted" | "failed";
-
-export type PaymentMode = "pay-now" | "concierge-confirmation";
-
-export interface AvailabilityState {
-  status: "idle" | "loading" | "available" | "unavailable" | "error";
-  message: string | null;
-  totalEstimate: number | null;
-  pricePerNight: number | null;
-}
-
+/**
+ * Booking Domain V2 wizard state.
+ * schemaVersion guards against legacy (V1) persisted blobs.
+ */
 export interface BookingState {
-  currentStep: number;
-  journeyType: JourneyType;
-  selectedItem: string | null;
-  selectedItemTitle: string | null;
-  selectedItemPrice: number;
-  selectedItemMaxGuests: number | null;
-  selectedItemSlug: string | null;
-  selectedItemApiId: number | null;
-  selectedExperienceApiId: number | null;
-  selectedExperienceZoneId: number | null;
-  selectedOccasionId: string | null;
-  selectedOccasionTitle: string | null;
-  isPrivateCustom: boolean;
-  dateSelection: DateSelection;
-  guests: number;
-  participants: number;
-  estimatedGuests: number;
-  enhancements: EnhancementAddOn[];
-  guestDetails: GuestContactDetails;
-  baseTotal: number;
-  addOnsTotal: number;
-  estimatedTotal: number;
-  bookingStatus: BookingStatus;
+  schemaVersion: typeof BOOKING_STATE_SCHEMA_VERSION;
+  productType: BookingProductType | null;
+  /** 0-based index into the active product step list. */
+  currentStepIndex: number;
+  dayUse: DayUseState;
+  bubbleStay: BubbleStayState;
+  guest: GuestDetailsState;
+  bookingStatus: BookingUiStatus;
   bookingReference: string | null;
-  paymentMode: PaymentMode;
   submissionError: string | null;
-  availability: AvailabilityState;
 }
 
-export interface BookingStep {
+export const BOOKING_STATE_SCHEMA_VERSION = 2 as const;
+
+/** Slim catalog metadata for capacity / estimate helpers (not mutation state). */
+export interface AccommodationTypeMeta {
   id: number;
-  key: string;
+  slug: string;
+  name_en: string;
+  name_ar: string;
+  description_en?: string;
+  description_ar?: string;
+  max_guests: number;
+  price_per_night: string;
+  is_active: boolean;
+  bubbles_count: number;
+  cover_image?: string | null;
+  gallery?: Array<string | { url?: string; original_url?: string }>;
+  media?: Array<{ url?: string; original_url?: string }>;
+  /** Catalog inventory only — never use as date-specific availability. */
+  bubbles: Array<{
+    id: number;
+    name_en: string;
+    name_ar: string;
+    status: string;
+    cover_image?: string | null;
+    gallery?: Array<string | { url?: string; original_url?: string }>;
+    media?: Array<{ url?: string; original_url?: string }>;
+  }>;
+}
+
+export interface BookingCatalog {
+  accommodationTypes: AccommodationTypeMeta[];
+}
+
+export interface BookingStepDefinition {
+  id: BookingStepId;
   label: string;
   shortLabel: string;
+}
+
+export type BookingValidationCode =
+  | "missing_product"
+  | "invalid_visit_date"
+  | "invalid_guest_count"
+  | "invalid_check_in"
+  | "invalid_check_out"
+  | "check_out_not_after_check_in"
+  | "no_bubble_selections"
+  | "guest_under_allocated"
+  | "guest_over_allocated"
+  | "selection_guests_min"
+  | "selection_guests_over_capacity"
+  | "missing_accommodation_type"
+  | "missing_manual_bubble_id"
+  | "duplicate_manual_bubble"
+  | "random_has_bubble_id"
+  | "mixed_assignment_modes"
+  | "invalid_guest_name"
+  | "invalid_guest_email"
+  | "invalid_guest_phone";
+
+export interface BookingValidationIssue {
+  code: BookingValidationCode;
+  message: string;
+  selectionKey?: string;
+  field?: string;
 }

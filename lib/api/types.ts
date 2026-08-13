@@ -1,3 +1,8 @@
+/**
+ * Shared API envelope + CMS catalog types.
+ * Booking Domain V2 checkout types live in `./booking-types`.
+ */
+
 export interface ApiEnvelope<T> {
   success: boolean;
   message: string;
@@ -29,6 +34,7 @@ export interface ApiMedia {
   original_url?: string;
 }
 
+/** CMS marketing zones — not linked to bookings in V2. */
 export interface ApiZone {
   id: number;
   name_en: string;
@@ -40,30 +46,25 @@ export interface ApiZone {
   media?: ApiMedia[];
 }
 
-export interface ApiAccommodation {
-  id: number;
-  name_en: string;
-  name_ar: string;
-  slug_en: string;
-  slug_ar: string;
-  max_guests: number;
-  base_price: string;
-  is_active: boolean;
-  zone: ApiZone;
-  media: ApiMedia[];
-}
-
+/** CMS experiences — marketing only; not bookable in Booking Domain V2. */
 export interface ApiExperience {
   id: number;
   name_en: string;
   name_ar: string;
+  slug_en?: string;
+  slug_ar?: string;
   type: string;
-  price_per_person: string;
+  /** Present on some CMS payloads; never used in V2 booking totals. */
+  price_per_person?: string;
+  description_en?: string;
+  description_ar?: string;
+  display_order?: number;
   is_active: boolean;
-  zone: ApiZone;
-  media: ApiMedia[];
+  zone?: ApiZone;
+  media?: ApiMedia[];
 }
 
+/** CMS add-ons — marketing only; not part of V2 checkout. */
 export interface ApiAddOn {
   id: number;
   name_en: string;
@@ -71,59 +72,6 @@ export interface ApiAddOn {
   type: string;
   price: string;
   pricing_type: "per_person" | "per_booking" | "fixed" | string;
-}
-
-export interface ApiAvailability {
-  availability: boolean;
-  price_per_night: string;
-  total_estimate: string;
-}
-
-export interface CreateBookingPayload {
-  accommodation_id: number;
-  check_in_date: string;
-  check_out_date: string;
-  guests: number;
-  guest_name: string;
-  guest_email: string;
-  guest_phone: string;
-  add_ons?: Array<{ id: number; quantity: number }>;
-  experiences?: Array<{
-    id: number;
-    participants: number;
-    date: string;
-  }>;
-}
-
-export interface ApiBooking {
-  booking_reference: string;
-  status: string;
-  total: string;
-  hold_expires_at: string | null;
-  check_in_date: string;
-  check_out_date: string;
-  created_at: string;
-  guest_name?: string;
-  guest_email?: string;
-  guest_phone?: string;
-  accommodation?: ApiAccommodation;
-  add_ons?: Array<{
-    add_on: ApiAddOn;
-    quantity: number;
-    total_price: string;
-  }>;
-  experiences?: Array<{
-    experience: ApiExperience;
-    participants: number;
-    date: string;
-    total_price: string;
-  }>;
-  payment?: { status: string };
-  tickets_count?: number;
-}
-
-export interface ApiPaymentSession {
-  payment_url: string;
 }
 
 export interface ApiBlog {
@@ -152,15 +100,18 @@ export interface ApiPage {
 export class ApiError extends Error {
   status: number;
   errors?: Record<string, string[]>;
+  requestId?: string;
 
   constructor(
     message: string,
     status: number,
-    errors?: Record<string, string[]>
+    errors?: Record<string, string[]>,
+    requestId?: string
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.errors = errors;
+    this.requestId = requestId;
   }
 }

@@ -1,7 +1,7 @@
 import {
   LuxuryHero,
   HeritageStory,
-  GlimpseGallery,
+  MarketShowcase,
   SignatureMoments,
   DayNightExperience,
   ZalinaPromise,
@@ -25,8 +25,8 @@ export default function Home() {
       {/* Section 4: Day vs Night Experience */}
       <DayNightExperience />
 
-      {/* Section 5: A Glimpse Into Zalina - Cinematic Gallery */}
-      <GlimpseGallery />
+      {/* Section 5: The Market — Zalina Souk Showcase */}
+      <MarketShowcase />
 
       {/* Section 6: The Zalina Promise - Slim Trust Strip */}
       <ZalinaPromise />

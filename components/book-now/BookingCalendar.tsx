@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getMockUnavailableDates } from "./mockData";
 
 interface BookingCalendarProps {
   mode: "single" | "range";
@@ -12,6 +11,8 @@ interface BookingCalendarProps {
   onSelectDate?: (iso: string) => void;
   onSelectRange?: (checkIn: string, checkOut: string | null) => void;
   minDate?: string;
+  /** Optional blocked dates (YYYY-MM-DD). Bubble availability is API-driven separately. */
+  unavailableDates?: ReadonlySet<string>;
 }
 
 const GOLD = "rgba(212,175,55,0.9)";
@@ -26,6 +27,7 @@ const MONTHS = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December",
 ];
+const EMPTY_UNAVAILABLE: ReadonlySet<string> = new Set();
 
 function toLocalISO(d: Date): string {
   const y = d.getFullYear();
@@ -52,11 +54,12 @@ export function BookingCalendar({
   onSelectDate,
   onSelectRange,
   minDate,
+  unavailableDates,
 }: BookingCalendarProps) {
   const today = toLocalISO(new Date());
   const effectiveMin = minDate ?? today;
 
-  const unavailable = useMemo(() => getMockUnavailableDates(), []);
+  const unavailable = unavailableDates ?? EMPTY_UNAVAILABLE;
 
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());

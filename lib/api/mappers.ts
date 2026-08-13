@@ -1,13 +1,11 @@
-import type { EnhancementAddOn, ExperienceOption, StayOption } from "@/components/book-now/types";
 import type { ExperienceItem } from "@/sections/experiences/types";
 import type { Zone } from "@/sections/zones/zones.data";
 import {
   experienceFallbackImage,
   mediaUrl,
-  stayFallbackImage,
   zoneFallbackImage,
 } from "./fallbacks";
-import type { ApiAccommodation, ApiAddOn, ApiExperience, ApiZone } from "./types";
+import type { ApiExperience, ApiZone } from "./types";
 
 const ZONE_COPY: Record<
   string,
@@ -31,12 +29,6 @@ const ZONE_COPY: Record<
     bestFor: "Shows, large gatherings, night events",
     mood: "Grand / Theatrical / Desert night",
   },
-};
-
-const ZONE_GRADIENTS: Record<string, { from: string; to: string }> = {
-  souk: { from: "#14100a", to: "#0b0905" },
-  vip: { from: "#180f06", to: "#100a04" },
-  arena: { from: "#1a1208", to: "#0e0a05" },
 };
 
 function parsePrice(value: string | number | undefined | null): number {
@@ -76,72 +68,7 @@ export function mapZoneToUi(zone: ApiZone, locale: "en" | "ar" = "en"): Zone {
   };
 }
 
-export function mapAccommodationToStay(
-  item: ApiAccommodation,
-  locale: "en" | "ar" = "en"
-): StayOption {
-  const price = parsePrice(item.base_price);
-  const zoneType = item.zone?.type ?? "souk";
-  const gradients = ZONE_GRADIENTS[zoneType] ?? ZONE_GRADIENTS.souk;
-  const title =
-    locale === "ar" ? item.name_ar || item.name_en : item.name_en;
-  const zoneName =
-    locale === "ar"
-      ? item.zone?.name_ar || item.zone?.name_en || ""
-      : item.zone?.name_en || "";
-
-  return {
-    id: String(item.id),
-    apiId: item.id,
-    slug: item.slug_en,
-    title,
-    zone: zoneName,
-    zoneId: item.zone?.id,
-    zoneType,
-    price,
-    priceLabel: formatEgp(price),
-    maxGuests: item.max_guests,
-    badge: item.zone?.type ? titleCaseType(item.zone.type) : "Stay",
-    description: `Up to ${item.max_guests} guests in ${zoneName || "Zalina"}.`,
-    gradientFrom: gradients.from,
-    gradientTo: gradients.to,
-    image: mediaUrl(item.media) ?? stayFallbackImage(zoneType),
-  };
-}
-
-export function mapExperienceToOption(
-  item: ApiExperience,
-  locale: "en" | "ar" = "en"
-): ExperienceOption {
-  const price = parsePrice(item.price_per_person);
-  const zoneType = item.zone?.type ?? "souk";
-  const gradients = ZONE_GRADIENTS[zoneType] ?? ZONE_GRADIENTS.souk;
-  const title =
-    locale === "ar" ? item.name_ar || item.name_en : item.name_en;
-  const zoneName =
-    locale === "ar"
-      ? item.zone?.name_ar || item.zone?.name_en || ""
-      : item.zone?.name_en || "";
-
-  return {
-    id: String(item.id),
-    apiId: item.id,
-    title,
-    zone: zoneName,
-    zoneId: item.zone?.id ?? 0,
-    zoneSlug: item.zone?.slug_en ?? "",
-    zoneType,
-    price,
-    priceLabel: formatEgp(price),
-    minGuests: 1,
-    badge: titleCaseType(item.type),
-    description: `A ${item.type} experience in ${zoneName || "Zalina"}.`,
-    gradientFrom: gradients.from,
-    gradientTo: gradients.to,
-    image: mediaUrl(item.media) ?? experienceFallbackImage(item.type),
-  };
-}
-
+/** CMS experiences catalog card — marketing only, not bookable in V2 checkout. */
 export function mapExperienceToCatalogItem(
   item: ApiExperience,
   locale: "en" | "ar" = "en"
@@ -171,7 +98,10 @@ export function mapExperienceToCatalogItem(
   return {
     id: String(item.id),
     title,
-    description: `${formatEgp(price)} per person · ${zoneName}`,
+    description:
+      price > 0
+        ? `${formatEgp(price)} per person · ${zoneName}`
+        : zoneName || "Zalina Arabian Village",
     image: mediaUrl(item.media) ?? experienceFallbackImage(item.type),
     label,
     categories,
@@ -179,32 +109,6 @@ export function mapExperienceToCatalogItem(
     href: "/book-now",
     type: item.type,
     price,
-  };
-}
-
-const ADDON_CATEGORY_MAP: Record<
-  string,
-  EnhancementAddOn["category"]
-> = {
-  transport: "Arrival",
-  activity: "Atmosphere",
-  extra: "Dining",
-  upgrade: "Memories",
-};
-
-export function mapAddOnToEnhancement(item: ApiAddOn): EnhancementAddOn {
-  const pricingType =
-    item.pricing_type === "per_person" ? "per-guest" : "fixed";
-
-  return {
-    id: String(item.id),
-    apiId: item.id,
-    category: ADDON_CATEGORY_MAP[item.type?.toLowerCase()] ?? "Dining",
-    name: item.name_en,
-    description: `${titleCaseType(item.type)} · ${item.pricing_type.replace(/_/g, " ")}`,
-    price: parsePrice(item.price),
-    pricingType,
-    selected: false,
   };
 }
 

@@ -2,17 +2,26 @@
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { BOOKING_STEPS } from "./mockData";
+import type { BookingStepDefinition } from "./types";
 
 interface BookingProgressProps {
-  currentStep: number;
-  onStepClick?: (step: number) => void;
+  steps: BookingStepDefinition[];
+  currentStepIndex: number;
+  onStepClick?: (stepIndex: number) => void;
 }
 
-export function BookingProgress({ currentStep, onStepClick }: BookingProgressProps) {
+export function BookingProgress({
+  steps,
+  currentStepIndex,
+  onStepClick,
+}: BookingProgressProps) {
+  const displaySteps = steps.map((step, index) => ({
+    ...step,
+    number: index + 1,
+  }));
+
   return (
     <>
-      {/* Desktop Stepper */}
       <div
         className="hidden md:block w-full"
         style={{
@@ -28,26 +37,25 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
             height: "72px",
           }}
         >
-          {BOOKING_STEPS.map((step, index) => {
-            const isCompleted = step.id < currentStep;
-            const isActive = step.id === currentStep;
-            const isUpcoming = step.id > currentStep;
+          {displaySteps.map((step, index) => {
+            const isCompleted = index < currentStepIndex;
+            const isActive = index === currentStepIndex;
+            const isUpcoming = index > currentStepIndex;
 
             return (
               <div key={step.id} className="flex items-center flex-1 last:flex-none">
-                {/* Step item */}
                 <button
-                  onClick={() => isCompleted && onStepClick?.(step.id)}
+                  type="button"
+                  onClick={() => isCompleted && onStepClick?.(index)}
                   disabled={!isCompleted}
                   className="flex items-center gap-3 group transition-opacity duration-300"
                   style={{
                     cursor: isCompleted ? "pointer" : "default",
                     opacity: isUpcoming ? 0.38 : 1,
                   }}
-                  aria-label={`Step ${step.id}: ${step.label}`}
+                  aria-label={`Step ${step.number}: ${step.label}`}
                   aria-current={isActive ? "step" : undefined}
                 >
-                  {/* Circle */}
                   <div
                     className="flex-shrink-0 flex items-center justify-center transition-all duration-400"
                     style={{
@@ -57,13 +65,13 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
                       border: isActive
                         ? "1.5px solid rgba(212,175,55,0.9)"
                         : isCompleted
-                        ? "1.5px solid rgba(212,175,55,0.5)"
-                        : "1.5px solid rgba(248,242,231,0.18)",
+                          ? "1.5px solid rgba(212,175,55,0.5)"
+                          : "1.5px solid rgba(248,242,231,0.18)",
                       background: isActive
                         ? "rgba(212,175,55,0.14)"
                         : isCompleted
-                        ? "rgba(212,175,55,0.08)"
-                        : "transparent",
+                          ? "rgba(212,175,55,0.08)"
+                          : "transparent",
                     }}
                   >
                     {isCompleted ? (
@@ -79,12 +87,11 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
                             : "rgba(248,242,231,0.35)",
                         }}
                       >
-                        {step.id}
+                        {step.number}
                       </span>
                     )}
                   </div>
 
-                  {/* Label */}
                   <span
                     style={{
                       fontFamily: "var(--font-body)",
@@ -94,8 +101,8 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
                       color: isActive
                         ? "rgba(212,175,55,0.95)"
                         : isCompleted
-                        ? "rgba(248,242,231,0.65)"
-                        : "rgba(248,242,231,0.3)",
+                          ? "rgba(248,242,231,0.65)"
+                          : "rgba(248,242,231,0.3)",
                       textTransform: "uppercase",
                       whiteSpace: "nowrap",
                     }}
@@ -104,8 +111,7 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
                   </span>
                 </button>
 
-                {/* Connector line */}
-                {index < BOOKING_STEPS.length - 1 && (
+                {index < displaySteps.length - 1 && (
                   <div
                     className="flex-1 mx-4"
                     style={{ height: "1px", minWidth: "20px" }}
@@ -127,7 +133,6 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
         </div>
       </div>
 
-      {/* Mobile Progress Indicator */}
       <div
         className="md:hidden"
         style={{
@@ -147,7 +152,7 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
               fontWeight: 500,
             }}
           >
-            Step {currentStep} of {BOOKING_STEPS.length}
+            Step {currentStepIndex + 1} of {displaySteps.length}
           </span>
           <span
             style={{
@@ -157,11 +162,10 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
               fontWeight: 500,
             }}
           >
-            {BOOKING_STEPS[currentStep - 1]?.label}
+            {displaySteps[currentStepIndex]?.label}
           </span>
         </div>
 
-        {/* Progress bar */}
         <div
           style={{
             height: "2px",
@@ -172,7 +176,9 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
         >
           <motion.div
             initial={false}
-            animate={{ width: `${(currentStep / BOOKING_STEPS.length) * 100}%` }}
+            animate={{
+              width: `${((currentStepIndex + 1) / displaySteps.length) * 100}%`,
+            }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             style={{
               height: "100%",
@@ -183,11 +189,10 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
           />
         </div>
 
-        {/* Mobile step dots */}
         <div className="flex justify-center gap-2 mt-3">
-          {BOOKING_STEPS.map((step) => {
-            const isCompleted = step.id < currentStep;
-            const isActive = step.id === currentStep;
+          {displaySteps.map((step, index) => {
+            const isCompleted = index < currentStepIndex;
+            const isActive = index === currentStepIndex;
             return (
               <div
                 key={step.id}
@@ -198,8 +203,8 @@ export function BookingProgress({ currentStep, onStepClick }: BookingProgressPro
                   background: isActive
                     ? "rgba(212,175,55,0.9)"
                     : isCompleted
-                    ? "rgba(212,175,55,0.45)"
-                    : "rgba(248,242,231,0.12)",
+                      ? "rgba(212,175,55,0.45)"
+                      : "rgba(248,242,231,0.12)",
                   transition: "all 0.3s ease",
                 }}
               />

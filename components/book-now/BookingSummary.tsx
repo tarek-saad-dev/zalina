@@ -1,58 +1,46 @@
 "use client";
 
-import { Shield, Zap, QrCode } from "lucide-react";
-import type { BookingState } from "./types";
-import { JOURNEY_TYPE_LABELS } from "./mockData";
+import { ArrowRight } from "lucide-react";
+import type { DayUseSettings } from "@/lib/api";
+import type { AccommodationTypeMeta, BookingState } from "./types";
+import type { CheckoutState } from "./checkoutTypes";
+import { nightsBetween } from "./bookingValidation";
+import {
+  formatMoneyAmount,
+  localizedName,
+  parseMoney,
+} from "./bookingMedia";
+import { useHoldCountdown } from "./useHoldCountdown";
+
+const GOLD = "rgba(212,175,55,0.9)";
+const TEXT_PRIMARY = "#F8F2E7";
+const TEXT_MUTED = "rgba(248,242,231,0.52)";
 
 interface BookingSummaryProps {
   state: BookingState;
+  accommodationTypes: AccommodationTypeMeta[];
+  locale: "en" | "ar";
+  estimatedTotal: number | null;
+  allocatedGuests: number;
+  remainingGuests: number;
+  dayUseSettings: DayUseSettings | null;
+  checkout: CheckoutState;
   onContinue: () => void;
-  isLastStep?: boolean;
+  isLastStep: boolean;
   canProceed?: boolean;
   ctaLabel?: string;
 }
 
-const GOLD = "rgba(212,175,55,0.9)";
-const GOLD_FAINT = "rgba(212,175,55,0.14)";
-const GOLD_BORDER = "rgba(212,175,55,0.22)";
-const TEXT_PRIMARY = "#F8F2E7";
-const TEXT_MUTED = "rgba(248,242,231,0.50)";
-
-function SummaryRow({
-  label,
-  value,
-  highlight,
-  muted,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  muted?: boolean;
-}) {
+function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="flex justify-between items-center py-3"
-      style={{ borderBottom: `1px solid ${GOLD_BORDER}` }}
-    >
+    <div className="flex justify-between gap-3 py-2">
+      <span style={{ fontSize: "12px", color: TEXT_MUTED }}>{label}</span>
       <span
         style={{
-          fontFamily: "var(--font-body)",
-          fontSize: "11px",
-          letterSpacing: "0.10em",
-          textTransform: "uppercase",
-          color: TEXT_MUTED,
-          fontWeight: 500,
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontFamily: "var(--font-body)",
           fontSize: "13px",
-          color: highlight ? GOLD : muted ? "rgba(248,242,231,0.38)" : TEXT_PRIMARY,
-          fontWeight: highlight ? 600 : 400,
-          fontStyle: muted ? "italic" : "normal",
+          color: TEXT_PRIMARY,
+          textAlign: "right",
+          maxWidth: "60%",
         }}
       >
         {value}
@@ -61,202 +49,188 @@ function SummaryRow({
   );
 }
 
-export function BookingSummary({ state, onContinue, isLastStep, canProceed, ctaLabel }: BookingSummaryProps) {
-  const selectedEnhancements = state.enhancements.filter((e) => e.selected);
-
-  const journeyLabel = state.journeyType
-    ? JOURNEY_TYPE_LABELS[state.journeyType]
-    : "Not selected";
-
-  const selectionLabel = state.isPrivateCustom
-    ? state.selectedOccasionTitle ?? "Not selected"
-    : state.selectedItemTitle ?? "Not selected";
-
-  const ds = state.dateSelection;
-  const dateLabel = (() => {
-    if (state.journeyType === "stay") {
-      if (ds.checkIn && ds.checkOut)
-        return `${ds.checkIn} → ${ds.checkOut}`;
-      if (ds.checkIn) return ds.checkIn;
-      return "Not selected";
-    }
-    if (state.journeyType === "evening") {
-      if (ds.date && ds.timeSlot) {
-        const slot = ds.timeSlot.charAt(0).toUpperCase() + ds.timeSlot.slice(1);
-        return `${ds.date} · ${slot}`;
-      }
-      return ds.date ?? "Not selected";
-    }
-    if (state.journeyType === "private") {
-      const parts: string[] = [];
-      if (ds.date) parts.push(ds.date);
-      if (ds.preferredPeriod) parts.push(ds.preferredPeriod);
-      return parts.length ? parts.join(" · ") : "Not selected";
-    }
-    return "Not selected";
-  })();
-
-  const enhancementsLabel =
-    selectedEnhancements.length > 0
-      ? `${selectedEnhancements.length} selected`
-      : "None";
-
-  const guestNameLabel = state.guestDetails.fullName.trim() || null;
-
-  const occasionLabel =
-    state.guestDetails.occasion !== "none" && state.guestDetails.occasion
-      ? state.guestDetails.occasion.charAt(0).toUpperCase() + state.guestDetails.occasion.slice(1)
-      : null;
-
-  const totalLabel = state.isPrivateCustom
-    ? "Custom proposal"
-    : state.estimatedTotal > 0
-    ? `EGP ${state.estimatedTotal.toLocaleString()}`
-    : "EGP 0";
-
+export function BookingSummary({
+  state,
+  accommodationTypes,
+  locale,
+  estimatedTotal,
+  allocatedGuests,
+  remainingGuests,
+  dayUseSettings,
+  checkout,
+  onContinue,
+  isLastStep,
+  canProceed,
+  ctaLabel,
+}: BookingSummaryProps) {
   const ctaEnabled = canProceed !== false;
+  const nights =
+    state.bubbleStay.checkIn && state.bubbleStay.checkOut
+      ? nightsBetween(state.bubbleStay.checkIn, state.bubbleStay.checkOut)
+      : 0;
+
+  const productLabel =
+    state.productType === "day_use"
+      ? "Day Use"
+      : state.productType === "bubble_stay"
+        ? "Bubble Stay"
+        : "Not selected";
+
+  const booking = checkout.booking;
+  const countdown = useHoldCountdown({
+    payment_expires_at: booking?.payment_expires_at,
+    hold_expires_at: booking?.hold_expires_at,
+  });
+
+  const estimateLabel =
+    estimatedTotal == null
+      ? "—"
+      : state.productType === "day_use" && dayUseSettings
+        ? formatMoneyAmount(estimatedTotal, dayUseSettings.currency)
+        : Math.round(estimatedTotal).toLocaleString("en-US");
+
+  const serverTotalLabel = booking
+    ? (() => {
+        const amount = parseMoney(booking.total);
+        if (amount == null) return booking.total;
+        return formatMoneyAmount(amount, booking.currency);
+      })()
+    : null;
 
   return (
     <aside
       style={{
-        background: "rgba(15,11,7,0.92)",
-        border: `1px solid ${GOLD_BORDER}`,
+        background: "rgba(255,255,255,0.025)",
+        border: "1px solid rgba(255,255,255,0.07)",
         borderRadius: "16px",
-        padding: "28px 24px",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        boxShadow: "0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(212,175,55,0.05)",
+        padding: "22px",
       }}
     >
-      {/* Card header */}
-      <div className="mb-5">
-        <div className="flex items-center gap-2 mb-1">
-          <div
-            style={{
-              width: "20px",
-              height: "1px",
-              background: GOLD,
-            }}
-          />
-          <span
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "10px",
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: GOLD,
-              fontWeight: 500,
-            }}
-          >
-            Your Booking
-          </span>
-        </div>
-        <h2
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "22px",
-            fontWeight: 400,
-            color: TEXT_PRIMARY,
-            lineHeight: 1.2,
-          }}
-        >
-          Your Zalina Journey
-        </h2>
-      </div>
-
-      {/* Summary rows */}
-      <div>
-        <SummaryRow label="Journey" value={journeyLabel} />
-        <SummaryRow label="Selection" value={selectionLabel} />
-        <SummaryRow label="Date" value={dateLabel} />
-        {state.journeyType === "evening" ? (
-          <SummaryRow label="Participants" value={`${state.participants} participant${state.participants !== 1 ? "s" : ""}`} />
-        ) : state.journeyType === "private" ? (
-          <SummaryRow label="Est. Guests" value={`~${state.estimatedGuests} guests`} />
-        ) : (
-          <SummaryRow label="Guests" value={`${state.guests} guest${state.guests !== 1 ? "s" : ""}`} />
-        )}
-        <SummaryRow label="Enhancements" value={enhancementsLabel} />
-        {guestNameLabel && (
-          <SummaryRow label="Guest" value={guestNameLabel} />
-        )}
-        {occasionLabel && (
-          <SummaryRow label="Occasion" value={occasionLabel} />
-        )}
-        <SummaryRow
-          label="Estimated Total"
-          value={totalLabel}
-          highlight={!state.isPrivateCustom}
-          muted={state.isPrivateCustom}
-        />
-      </div>
-
-      {/* CTA Button */}
-      <button
-        onClick={ctaEnabled ? onContinue : undefined}
-        disabled={!ctaEnabled}
-        className="w-full mt-6 transition-all duration-300"
+      <p
         style={{
-          height: "50px",
-          background: ctaEnabled
-            ? `linear-gradient(135deg, rgba(212,175,55,0.95) 0%, rgba(232,199,102,0.95) 100%)`
-            : "rgba(255,255,255,0.05)",
-          color: ctaEnabled ? "#0D0B08" : "rgba(248,242,231,0.22)",
           fontFamily: "var(--font-body)",
-          fontSize: "13px",
-          fontWeight: 600,
-          letterSpacing: "0.12em",
+          fontSize: "11px",
+          letterSpacing: "0.16em",
           textTransform: "uppercase",
-          borderRadius: "10px",
-          border: ctaEnabled ? "none" : "1px solid rgba(255,255,255,0.06)",
-          cursor: ctaEnabled ? "pointer" : "not-allowed",
-          opacity: ctaEnabled ? 1 : 0.6,
-        }}
-        onMouseEnter={(e) => {
-          if (ctaEnabled) {
-            e.currentTarget.style.boxShadow = "0 8px 30px rgba(212,175,55,0.35)";
-            e.currentTarget.style.transform = "translateY(-1px)";
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = "none";
-          e.currentTarget.style.transform = "translateY(0)";
+          color: GOLD,
+          marginBottom: "14px",
         }}
       >
-        {ctaLabel ?? (isLastStep ? "Confirm Booking" : "Continue")}
-      </button>
+        Booking summary
+      </p>
 
-      {/* Trust strip */}
-      <div className="mt-4 flex flex-col gap-1.5">
-        {[
-          { icon: Shield, text: "Secure payment" },
-          { icon: Zap, text: "Instant booking reference" },
-          { icon: QrCode, text: "QR ticket after confirmation" },
-        ].map(({ icon: Icon, text }) => (
-          <div key={text} className="flex items-center gap-2">
-            <Icon size={11} color={TEXT_MUTED} />
-            <span
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "11px",
-                color: TEXT_MUTED,
-              }}
-            >
-              {text}
-            </span>
-          </div>
-        ))}
+      <SummaryRow label="Experience" value={productLabel} />
+
+      {state.productType === "day_use" && (
+        <>
+          <SummaryRow label="Visit" value={state.dayUse.visitDate ?? "—"} />
+          <SummaryRow label="Guests" value={String(state.dayUse.guests)} />
+        </>
+      )}
+
+      {state.productType === "bubble_stay" && (
+        <>
+          <SummaryRow
+            label="Stay"
+            value={
+              state.bubbleStay.checkIn && state.bubbleStay.checkOut
+                ? `${state.bubbleStay.checkIn} → ${state.bubbleStay.checkOut}`
+                : "—"
+            }
+          />
+          <SummaryRow
+            label="Nights"
+            value={nights > 0 ? String(nights) : "—"}
+          />
+          <SummaryRow
+            label="Guests"
+            value={`${allocatedGuests}/${state.bubbleStay.totalGuests}`}
+          />
+          <SummaryRow label="Remaining" value={String(remainingGuests)} />
+          <SummaryRow
+            label="Bubbles"
+            value={
+              booking && booking.bubbles.length > 0
+                ? booking.bubbles
+                    .map((b) => localizedName(b, locale))
+                    .join(", ")
+                : state.bubbleStay.selections.length
+                  ? state.bubbleStay.selections
+                      .map((s) => {
+                        const type = accommodationTypes.find(
+                          (t) => t.id === s.accommodationTypeId
+                        );
+                        return type
+                          ? localizedName(type, locale)
+                          : s.accommodationSlug;
+                      })
+                      .join(", ")
+                  : "—"
+            }
+          />
+        </>
+      )}
+
+      <SummaryRow label="Guest" value={state.guest.name || "—"} />
+
+      <div
+        style={{
+          marginTop: "16px",
+          paddingTop: "14px",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        {booking ? (
+          <>
+            <SummaryRow label="Total due" value={serverTotalLabel ?? "—"} />
+            {countdown.label != null && (
+              <SummaryRow
+                label="Hold"
+                value={
+                  countdown.isExpired
+                    ? "Expired"
+                    : `${countdown.label} left`
+                }
+              />
+            )}
+            <p style={{ fontSize: "11px", color: TEXT_MUTED, marginTop: "6px" }}>
+              Server total is final for this reservation.
+            </p>
+          </>
+        ) : (
+          <>
+            <SummaryRow label="Estimated total" value={estimateLabel} />
+            <p style={{ fontSize: "11px", color: TEXT_MUTED, marginTop: "6px" }}>
+              Estimate only — server total after create is final.
+            </p>
+          </>
+        )}
       </div>
 
-      {/* Ornamental bottom accent */}
-      <div
-        className="mt-5"
+      <button
+        type="button"
+        onClick={ctaEnabled ? onContinue : undefined}
+        disabled={!ctaEnabled}
+        className="w-full flex items-center justify-center gap-2 mt-5"
         style={{
-          height: "1px",
-          background:
-            "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)",
+          fontFamily: "var(--font-body)",
+          fontSize: "12px",
+          fontWeight: 600,
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          color: ctaEnabled ? "#0D0B08" : "rgba(248,242,231,0.25)",
+          background: ctaEnabled
+            ? "linear-gradient(135deg, rgba(212,175,55,0.95), rgba(232,199,102,0.95))"
+            : "rgba(255,255,255,0.05)",
+          borderRadius: "9px",
+          padding: "13px 18px",
+          border: ctaEnabled ? "none" : "1px solid rgba(255,255,255,0.06)",
+          cursor: ctaEnabled ? "pointer" : "not-allowed",
         }}
-      />
+      >
+        {ctaLabel ?? (isLastStep ? "Reserve & Continue to Payment" : "Continue")}
+        {ctaEnabled && <ArrowRight size={14} />}
+      </button>
     </aside>
   );
 }

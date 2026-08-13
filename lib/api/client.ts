@@ -1,18 +1,13 @@
 import { ApiError, type ApiEnvelope } from "./types";
+import { getApiBaseUrl } from "./config";
+import { DEFAULT_API_LOCALE, resolveApiLocale } from "./locale";
 
-const DEFAULT_BASE = "https://api.zalinaarabianvillage.com";
-
-/** Absolute upstream API origin (server / SSR). */
-export function getApiBaseUrl(): string {
-  const raw =
-    process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || DEFAULT_BASE;
-  return raw.replace(/\/$/, "");
-}
+export { getApiBaseUrl } from "./config";
 
 /**
- * Browser calls go through the Next.js rewrite (`/api/v1/*`) so the
+ * Browser calls go through the Next.js proxy (`/api/v1/*`) so the
  * upstream request has no localhost Origin (which currently 500s bookings).
- * Server components still hit the absolute API URL.
+ * Server components still hit the absolute API URL from env config.
  */
 export function getApiRequestOrigin(): string {
   if (typeof window !== "undefined") {
@@ -54,12 +49,16 @@ function buildUrl(
   return url.toString();
 }
 
+/**
+ * Central envelope parser. Callers receive unwrapped `data` (or throw ApiError).
+ * Preserves message, validation errors, HTTP status, and X-Request-Id when present.
+ */
 export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions = {}
 ): Promise<T> {
   const {
-    locale = "en",
+    locale,
     body,
     searchParams,
     unwrap = true,
@@ -70,7 +69,7 @@ export async function apiFetch<T>(
   const headers = new Headers(initHeaders);
   if (!headers.has("Accept")) headers.set("Accept", "application/json");
   if (!headers.has("Accept-Language")) {
-    headers.set("Accept-Language", locale);
+    headers.set("Accept-Language", resolveApiLocale(locale ?? DEFAULT_API_LOCALE));
   }
   if (body !== undefined && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
@@ -81,6 +80,11 @@ export async function apiFetch<T>(
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
+
+  const requestId =
+    res.headers.get("X-Request-Id") ??
+    res.headers.get("x-request-id") ??
+    undefined;
 
   let json: ApiEnvelope<T> | null = null;
   try {
@@ -93,12 +97,13 @@ export async function apiFetch<T>(
     throw new ApiError(
       json?.message || `Request failed (${res.status})`,
       res.status,
-      json?.errors
+      json?.errors,
+      requestId
     );
   }
 
   if (!json) {
-    throw new ApiError("Empty API response", res.status);
+    throw new ApiError("Empty API response", res.status, undefined, requestId);
   }
 
   if (!unwrap) {

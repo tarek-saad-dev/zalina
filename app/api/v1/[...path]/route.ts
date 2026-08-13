@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getApiBaseUrl } from "@/lib/api/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const DEFAULT_BASE = "https://api.zalinaarabianvillage.com";
-
 function upstreamBase(): string {
-  return (
-    process.env.NEXT_PUBLIC_API_BASE_URL?.trim().replace(/\/$/, "") ||
-    DEFAULT_BASE
-  );
+  return getApiBaseUrl();
 }
 
 async function proxy(req: NextRequest, pathParts: string[]) {
@@ -46,6 +42,10 @@ async function proxy(req: NextRequest, pathParts: string[]) {
   const responseHeaders = new Headers();
   const upstreamType = upstream.headers.get("content-type");
   if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
+  const requestId =
+    upstream.headers.get("X-Request-Id") ??
+    upstream.headers.get("x-request-id");
+  if (requestId) responseHeaders.set("X-Request-Id", requestId);
 
   return new NextResponse(body, {
     status: upstream.status,

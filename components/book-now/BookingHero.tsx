@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { LUXURY_TAGS } from "./mockData";
+
+const HERO_TAGS = ["Day Use", "Bubble Stay"] as const;
 
 export function BookingHero() {
   return (
@@ -105,8 +106,7 @@ export function BookingHero() {
             marginBottom: "22px",
           }}
         >
-          Choose your night, personalize the details, and let the village take
-          care of the rest.
+          Choose Day Use or Bubble Stay, then complete your booking details.
         </motion.p>
 
         {/* Luxury tags */}
@@ -116,7 +116,7 @@ export function BookingHero() {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.32 }}
           className="flex flex-wrap gap-2"
         >
-          {LUXURY_TAGS.map((tag) => (
+          {HERO_TAGS.map((tag) => (
             <span
               key={tag}
               style={{

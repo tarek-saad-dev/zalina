@@ -1,77 +1,210 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useBookingState, type BookingCatalog } from "./useBookingState";
 import { BookingHero } from "./BookingHero";
 import { BookingProgress } from "./BookingProgress";
 import { BookingSummary } from "./BookingSummary";
 import { MobileBookingBar } from "./MobileBookingBar";
-import { StepPlaceholder } from "./StepPlaceholder";
-import { BookingConfirmation } from "./BookingConfirmation";
-import type {
-  JourneyType,
-  DateSelection,
-  PreferredPeriod,
-  GuestContactDetails,
-} from "./types";
-import { BOOKING_STEPS } from "./mockData";
+import { StepShell } from "./StepShell";
+import { useBookingLocale } from "./useBookingLocale";
+import { useDayUseSettings } from "./useDayUseSettings";
+import { useAvailabilityCache } from "./useAvailabilityCache";
+import { useBookingCheckout } from "./useBookingCheckout";
+import { parseMoney } from "./bookingMedia";
+import { isBusyCheckoutPhase } from "./checkoutTypes";
 
 interface BookNowPageProps {
   catalog: BookingCatalog;
 }
 
 export function BookNowPage({ catalog }: BookNowPageProps) {
+  const locale = useBookingLocale();
+  const dayUseQuery = useDayUseSettings({
+    enabled: true,
+    locale,
+  });
+  const dayUsePrice = parseMoney(dayUseQuery.settings?.price_per_guest);
+  const dayUseActiveOption =
+    dayUseQuery.status === "ready"
+      ? (dayUseQuery.settings?.is_active ?? false)
+      : dayUseQuery.status === "error"
+        ? false
+        : null;
+
   const {
     state,
+    activeSteps,
+    currentStep,
+    derived,
+    accommodationTypes,
     nextStep,
     prevStep,
     goToStep,
-    setJourneyType,
-    setSelectedItem,
-    setSelectedOccasion,
-    setDateSelection,
-    setGuests,
-    setParticipants,
-    setEstimatedGuests,
-    setPreferredPeriod,
-    toggleEnhancement,
+    jumpToStepId,
+    setProductType,
+    setVisitDate,
+    setDayUseGuests,
+    setBubbleStayDates,
+    setBubbleStayGuests,
+    addBubbleSelection,
+    updateBubbleSelection,
+    removeBubbleSelection,
+    clearBubbleSelections,
+    clearStaleBubbleInventory,
     setGuestDetails,
-    submitBooking,
-    resetBooking,
+    markBookingCreated,
     canProceed,
-  } = useBookingState(catalog);
+  } = useBookingState(catalog, {
+    dayUsePricePerGuest: dayUsePrice,
+    dayUseActive: dayUseActiveOption,
+  });
 
-  const isConfirmed = state.bookingStatus === "submitted";
-  const isLastStep = state.currentStep === BOOKING_STEPS.length;
-  const proceed = canProceed(state.currentStep);
-  const isSubmitting = state.bookingStatus === "submitting";
+  const {
+    getEntry,
+    fetchAvailability,
+    invalidateAll,
+  } = useAvailabilityCache(locale);
+
+  const handleBubbleConflict = useCallback(
+    (_message: string) => {
+      clearStaleBubbleInventory();
+      invalidateAll();
+      jumpToStepId("bubbles");
+      // Re-fetch for current selections
+      const { checkIn, checkOut, selections } = state.bubbleStay;
+      if (checkIn && checkOut) {
+        for (const selection of selections) {
+          void fetchAvailability({
+            slug: selection.accommodationSlug,
+            checkIn,
+            checkOut,
+            guests: selection.guests,
+          });
+        }
+      }
+      if (process.env.NODE_ENV !== "production") {
+        // Dev-only: conflict recovery (no guest PII / payment URLs)
+        console.info("[booking-checkout] bubble conflict recovered");
+      }
+    },
+    [
+      clearStaleBubbleInventory,
+      fetchAvailability,
+      jumpToStepId,
+      invalidateAll,
+      state.bubbleStay,
+    ]
+  );
+
+  const {
+    checkout,
+    reserveAndPay,
+    retryPayment,
+    startNewReservation,
+    canSubmit,
+    hasActiveHold,
+    isBusy,
+  } = useBookingCheckout({
+    state,
+    accommodationTypes,
+    dayUsePricePerGuest: dayUsePrice,
+    locale,
+    onBubbleConflict: handleBubbleConflict,
+  });
+
+  // Sync reference into wizard state for Phase 5 recovery surfaces
+  const lastSyncedRef = useRef<string | null>(null);
+  useEffect(() => {
+    const ref = checkout.booking?.booking_reference ?? null;
+    if (ref && ref !== lastSyncedRef.current) {
+      lastSyncedRef.current = ref;
+      markBookingCreated(ref);
+    }
+  }, [checkout.booking, markBookingCreated]);
+
+  useEffect(() => {
+    invalidateAll();
+  }, [state.bubbleStay.checkIn, state.bubbleStay.checkOut, invalidateAll]);
+
+  const isLastStep = state.currentStepIndex === activeSteps.length - 1;
+  const proceed = canProceed(state.currentStepIndex);
+
+  const getAvailability = useMemo(
+    () => (slug: string, guests: number) => {
+      const { checkIn, checkOut } = state.bubbleStay;
+      if (!checkIn || !checkOut) {
+        return {
+          status: "idle" as const,
+          data: null,
+          error: null,
+          bubbles: [],
+        };
+      }
+      return getEntry(slug, checkIn, checkOut, guests);
+    },
+    [getEntry, state.bubbleStay]
+  );
 
   const handleNext = () => {
+    if (hasActiveHold) return;
     if (proceed) nextStep();
   };
 
-  const handleSummaryContinue = () => {
-    if (isLastStep) {
-      void submitBooking();
-    } else if (proceed) {
-      nextStep();
+  const handleBack = () => {
+    if (isBusyCheckoutPhase(checkout.phase)) return;
+    if (hasActiveHold) {
+      // Editing after hold requires deliberate restart
+      return;
     }
+    prevStep();
   };
 
-  const summaryCTALabel = isSubmitting
-    ? "Processing…"
-    : isLastStep
-      ? state.isPrivateCustom
-        ? "Confirm & Pay"
-        : "Confirm & Pay"
-      : "Continue";
+  const handleReturnToBubbles = () => {
+    clearStaleBubbleInventory();
+    invalidateAll();
+    jumpToStepId("bubbles");
+  };
+
+  const handleCheckoutCta = () => {
+    if (checkout.booking && checkout.phase === "error") {
+      void retryPayment();
+      return;
+    }
+    void reserveAndPay();
+  };
+
+  const summaryCTALabel = isBusy
+    ? checkout.phase === "creating"
+      ? "Securing…"
+      : checkout.phase === "initiating_payment" ||
+          checkout.phase === "redirecting"
+        ? "Preparing payment…"
+        : "Processing…"
+    : checkout.booking
+      ? "Proceed to Secure Payment"
+      : isLastStep
+        ? "Reserve & Continue to Payment"
+        : "Continue";
+
+  const lastStepCanProceed =
+    isLastStep &&
+    canSubmit &&
+    checkout.phase !== "expired" &&
+    checkout.phase !== "already_paid";
 
   return (
     <main style={{ minHeight: "100vh" }} className="page-atmosphere">
       <BookingHero />
 
-      {!isConfirmed && (
-        <BookingProgress currentStep={state.currentStep} onStepClick={goToStep} />
-      )}
+      <BookingProgress
+        steps={activeSteps}
+        currentStepIndex={state.currentStepIndex}
+        onStepClick={(index) => {
+          if (hasActiveHold || isBusy) return;
+          goToStep(index);
+        }}
+      />
 
       <section
         style={{
@@ -83,106 +216,126 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         <div
           className="mx-auto"
           style={{
-            maxWidth: isConfirmed ? "760px" : "1280px",
+            maxWidth: "1280px",
             padding: "48px 24px 0",
           }}
         >
-          {isConfirmed ? (
-            <div
-              style={{
-                background: "rgba(255,255,255,0.022)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "18px",
-                padding: "clamp(32px, 5vw, 56px)",
-              }}
-            >
-              <BookingConfirmation state={state} onReset={resetBooking} />
-            </div>
-          ) : (
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-              <div className="flex-1 min-w-0">
-                <div
-                  style={{
-                    background: "rgba(255,255,255,0.022)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: "18px",
-                    padding: "clamp(24px, 4vw, 40px)",
-                  }}
-                >
-                  <StepPlaceholder
-                    state={state}
-                    stays={catalog.stays}
-                    experiences={catalog.experiences}
-                    onNext={handleNext}
-                    onBack={prevStep}
-                    canProceed={proceed && !isSubmitting}
-                    onSetJourneyType={(type: JourneyType) => setJourneyType(type)}
-                    onSelectItem={setSelectedItem}
-                    onSelectOccasion={setSelectedOccasion}
-                    onSetDateSelection={(patch: Partial<DateSelection>) =>
-                      setDateSelection(patch)
-                    }
-                    onSetGuests={setGuests}
-                    onSetParticipants={setParticipants}
-                    onSetEstimatedGuests={setEstimatedGuests}
-                    onSetPreferredPeriod={(p: PreferredPeriod) =>
-                      setPreferredPeriod(p)
-                    }
-                    onToggleEnhancement={toggleEnhancement}
-                    onSetGuestDetails={(patch: Partial<GuestContactDetails>) =>
-                      setGuestDetails(patch)
-                    }
-                    onSubmit={() => void submitBooking()}
-                  />
-                  {state.submissionError && (
-                    <p
-                      style={{
-                        marginTop: "16px",
-                        fontFamily: "var(--font-body)",
-                        fontSize: "13px",
-                        color: "rgba(220,160,100,0.95)",
-                        lineHeight: 1.6,
-                      }}
-                      role="alert"
-                    >
-                      {state.submissionError}
-                    </p>
-                  )}
-                </div>
-              </div>
-
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+            <div className="flex-1 min-w-0">
               <div
-                className="hidden lg:block"
                 style={{
-                  width: "340px",
-                  flexShrink: 0,
-                  position: "sticky",
-                  top: "104px",
-                  alignSelf: "flex-start",
+                  background: "rgba(255,255,255,0.022)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: "18px",
+                  padding: "clamp(24px, 4vw, 40px)",
                 }}
               >
-                <BookingSummary
+                {hasActiveHold && currentStep.id !== "review" && (
+                  <p
+                    style={{
+                      marginBottom: "16px",
+                      fontSize: "13px",
+                      color: "rgba(220,160,100,0.95)",
+                      lineHeight: 1.6,
+                    }}
+                    role="status"
+                  >
+                    A reservation hold is active. Use &quot;Start a new
+                    reservation&quot; on Review before changing details.
+                  </p>
+                )}
+                <StepShell
                   state={state}
-                  onContinue={handleSummaryContinue}
-                  isLastStep={isLastStep}
-                  canProceed={proceed && !isSubmitting}
-                  ctaLabel={summaryCTALabel}
+                  currentStep={currentStep}
+                  activeSteps={activeSteps}
+                  accommodationTypes={accommodationTypes}
+                  locale={locale}
+                  allocatedGuests={derived.allocatedGuests}
+                  remainingGuests={derived.remainingGuests}
+                  estimatedTotal={derived.estimatedTotal}
+                  dayUseSettings={dayUseQuery.settings}
+                  dayUseSettingsStatus={dayUseQuery.status}
+                  dayUseSettingsError={dayUseQuery.error}
+                  onReloadDayUseSettings={() => void dayUseQuery.reload()}
+                  getAvailability={getAvailability}
+                  fetchAvailability={(input) => fetchAvailability(input)}
+                  onNext={handleNext}
+                  onBack={handleBack}
+                  canProceed={proceed && !isBusy && !hasActiveHold}
+                  onSetProductType={setProductType}
+                  onSetVisitDate={setVisitDate}
+                  onSetDayUseGuests={setDayUseGuests}
+                  onSetBubbleStayDates={setBubbleStayDates}
+                  onSetBubbleStayGuests={setBubbleStayGuests}
+                  onAddBubbleSelection={addBubbleSelection}
+                  onUpdateBubbleSelection={updateBubbleSelection}
+                  onRemoveBubbleSelection={removeBubbleSelection}
+                  onClearBubbleSelections={clearBubbleSelections}
+                  onSetGuestDetails={setGuestDetails}
+                  checkout={checkout}
+                  onReserveAndPay={() => void reserveAndPay()}
+                  onRetryPayment={() => void retryPayment()}
+                  onStartNewReservation={startNewReservation}
+                  onReturnToBubbles={handleReturnToBubbles}
                 />
               </div>
             </div>
-          )}
+
+            <div
+              className="hidden lg:block"
+              style={{
+                width: "340px",
+                flexShrink: 0,
+                position: "sticky",
+                top: "104px",
+                alignSelf: "flex-start",
+              }}
+            >
+              <BookingSummary
+                state={state}
+                accommodationTypes={accommodationTypes}
+                locale={locale}
+                estimatedTotal={derived.estimatedTotal}
+                allocatedGuests={derived.allocatedGuests}
+                remainingGuests={derived.remainingGuests}
+                dayUseSettings={dayUseQuery.settings}
+                checkout={checkout}
+                onContinue={
+                  isLastStep ? handleCheckoutCta : () => handleNext()
+                }
+                isLastStep={isLastStep}
+                canProceed={
+                  isLastStep
+                    ? lastStepCanProceed
+                    : proceed && !isBusy && !hasActiveHold
+                }
+                ctaLabel={summaryCTALabel}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      {!isConfirmed && (
-        <MobileBookingBar
-          state={state}
-          onContinue={
-            isLastStep ? () => void submitBooking() : handleNext
-          }
-          canProceed={isLastStep ? !isSubmitting : proceed && !isSubmitting}
-        />
-      )}
+      <MobileBookingBar
+        state={state}
+        estimatedTotal={derived.estimatedTotal}
+        allocatedGuests={derived.allocatedGuests}
+        dayUseCurrency={dayUseQuery.settings?.currency}
+        checkout={checkout}
+        onContinue={isLastStep ? handleCheckoutCta : handleNext}
+        canProceed={
+          isLastStep
+            ? lastStepCanProceed
+            : proceed && !isBusy && !hasActiveHold
+        }
+        ctaLabel={
+          isLastStep
+            ? checkout.booking
+              ? "Pay now"
+              : "Reserve"
+            : "Continue"
+        }
+      />
     </main>
   );
 }
