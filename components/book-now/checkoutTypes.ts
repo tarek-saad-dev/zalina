@@ -15,6 +15,8 @@ export interface CheckoutError {
   message: string;
   status: number | null;
   fieldErrors?: Record<string, string[]>;
+  /** Upstream X-Request-Id when available (safe to show). */
+  requestId?: string;
   /** Bubble inventory conflict — return to bubbles step. */
   kind?: "conflict" | "validation" | "rate_limit" | "network" | "payment" | "generic";
 }

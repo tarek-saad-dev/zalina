@@ -9,7 +9,6 @@ import {
 } from "../bookingCheckoutRunner";
 import { prepareBookingPayload } from "../prepareBookingPayload";
 import {
-  isMockPaymentUrl,
   isSafePaymentUrl,
   navigateAfterPaymentInitiation,
 } from "../paymentUrl";
@@ -218,36 +217,94 @@ describe("payment helpers", () => {
     expect(isSafePaymentUrl("")).toBe(false);
   });
 
-  it("mock payment stashes checkout url and lands on status route", () => {
-    expect(
-      isMockPaymentUrl(
-        "https://api.zalinaarabianvillage.com/mock-pay?txn=MOCK-1"
-      )
-    ).toBe(true);
+  it("navigates to returned payment_url as-is (mock or paymob)", () => {
     const assign = vi.fn();
-    const stashMockUrl = vi.fn();
     navigateAfterPaymentInitiation({
       paymentUrl: "https://api.example/mock-pay?txn=1",
       bookingReference: "BK-REF-123456",
       assign,
-      stashMockUrl,
     });
-    expect(stashMockUrl).toHaveBeenCalledWith(
-      "https://api.example/mock-pay?txn=1"
-    );
-    expect(assign).toHaveBeenCalledWith("/booking/BK-REF-123456");
+    expect(assign).toHaveBeenCalledWith("https://api.example/mock-pay?txn=1");
+    expect(assign).not.toHaveBeenCalledWith("/booking/BK-REF-123456");
   });
 
-  it("production gateway resolves to paymob", () => {
-    const prev = process.env.NODE_ENV;
-    const prevGw = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY;
+  it("env mock/paymob/missing/invalid resolve correctly", () => {
+    const prev = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY;
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "mock";
+    expect(resolvePaymentGateway()).toBe("mock");
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "paymob";
+    expect(resolvePaymentGateway()).toBe("paymob");
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "MOCK";
+    expect(resolvePaymentGateway()).toBe("mock");
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "stripe";
+    expect(resolvePaymentGateway()).toBe("paymob");
+    delete process.env.NEXT_PUBLIC_PAYMENT_GATEWAY;
+    expect(resolvePaymentGateway()).toBe("paymob");
+    // NODE_ENV production must NOT override explicit mock
+    const prevNode = process.env.NODE_ENV;
     // @ts-expect-error test override
     process.env.NODE_ENV = "production";
     process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "mock";
-    expect(resolvePaymentGateway()).toBe("paymob");
+    expect(resolvePaymentGateway()).toBe("mock");
     // @ts-expect-error restore
-    process.env.NODE_ENV = prev;
-    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = prevGw;
+    process.env.NODE_ENV = prevNode;
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = prev;
+  });
+
+  it("mock payment initiation sends { gateway: mock } and uses payment_url", async () => {
+    const persist = vi.fn();
+    const navigate = vi.fn();
+    const pay = vi.fn(async (ref: string, gateway: "paymob" | "mock") => {
+      expect(ref).toBe("BK-MOCK-REF");
+      expect(gateway).toBe("mock");
+      return {
+        payment_url: "https://api.zalinaarabianvillage.com/mock-pay?txn=MOCK-X",
+      };
+    });
+    const runner = new BookingCheckoutRunner({
+      pay,
+      persist,
+      navigate,
+      resolveGateway: () => "mock",
+    });
+    const booking = sampleBooking({
+      booking_reference: "BK-MOCK-REF",
+    });
+    runner.seedBooking(booking);
+    await runner.pay(booking);
+    expect(pay).toHaveBeenCalledTimes(1);
+    expect(runner.lastPaymentBody).toEqual({ gateway: "mock" });
+    expect(persist).toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith(
+      "https://api.zalinaarabianvillage.com/mock-pay?txn=MOCK-X",
+      "BK-MOCK-REF"
+    );
+    expect(runner.payCallCount).toBe(1);
+    expect(runner.createCallCount).toBe(0);
+  });
+
+  it("payment retry uses same booking_reference without second create", async () => {
+    const booking = sampleBooking({ booking_reference: "BK-RETRY-1" });
+    const createDayUse = vi.fn();
+    const pay = vi.fn(async (ref: string, gateway: "paymob" | "mock") => {
+      expect(ref).toBe("BK-RETRY-1");
+      expect(gateway).toBe("mock");
+      return { payment_url: "https://api.example/mock-pay?txn=2" };
+    });
+    const navigate = vi.fn();
+    const runner = new BookingCheckoutRunner({
+      createDayUse,
+      pay,
+      navigate,
+      resolveGateway: () => "mock",
+    });
+    runner.seedBooking(booking);
+    await runner.retryPayment();
+    await runner.retryPayment();
+    expect(createDayUse).not.toHaveBeenCalled();
+    expect(pay).toHaveBeenCalledTimes(2);
+    expect(pay.mock.calls.every((c) => c[0] === "BK-RETRY-1")).toBe(true);
+    expect(runner.createCallCount).toBe(0);
   });
 
   it("hold/payment expiry derived from API timestamps", () => {

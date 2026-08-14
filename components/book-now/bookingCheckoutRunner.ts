@@ -86,6 +86,7 @@ export function mapPaymentError(err: unknown): CheckoutError {
         message: err.message || "Booking not found.",
         status: 404,
         kind: "payment",
+        requestId: err.requestId,
       };
     }
     if (err.status === 409) {
@@ -95,6 +96,7 @@ export function mapPaymentError(err: unknown): CheckoutError {
           "This booking appears to be already paid. Your reference has been saved for lookup.",
         status: 409,
         kind: "payment",
+        requestId: err.requestId,
       };
     }
     if (err.status === 422) {
@@ -104,6 +106,7 @@ export function mapPaymentError(err: unknown): CheckoutError {
           "This reservation hold has expired. Please check availability again.",
         status: 422,
         kind: "payment",
+        requestId: err.requestId,
       };
     }
     if (err.status === 429) {
@@ -113,12 +116,21 @@ export function mapPaymentError(err: unknown): CheckoutError {
           "Too many payment attempts. Please wait a moment before retrying.",
         status: 429,
         kind: "rate_limit",
+        requestId: err.requestId,
       };
     }
+    const base = err.message?.trim() || "Unable to start payment.";
+    const withRef =
+      err.status != null && err.status >= 500 && err.requestId
+        ? `${base} You can retry payment without creating a new booking. Support ref: ${err.requestId}`
+        : err.status != null && err.status >= 500
+          ? `${base} You can retry payment without creating a new booking.`
+          : base;
     return {
-      message: err.message || "Unable to start payment.",
+      message: withRef,
       status: err.status,
       kind: "payment",
+      requestId: err.requestId,
     };
   }
 
@@ -283,7 +295,8 @@ export class BookingCheckoutRunner {
         statusMessage:
           "Your booking is temporarily reserved while you complete payment.",
       };
-      this.inFlight = false;
+      // Keep inFlight locked across create → pay so a second click cannot
+      // start a duplicate /pay before pay() sets its own lock.
       return booking;
     } catch (err) {
       this.inFlight = false;
@@ -303,8 +316,10 @@ export class BookingCheckoutRunner {
   }
 
   async pay(booking: ApiBooking, locale?: string): Promise<boolean> {
-    if (this.inFlight) return false;
+    // Allow create→pay handoff while inFlight is still held from create().
+    if (this.inFlight && this.state.phase !== "created") return false;
     if (isHoldExpired(booking)) {
+      this.inFlight = false;
       this.state = {
         ...this.state,
         phase: "expired",

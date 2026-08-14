@@ -507,15 +507,30 @@ describe("PAYMENT / STATUS hardening", () => {
     expect(controller.rateLimitedUntil).toBeTruthy();
   });
 
-  it("unsafe payment urls rejected; production gateway forced paymob", () => {
+  it("unsafe payment urls rejected; env mock works in production NODE_ENV", () => {
     expect(isSafePaymentUrl("javascript:alert(1)")).toBe(false);
-    const prev = process.env.NODE_ENV;
+    const prevNode = process.env.NODE_ENV;
+    const prevGw = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY;
     // @ts-expect-error test
     process.env.NODE_ENV = "production";
     process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "mock";
+    expect(resolvePaymentGateway()).toBe("mock");
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = "paymob";
+    expect(resolvePaymentGateway()).toBe("paymob");
+    delete process.env.NEXT_PUBLIC_PAYMENT_GATEWAY;
     expect(resolvePaymentGateway()).toBe("paymob");
     // @ts-expect-error restore
-    process.env.NODE_ENV = prev;
+    process.env.NODE_ENV = prevNode;
+    process.env.NEXT_PUBLIC_PAYMENT_GATEWAY = prevGw;
+  });
+
+  it("has no frontend mock payment page route", async () => {
+    const { existsSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const root = join(process.cwd());
+    expect(existsSync(join(root, "app", "mock-pay"))).toBe(false);
+    expect(existsSync(join(root, "pages", "mock-pay.tsx"))).toBe(false);
+    expect(existsSync(join(root, "app", "mock-pay", "page.tsx"))).toBe(false);
   });
 });
 

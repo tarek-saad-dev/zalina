@@ -2,13 +2,8 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
-import {
-  consumeMockCheckoutUrl,
-  isMockPaymentUrl,
-  peekMockCheckoutUrl,
-} from "@/components/book-now/paymentUrl";
 import { BookingDetails } from "./BookingDetails";
 import { BookingStatusHero } from "./BookingStatusHero";
 import {
@@ -92,7 +87,6 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
   const paymentRetry = usePaymentRetry(locale);
   const focusRef = useRef<HTMLDivElement>(null);
   const lastBucket = useRef<string | null>(null);
-  const [mockCheckoutUrl, setMockCheckoutUrl] = useState<string | null>(null);
 
   const bucket = booking ? classifyBooking(booking) : "waiting";
   const showQr = booking ? canShowBookingQr(booking) : false;
@@ -100,23 +94,6 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
     booking != null &&
     bucket === "confirmed_preparing_ticket" &&
     !isTicketMetadataReady(booking);
-
-  useEffect(() => {
-    const url = peekMockCheckoutUrl();
-    if (url) setMockCheckoutUrl(url);
-  }, []);
-
-  useEffect(() => {
-    if (!booking) return;
-    if (
-      bucket === "confirmed_ready" ||
-      bucket === "confirmed_preparing_ticket" ||
-      bucket === "active_visit"
-    ) {
-      consumeMockCheckoutUrl();
-      setMockCheckoutUrl(null);
-    }
-  }, [booking, bucket]);
 
   useEffect(() => {
     if (!booking) return;
@@ -246,28 +223,6 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
                 {paymentRetry.error}
               </p>
             )}
-
-            {mockCheckoutUrl &&
-              isMockPaymentUrl(mockCheckoutUrl) &&
-              retryAllowed && (
-                <a
-                  href={mockCheckoutUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    consumeMockCheckoutUrl();
-                  }}
-                  style={{
-                    ...primaryBtnStyle,
-                    textDecoration: "none",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {locale === "ar" ? "إكمال الدفع" : "Complete payment"}
-                </a>
-              )}
 
             <div className="flex flex-wrap gap-3 pt-2">
               {(bucket === "waiting" ||
