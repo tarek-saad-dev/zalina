@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 const chips = [
   "Lantern-lit pathways",
@@ -86,7 +87,7 @@ export function DestinationOverview() {
             }}
           >
             <Image
-              src="/assets/aboutHero.png"
+              src={NEUTRAL_MEDIA_FALLBACK}
               alt="Panoramic view of Zalina Arabian Village at dusk with heritage buildings and lantern-lit pathways"
               fill
               className="object-cover"

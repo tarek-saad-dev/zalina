@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 const STARS = [
   { top: "8%",  left: "12%", size: 2,   delay: "0s",   dur: "3.2s" },
@@ -55,7 +56,7 @@ export function LuxuryHero() {
       {/* ── LAYER 1: Background Image ─────────────────── */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
-          src="/assets/aboutHero.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="Zalina Arabian Village at Night"
           fill
           className="object-cover object-center"

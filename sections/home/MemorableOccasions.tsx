@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Users, Building2, PartyPopper } from "lucide-react";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 const occasions = [
   {
     icon: Users,
-    image: "/assets/Moments to Remember.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     title: "Private Gatherings",
     subtitle: "Intimate Celebrations",
     description:
@@ -18,7 +19,7 @@ const occasions = [
   },
   {
     icon: Building2,
-    image: "/assets/Cultural Performances.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     title: "Corporate Experiences",
     subtitle: "Business Excellence",
     description:
@@ -27,7 +28,7 @@ const occasions = [
   },
   {
     icon: PartyPopper,
-    image: "/assets/Starlit.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     title: "Social Celebrations",
     subtitle: "Grand Festivities",
     description:

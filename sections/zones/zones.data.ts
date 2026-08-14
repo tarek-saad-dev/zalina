@@ -2,6 +2,8 @@
 // ZONES PAGE - TYPED DATA & CONSTANTS
 // ============================================
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export type ZoneId = string;
 
 export type OccasionId =
@@ -18,6 +20,7 @@ export interface Zone {
   bestFor: string;
   mood: string;
   image: string;
+  imageAlt?: string;
   apiId?: number;
   type?: string;
   isBookableOnline?: boolean;
@@ -99,6 +102,8 @@ export const OCCASIONS: OccasionCard[] = [
 
 // ============================================
 // JOURNEY STEPS DATA
+// Editorial storytelling — images use neutral fallback until page CMS exists.
+// When zones are passed at runtime, ImmersiveJourney prefers zone covers.
 // ============================================
 
 export const JOURNEY_STEPS: JourneyStep[] = [
@@ -106,25 +111,25 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     number: 1,
     title: "Arrival & Welcome",
     description: "Step through the grand gates into a world of Arabian elegance",
-    image: "/assets/aboutHero.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     number: 2,
     title: "Explore the Zones",
     description: "Discover each unique space designed for different moments",
-    image: "/assets/Twilight Gatherings.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     number: 3,
     title: "Live the Experience",
     description: "Immerse yourself in celebrations, dining, and cultural stories",
-    image: "/assets/Cultural Performances.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     number: 4,
     title: "Depart with Memories",
     description: "Leave with stories that last a lifetime",
-    image: "/assets/Moments to Remember.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
@@ -153,6 +158,7 @@ export const PROMISE_CARDS: PromiseCard[] = [
 
 // ============================================
 // BOOKING CONNECTION DATA
+// Editorial CTAs — neutral fallback (no Weddings/Corporate page media contract).
 // ============================================
 
 export const BOOKING_CARDS: BookingCard[] = [
@@ -162,7 +168,7 @@ export const BOOKING_CARDS: BookingCard[] = [
       "Full wedding planning — ceremonies, receptions, and coordination in our most prestigious venues.",
     cta: "Plan Your Wedding",
     href: "/book-now",
-    image: "/assets/wedding.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     title: "Corporate Events",
@@ -170,7 +176,7 @@ export const BOOKING_CARDS: BookingCard[] = [
       "Executive-level gatherings, conferences, and branded evenings in refined private spaces.",
     cta: "Request a Quote",
     href: "/book-now",
-    image: "/assets/Twilight Gatherings.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     title: "Private Celebrations",
@@ -178,7 +184,7 @@ export const BOOKING_CARDS: BookingCard[] = [
       "Birthdays, anniversaries, and milestone occasions set in intimate, beautifully curated zones.",
     cta: "Start Planning",
     href: "/book-now",
-    image: "/assets/Starlit.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 

@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Check } from "lucide-react";
 import { BOOK_NOW_HREF, FEATURED_DINNER_HIGHLIGHTS } from "./data";
 import { useExpMotion } from "./useExpMotion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function EditorialSpotlight() {
   const { prefersReducedMotion, isMobile, fadeUp, transition } = useExpMotion();
@@ -74,7 +75,7 @@ export function EditorialSpotlight() {
                 style={{ y: imageY }}
               >
                 <Image
-                  src="/assets/Flavors.png"
+                  src={NEUTRAL_MEDIA_FALLBACK}
                   alt="Signature dinner experience in a lantern-lit majlis"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"

@@ -1,53 +1,45 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
+import { CmsImage } from "@/components/media/CmsImage";
+import {
+  NEUTRAL_MEDIA_FALLBACK,
+  type CatalogMediaCard,
+} from "@/lib/media";
 
-const galleryImages = [
-  {
-    src: "/assets/Twilight Gatherings.png",
-    alt: "Grand Entrance",
-    size: "tall",
-  },
-  {
-    src: "/assets/Starlit.png",
-    alt: "Illuminated Pathways",
-    size: "wide",
-  },
-  {
-    src: "/assets/Cultural Performances.png",
-    alt: "Luxury Suite",
-    size: "hero",
-  },
-  {
-    src: "/assets/Flavors.png",
-    alt: "Courtyard Lagoon",
-    size: "wide",
-  },
-  {
-    src: "/assets/Moments to Remember.png",
-    alt: "Architectural Details",
-    size: "tall",
-  },
-  {
-    src: "/assets/day.png",
-    alt: "Lantern-lit Spaces",
-    size: "square",
-  },
-  {
-    src: "/assets/night.png",
-    alt: "Atmospheric Night",
-    size: "wide",
-  },
-];
+const LAYOUT_SIZES = [
+  "tall",
+  "wide",
+  "hero",
+  "wide",
+  "tall",
+  "square",
+  "wide",
+] as const;
 
-export function GlimpseGallery() {
+interface GlimpseGalleryProps {
+  items?: CatalogMediaCard[];
+}
+
+export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+
+  const galleryItems =
+    items.length > 0
+      ? items
+      : [
+          {
+            id: "neutral",
+            title: "Zalina Arabian Village",
+            image: NEUTRAL_MEDIA_FALLBACK,
+            alt: "Zalina Arabian Village",
+          },
+        ];
 
   // Auto-scroll animation
   useEffect(() => {
@@ -214,13 +206,16 @@ export function GlimpseGallery() {
           onTouchEnd={handleMouseUp}
         >
           {/* Double the images for seamless loop */}
-          {[...galleryImages, ...galleryImages].map((image, index) => {
-            const dims = getCardDimensions(image.size);
-            const borderRadius = getBorderRadius(image.size);
+          {[...galleryItems, ...galleryItems].map((item, index) => {
+            const itemIndex = index % galleryItems.length;
+            const size = LAYOUT_SIZES[itemIndex % LAYOUT_SIZES.length];
+            const dims = getCardDimensions(size);
+            const borderRadius = getBorderRadius(size);
+            const alt = item.alt || item.title;
 
             return (
               <motion.div
-                key={`${image.alt}-${index}`}
+                key={`${item.id}-${index}`}
                 className="relative flex-shrink-0 group"
                 style={{
                   width: dims.width,
@@ -229,7 +224,7 @@ export function GlimpseGallery() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: (index % galleryImages.length) * 0.1 }}
+                transition={{ duration: 0.5, delay: (index % galleryItems.length) * 0.1 }}
               >
                 {/* Image Container with Border */}
                 <div
@@ -237,12 +232,12 @@ export function GlimpseGallery() {
                   style={{
                     borderRadius: borderRadius,
                     border: "1px solid rgba(212, 175, 55, 0.3)",
-                    boxShadow: image.size === "hero" ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.2)",
+                    boxShadow: size === "hero" ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.2)",
                   }}
                 >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
+                  <CmsImage
+                    src={item.image}
+                    alt={alt}
                     fill
                     sizes={dims.width}
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -285,7 +280,7 @@ export function GlimpseGallery() {
                       className="text-white text-sm font-medium tracking-wide"
                       style={{ fontFamily: "var(--font-display, serif)" }}
                     >
-                      {image.alt}
+                      {alt}
                     </p>
                   </div>
                 </div>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { BOOK_NOW_HREF } from "./data";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 const PARTICLE_POSITIONS = [
   { left: "12%", top: "22%", delay: "0s", duration: "14s" },
@@ -41,7 +42,7 @@ export function Hero() {
     >
       <motion.div className="absolute inset-0 will-change-transform" style={{ y, scale }}>
         <Image
-          src="/assets/night.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="Lantern-lit Arabian courtyard under a starlit desert sky"
           fill
           priority

@@ -3,19 +3,49 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
-const galleryImages = [
-  { src: "/assets/zalina-hero-bg.png", alt: "Arabian Architecture", size: "tall" },
-  { src: "/assets/Twilight Gatherings.png", alt: "Desert Sunset", size: "wide" },
-  { src: "/assets/Cultural Performances.png", alt: "Traditional Courtyard", size: "arch" },
-  { src: "/assets/Flavors.png", alt: "Luxury Interior", size: "normal" },
-  { src: "/assets/Starlit.png", alt: "Night Ambiance", size: "tall" },
-  { src: "/assets/Moments to Remember.png", alt: "Culinary Art", size: "normal" },
-  { src: "/assets/Twilight Gatherings.png", alt: "Cultural Performance", size: "wide" },
-  { src: "/assets/Cultural Performances.png", alt: "Palm Gardens", size: "arch" },
+type GallerySize = "tall" | "wide" | "arch" | "normal";
+
+export interface ImmersiveGalleryItem {
+  id: string;
+  title: string;
+  image: string;
+  alt: string;
+}
+
+const DEFAULT_SIZES: GallerySize[] = [
+  "tall",
+  "wide",
+  "arch",
+  "normal",
+  "tall",
+  "normal",
+  "wide",
+  "arch",
 ];
 
-export function ImmersiveGallery() {
+const FALLBACK_ITEMS: ImmersiveGalleryItem[] = [
+  { id: "arabian-architecture", title: "Arabian Architecture", image: NEUTRAL_MEDIA_FALLBACK, alt: "Arabian Architecture" },
+  { id: "desert-sunset", title: "Desert Sunset", image: NEUTRAL_MEDIA_FALLBACK, alt: "Desert Sunset" },
+  { id: "traditional-courtyard", title: "Traditional Courtyard", image: NEUTRAL_MEDIA_FALLBACK, alt: "Traditional Courtyard" },
+  { id: "luxury-interior", title: "Luxury Interior", image: NEUTRAL_MEDIA_FALLBACK, alt: "Luxury Interior" },
+  { id: "night-ambiance", title: "Night Ambiance", image: NEUTRAL_MEDIA_FALLBACK, alt: "Night Ambiance" },
+  { id: "culinary-art", title: "Culinary Art", image: NEUTRAL_MEDIA_FALLBACK, alt: "Culinary Art" },
+  { id: "cultural-performance", title: "Cultural Performance", image: NEUTRAL_MEDIA_FALLBACK, alt: "Cultural Performance" },
+  { id: "palm-gardens", title: "Palm Gardens", image: NEUTRAL_MEDIA_FALLBACK, alt: "Palm Gardens" },
+];
+
+interface ImmersiveGalleryProps {
+  items?: ImmersiveGalleryItem[];
+}
+
+export function ImmersiveGallery({ items = [] }: ImmersiveGalleryProps) {
+  const galleryImages =
+    items.length > 0
+      ? items
+      : FALLBACK_ITEMS;
+
   return (
     <section
       className="lux-section relative overflow-hidden"
@@ -47,8 +77,9 @@ export function ImmersiveGallery() {
         {/* Masonry Gallery Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px]">
           {galleryImages.map((image, index) => {
+            const size = DEFAULT_SIZES[index % DEFAULT_SIZES.length];
             const getSpan = () => {
-              switch (image.size) {
+              switch (size) {
                 case "tall":
                   return "row-span-2";
                 case "wide":
@@ -62,19 +93,19 @@ export function ImmersiveGallery() {
 
             return (
               <motion.div
-                key={image.src}
+                key={image.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className={`relative group cursor-pointer overflow-hidden ${getSpan()} ${
-                  image.size === "arch" ? "lux-arch" : ""
+                  size === "arch" ? "lux-arch" : ""
                 }`}
               >
                 {/* Image */}
                 <Image
-                  src={image.src}
-                  alt={image.alt}
+                  src={image.image}
+                  alt={image.alt || image.title}
                   fill
                   className="object-cover transition-transform duration-[1200ms] group-hover:scale-110"
                 />
@@ -102,7 +133,7 @@ export function ImmersiveGallery() {
                     className="text-sm font-medium"
                     style={{ color: "var(--lux-text)" }}
                   >
-                    {image.alt}
+                    {image.alt || image.title}
                   </p>
                 </div>
 

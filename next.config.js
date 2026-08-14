@@ -7,6 +7,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "api.zalinaarabianvillage.com",
+        pathname: "/**",
       },
     ],
   },

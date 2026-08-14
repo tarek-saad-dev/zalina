@@ -50,7 +50,7 @@ export default async function ZonesPage() {
       <MainZones zones={zones} />
       <FeaturedZone zone={featured} />
       <ZoneDifferentiation />
-      <ImmersiveJourney />
+      <ImmersiveJourney zones={zones} />
       <WhyZonesMatter />
       <BookingConnection />
       <FinalCTA />

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function Hero() {
   const prefersReduced = useReducedMotion();
@@ -30,7 +31,7 @@ export function Hero() {
         transition={{ duration: 12, ease: "easeOut" }}
       >
         <Image
-          src="/assets/zalina-hero-bg.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="Aerial view of Zalina Arabian Village at night with heritage architecture, lanterns, and palms"
           fill
           className="object-cover"

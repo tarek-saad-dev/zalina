@@ -6,6 +6,8 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function WeddingHero() {
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
@@ -30,7 +32,7 @@ export function WeddingHero() {
         transition={{ duration: 14, ease: "easeOut" }}
       >
         <Image
-          src="/assets/wedding.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="A grand wedding celebration at Zalina Arabian Village beneath lanterns, palms, and heritage architecture"
           fill
           className="object-cover"

@@ -3,6 +3,7 @@
 import { Container } from "@/components/ui/Container";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { OrnamentalDivider } from "@/components/ui/OrnamentalDivider";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function BookingCTASection() {
   return (
@@ -12,7 +13,7 @@ export function BookingCTASection() {
         <div 
           className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: `url("https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=1600&q=80")`,
+            backgroundImage: `url("${NEUTRAL_MEDIA_FALLBACK}")`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}

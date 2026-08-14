@@ -6,13 +6,15 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { ArrowRight } from "lucide-react";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function HomeHero() {
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/assets/zalina-hero-bg.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="Zalina Arabian Village at night"
           fill
           className="object-cover object-center"

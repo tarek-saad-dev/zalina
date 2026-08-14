@@ -3,45 +3,22 @@
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
+/** Legacy section — no Gallery CMS contract; neutral placeholder only. */
 const galleryImages = [
-  {
-    src: "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&q=80",
-    alt: "Desert Landscape",
-    size: "large",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1547234935-80c7142ee969?w=400&q=80",
-    alt: "Luxury Tent",
-    size: "small",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1590073242678-cfea024341e2?w=400&q=80",
-    alt: "Arabian Architecture",
-    size: "small",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?w=400&q=80",
-    alt: "Camel Caravan",
-    size: "small",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&q=80",
-    alt: "Evening Entertainment",
-    size: "small",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80",
-    alt: "Desert Dining",
-    size: "large",
-  },
+  { src: NEUTRAL_MEDIA_FALLBACK, alt: "Zalina Arabian Village", size: "large" },
+  { src: NEUTRAL_MEDIA_FALLBACK, alt: "Zalina Arabian Village", size: "small" },
+  { src: NEUTRAL_MEDIA_FALLBACK, alt: "Zalina Arabian Village", size: "small" },
+  { src: NEUTRAL_MEDIA_FALLBACK, alt: "Zalina Arabian Village", size: "small" },
+  { src: NEUTRAL_MEDIA_FALLBACK, alt: "Zalina Arabian Village", size: "small" },
+  { src: NEUTRAL_MEDIA_FALLBACK, alt: "Zalina Arabian Village", size: "large" },
 ];
 
 export function GallerySection() {
   return (
     <section id="gallery" className="py-24 md:py-32 bg-bg-section">
       <Container size="large">
-        {/* Header */}
         <div className="text-center mb-16">
           <SectionHeading
             subtitle="Visual Journey"
@@ -51,9 +28,7 @@ export function GallerySection() {
           />
         </div>
 
-        {/* Gallery Grid - Masonry Style */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] md:auto-rows-[240px]">
-          {/* Large Image */}
           <div className="col-span-2 row-span-2 group relative overflow-hidden rounded-card">
             <img
               src={galleryImages[0].src}
@@ -66,12 +41,11 @@ export function GallerySection() {
             </div>
           </div>
 
-          {/* Small Images */}
           {galleryImages.slice(1, 5).map((image, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`group relative overflow-hidden rounded-card ${
-                index === 1 ? 'col-span-1 md:col-span-1' : ''
+                index === 1 ? "col-span-1 md:col-span-1" : ""
               }`}
             >
               <img
@@ -83,7 +57,6 @@ export function GallerySection() {
             </div>
           ))}
 
-          {/* Large Image - Bottom */}
           <div className="col-span-2 row-span-1 md:row-span-1 group relative overflow-hidden rounded-card">
             <img
               src={galleryImages[5].src}
@@ -97,9 +70,8 @@ export function GallerySection() {
           </div>
         </div>
 
-        {/* View More Button */}
         <div className="text-center mt-12">
-          <SecondaryButton href="#" showArrow size="large">
+          <SecondaryButton href="/gallery" showArrow size="large">
             View Full Gallery
           </SecondaryButton>
         </div>

@@ -3,6 +3,8 @@
  * Booking Domain V2 checkout types live in `./booking-types`.
  */
 
+import type { GalleryItemRaw, RawApiMedia } from "@/lib/media";
+
 export interface ApiEnvelope<T> {
   success: boolean;
   message: string;
@@ -24,15 +26,10 @@ export interface ApiEnvelope<T> {
   };
 }
 
-export interface ApiMedia {
-  id?: number;
-  file_name: string;
-  mime_type?: string;
-  size?: number;
-  collection_name?: string;
-  url?: string;
-  original_url?: string;
-}
+/** @deprecated Prefer RawApiMedia / CmsMedia from @/lib/media */
+export type ApiMedia = RawApiMedia & {
+  file_name?: string;
+};
 
 /** CMS marketing zones — not linked to bookings in V2. */
 export interface ApiZone {
@@ -41,9 +38,16 @@ export interface ApiZone {
   name_ar: string;
   slug_en: string;
   slug_ar: string;
-  type: string;
-  is_bookable_online: boolean;
-  media?: ApiMedia[];
+  /** Present on some payloads; optional on live V2 catalog. */
+  type?: string;
+  description_en?: string | null;
+  description_ar?: string | null;
+  display_order?: number;
+  is_active?: boolean;
+  is_bookable_online?: boolean;
+  cover_image?: string | null;
+  gallery?: GalleryItemRaw[];
+  media?: RawApiMedia[];
 }
 
 /** CMS experiences — marketing only; not bookable in Booking Domain V2. */
@@ -56,12 +60,14 @@ export interface ApiExperience {
   type: string;
   /** Present on some CMS payloads; never used in V2 booking totals. */
   price_per_person?: string;
-  description_en?: string;
-  description_ar?: string;
+  description_en?: string | null;
+  description_ar?: string | null;
   display_order?: number;
   is_active: boolean;
   zone?: ApiZone;
-  media?: ApiMedia[];
+  cover_image?: string | null;
+  gallery?: GalleryItemRaw[];
+  media?: RawApiMedia[];
 }
 
 /** CMS add-ons — marketing only; not part of V2 checkout. */
@@ -72,6 +78,9 @@ export interface ApiAddOn {
   type: string;
   price: string;
   pricing_type: "per_person" | "per_booking" | "fixed" | string;
+  cover_image?: string | null;
+  gallery?: GalleryItemRaw[];
+  media?: RawApiMedia[];
 }
 
 export interface ApiBlog {
@@ -86,6 +95,11 @@ export interface ApiBlog {
   published_at: string | null;
 }
 
+/**
+ * CMS page resource (GET /pages/{slug}).
+ * Documented as HTML title/content only — no media slots in the contract.
+ * Live production currently returns 404 for all probed slugs (unpublished / empty).
+ */
 export interface ApiPage {
   id: number;
   title_en: string;

@@ -12,6 +12,7 @@ export interface ExperienceItem {
   title: string;
   description: string;
   image: string;
+  imageAlt?: string;
   /** Primary label shown on the card */
   label: string;
   /** Categories used for filtering */

@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 const brandEssencePoints = [
   "Unmatched Luxury Hospitality",
   "Deeply Rooted Arabian Identity",
@@ -26,7 +28,7 @@ export function SignatureBrandEssence() {
               style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.35)" }}
             >
               <Image
-                src="/assets/zalina-hero-bg.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Zalina luxury experience"
                 fill
                 className="object-cover"
@@ -39,7 +41,7 @@ export function SignatureBrandEssence() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/assets/Flavors.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Arabian architectural detail"
                 fill
                 className="object-cover"

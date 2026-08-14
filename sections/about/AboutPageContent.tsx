@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
   show: { opacity: 1, y: 0 },
@@ -48,17 +50,17 @@ const PILLARS = [
   {
     title: "Heritage",
     desc: "Rooted in the grandeur of Ancient Arabian culture.",
-    img: "/assets/Cultural Performances.png",
+    img: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     title: "Atmosphere",
     desc: "A cinematic night setting unlike anywhere else.",
-    img: "/assets/Starlit.png",
+    img: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     title: "Celebration",
     desc: "From intimate dinners to grand wedding nights.",
-    img: "/assets/wedding.png",
+    img: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
@@ -90,7 +92,7 @@ function AboutHeroSection() {
     <section ref={ref} className="relative w-full overflow-hidden" style={{ minHeight: "100vh", background: "transparent" }}>
       {/* BG */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
-        <Image src="/assets/zalina-hero-bg.png" alt="Zalina Arabian Village" fill className="object-cover object-center" priority quality={100} />
+        <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Zalina Arabian Village" fill className="object-cover object-center" priority quality={100} />
       </motion.div>
 
       {/* Overlays */}
@@ -169,12 +171,12 @@ function BrandStorySection() {
           >
             {/* Back image */}
             <div className="absolute" style={{ top: 0, left: "10%", width: "72%", height: "380px", border: "1px solid rgba(212,175,55,0.2)", boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
-              <Image src="/assets/about1.png" alt="Twilight Gatherings at Zalina" fill className="object-cover" />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Twilight Gatherings at Zalina" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.35) 0%, transparent 60%)" }} />
             </div>
             {/* Front image */}
             <div className="absolute" style={{ bottom: 0, right: 0, width: "58%", height: "280px", border: "1px solid rgba(212,175,55,0.25)", boxShadow: "0 32px 64px rgba(0,0,0,0.7)", zIndex: 2 }}>
-              <Image src="/assets/about2.png" alt="Arabian Flavors at Zalina" fill className="object-cover" />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Arabian Flavors at Zalina" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.25) 0%, transparent 70%)" }} />
             </div>
             {/* Gold accent dot */}
@@ -380,7 +382,7 @@ function ImmersiveStoriesSection() {
             style={{ minHeight: "580px" }}
           >
             <div className="relative w-full h-full" style={{ minHeight: "580px" }}>
-              <Image src="/assets/Moments to Remember.png" alt="Immersive Arabian Stories at Zalina" fill className="object-cover" style={{ border: "1px solid rgba(212,175,55,0.18)" }} />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Immersive Arabian Stories at Zalina" fill className="object-cover" style={{ border: "1px solid rgba(212,175,55,0.18)" }} />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.3) 0%, transparent 60%)" }} />
               {/* decorative frame corner */}
               <div className="absolute top-4 left-4 w-10 h-10 pointer-events-none" style={{ borderTop: "1px solid rgba(212,175,55,0.5)", borderLeft: "1px solid rgba(212,175,55,0.5)" }} />
@@ -442,12 +444,12 @@ function DifferenceSection() {
           >
             {/* Main image */}
             <div className="absolute" style={{ top: 0, right: 0, width: "75%", height: "360px", border: "1px solid rgba(212,175,55,0.18)", boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
-              <Image src="/assets/night.png" alt="Zalina at Night" fill className="object-cover" />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Zalina at Night" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.3) 0%, transparent 60%)" }} />
             </div>
             {/* Second image */}
             <div className="absolute" style={{ bottom: 0, left: 0, width: "55%", height: "240px", border: "1px solid rgba(212,175,55,0.22)", boxShadow: "0 32px 64px rgba(0,0,0,0.7)", zIndex: 2 }}>
-              <Image src="/assets/day.png" alt="Zalina by Day" fill className="object-cover" />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Zalina by Day" fill className="object-cover" />
             </div>
             {/* Gold dot accent */}
             <div className="absolute" style={{ top: "40px", left: "20%", width: "5px", height: "5px", borderRadius: "50%", background: "#D4AF37", boxShadow: "0 0 10px rgba(212,175,55,0.5)", zIndex: 3 }} />
@@ -464,7 +466,7 @@ function AboutCTASection() {
     <section className="w-full relative overflow-hidden" style={{ paddingTop: "120px", paddingBottom: "120px" }}>
       {/* Background */}
       <div className="absolute inset-0">
-        <Image src="/assets/Starlit.png" alt="Zalina Starlit Night" fill className="object-cover" />
+        <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Zalina Starlit Night" fill className="object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.7) 50%, rgba(5,5,5,0.92) 100%)" }} />
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 65% 50% at 50% 50%, rgba(212,175,55,0.09) 0%, transparent 70%)" }} />
       </div>

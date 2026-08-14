@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function ConsultationCTA() {
   const prefersReduced = useReducedMotion();
 
@@ -32,7 +34,7 @@ export function ConsultationCTA() {
           {/* Background image with heavy overlay */}
           <div className="absolute inset-0" aria-hidden="true">
             <Image
-              src="/assets/wedding.png"
+              src={NEUTRAL_MEDIA_FALLBACK}
               alt=""
               fill
               className="object-cover"

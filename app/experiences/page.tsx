@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Signature moments crafted with elegance, heritage, and Arabian warmth.",
     type: "website",
-    images: [{ url: "/assets/night.png", width: 1200, height: 630 }],
+    images: [{ url: "/assets/zalina-hero-bg.png", width: 1200, height: 630 }],
   },
 };
 

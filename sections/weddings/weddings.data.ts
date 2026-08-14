@@ -4,6 +4,8 @@
 
 // ── VENUE TYPES ─────────────────────────────
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export const WEDDING_VENUE_IDS = [
   "royal-wedding-court",
   "banquet-hall",
@@ -42,7 +44,7 @@ export const WEDDING_VENUES: WeddingVenue[] = [
     capacity: "Up to 300 guests",
     mood: "Grand / Cinematic / Regal",
     bestFor: "Large weddings and formal celebrations",
-    image: "/assets/wedding.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "banquet-hall",
@@ -53,7 +55,7 @@ export const WEDDING_VENUES: WeddingVenue[] = [
     capacity: "Up to 180 guests",
     mood: "Elegant / Formal / Warm",
     bestFor: "Formal dinners and gala-style weddings",
-    image: "/assets/Twilight Gatherings.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "desert-lounge",
@@ -64,7 +66,7 @@ export const WEDDING_VENUES: WeddingVenue[] = [
     capacity: "Up to 80 guests",
     mood: "Intimate / Warm / Relaxed",
     bestFor: "Henna nights, engagement dinners, private gatherings",
-    image: "/assets/Starlit.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "poolside-pavilion",
@@ -75,7 +77,7 @@ export const WEDDING_VENUES: WeddingVenue[] = [
     capacity: "Up to 120 guests",
     mood: "Fresh / Sunset / Romantic",
     bestFor: "Receptions, cocktail evenings, daytime celebrations",
-    image: "/assets/day.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
@@ -106,7 +108,7 @@ export const WEDDING_JOURNEY_STEPS: WeddingJourneyStep[] = [
     title: "The Welcome",
     description:
       "Guests arrive through lantern-lit pathways and warm hospitality.",
-    image: "/assets/aboutHero.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "ceremony",
@@ -114,7 +116,7 @@ export const WEDDING_JOURNEY_STEPS: WeddingJourneyStep[] = [
     title: "The Ceremony",
     description:
       "A cinematic moment framed by heritage architecture.",
-    image: "/assets/wedding.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "dinner",
@@ -122,7 +124,7 @@ export const WEDDING_JOURNEY_STEPS: WeddingJourneyStep[] = [
     title: "The Dinner",
     description:
       "Curated dining beneath palms, golden light, and open skies.",
-    image: "/assets/Flavors.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "celebration",
@@ -130,7 +132,7 @@ export const WEDDING_JOURNEY_STEPS: WeddingJourneyStep[] = [
     title: "The Celebration",
     description:
       "Music, movement, and atmosphere beneath the stars.",
-    image: "/assets/Cultural Performances.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     id: "memory",
@@ -138,7 +140,7 @@ export const WEDDING_JOURNEY_STEPS: WeddingJourneyStep[] = [
     title: "The Memory",
     description:
       "Every corner designed for timeless photographs.",
-    image: "/assets/Moments to Remember.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
@@ -189,7 +191,7 @@ export const CELEBRATION_STYLES: CelebrationStyle[] = [
     title: "Intimate Wedding",
     description:
       "For close family, private vows, and deeply personal celebrations.",
-    image: "/assets/Starlit.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     cta: "Inquire",
   },
   {
@@ -197,7 +199,7 @@ export const CELEBRATION_STYLES: CelebrationStyle[] = [
     title: "Grand Celebration",
     description:
       "For large weddings, formal dining, and a complete guest experience.",
-    image: "/assets/wedding.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     cta: "Inquire",
   },
   {
@@ -205,7 +207,7 @@ export const CELEBRATION_STYLES: CelebrationStyle[] = [
     title: "Destination Wedding",
     description:
       "For couples seeking an immersive celebration beneath the stars.",
-    image: "/assets/night.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     cta: "Inquire",
   },
   {
@@ -213,7 +215,7 @@ export const CELEBRATION_STYLES: CelebrationStyle[] = [
     title: "Pre-Wedding Gathering",
     description:
       "Henna nights, engagement dinners, family receptions, and private rituals.",
-    image: "/assets/Twilight Gatherings.png",
+    image: NEUTRAL_MEDIA_FALLBACK,
     cta: "Inquire",
   },
 ];
@@ -226,14 +228,14 @@ export interface GalleryMoment {
 }
 
 export const GALLERY_MOMENTS: GalleryMoment[] = [
-  { caption: "Lantern aisle", image: "/assets/aboutHero.png" },
-  { caption: "Palace gate entrance", image: "/assets/zalina-hero-bg.png" },
-  { caption: "Dinner tables", image: "/assets/Flavors.png" },
-  { caption: "Bride and groom silhouette", image: "/assets/wedding.png" },
-  { caption: "Dance beneath the stars", image: "/assets/Cultural Performances.png" },
-  { caption: "Coffee ritual", image: "/assets/about1.png" },
-  { caption: "Palm-lit courtyard", image: "/assets/night.png" },
-  { caption: "Golden reception", image: "/assets/Twilight Gatherings.png" },
+  { caption: "Lantern aisle", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Palace gate entrance", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Dinner tables", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Bride and groom silhouette", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Dance beneath the stars", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Coffee ritual", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Palm-lit courtyard", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Golden reception", image: NEUTRAL_MEDIA_FALLBACK },
 ];
 
 // ── REASONS TO CHOOSE ───────────────────────

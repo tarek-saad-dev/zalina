@@ -9,7 +9,12 @@ export {
   getExperience,
   getAddOns,
   getMedia,
+  getPage,
+  listMediaForModel,
+  assertCmsMediaOwner,
 } from "./catalog";
+
+export { clearMediaRequestCache, UnsupportedMediaOwnerError } from "./media";
 
 export { getDayUseSettings } from "./day-use";
 
@@ -44,6 +49,8 @@ export {
   experienceFallbackImage,
   stayFallbackImage,
   mediaUrl,
+  NEUTRAL_MEDIA_FALLBACK,
+  NEUTRAL_MEDIA_ALT,
 } from "./fallbacks";
 
 export {

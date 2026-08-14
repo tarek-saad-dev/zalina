@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function EmotionalIntro() {
   const prefersReduced = useReducedMotion();
 
@@ -49,7 +51,7 @@ export function EmotionalIntro() {
               }}
             >
               <Image
-                src="/assets/night.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="An intimate evening setting at Zalina with warm lantern light and palm silhouettes"
                 fill
                 className="object-cover"
@@ -74,7 +76,7 @@ export function EmotionalIntro() {
               }}
             >
               <Image
-                src="/assets/about2.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Heritage courtyard detail with golden architecture"
                 fill
                 className="object-cover"

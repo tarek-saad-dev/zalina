@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { BOOK_NOW_HREF, CONTACT_HREF } from "./data";
 import { useExpMotion } from "./useExpMotion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function CTASection() {
   const { fadeUp, transition } = useExpMotion();
@@ -21,7 +22,7 @@ export function CTASection() {
     >
       <div className="absolute inset-0" aria-hidden="true">
         <Image
-          src="/assets/Starlit.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt=""
           fill
           sizes="100vw"

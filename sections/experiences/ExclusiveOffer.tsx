@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { BOOK_NOW_HREF } from "./data";
 import { useExpMotion } from "./useExpMotion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function ExclusiveOffer() {
   const { fadeUp, transition } = useExpMotion();
@@ -31,7 +32,7 @@ export function ExclusiveOffer() {
           <div className="grid md:grid-cols-2">
             <div className="relative min-h-[240px] sm:min-h-[300px] md:min-h-[400px]">
               <Image
-                src="/assets/Twilight Gatherings.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Guests enjoying the Sunset and Dine package at golden hour"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"

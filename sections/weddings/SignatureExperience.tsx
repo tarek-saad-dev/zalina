@@ -6,6 +6,8 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { SIGNATURE_FEATURES } from "./weddings.data";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function SignatureExperience() {
   const prefersReduced = useReducedMotion();
 
@@ -69,7 +71,7 @@ export function SignatureExperience() {
           {/* Image — Left */}
           <div className="relative w-full lg:w-[57%] h-[300px] sm:h-[380px] lg:h-auto lg:min-h-[560px] overflow-hidden group">
             <Image
-              src="/assets/aboutHero.png"
+              src={NEUTRAL_MEDIA_FALLBACK}
               alt="Zalina courtyard at night — lantern-lit pathways with heritage architecture perfect for wedding ceremonies"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"

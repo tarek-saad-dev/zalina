@@ -1,6 +1,13 @@
 import { apiFetchSafe } from "./client";
-import type { ApiAddOn, ApiExperience, ApiMedia, ApiZone } from "./types";
+import type { ApiAddOn, ApiExperience, ApiPage, ApiZone } from "./types";
 import { resolveApiLocale } from "./locale";
+import {
+  listMediaForModel,
+  assertCmsMediaOwner,
+} from "./media";
+import type { CmsMedia, CmsMediaOwner } from "@/lib/media";
+
+export { listMediaForModel, assertCmsMediaOwner };
 
 /** CMS zones — marketing only; not linked to bookings in V2. */
 export function getZones(locale?: string): Promise<ApiZone[]> {
@@ -46,12 +53,27 @@ export function getAddOns(locale?: string): Promise<ApiAddOn[]> {
   });
 }
 
+/**
+ * @deprecated Prefer listMediaForModel — typed owners only.
+ * Kept for compatibility; rejects unsupported types.
+ */
 export function getMedia(
-  modelType: string,
+  modelType: CmsMediaOwner | string,
   modelId: number | string,
   locale?: string
-): Promise<ApiMedia[]> {
-  return apiFetchSafe<ApiMedia[]>(`/media/${modelType}/${modelId}`, [], {
+): Promise<CmsMedia[]> {
+  return listMediaForModel(modelType, modelId, locale);
+}
+
+/**
+ * GET /pages/{slug} — documented in Postman as HTML title/content only (no media).
+ * Live production currently 404s for common slugs (no published pages).
+ */
+export function getPage(
+  slug: string,
+  locale?: string
+): Promise<ApiPage | null> {
+  return apiFetchSafe<ApiPage | null>(`/pages/${slug}`, null, {
     locale: resolveApiLocale(locale),
     next: { revalidate: 60 },
   });

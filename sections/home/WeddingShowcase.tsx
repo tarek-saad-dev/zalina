@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function WeddingShowcase() {
   return (
@@ -11,7 +12,7 @@ export function WeddingShowcase() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/assets/wedding.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="Luxury Wedding Ceremony at Zalina - Ancient Egyptian Heritage Resort by Lagoon at Sunset"
           fill
           className="object-cover"

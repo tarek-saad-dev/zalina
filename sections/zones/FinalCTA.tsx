@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function FinalCTA() {
   const prefersReduced = useReducedMotion();
@@ -32,7 +33,7 @@ export function FinalCTA() {
           {/* Background image layer */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <Image
-              src="/assets/night.png"
+              src={NEUTRAL_MEDIA_FALLBACK}
               alt=""
               fill
               className="object-cover opacity-20"

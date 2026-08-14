@@ -1,10 +1,6 @@
 import type { ExperienceItem } from "@/sections/experiences/types";
 import type { Zone } from "@/sections/zones/zones.data";
-import {
-  experienceFallbackImage,
-  mediaUrl,
-  zoneFallbackImage,
-} from "./fallbacks";
+import { resolveCoverImage } from "@/lib/media";
 import type { ApiExperience, ApiZone } from "./types";
 
 const ZONE_COPY: Record<
@@ -48,19 +44,28 @@ function titleCaseType(type: string): string {
 }
 
 export function mapZoneToUi(zone: ApiZone, locale: "en" | "ar" = "en"): Zone {
-  const copy = ZONE_COPY[zone.type?.toLowerCase()] ?? {
-    description: `${zone.name_en} at Zalina Arabian Village.`,
-    bestFor: zone.is_bookable_online ? "Online booking available" : "Inquire to book",
-    mood: titleCaseType(zone.type),
+  const typeKey = (zone.type || "").toLowerCase();
+  const copy = ZONE_COPY[typeKey] ?? {
+    description:
+      (locale === "ar"
+        ? zone.description_ar || zone.description_en
+        : zone.description_en || zone.description_ar) ||
+      `${zone.name_en} at Zalina Arabian Village.`,
+    bestFor: zone.is_bookable_online
+      ? "Online booking available"
+      : "Inquire to book",
+    mood: titleCaseType(zone.type || "Zone"),
   };
   const title = locale === "ar" ? zone.name_ar || zone.name_en : zone.name_en;
+  const cover = resolveCoverImage(zone, { entityName: title });
   return {
     id: zone.slug_en,
     title,
     description: copy.description,
     bestFor: copy.bestFor,
     mood: copy.mood,
-    image: mediaUrl(zone.media) ?? zoneFallbackImage(zone.type),
+    image: cover.url,
+    imageAlt: cover.alt,
     apiId: zone.id,
     type: zone.type,
     isBookableOnline: zone.is_bookable_online,
@@ -95,6 +100,8 @@ export function mapExperienceToCatalogItem(
   const categories: ExperienceItem["categories"] = ["All Experiences"];
   if (category) categories.push(category);
 
+  const cover = resolveCoverImage(item, { entityName: title });
+
   return {
     id: String(item.id),
     title,
@@ -102,7 +109,8 @@ export function mapExperienceToCatalogItem(
       price > 0
         ? `${formatEgp(price)} per person · ${zoneName}`
         : zoneName || "Zalina Arabian Village",
-    image: mediaUrl(item.media) ?? experienceFallbackImage(item.type),
+    image: cover.url,
+    imageAlt: cover.alt,
     label,
     categories,
     tags: [label, zoneName].filter(Boolean),

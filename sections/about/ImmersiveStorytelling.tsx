@@ -3,6 +3,8 @@
 import React from "react";
 import Image from "next/image";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function ImmersiveStorytelling() {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-12">
@@ -16,7 +18,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/assets/zalina-hero-bg.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Immersive Arabian storytelling experience"
                 fill
                 className="object-cover"
@@ -48,7 +50,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/assets/Twilight Gatherings.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Arabian cultural experience"
                 fill
                 className="object-cover"
@@ -61,7 +63,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/assets/Cultural Performances.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Traditional Arabian hospitality"
                 fill
                 className="object-cover"
@@ -74,7 +76,7 @@ export function ImmersiveStorytelling() {
               style={{ boxShadow: "0 15px 40px rgba(0,0,0,0.3)" }}
             >
               <Image
-                src="/assets/Flavors.png"
+                src={NEUTRAL_MEDIA_FALLBACK}
                 alt="Luxury desert retreat detail"
                 fill
                 className="object-cover"

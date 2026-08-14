@@ -8,36 +8,47 @@ import {
   WeddingShowcase,
   FinalCTA,
   LuxuryFooter,
+  GlimpseGallery,
 } from "@/sections/home";
+import {
+  getExperiences,
+  getZones,
+  listAccommodationTypes,
+} from "@/lib/api";
+import {
+  buildEntityGlimpseItems,
+  experiencesToMomentCards,
+  zonesToMarketCardsWithSize,
+} from "@/lib/media";
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  const [zones, experiences, accommodations] = await Promise.all([
+    getZones(),
+    getExperiences(),
+    listAccommodationTypes(),
+  ]);
+
+  const moments = experiencesToMomentCards(experiences);
+  const stalls = zonesToMarketCardsWithSize(zones);
+  const glimpseItems = buildEntityGlimpseItems(
+    zones,
+    experiences,
+    accommodations
+  );
+
   return (
     <main className="lux-page min-h-screen">
-      {/* Section 1: Cinematic Hero - 100vh */}
       <LuxuryHero />
-
-      {/* Section 2: Heritage Story */}
       <HeritageStory />
-
-      {/* Section 3: Signature Moments - 5 Premium Cards */}
-      <SignatureMoments />
-
-      {/* Section 4: Day vs Night Experience */}
+      <SignatureMoments moments={moments} />
       <DayNightExperience />
-
-      {/* Section 5: The Market — Zalina Souk Showcase */}
-      <MarketShowcase />
-
-      {/* Section 6: The Zalina Promise - Slim Trust Strip */}
+      <MarketShowcase stalls={stalls} />
+      <GlimpseGallery items={glimpseItems} />
       <ZalinaPromise />
-
-      {/* Section 7: Weddings at Zalina - Premium Hero */}
       <WeddingShowcase />
-
-      {/* Section 8: Final Conversion CTA */}
       <FinalCTA />
-
-      {/* Section 9: Luxury Footer */}
       <LuxuryFooter />
     </main>
   );

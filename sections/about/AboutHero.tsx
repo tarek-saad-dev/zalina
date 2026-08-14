@@ -3,13 +3,15 @@
 import React from "react";
 import Image from "next/image";
 
+import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+
 export function AboutHero() {
   return (
     <section className="relative w-full h-[780px] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/assets/zalina-hero-bg.png"
+          src={NEUTRAL_MEDIA_FALLBACK}
           alt="Zalina Arabian Village - Luxury Desert Hospitality"
           fill
           className="object-cover"

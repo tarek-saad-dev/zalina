@@ -1,61 +1,38 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { CmsImage } from "@/components/media/CmsImage";
+import {
+  NEUTRAL_MEDIA_FALLBACK,
+  type MarketCard,
+} from "@/lib/media";
 
-const marketStalls = [
-  {
-    src: "/assets/Twilight Gatherings.png",
-    title: "Lantern Lane",
-    tagline: "Warm light, open tents, evening trade",
-    size: "tall",
-  },
-  {
-    src: "/assets/Flavors.png",
-    title: "Spice Courtyard",
-    tagline: "Aromatic blends from across Arabia",
-    size: "wide",
-  },
-  {
-    src: "/assets/Cultural Performances.png",
-    title: "Artisan Atelier",
-    tagline: "Handcrafted treasures & living tradition",
-    size: "hero",
-  },
-  {
-    src: "/assets/Starlit.png",
-    title: "Night Bazaar",
-    tagline: "Gold-lit stalls under desert stars",
-    size: "wide",
-  },
-  {
-    src: "/assets/Moments to Remember.png",
-    title: "Heritage Crafts",
-    tagline: "Woven stories passed through generations",
-    size: "tall",
-  },
-  {
-    src: "/assets/day.png",
-    title: "Morning Souk",
-    tagline: "Sunlit alleys & quiet discovery",
-    size: "square",
-  },
-  {
-    src: "/assets/night.png",
-    title: "Candlelight Trade",
-    tagline: "Intimate stalls after dusk",
-    size: "wide",
-  },
-];
+interface MarketShowcaseProps {
+  stalls?: MarketCard[];
+}
 
-export function MarketShowcase() {
+export function MarketShowcase({ stalls = [] }: MarketShowcaseProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+
+  const marketStalls: MarketCard[] =
+    stalls.length > 0
+      ? stalls
+      : [
+          {
+            id: "neutral",
+            title: "Zalina Arabian Village",
+            subtitle: "Market stalls from the CMS catalog",
+            image: NEUTRAL_MEDIA_FALLBACK,
+            alt: "Zalina Arabian Village",
+            size: "hero",
+          },
+        ];
 
   useEffect(() => {
     if (isPaused || isDragging) return;
@@ -271,7 +248,7 @@ export function MarketShowcase() {
 
             return (
               <motion.div
-                key={`${stall.title}-${index}`}
+                key={`${stall.id}-${index}`}
                 className="relative flex-shrink-0 group"
                 style={{
                   width: dims.width,
@@ -296,9 +273,9 @@ export function MarketShowcase() {
                         : "0 4px 20px rgba(0,0,0,0.2)",
                   }}
                 >
-                  <Image
-                    src={stall.src}
-                    alt={stall.title}
+                  <CmsImage
+                    src={stall.image}
+                    alt={stall.alt}
                     fill
                     sizes={dims.width}
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -363,7 +340,7 @@ export function MarketShowcase() {
                       className="text-white/70 text-xs mt-1 max-h-0 overflow-hidden opacity-0 group-hover:max-h-10 group-hover:opacity-100 transition-all duration-500"
                       style={{ fontFamily: "var(--font-body, sans-serif)" }}
                     >
-                      {stall.tagline}
+                      {stall.subtitle}
                     </p>
                   </div>
                 </div>
