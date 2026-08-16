@@ -12,13 +12,17 @@ import {
 } from "@/sections/home";
 import {
   getExperiences,
+  getZone,
   getZones,
   listAccommodationTypes,
+  listMediaForModel,
 } from "@/lib/api";
 import {
+  MARKET_ZONE_SLUG,
   buildEntityGlimpseItems,
   experiencesToMomentCards,
-  zonesToMarketCardsWithSize,
+  findMarketZone,
+  marketZoneGalleryToCards,
 } from "@/lib/media";
 
 export const revalidate = 60;
@@ -31,7 +35,20 @@ export default async function Home() {
   ]);
 
   const moments = experiencesToMomentCards(experiences);
-  const stalls = zonesToMarketCardsWithSize(zones);
+
+  // Market strip uses Al-Souk gallery — never the full zones catalog.
+  const marketFromList = findMarketZone(zones);
+  const marketDetail = await getZone(
+    marketFromList?.slug_en || MARKET_ZONE_SLUG
+  );
+  const marketZone = marketDetail ?? marketFromList ?? null;
+  const marketMedia = marketZone
+    ? await listMediaForModel("zone", marketZone.id)
+    : [];
+  const stalls = marketZoneGalleryToCards(marketZone, marketMedia);
+  const marketZoneName =
+    marketZone?.name_en?.trim() || "Al-Souk Village";
+
   const glimpseItems = buildEntityGlimpseItems(
     zones,
     experiences,
@@ -44,7 +61,7 @@ export default async function Home() {
       <HeritageStory />
       <SignatureMoments moments={moments} />
       <DayNightExperience />
-      <MarketShowcase stalls={stalls} />
+      <MarketShowcase stalls={stalls} zoneName={marketZoneName} />
       <GlimpseGallery items={glimpseItems} />
       <ZalinaPromise />
       <WeddingShowcase />

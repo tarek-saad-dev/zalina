@@ -4,8 +4,18 @@
 import type { AccommodationType } from "@/lib/api/booking-types";
 import type { ApiExperience, ApiZone } from "@/lib/api/types";
 import { NEUTRAL_MEDIA_FALLBACK } from "./fallback";
-import { resolveCoverImage } from "./resolveMedia";
-import type { ResolvedImage } from "./types";
+import {
+  dedupeMedia,
+  isLikelyFilenameAlt,
+  normalizeMediaList,
+  sortMedia,
+} from "./normalize";
+import {
+  collectEntityMedia,
+  resolveCoverImage,
+  resolveMediaAlt,
+} from "./resolveMedia";
+import type { CmsMedia, ResolvedImage } from "./types";
 
 export interface CatalogMediaCard {
   id: string;
@@ -22,6 +32,9 @@ export type MarketCard = CatalogMediaCard & {
   size: (typeof SIZES)[number];
 };
 
+/** Preferred market / souk zone slug on production CMS. */
+export const MARKET_ZONE_SLUG = "al-souk-village";
+
 function cardFromResolved(
   id: string,
   title: string,
@@ -37,6 +50,96 @@ function cardFromResolved(
     alt: resolved.alt,
     href,
   };
+}
+
+function zoneLabel(zone: ApiZone, locale: "en" | "ar"): string {
+  return locale === "ar" ? zone.name_ar || zone.name_en : zone.name_en;
+}
+
+function looksLikeMarketZone(zone: ApiZone): boolean {
+  const hay = [
+    zone.slug_en,
+    zone.slug_ar,
+    zone.name_en,
+    zone.name_ar,
+    zone.type,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return /souk|market|bazaar|سوق|ماركت/.test(hay);
+}
+
+/** Pick the Market (Al-Souk) zone — not every zone. */
+export function findMarketZone(zones: ApiZone[]): ApiZone | undefined {
+  if (!zones.length) return undefined;
+  const bySlug = zones.find(
+    (z) => (z.slug_en || "").toLowerCase() === MARKET_ZONE_SLUG
+  );
+  if (bySlug) return bySlug;
+  return zones.find(looksLikeMarketZone);
+}
+
+/**
+ * Home Market Showcase cards from the Market zone gallery (not all zones).
+ * Prefers nested `gallery`, then merged cover/media + optional GET /media list.
+ */
+export function marketZoneGalleryToCards(
+  zone: ApiZone | null | undefined,
+  extraMedia: CmsMedia[] = [],
+  locale: "en" | "ar" = "en"
+): MarketCard[] {
+  if (!zone) {
+    return [
+      {
+        id: "neutral",
+        title: "Zalina Arabian Village",
+        subtitle: "Market gallery from the CMS",
+        image: NEUTRAL_MEDIA_FALLBACK,
+        alt: "Zalina Arabian Village",
+        size: "hero",
+      },
+    ];
+  }
+
+  const title = zoneLabel(zone, locale);
+  const gallery = sortMedia(normalizeMediaList(zone.gallery));
+  const merged = sortMedia(
+    dedupeMedia([...collectEntityMedia(zone), ...extraMedia])
+  );
+  // Gallery is the intended Market strip; fall back to full zone media when empty.
+  const source = gallery.length > 0 ? gallery : merged;
+
+  if (source.length === 0) {
+    return [
+      {
+        id: `market-${zone.id}-empty`,
+        title,
+        subtitle: "Market gallery coming soon",
+        image: NEUTRAL_MEDIA_FALLBACK,
+        alt: title,
+        href: "/zones",
+        size: "hero",
+      },
+    ];
+  }
+
+  return source.map((media, index) => {
+    const caption =
+      media.caption?.trim() ||
+      (media.altText && !isLikelyFilenameAlt(media.altText)
+        ? media.altText.trim()
+        : undefined);
+    return {
+      id: `market-${zone.id}-${media.id}`,
+      title: media.title?.trim() || title,
+      subtitle: caption || undefined,
+      image: media.url,
+      alt: resolveMediaAlt(media, { entityName: title }),
+      href: "/zones",
+      size: SIZES[index % SIZES.length],
+    };
+  });
 }
 
 /** Experience showcase cards for home Signature Moments. */
@@ -62,30 +165,15 @@ export function experiencesToMomentCards(
   });
 }
 
-/** Zone showcase cards for home Market Showcase. */
+/**
+ * @deprecated Prefer marketZoneGalleryToCards — Market shows souk gallery, not all zones.
+ */
 export function zonesToMarketCardsWithSize(
   zones: ApiZone[],
-  locale: "en" | "ar" = "en"
+  locale: "en" | "ar" = "en",
+  extraMedia: CmsMedia[] = []
 ): MarketCard[] {
-  return zones.map((zone, index) => {
-    const title =
-      locale === "ar" ? zone.name_ar || zone.name_en : zone.name_en;
-    const desc =
-      (locale === "ar"
-        ? zone.description_ar || zone.description_en
-        : zone.description_en || zone.description_ar) || "";
-    const resolved = resolveCoverImage(zone, { entityName: title });
-    return {
-      ...cardFromResolved(
-        String(zone.id),
-        title,
-        resolved,
-        desc || undefined,
-        "/zones"
-      ),
-      size: SIZES[index % SIZES.length],
-    };
-  });
+  return marketZoneGalleryToCards(findMarketZone(zones), extraMedia, locale);
 }
 
 /** Aggregate entity covers for home visual galleries (no invented page CMS). */
