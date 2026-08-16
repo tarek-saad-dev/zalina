@@ -128,8 +128,8 @@ export function LuxuryHero() {
 
       {/* ── LAYER 4: Main Content ─────────────────────── */}
       <motion.div
-        className="relative z-10 flex flex-col justify-center min-h-screen px-6 md:px-12 lg:px-20"
-        style={{ opacity: fadeOut, paddingTop: "100px", paddingBottom: "200px" }}
+        className="relative z-10 flex flex-col justify-center min-h-screen px-6 md:px-12 lg:px-20 pt-[100px] pb-[220px] sm:pb-[200px]"
+        style={{ opacity: fadeOut }}
       >
         <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-14">
 
@@ -234,16 +234,16 @@ export function LuxuryHero() {
               rituals, and unforgettable Arabian hospitality beneath the stars.
             </motion.p>
 
-            {/* CTAs */}
+            {/* CTAs — primary Book Now; secondary desktop-only (distinct from booking) */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.25 }}
-              className="flex flex-col sm:flex-row items-start gap-4 mt-10"
+              className="relative z-30 flex flex-col sm:flex-row items-start gap-4 mt-10"
             >
               {/* Primary */}
               <Link
-                href="#glimpse"
+                href="/book-now"
                 className="inline-flex items-center justify-center gap-2 px-9 py-4 text-xs font-medium uppercase transition-all duration-300 sm:w-auto w-full"
                 style={{
                   fontFamily: "var(--font-body, sans-serif)",
@@ -262,10 +262,10 @@ export function LuxuryHero() {
                   (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(212,175,55,0.28)";
                 }}
               >
-                Explore the Village
+                Book Now
               </Link>
 
-              {/* Secondary — hidden on mobile */}
+              {/* Secondary — hidden on mobile (avoids duplicate CTAs on small screens) */}
               <Link
                 href="/experiences"
                 className="hidden sm:inline-flex items-center justify-center gap-2 px-9 py-4 text-xs font-medium uppercase transition-all duration-300"
