@@ -1,4 +1,4 @@
-import type { CmsMedia, GalleryItemRaw, RawApiMedia } from "./types";
+import type { CmsMedia, GalleryItemRaw, MediaAsset, RawApiMedia } from "./types";
 
 function asNumber(value: unknown, fallback: number): number {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -15,14 +15,16 @@ function asOptionalNumber(value: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-function pickUrl(raw: RawApiMedia): string | null {
-  const url = raw.url || raw.original_url;
-  if (typeof url !== "string") return null;
-  const trimmed = url.trim();
+function pickUrl(raw: RawApiMedia | MediaAsset): string | null {
+  const candidate =
+    ("url" in raw ? raw.url : null) ||
+    ("original_url" in raw ? raw.original_url : null);
+  if (typeof candidate !== "string") return null;
+  const trimmed = candidate.trim();
   return trimmed.length > 0 ? trimmed : null;
 }
 
-/** True when mime looks like an image (or is unknown — treat as image for legacy string URLs). */
+/** True when mime looks like an image (or is unknown — treat as image). */
 export function isImageMime(mimeType?: string | null): boolean {
   if (!mimeType) return true;
   return mimeType.toLowerCase().startsWith("image/");
@@ -43,57 +45,78 @@ function nextSyntheticId(): number {
   return syntheticId;
 }
 
+export function isMediaAssetLike(value: unknown): value is RawApiMedia {
+  if (value == null || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  const obj = value as Record<string, unknown>;
+  return (
+    typeof obj.url === "string" ||
+    typeof obj.original_url === "string" ||
+    typeof obj.id === "number"
+  );
+}
+
+/**
+ * Normalize one MediaAsset (or partial raw media) into CmsMedia.
+ * Returns null for invalid / non-image / missing-url payloads — never throws.
+ */
+export function normalizeMediaAsset(
+  raw: MediaAsset | RawApiMedia | null | undefined,
+  index = 0
+): CmsMedia | null {
+  if (!raw || typeof raw !== "object") return null;
+  try {
+    const url = pickUrl(raw);
+    if (!url) return null;
+    if (!isImageMime(raw.mime_type)) return null;
+
+    return {
+      id: asNumber(raw.id, nextSyntheticId()),
+      url,
+      thumbnailUrl: raw.thumbnail_url ?? null,
+      mimeType: raw.mime_type ?? null,
+      width: asOptionalNumber(raw.width),
+      height: asOptionalNumber(raw.height),
+      title: raw.title ?? null,
+      altText: raw.alt_text ?? null,
+      caption: raw.caption ?? null,
+      collectionName: raw.collection_name ?? null,
+      isCover: Boolean(raw.is_cover),
+      sortOrder: asNumber(raw.sort_order, index),
+      fileName: raw.file_name ?? null,
+      size: asOptionalNumber(raw.size),
+    };
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("[normalizeMediaAsset] invalid media payload", err);
+    }
+    return null;
+  }
+}
+
+/** @deprecated Prefer normalizeMediaAsset */
 export function normalizeApiMedia(
   raw: RawApiMedia,
   index = 0
 ): CmsMedia | null {
-  const url = pickUrl(raw);
-  if (!url) return null;
-  if (!isImageMime(raw.mime_type)) return null;
-
-  return {
-    id: asNumber(raw.id, nextSyntheticId()),
-    url,
-    thumbnailUrl: raw.thumbnail_url ?? null,
-    mimeType: raw.mime_type ?? null,
-    width: asOptionalNumber(raw.width),
-    height: asOptionalNumber(raw.height),
-    title: raw.title ?? null,
-    altText: raw.alt_text ?? null,
-    caption: raw.caption ?? null,
-    collectionName: raw.collection_name ?? null,
-    isCover: Boolean(raw.is_cover),
-    sortOrder: asNumber(raw.sort_order, index),
-    fileName: raw.file_name ?? null,
-    size: asOptionalNumber(raw.size),
-  };
+  return normalizeMediaAsset(raw, index);
 }
 
 export function normalizeGalleryItem(
-  item: GalleryItemRaw,
+  item: GalleryItemRaw | unknown,
   index = 0
 ): CmsMedia | null {
+  // Production contract: MediaAsset objects only. Reject bare strings.
   if (typeof item === "string") {
-    const url = item.trim();
-    if (!url) return null;
-    return {
-      id: nextSyntheticId(),
-      url,
-      thumbnailUrl: null,
-      mimeType: "image/*",
-      width: null,
-      height: null,
-      title: null,
-      altText: null,
-      caption: null,
-      collectionName: "gallery",
-      isCover: false,
-      sortOrder: index,
-      fileName: null,
-      size: null,
-    };
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[normalizeGalleryItem] ignoring bare URL string; expected MediaAsset object"
+      );
+    }
+    return null;
   }
-  return normalizeApiMedia(item, index);
+  return normalizeMediaAsset(item as RawApiMedia, index);
 }
 
 export function normalizeMediaList(
@@ -102,7 +125,7 @@ export function normalizeMediaList(
   if (!items?.length) return [];
   const out: CmsMedia[] = [];
   items.forEach((item, index) => {
-    const normalized = normalizeGalleryItem(item as GalleryItemRaw, index);
+    const normalized = normalizeGalleryItem(item, index);
     if (normalized) out.push(normalized);
   });
   return dedupeMedia(out);

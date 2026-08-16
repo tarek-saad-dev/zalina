@@ -1,4 +1,4 @@
-import type { ApiMedia } from "./types";
+import type { MediaAsset } from "@/lib/media";
 import type {
   AccommodationAvailability,
   AccommodationType,
@@ -28,9 +28,9 @@ export interface RawPhysicalBubble {
   name_ar: string;
   status?: string;
   accommodation_type_id?: number;
-  cover_image?: string | null;
-  gallery?: Array<string | ApiMedia>;
-  media?: ApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
 }
 
 /**
@@ -54,9 +54,9 @@ export interface RawAccommodationType {
   bubbles_count?: number;
   bubbles?: RawPhysicalBubble[];
   available_bubbles?: number | RawPhysicalBubble[];
-  cover_image?: string | null;
-  gallery?: Array<string | ApiMedia>;
-  media?: ApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
 }
 
 export interface RawAccommodationAvailability {

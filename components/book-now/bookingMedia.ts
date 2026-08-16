@@ -5,14 +5,22 @@ import {
   type MediaBearingEntity,
 } from "@/lib/media";
 
+function asCssUrl(value: string): string {
+  // Always return a plain string URL safe for CSS url("...") / Image src.
+  if (typeof value !== "string" || !value.trim()) {
+    return stayFallbackImage();
+  }
+  return value.trim();
+}
+
 /**
  * Accommodation type image — shared CMS resolver.
- * cover_image → is_cover media → media[0] → gallery[0] → neutral
+ * cover_image (MediaAsset) → is_cover media → media[0] → gallery[0] → neutral
  */
 export function resolveAccommodationImage(
   input: MediaBearingEntity
 ): string {
-  return resolveCoverUrl(input) || stayFallbackImage();
+  return asCssUrl(resolveCoverUrl(input) || stayFallbackImage());
 }
 
 /**
@@ -23,7 +31,9 @@ export function resolveBubbleImage(
   bubble: MediaBearingEntity,
   typeFallback?: MediaBearingEntity
 ): string {
-  return resolveBubbleCoverUrl(bubble, typeFallback) || stayFallbackImage();
+  return asCssUrl(
+    resolveBubbleCoverUrl(bubble, typeFallback) || stayFallbackImage()
+  );
 }
 
 export function localizedName(

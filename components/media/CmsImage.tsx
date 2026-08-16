@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image, { type ImageProps } from "next/image";
 import {
   NEUTRAL_MEDIA_ALT,
@@ -13,7 +13,7 @@ import {
 
 type CmsImageBase = {
   media?: CmsMedia | null;
-  /** Pre-resolved URL (e.g. from resolveCoverImage). */
+  /** Pre-resolved URL string (never a MediaAsset object). */
   src?: string | null;
   alt?: string;
   altOptions?: ResolveCoverOptions;
@@ -42,9 +42,17 @@ export type CmsImageProps = (CmsImageFill | CmsImageSized) &
     "src" | "alt" | "width" | "height" | "fill" | "sizes" | "onError"
   >;
 
+function asSafeUrl(value: unknown, fallback: string): string {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed && trimmed !== "[object Object]") return trimmed;
+  }
+  return fallback;
+}
+
 /**
- * Safe CMS image — uses normalized media, alt priority, and one-shot fallback.
- * Preserves surrounding layout (fill / object-cover) on load failure.
+ * Safe CMS image — uses normalized CmsMedia, alt priority, and one-shot fallback.
+ * Never accepts a raw MediaAsset object as `src`.
  */
 export function CmsImage({
   media,
@@ -62,9 +70,14 @@ export function CmsImage({
   ...rest
 }: CmsImageProps) {
   const resolvedFromMedia = selectDisplayUrl(media, preferThumbnail);
-  const initial = (src || resolvedFromMedia || fallbackSrc).trim() || fallbackSrc;
+  const initial = asSafeUrl(src ?? resolvedFromMedia, fallbackSrc);
   const [currentSrc, setCurrentSrc] = useState(initial);
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setCurrentSrc(asSafeUrl(src ?? resolvedFromMedia, fallbackSrc));
+    setFailed(false);
+  }, [src, resolvedFromMedia, fallbackSrc]);
 
   const resolvedAlt =
     alt?.trim() ||

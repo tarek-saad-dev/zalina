@@ -21,7 +21,13 @@ const TYPES: AccommodationTypeMeta[] = [
     price_per_night: "900.00",
     is_active: true,
     bubbles_count: 2,
-    cover_image: "https://cdn.example/cover.jpg",
+    cover_image: {
+      id: 99,
+      url: "https://cdn.example/cover.jpg",
+      mime_type: "image/jpeg",
+      is_cover: true,
+      sort_order: 1,
+    },
     bubbles: [],
   },
 ];
@@ -78,27 +84,55 @@ describe("Phase 3 journey UI helpers", () => {
     expect(rendered.join(" ")).not.toMatch(/One Bed|Two Bed|Three Bed/);
   });
 
-  it("media fallback prefers cover_image then gallery then neutral", () => {
+  it("media fallback prefers cover_image MediaAsset then gallery then parent", () => {
     expect(
       resolveAccommodationImage({
-        cover_image: "https://cdn.example/a.jpg",
-        gallery: ["https://cdn.example/b.jpg"],
+        cover_image: {
+          id: 1,
+          url: "https://cdn.example/a.jpg",
+          mime_type: "image/jpeg",
+        },
+        gallery: [{ id: 2, url: "https://cdn.example/b.jpg", mime_type: "image/jpeg" }],
       })
     ).toBe("https://cdn.example/a.jpg");
 
     expect(
       resolveAccommodationImage({
         cover_image: null,
-        gallery: ["https://cdn.example/b.jpg"],
+        gallery: [{ id: 2, url: "https://cdn.example/b.jpg", mime_type: "image/jpeg" }],
       })
     ).toBe("https://cdn.example/b.jpg");
 
     expect(
       resolveBubbleImage(
-        { cover_image: null, gallery: [] },
-        { cover_image: "https://cdn.example/type.jpg" }
+        { cover_image: null, gallery: [], media: [] },
+        {
+          cover_image: {
+            id: 3,
+            url: "https://cdn.example/type.jpg",
+            mime_type: "image/jpeg",
+          },
+        }
       )
     ).toBe("https://cdn.example/type.jpg");
+  });
+
+  it("cover_image MediaAsset object never crashes booking media helpers", () => {
+    const url = resolveAccommodationImage({
+      cover_image: {
+        id: 123,
+        url: "https://api.zalinaarabianvillage.com/media/assets/123",
+        thumbnail_url:
+          "https://api.zalinaarabianvillage.com/media/assets/123/thumbnail",
+        mime_type: "image/png",
+        is_cover: true,
+        sort_order: 1,
+      },
+      gallery: [],
+      media: [],
+    });
+    expect(typeof url).toBe("string");
+    expect(url).toBe("https://api.zalinaarabianvillage.com/media/assets/123");
   });
 
   it("money helpers parse API strings without inventing currency", () => {

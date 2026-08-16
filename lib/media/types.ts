@@ -1,6 +1,11 @@
 /**
  * Normalized CMS media shapes for the public site.
  * Snake_case API fields are normalized once here — UI never reads them raw.
+ *
+ * Backend contract (Booking Domain / CMS MediaAsset):
+ *   cover_image: MediaAsset | null
+ *   gallery: MediaAsset[]
+ *   media: MediaAsset[]
  */
 
 export const CMS_MEDIA_OWNERS = [
@@ -41,11 +46,13 @@ export interface CmsMedia {
   size?: number | null;
 }
 
-/** Raw media object as returned by the API (partial / drifting fields allowed). */
-export interface RawApiMedia {
-  id?: number;
-  url?: string | null;
-  original_url?: string | null;
+/**
+ * Raw MediaAsset as returned by the API on cover_image / gallery / media.
+ * This is the production contract — not a URL string.
+ */
+export interface MediaAsset {
+  id: number;
+  url: string;
   thumbnail_url?: string | null;
   file_name?: string | null;
   mime_type?: string | null;
@@ -60,16 +67,22 @@ export interface RawApiMedia {
   sort_order?: number | null;
 }
 
-export type GalleryItemRaw = string | RawApiMedia;
+/** @deprecated Prefer MediaAsset — kept as alias for older imports. */
+export type RawApiMedia = Partial<MediaAsset> & {
+  /** Legacy alias some payloads used instead of `url`. */
+  original_url?: string | null;
+};
+
+export type GalleryItemRaw = MediaAsset | RawApiMedia;
 
 /**
  * Any catalog entity that may carry nested media fields.
  * Prefer these over GET /media when sufficient.
  */
 export interface MediaBearingEntity {
-  cover_image?: string | null;
+  cover_image?: MediaAsset | RawApiMedia | null;
   gallery?: GalleryItemRaw[] | null;
-  media?: RawApiMedia[] | null;
+  media?: Array<MediaAsset | RawApiMedia> | null;
 }
 
 export interface ResolveCoverOptions {

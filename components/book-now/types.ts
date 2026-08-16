@@ -1,5 +1,5 @@
 import type { BookingProductType } from "@/lib/api";
-import type { GalleryItemRaw, RawApiMedia } from "@/lib/media";
+import type { MediaAsset } from "@/lib/media";
 
 /** Semantic wizard step IDs (product-specific flows). */
 export type BookingStepId =
@@ -77,18 +77,18 @@ export interface AccommodationTypeMeta {
   price_per_night: string;
   is_active: boolean;
   bubbles_count: number;
-  cover_image?: string | null;
-  gallery?: GalleryItemRaw[] | null;
-  media?: RawApiMedia[] | null;
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[] | null;
+  media?: MediaAsset[] | null;
   /** Catalog inventory only — never use as date-specific availability. */
   bubbles: Array<{
     id: number;
     name_en: string;
     name_ar: string;
     status: string;
-    cover_image?: string | null;
-    gallery?: GalleryItemRaw[] | null;
-    media?: RawApiMedia[] | null;
+    cover_image?: MediaAsset | null;
+    gallery?: MediaAsset[] | null;
+    media?: MediaAsset[] | null;
   }>;
 }
 

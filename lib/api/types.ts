@@ -3,7 +3,7 @@
  * Booking Domain V2 checkout types live in `./booking-types`.
  */
 
-import type { GalleryItemRaw, RawApiMedia } from "@/lib/media";
+import type { MediaAsset, RawApiMedia } from "@/lib/media";
 
 export interface ApiEnvelope<T> {
   success: boolean;
@@ -26,10 +26,8 @@ export interface ApiEnvelope<T> {
   };
 }
 
-/** @deprecated Prefer RawApiMedia / CmsMedia from @/lib/media */
-export type ApiMedia = RawApiMedia & {
-  file_name?: string;
-};
+/** @deprecated Prefer MediaAsset / CmsMedia from @/lib/media */
+export type ApiMedia = RawApiMedia;
 
 /** CMS marketing zones — not linked to bookings in V2. */
 export interface ApiZone {
@@ -45,9 +43,9 @@ export interface ApiZone {
   display_order?: number;
   is_active?: boolean;
   is_bookable_online?: boolean;
-  cover_image?: string | null;
-  gallery?: GalleryItemRaw[];
-  media?: RawApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
 }
 
 /** CMS experiences — marketing only; not bookable in Booking Domain V2. */
@@ -65,9 +63,9 @@ export interface ApiExperience {
   display_order?: number;
   is_active: boolean;
   zone?: ApiZone;
-  cover_image?: string | null;
-  gallery?: GalleryItemRaw[];
-  media?: RawApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
 }
 
 /** CMS add-ons — marketing only; not part of V2 checkout. */
@@ -78,9 +76,9 @@ export interface ApiAddOn {
   type: string;
   price: string;
   pricing_type: "per_person" | "per_booking" | "fixed" | string;
-  cover_image?: string | null;
-  gallery?: GalleryItemRaw[];
-  media?: RawApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
 }
 
 export interface ApiBlog {

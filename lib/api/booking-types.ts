@@ -1,4 +1,4 @@
-import type { ApiMedia } from "./types";
+import type { MediaAsset } from "@/lib/media";
 
 /** Booking Domain V2 product types (contract constants). */
 export type BookingProductType = "day_use" | "bubble_stay";
@@ -45,9 +45,9 @@ export interface PhysicalBubble {
   name_ar: string;
   status: string;
   accommodation_type_id?: number;
-  cover_image?: string | null;
-  gallery?: Array<string | ApiMedia>;
-  media?: ApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
 }
 
 /**
@@ -66,9 +66,9 @@ export interface AccommodationType {
   price_per_night: string;
   is_active: boolean;
   bubbles_count: number;
-  cover_image?: string | null;
-  gallery?: Array<string | ApiMedia>;
-  media?: ApiMedia[];
+  cover_image?: MediaAsset | null;
+  gallery?: MediaAsset[];
+  media?: MediaAsset[];
   /** Normalized catalog / inventory bubbles for this type. */
   bubbles: PhysicalBubble[];
 }

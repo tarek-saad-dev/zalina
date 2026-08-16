@@ -2,6 +2,7 @@ export type {
   CmsMedia,
   CmsMediaOwner,
   GalleryItemRaw,
+  MediaAsset,
   MediaBearingEntity,
   RawApiMedia,
   ResolveCoverOptions,
@@ -20,6 +21,8 @@ export {
 export {
   isImageMime,
   isLikelyFilenameAlt,
+  isMediaAssetLike,
+  normalizeMediaAsset,
   normalizeApiMedia,
   normalizeGalleryItem,
   normalizeMediaList,
@@ -28,6 +31,7 @@ export {
 } from "./normalize";
 
 export {
+  coverImageAsMedia,
   collectEntityMedia,
   resolveCoverMedia,
   resolveGalleryMedia,
