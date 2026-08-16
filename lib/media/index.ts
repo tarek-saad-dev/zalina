@@ -54,3 +54,28 @@ export {
   buildEntityGlimpseItems,
 } from "./homeCatalogMedia";
 export type { CatalogMediaCard, MarketCard } from "./homeCatalogMedia";
+
+export {
+  GALLERY_FILTER_IDS,
+  GALLERY_FILTER_LABELS_EN,
+  GALLERY_I18N_KEYS,
+  buildGalleryCatalog,
+  dedupeGalleryItems,
+  entitiesNeedingMediaEnrichment,
+  filterGalleryItems,
+  galleryItemAlt,
+  galleryItemTitle,
+  getSafeGalleryFilterId,
+  interleaveGalleryCategories,
+  isGalleryFilterId,
+} from "./galleryCatalog";
+export type {
+  GalleryAspect,
+  GalleryCatalogResult,
+  GalleryCategory,
+  GalleryFilterId,
+  GalleryItem,
+  GallerySourceType,
+} from "./galleryCatalog";
+
+export { loadGalleryCatalog } from "./loadGalleryCatalog";
