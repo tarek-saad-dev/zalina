@@ -1,12 +1,59 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
-const DAY_IMAGE = "/assets/day-experience.png";
-const NIGHT_IMAGE = "/assets/night-experience.png";
+const DAY_IMAGES = [
+  "/assets/day-experience.png",
+  "/assets/day-experience-2.png",
+] as const;
+const NIGHT_IMAGES = [
+  "/assets/night-experience.png",
+  "/assets/night-experience-2.png",
+] as const;
+const IMAGE_ROTATION_MS = 4200;
+
+function ExperienceBackground({
+  images,
+  alt,
+}: {
+  images: readonly string[];
+  alt: string;
+}) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length < 2) return;
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % images.length);
+    }, IMAGE_ROTATION_MS);
+    return () => window.clearInterval(timer);
+  }, [images]);
+
+  return (
+    <div className="absolute inset-0">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={images[index]}
+          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+        >
+          <Image
+            src={images[index]}
+            alt={alt}
+            fill
+            className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"
+          />
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export function DayNightExperience() {
   return (
@@ -24,14 +71,10 @@ export function DayNightExperience() {
           className="relative w-full lg:w-1/2 h-[420px] lg:h-[500px] group"
         >
           {/* Background Image */}
-          <div className="absolute inset-0">
-            <Image
-              src={DAY_IMAGE}
-              alt="Day Experience at Zalina"
-              fill
-              className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"
-            />
-          </div>
+          <ExperienceBackground
+            images={DAY_IMAGES}
+            alt="Day Experience at Zalina"
+          />
 
           {/* Warm Day Overlay */}
           <div
@@ -102,7 +145,7 @@ export function DayNightExperience() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
-                <Link href="/experiences/day" className="lux-btn-secondary">
+                <Link href="/experiences" className="lux-btn-secondary">
                   Explore Day
                 </Link>
               </motion.div>
@@ -127,14 +170,10 @@ export function DayNightExperience() {
           className="relative w-full lg:w-1/2 h-[420px] lg:h-[500px] group"
         >
           {/* Background Image */}
-          <div className="absolute inset-0">
-            <Image
-              src={NIGHT_IMAGE}
-              alt="Night Experience at Zalina"
-              fill
-              className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"
-            />
-          </div>
+          <ExperienceBackground
+            images={NIGHT_IMAGES}
+            alt="Night Experience at Zalina"
+          />
 
           {/* Cool Night Overlay */}
           <div
@@ -205,7 +244,7 @@ export function DayNightExperience() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.7 }}
               >
-                <Link href="/experiences/night" className="lux-btn-primary">
+                <Link href="/experiences" className="lux-btn-primary">
                   Explore Night
                 </Link>
               </motion.div>
