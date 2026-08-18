@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
-import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+const DAY_IMAGE = "/assets/day-experience.png";
+const NIGHT_IMAGE = "/assets/night-experience.png";
 
 export function DayNightExperience() {
   return (
@@ -25,7 +26,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src={NEUTRAL_MEDIA_FALLBACK}
+              src={DAY_IMAGE}
               alt="Day Experience at Zalina"
               fill
               className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"
@@ -128,7 +129,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src={NEUTRAL_MEDIA_FALLBACK}
+              src={NIGHT_IMAGE}
               alt="Night Experience at Zalina"
               fill
               className="object-cover transition-transform duration-[1500ms] group-hover:scale-105"
