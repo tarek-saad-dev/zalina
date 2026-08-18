@@ -189,7 +189,7 @@ export function GalleryPageContent({
   };
 
   return (
-    <main className="zones-page min-h-screen overflow-x-hidden">
+    <main className="zones-page min-h-screen [overflow-x:clip]">
       {/* Hero — GALLERY HERO PAGE MEDIA CONTRACT GAP: no CMS page owner; neutral only */}
       <section
         className="relative flex min-h-screen items-center justify-center overflow-hidden"
