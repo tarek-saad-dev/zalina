@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CmsImage } from "@/components/media/CmsImage";
 import {
   NEUTRAL_MEDIA_FALLBACK,
@@ -160,6 +160,127 @@ function GallerySet({
   );
 }
 
+const MOBILE_SLIDE_INTERVAL_MS = 3500;
+const MOBILE_CARD_WIDTH = 280;
+const MOBILE_BREAKPOINT = 768;
+
+function MobileAutoSlide({ items }: { items: CatalogMediaCard[] }) {
+  const [active, setActive] = useState(0);
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      ([e]) => setInView(Boolean(e?.isIntersecting)),
+      { threshold: 0.25 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView || items.length < 2) return;
+    const id = setInterval(
+      () => setActive((p) => (p + 1) % items.length),
+      MOBILE_SLIDE_INTERVAL_MS
+    );
+    return () => clearInterval(id);
+  }, [inView, items.length]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const endX = e.changedTouches[0]?.clientX ?? touchStartX.current;
+    const delta = endX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 40) return;
+    setActive((p) =>
+      delta < 0
+        ? (p + 1) % items.length
+        : (p - 1 + items.length) % items.length
+    );
+  };
+
+  const item = items[active];
+  if (!item) return null;
+
+  return (
+    <div ref={sectionRef} className="relative" style={{ minHeight: 380 }}>
+      <div
+        className="relative mx-auto overflow-hidden rounded-xl"
+        style={{
+          width: MOBILE_CARD_WIDTH,
+          height: 380,
+          border: "1px solid rgba(212,175,55,0.3)",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.35)",
+        }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <motion.div
+          key={item.id}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="absolute inset-0"
+        >
+          <CmsImage
+            src={item.image}
+            alt={item.alt || item.title}
+            fill
+            sizes={`${MOBILE_CARD_WIDTH}px`}
+            className="object-cover"
+            draggable={false}
+          />
+        </motion.div>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)",
+          }}
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
+          <p
+            className="text-white text-sm font-medium tracking-wide"
+            style={{ fontFamily: "var(--font-display, serif)" }}
+          >
+            {item.alt || item.title}
+          </p>
+        </div>
+      </div>
+
+      {items.length > 1 && (
+        <div className="flex justify-center gap-1.5 mt-4">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => setActive(i)}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === active ? 20 : 6,
+                height: 6,
+                background:
+                  i === active
+                    ? "var(--lux-gold)"
+                    : "rgba(212,175,55,0.3)",
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   const prefersReduced = useReducedMotion();
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -182,6 +303,14 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
 
   const [isDragging, setIsDragging] = useState(false);
   const [copyCount, setCopyCount] = useState(2);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check, { passive: true });
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const galleryItems = useMemo(
     () =>
@@ -225,6 +354,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   }, [applyTransform]);
 
   useEffect(() => {
+    if (isMobile) return;
     measure();
     const viewport = viewportRef.current;
     const loop = loopRef.current;
@@ -234,9 +364,10 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
     observer.observe(viewport);
     observer.observe(loop);
     return () => observer.disconnect();
-  }, [measure, items, copyCount]);
+  }, [measure, items, copyCount, isMobile]);
 
   useEffect(() => {
+    if (isMobile) return;
     const viewport = viewportRef.current;
     if (!viewport || typeof IntersectionObserver === "undefined") return;
 
@@ -248,7 +379,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
     );
     observer.observe(viewport);
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const onVisibility = () => {
@@ -260,7 +391,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   }, []);
 
   useEffect(() => {
-    if (prefersReduced) return;
+    if (prefersReduced || isMobile) return;
 
     let last = performance.now();
 
@@ -296,7 +427,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [applyTransform, prefersReduced]);
+  }, [applyTransform, prefersReduced, isMobile]);
 
   const endPointer = useCallback(
     (pointerId?: number) => {
@@ -424,66 +555,70 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
         </div>
       </div>
 
-      <div className="relative">
-        <div
-          className="absolute left-0 top-0 bottom-0 z-10 pointer-events-none"
-          style={{
-            width: "120px",
-            background:
-              "linear-gradient(to right, var(--lux-surface) 0%, transparent 100%)",
-          }}
-        />
-        <div
-          className="absolute right-0 top-0 bottom-0 z-10 pointer-events-none"
-          style={{
-            width: "120px",
-            background:
-              "linear-gradient(to left, var(--lux-surface) 0%, transparent 100%)",
-          }}
-        />
+      {isMobile ? (
+        <MobileAutoSlide items={galleryItems} />
+      ) : (
+        <div className="relative">
+          <div
+            className="absolute left-0 top-0 bottom-0 z-10 pointer-events-none"
+            style={{
+              width: "120px",
+              background:
+                "linear-gradient(to right, var(--lux-surface) 0%, transparent 100%)",
+            }}
+          />
+          <div
+            className="absolute right-0 top-0 bottom-0 z-10 pointer-events-none"
+            style={{
+              width: "120px",
+              background:
+                "linear-gradient(to left, var(--lux-surface) 0%, transparent 100%)",
+            }}
+          />
 
-        <div
-          ref={viewportRef}
-          className={`relative overflow-hidden select-none ${
-            isDragging ? "cursor-grabbing" : "cursor-grab"
-          }`}
-          style={{
-            touchAction: prefersReduced ? "pan-x" : "pan-y",
-          }}
-          onPointerDown={prefersReduced ? undefined : onPointerDown}
-          onPointerMove={prefersReduced ? undefined : onPointerMove}
-          onPointerUp={prefersReduced ? undefined : onPointerUp}
-          onPointerCancel={prefersReduced ? undefined : onPointerUp}
-          onDragStart={(event) => event.preventDefault()}
-          role="region"
-          aria-roledescription="gallery"
-          aria-label="A glimpse into Zalina"
-        >
-          {prefersReduced ? (
-            <div
-              className="flex items-center overflow-x-auto scrollbar-hide"
-              style={{ gap: GAP_PX }}
-            >
-              <GallerySet items={galleryItems} />
-            </div>
-          ) : (
-            <div
-              ref={trackRef}
-              className="flex w-max items-center will-change-transform"
-              style={{ gap: GAP_PX }}
-            >
-              <GallerySet items={galleryItems} loopRef={loopRef} />
-              {Array.from({ length: extraCopies }, (_, copyIndex) => (
-                <GallerySet
-                  key={`copy-${copyIndex}`}
-                  items={galleryItems}
-                  hidden
-                />
-              ))}
-            </div>
-          )}
+          <div
+            ref={viewportRef}
+            className={`relative overflow-hidden select-none ${
+              isDragging ? "cursor-grabbing" : "cursor-grab"
+            }`}
+            style={{
+              touchAction: prefersReduced ? "pan-x" : "pan-y",
+            }}
+            onPointerDown={prefersReduced ? undefined : onPointerDown}
+            onPointerMove={prefersReduced ? undefined : onPointerMove}
+            onPointerUp={prefersReduced ? undefined : onPointerUp}
+            onPointerCancel={prefersReduced ? undefined : onPointerUp}
+            onDragStart={(event) => event.preventDefault()}
+            role="region"
+            aria-roledescription="gallery"
+            aria-label="A glimpse into Zalina"
+          >
+            {prefersReduced ? (
+              <div
+                className="flex items-center overflow-x-auto scrollbar-hide"
+                style={{ gap: GAP_PX }}
+              >
+                <GallerySet items={galleryItems} />
+              </div>
+            ) : (
+              <div
+                ref={trackRef}
+                className="flex w-max items-center will-change-transform"
+                style={{ gap: GAP_PX }}
+              >
+                <GallerySet items={galleryItems} loopRef={loopRef} />
+                {Array.from({ length: extraCopies }, (_, copyIndex) => (
+                  <GallerySet
+                    key={`copy-${copyIndex}`}
+                    items={galleryItems}
+                    hidden
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
