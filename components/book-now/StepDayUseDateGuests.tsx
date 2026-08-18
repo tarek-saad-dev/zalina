@@ -5,7 +5,7 @@ import type { DayUseSettings } from "@/lib/api";
 import type { BookingState } from "./types";
 import { BookingCalendar } from "./BookingCalendar";
 import { GuestSelector } from "./GuestSelector";
-import { todayIsoDate } from "./bookingValidation";
+import { getBookingMinDate } from "./bookingValidation";
 import { formatMoneyAmount, parseMoney } from "./bookingMedia";
 
 const GOLD = "rgba(212,175,55,0.9)";
@@ -172,7 +172,7 @@ export function StepDayUseDateGuests({
           mode="single"
           selectedDate={state.dayUse.visitDate}
           onSelectDate={(date) => onSetVisitDate(date)}
-          minDate={todayIsoDate()}
+          minDate={getBookingMinDate()}
         />
         <div className="grid gap-4 content-start">
           <GuestSelector

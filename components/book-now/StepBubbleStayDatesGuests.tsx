@@ -3,7 +3,7 @@
 import type { BookingState } from "./types";
 import { BookingCalendar } from "./BookingCalendar";
 import { GuestSelector } from "./GuestSelector";
-import { nightsBetween, todayIsoDate } from "./bookingValidation";
+import { getBookingMinDate, nightsBetween } from "./bookingValidation";
 
 const GOLD = "rgba(212,175,55,0.9)";
 const TEXT_PRIMARY = "#F8F2E7";
@@ -76,7 +76,7 @@ export function StepBubbleStayDatesGuests({
             onSelectRange={(from, to) =>
               onSetBubbleStayDates({ checkIn: from, checkOut: to })
             }
-            minDate={todayIsoDate()}
+            minDate={getBookingMinDate()}
           />
         </div>
         <div className="grid gap-4 content-start">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FEATURE_FLAGS } from "@/lib/featureFlags";
 import {
   WeddingHero,
   EmotionalIntro,
@@ -12,6 +13,7 @@ import {
   ConsultationCTA,
 } from "@/sections/weddings";
 import { Footer } from "@/components/layout/Footer";
+import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
 
 export const metadata: Metadata = {
   title: "Weddings | Zalina Arabian Village",
@@ -34,39 +36,31 @@ export const metadata: Metadata = {
 };
 
 export default function WeddingsPage() {
+  if (!FEATURE_FLAGS.WEDDINGS_ACTIVE) {
+    return (
+      <main className="zones-page min-h-screen overflow-x-hidden">
+        <ComingSoonOverlay
+          title="Weddings at Zalina"
+          subtitle="We are crafting an extraordinary celebration experience. Stay tuned for something truly unforgettable."
+          variant="full"
+        />
+        <Footer />
+      </main>
+    );
+  }
+
   return (
     <main className="zones-page min-h-screen overflow-x-hidden">
-      {/* 1. Wedding Hero */}
       <WeddingHero />
-
-      {/* 2. Emotional Intro */}
       <EmotionalIntro />
-
-      {/* 3. Wedding Venues */}
       <WeddingVenues />
-
-      {/* 4. Signature Experience */}
       <SignatureExperience />
-
-      {/* 5. Wedding Timeline */}
       <WeddingTimeline />
-
-      {/* 6. Wedding Details */}
       <WeddingDetails />
-
-      {/* 7. Celebration Styles */}
       <CelebrationStyles />
-
-      {/* 8. Wedding Gallery */}
       <WeddingGallery />
-
-      {/* 9. Why Zalina */}
       <WhyZalina />
-
-      {/* 10. Consultation CTA */}
       <ConsultationCTA />
-
-      {/* 11. Footer */}
       <Footer />
     </main>
   );

@@ -48,7 +48,7 @@ function dayUseReady(): BookingState {
   return {
     ...createInitialBookingState(),
     productType: "day_use",
-    dayUse: { visitDate: "2026-09-01", guests: 2 },
+    dayUse: { visitDate: "2026-12-15", guests: 2 },
     guest: {
       name: "Guest One",
       email: "guest@example.com",
@@ -62,8 +62,8 @@ function bubbleManualReady(): BookingState {
     ...createInitialBookingState(),
     productType: "bubble_stay",
     bubbleStay: {
-      checkIn: "2026-09-10",
-      checkOut: "2026-09-12",
+      checkIn: "2026-12-10",
+      checkOut: "2026-12-12",
       totalGuests: 3,
       selections: [
         {
@@ -123,8 +123,8 @@ function sampleBooking(overrides: Partial<ApiBooking> = {}): ApiBooking {
     guests: 2,
     hold_expires_at: new Date(Date.now() + 10 * 60_000).toISOString(),
     payment_expires_at: new Date(Date.now() + 8 * 60_000).toISOString(),
-    valid_from: "2026-09-01",
-    valid_to: "2026-09-01",
+    valid_from: "2026-12-15",
+    valid_to: "2026-12-15",
     checked_in_at: null,
     checked_out_at: null,
     created_at: new Date().toISOString(),
@@ -139,7 +139,7 @@ describe("prepareBookingPayload V2", () => {
     expect(prepared?.product).toBe("day_use");
     expect(prepared?.payload).toEqual({
       product_type: "day_use",
-      visit_date: "2026-09-01",
+      visit_date: "2026-12-15",
       guests: 2,
       guest_name: "Guest One",
       guest_email: "guest@example.com",
@@ -152,8 +152,8 @@ describe("prepareBookingPayload V2", () => {
     expect(prepared?.product).toBe("bubble_stay");
     expect(prepared?.payload).toMatchObject({
       product_type: "bubble_stay",
-      check_in: "2026-09-10",
-      check_out: "2026-09-12",
+      check_in: "2026-12-10",
+      check_out: "2026-12-12",
       guests: 3,
       bubbles: [
         { accommodation_type_id: 2, bubble_id: 4, guests: 2 },

@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { FEATURE_FLAGS } from "@/lib/featureFlags";
 
 interface NavItem {
   label: string;
   href: string;
+  comingSoon?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -15,7 +17,7 @@ const navItems: NavItem[] = [
   { label: "About", href: "/about" },
   { label: "Experiences", href: "/experiences" },
   { label: "Zones", href: "/zones" },
-  { label: "Weddings", href: "/weddings" },
+  { label: "Weddings", href: "/weddings", comingSoon: !FEATURE_FLAGS.WEDDINGS_ACTIVE },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ];
@@ -137,7 +139,26 @@ export function LuxuryNavbar() {
                   }}
                 >
                   {item.label}
-                  {/* Active Gold Underline */}
+                  {item.comingSoon && (
+                    <span
+                      style={{
+                        marginLeft: "6px",
+                        fontSize: "8px",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        padding: "2px 6px",
+                        borderRadius: "9999px",
+                        background: "rgba(212,175,55,0.12)",
+                        border: "1px solid rgba(212,175,55,0.25)",
+                        color: "rgba(212,175,55,0.85)",
+                        verticalAlign: "super",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Soon
+                    </span>
+                  )}
                   {active && (
                     <span
                       className="absolute -bottom-1 left-1/2 -translate-x-1/2"
@@ -241,6 +262,26 @@ export function LuxuryNavbar() {
                   }}
                 >
                   {item.label}
+                  {item.comingSoon && (
+                    <span
+                      style={{
+                        marginLeft: "8px",
+                        fontSize: "10px",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        padding: "2px 8px",
+                        borderRadius: "9999px",
+                        background: "rgba(212,175,55,0.12)",
+                        border: "1px solid rgba(212,175,55,0.25)",
+                        color: "rgba(212,175,55,0.85)",
+                        verticalAlign: "super",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Soon
+                    </span>
+                  )}
                   {active && (
                     <span
                       className="absolute -bottom-2 left-1/2 -translate-x-1/2"

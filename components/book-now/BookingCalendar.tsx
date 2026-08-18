@@ -42,6 +42,11 @@ function addDays(iso: string, n: number): string {
   return toLocalISO(date);
 }
 
+function parseIsoDateParts(iso: string): { year: number; monthIndex: number } {
+  const [year, month] = iso.split("-").map(Number);
+  return { year, monthIndex: month - 1 };
+}
+
 function isBetween(iso: string, a: string, b: string): boolean {
   return iso > a && iso < b;
 }
@@ -58,11 +63,12 @@ export function BookingCalendar({
 }: BookingCalendarProps) {
   const today = toLocalISO(new Date());
   const effectiveMin = minDate ?? today;
+  const initialView = parseIsoDateParts(effectiveMin);
 
   const unavailable = unavailableDates ?? EMPTY_UNAVAILABLE;
 
-  const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
-  const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
+  const [viewYear, setViewYear] = useState(() => initialView.year);
+  const [viewMonth, setViewMonth] = useState(() => initialView.monthIndex);
   const [rangePick, setRangePick] = useState<"in" | "out">(
     checkIn && !checkOut ? "out" : "in"
   );

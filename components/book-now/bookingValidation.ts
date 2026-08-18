@@ -16,6 +16,12 @@ export function todayIsoDate(now = new Date()): string {
   return `${y}-${m}-${d}`;
 }
 
+/**
+ * Reservations are intentionally opened starting from this date.
+ * Keep it hardcoded until product requirements change.
+ */
+export const HARDCODED_BOOKING_START_DATE = "2026-12-01";
+
 export function isIsoDateString(value: string | null | undefined): value is string {
   if (!value) return false;
   return /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -26,11 +32,18 @@ export function compareIsoDates(a: string, b: string): number {
   return a < b ? -1 : 1;
 }
 
+export function getBookingMinDate(now = new Date()): string {
+  const today = todayIsoDate(now);
+  return compareIsoDates(today, HARDCODED_BOOKING_START_DATE) > 0
+    ? today
+    : HARDCODED_BOOKING_START_DATE;
+}
+
 export function isDateOnOrAfterToday(
   date: string,
   now = new Date()
 ): boolean {
-  return isIsoDateString(date) && compareIsoDates(date, todayIsoDate(now)) >= 0;
+  return isIsoDateString(date) && compareIsoDates(date, getBookingMinDate(now)) >= 0;
 }
 
 export function nightsBetween(checkIn: string, checkOut: string): number {
@@ -72,7 +85,7 @@ export function validateDayUseDates(
   if (!isIsoDateString(dayUse.visitDate) || !isDateOnOrAfterToday(dayUse.visitDate, now)) {
     issues.push({
       code: "invalid_visit_date",
-      message: "Choose a visit date on or after today.",
+      message: `Choose a visit date on or after ${getBookingMinDate(now)}.`,
       field: "visitDate",
     });
   }
@@ -96,7 +109,7 @@ export function validateBubbleStayDates(
   if (!isIsoDateString(checkIn) || !isDateOnOrAfterToday(checkIn, now)) {
     issues.push({
       code: "invalid_check_in",
-      message: "Check-in must be on or after today.",
+      message: `Check-in must be on or after ${getBookingMinDate(now)}.`,
       field: "checkIn",
     });
   }

@@ -12,6 +12,7 @@ import {
   createInitialBookingState,
 } from "../bookingStateFactory";
 import {
+  getBookingMinDate,
   isDateOnOrAfterToday,
   nightsBetween,
   todayIsoDate,
@@ -549,7 +550,9 @@ describe("timezone / midnight date-only", () => {
       now
     );
     expect(issues.some((i) => i.code === "invalid_visit_date")).toBe(true);
-    expect(isDateOnOrAfterToday("2026-08-13", now)).toBe(true);
+    expect(getBookingMinDate(now)).toBe("2026-12-01");
+    expect(isDateOnOrAfterToday("2026-08-13", now)).toBe(false);
+    expect(isDateOnOrAfterToday("2026-12-01", now)).toBe(true);
   });
 
   it("does not shift YYYY-MM-DD via UTC ISO conversion", () => {

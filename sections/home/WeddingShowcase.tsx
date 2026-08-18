@@ -5,8 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { FEATURE_FLAGS } from "@/lib/featureFlags";
+import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
 
 export function WeddingShowcase() {
+  if (!FEATURE_FLAGS.WEDDINGS_ACTIVE) {
+    return (
+      <ComingSoonOverlay
+        title="Weddings at Zalina"
+        subtitle="An extraordinary celebration experience is on its way."
+        variant="section"
+      />
+    );
+  }
   return (
     <section className="relative overflow-hidden" style={{ minHeight: "90vh" }}>
       {/* Background Image */}
