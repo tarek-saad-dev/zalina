@@ -19,7 +19,6 @@ const navItems: NavItem[] = [
   { label: "Gallery", href: "/gallery" },
   { label: "Dining", href: "/dining" },
   { label: "Stay", href: "/stay" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export function Header() {

@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CmsImage } from "@/components/media/CmsImage";
 import {
   NEUTRAL_MEDIA_FALLBACK,
@@ -26,9 +26,11 @@ const LAYOUT_SIZES = [
 
 const GAP_PX = 20;
 const AUTO_SPEED_PX_PER_SEC = 34;
+const MOBILE_AUTO_SPEED_PX_PER_SEC = 54;
 const DRAG_THRESHOLD_PX = 8;
 const INERTIA_FRICTION = 0.94;
 const INERTIA_MIN_VELOCITY = 0.18;
+const MOBILE_BREAKPOINT = 768;
 
 interface GlimpseGalleryProps {
   items?: CatalogMediaCard[];
@@ -41,7 +43,22 @@ function wrapOffset(offset: number, loopWidth: number) {
   return next;
 }
 
-function getCardDimensions(size: string) {
+function getCardDimensions(size: string, isMobile: boolean) {
+  if (isMobile) {
+    switch (size) {
+      case "hero":
+        return { width: "250px", height: "320px" };
+      case "tall":
+        return { width: "180px", height: "280px" };
+      case "wide":
+        return { width: "240px", height: "180px" };
+      case "square":
+        return { width: "200px", height: "200px" };
+      default:
+        return { width: "200px", height: "250px" };
+    }
+  }
+
   switch (size) {
     case "hero":
       return { width: "420px", height: "520px" };
@@ -63,11 +80,13 @@ function getBorderRadius(size: string) {
 function GlimpseCard({
   item,
   size,
+  isMobile,
 }: {
   item: CatalogMediaCard;
   size: (typeof LAYOUT_SIZES)[number];
+  isMobile: boolean;
 }) {
-  const dims = getCardDimensions(size);
+  const dims = getCardDimensions(size, isMobile);
   const borderRadius = getBorderRadius(size);
   const alt = item.alt || item.title;
 
@@ -122,8 +141,11 @@ function GlimpseCard({
           }}
         >
           <p
-            className="text-white text-sm font-medium tracking-wide"
-            style={{ fontFamily: "var(--font-display, serif)" }}
+            className="text-white font-medium tracking-wide"
+            style={{
+              fontFamily: "var(--font-display, serif)",
+              fontSize: isMobile ? "0.8rem" : undefined,
+            }}
           >
             {alt}
           </p>
@@ -137,10 +159,12 @@ function GallerySet({
   items,
   hidden,
   loopRef,
+  isMobile,
 }: {
   items: CatalogMediaCard[];
   hidden?: boolean;
   loopRef?: React.Ref<HTMLDivElement>;
+  isMobile: boolean;
 }) {
   return (
     <div
@@ -154,129 +178,9 @@ function GallerySet({
           key={`${item.id}-${index}`}
           item={item}
           size={LAYOUT_SIZES[index % LAYOUT_SIZES.length]}
+          isMobile={isMobile}
         />
       ))}
-    </div>
-  );
-}
-
-const MOBILE_SLIDE_INTERVAL_MS = 3500;
-const MOBILE_CARD_WIDTH = 280;
-const MOBILE_BREAKPOINT = 768;
-
-function MobileAutoSlide({ items }: { items: CatalogMediaCard[] }) {
-  const [active, setActive] = useState(0);
-  const [inView, setInView] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef<number | null>(null);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const obs = new IntersectionObserver(
-      ([e]) => setInView(Boolean(e?.isIntersecting)),
-      { threshold: 0.25 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!inView || items.length < 2) return;
-    const id = setInterval(
-      () => setActive((p) => (p + 1) % items.length),
-      MOBILE_SLIDE_INTERVAL_MS
-    );
-    return () => clearInterval(id);
-  }, [inView, items.length]);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.changedTouches[0]?.clientX ?? null;
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null) return;
-    const endX = e.changedTouches[0]?.clientX ?? touchStartX.current;
-    const delta = endX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(delta) < 40) return;
-    setActive((p) =>
-      delta < 0
-        ? (p + 1) % items.length
-        : (p - 1 + items.length) % items.length
-    );
-  };
-
-  const item = items[active];
-  if (!item) return null;
-
-  return (
-    <div ref={sectionRef} className="relative" style={{ minHeight: 380 }}>
-      <div
-        className="relative mx-auto overflow-hidden rounded-xl"
-        style={{
-          width: MOBILE_CARD_WIDTH,
-          height: 380,
-          border: "1px solid rgba(212,175,55,0.3)",
-          boxShadow: "0 8px 40px rgba(0,0,0,0.35)",
-        }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        <motion.div
-          key={item.id}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="absolute inset-0"
-        >
-          <CmsImage
-            src={item.image}
-            alt={item.alt || item.title}
-            fill
-            sizes={`${MOBILE_CARD_WIDTH}px`}
-            className="object-cover"
-            draggable={false}
-          />
-        </motion.div>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)",
-          }}
-        />
-        <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
-          <p
-            className="text-white text-sm font-medium tracking-wide"
-            style={{ fontFamily: "var(--font-display, serif)" }}
-          >
-            {item.alt || item.title}
-          </p>
-        </div>
-      </div>
-
-      {items.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-4">
-          {items.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`Go to slide ${i + 1}`}
-              onClick={() => setActive(i)}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === active ? 20 : 6,
-                height: 6,
-                background:
-                  i === active
-                    ? "var(--lux-gold)"
-                    : "rgba(212,175,55,0.3)",
-              }}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -412,7 +316,9 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             velocityRef.current = 0;
           }
         } else {
-          offsetRef.current -= AUTO_SPEED_PX_PER_SEC * (dt / 1000);
+          offsetRef.current -=
+            (isMobile ? MOBILE_AUTO_SPEED_PX_PER_SEC : AUTO_SPEED_PX_PER_SEC) *
+            (dt / 1000);
         }
 
         offsetRef.current = wrapOffset(
@@ -555,70 +461,71 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
         </div>
       </div>
 
-      {isMobile ? (
-        <MobileAutoSlide items={galleryItems} />
-      ) : (
-        <div className="relative">
-          <div
-            className="absolute left-0 top-0 bottom-0 z-10 pointer-events-none"
-            style={{
-              width: "120px",
-              background:
-                "linear-gradient(to right, var(--lux-surface) 0%, transparent 100%)",
-            }}
-          />
-          <div
-            className="absolute right-0 top-0 bottom-0 z-10 pointer-events-none"
-            style={{
-              width: "120px",
-              background:
-                "linear-gradient(to left, var(--lux-surface) 0%, transparent 100%)",
-            }}
-          />
+      <div className="relative">
+        <div
+          className="absolute left-0 top-0 bottom-0 z-10 pointer-events-none"
+          style={{
+            width: isMobile ? "44px" : "120px",
+            background:
+              "linear-gradient(to right, var(--lux-surface) 0%, transparent 100%)",
+          }}
+        />
+        <div
+          className="absolute right-0 top-0 bottom-0 z-10 pointer-events-none"
+          style={{
+            width: isMobile ? "44px" : "120px",
+            background:
+              "linear-gradient(to left, var(--lux-surface) 0%, transparent 100%)",
+          }}
+        />
 
-          <div
-            ref={viewportRef}
-            className={`relative overflow-hidden select-none ${
-              isDragging ? "cursor-grabbing" : "cursor-grab"
-            }`}
-            style={{
-              touchAction: prefersReduced ? "pan-x" : "pan-y",
-            }}
-            onPointerDown={prefersReduced ? undefined : onPointerDown}
-            onPointerMove={prefersReduced ? undefined : onPointerMove}
-            onPointerUp={prefersReduced ? undefined : onPointerUp}
-            onPointerCancel={prefersReduced ? undefined : onPointerUp}
-            onDragStart={(event) => event.preventDefault()}
-            role="region"
-            aria-roledescription="gallery"
-            aria-label="A glimpse into Zalina"
-          >
-            {prefersReduced ? (
-              <div
-                className="flex items-center overflow-x-auto scrollbar-hide"
-                style={{ gap: GAP_PX }}
-              >
-                <GallerySet items={galleryItems} />
-              </div>
-            ) : (
-              <div
-                ref={trackRef}
-                className="flex w-max items-center will-change-transform"
-                style={{ gap: GAP_PX }}
-              >
-                <GallerySet items={galleryItems} loopRef={loopRef} />
-                {Array.from({ length: extraCopies }, (_, copyIndex) => (
-                  <GallerySet
-                    key={`copy-${copyIndex}`}
-                    items={galleryItems}
-                    hidden
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+        <div
+          ref={viewportRef}
+          className={`relative overflow-hidden select-none ${
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          }`}
+          style={{
+            touchAction: prefersReduced ? "pan-x" : "pan-y",
+          }}
+          onPointerDown={prefersReduced ? undefined : onPointerDown}
+          onPointerMove={prefersReduced ? undefined : onPointerMove}
+          onPointerUp={prefersReduced ? undefined : onPointerUp}
+          onPointerCancel={prefersReduced ? undefined : onPointerUp}
+          onDragStart={(event) => event.preventDefault()}
+          role="region"
+          aria-roledescription="gallery"
+          aria-label="A glimpse into Zalina"
+        >
+          {prefersReduced ? (
+            <div
+              className="flex items-center overflow-x-auto scrollbar-hide"
+              style={{ gap: GAP_PX }}
+            >
+              <GallerySet items={galleryItems} isMobile={isMobile} />
+            </div>
+          ) : (
+            <div
+              ref={trackRef}
+              className="flex w-max items-center will-change-transform"
+              style={{ gap: GAP_PX }}
+            >
+              <GallerySet
+                items={galleryItems}
+                loopRef={loopRef}
+                isMobile={isMobile}
+              />
+              {Array.from({ length: extraCopies }, (_, copyIndex) => (
+                <GallerySet
+                  key={`copy-${copyIndex}`}
+                  items={galleryItems}
+                  hidden
+                  isMobile={isMobile}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </section>
   );
 }

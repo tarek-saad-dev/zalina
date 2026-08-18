@@ -12,7 +12,6 @@ const navLinks = [
   { label: "Zones", href: "#zones" },
   { label: "Weddings", href: "#weddings" },
   { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
 ];
 
 export function Navbar() {

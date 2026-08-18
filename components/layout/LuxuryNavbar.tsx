@@ -19,7 +19,6 @@ const navItems: NavItem[] = [
   { label: "Zones", href: "/zones" },
   { label: "Weddings", href: "/weddings", comingSoon: !FEATURE_FLAGS.WEDDINGS_ACTIVE },
   { label: "Gallery", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export function LuxuryNavbar() {
