@@ -48,9 +48,11 @@ export {
 export {
   MARKET_ZONE_SLUG,
   findMarketZone,
+  marketZoneCoverCard,
   marketZoneGalleryToCards,
   experiencesToMomentCards,
   zonesToMarketCardsWithSize,
+  galleryItemsToCatalogCards,
   buildEntityGlimpseItems,
 } from "./homeCatalogMedia";
 export type { CatalogMediaCard, MarketCard } from "./homeCatalogMedia";

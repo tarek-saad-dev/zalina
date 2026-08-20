@@ -10,7 +10,7 @@ import {
   BookingConnection,
   FinalCTA,
 } from "@/sections/zones";
-import { Footer } from "@/components/layout/Footer";
+import { LuxuryFooter } from "@/sections/home";
 import { getZones, mapZoneToUi } from "@/lib/api";
 
 export const revalidate = 60;
@@ -54,7 +54,7 @@ export default async function ZonesPage() {
       <WhyZonesMatter />
       <BookingConnection />
       <FinalCTA />
-      <Footer />
+      <LuxuryFooter />
     </main>
   );
 }

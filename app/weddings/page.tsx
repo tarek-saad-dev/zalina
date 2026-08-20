@@ -12,7 +12,7 @@ import {
   WhyZalina,
   ConsultationCTA,
 } from "@/sections/weddings";
-import { Footer } from "@/components/layout/Footer";
+import { LuxuryFooter } from "@/sections/home";
 import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
 
 export const metadata: Metadata = {
@@ -44,7 +44,7 @@ export default function WeddingsPage() {
           subtitle="We are crafting an extraordinary celebration experience. Stay tuned for something truly unforgettable."
           variant="full"
         />
-        <Footer />
+        <LuxuryFooter />
       </main>
     );
   }
@@ -61,7 +61,7 @@ export default function WeddingsPage() {
       <WeddingGallery />
       <WhyZalina />
       <ConsultationCTA />
-      <Footer />
+      <LuxuryFooter />
     </main>
   );
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ApiZone } from "@/lib/api/types";
 import {
   findMarketZone,
+  marketZoneCoverCard,
   marketZoneGalleryToCards,
   zonesToMarketCardsWithSize,
 } from "../homeCatalogMedia";
@@ -47,6 +48,27 @@ describe("findMarketZone", () => {
       zone({ id: 9, name_en: "Desert Market", slug_en: "desert-market" }),
     ];
     expect(findMarketZone(zones)?.id).toBe(9);
+  });
+});
+
+describe("marketZoneCoverCard", () => {
+  it("uses the same cover_image as /zones Main Zones", () => {
+    const market = zone({
+      id: 1,
+      name_en: "Al-Souk Village",
+      slug_en: "al-souk-village",
+      cover_image: asset(6, "https://api.example/media/assets/6"),
+      gallery: [
+        asset(10, "https://api.example/media/assets/10", {
+          title: "Spice Court",
+        }),
+      ],
+    });
+
+    const card = marketZoneCoverCard(market);
+    expect(card.image).toBe("https://api.example/media/assets/6");
+    expect(card.title).toBe("Al-Souk Village");
+    expect(card.href).toBe("/zones");
   });
 });
 

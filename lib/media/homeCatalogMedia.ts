@@ -5,6 +5,11 @@ import type { AccommodationType } from "@/lib/api/booking-types";
 import type { ApiExperience, ApiZone } from "@/lib/api/types";
 import { NEUTRAL_MEDIA_FALLBACK } from "./fallback";
 import {
+  galleryItemAlt,
+  galleryItemTitle,
+  type GalleryItem,
+} from "./galleryCatalog";
+import {
   dedupeMedia,
   isLikelyFilenameAlt,
   normalizeMediaList,
@@ -14,6 +19,7 @@ import {
   collectEntityMedia,
   resolveCoverImage,
   resolveMediaAlt,
+  selectDisplayUrl,
 } from "./resolveMedia";
 import type { CmsMedia, ResolvedImage } from "./types";
 
@@ -81,8 +87,38 @@ export function findMarketZone(zones: ApiZone[]): ApiZone | undefined {
 }
 
 /**
- * Home Market Showcase cards from the Market zone gallery (not all zones).
- * Prefers nested `gallery`, then merged cover/media + optional GET /media list.
+ * Home Market hero — same cover image as Al-Souk on `/zones` (mapZoneToUi).
+ */
+export function marketZoneCoverCard(
+  zone: ApiZone | null | undefined,
+  locale: "en" | "ar" = "en"
+): MarketCard {
+  if (!zone) {
+    return {
+      id: "neutral",
+      title: "Al-Souk Village",
+      image: NEUTRAL_MEDIA_FALLBACK,
+      alt: "Zalina Arabian Village",
+      href: "/zones",
+      size: "hero",
+    };
+  }
+
+  const title = zoneLabel(zone, locale);
+  const resolved = resolveCoverImage(zone, { entityName: title });
+  return {
+    id: `market-cover-${zone.id}`,
+    title,
+    image: resolved.url,
+    alt: resolved.alt,
+    href: "/zones",
+    size: "hero",
+  };
+}
+
+/**
+ * @deprecated Prefer marketZoneCoverCard — Market matches the /zones Al-Souk cover.
+ * Home Market strip from the Market zone gallery (not all zones).
  */
 export function marketZoneGalleryToCards(
   zone: ApiZone | null | undefined,
@@ -176,7 +212,45 @@ export function zonesToMarketCardsWithSize(
   return marketZoneGalleryToCards(findMarketZone(zones), extraMedia, locale);
 }
 
-/** Aggregate entity covers for home visual galleries (no invented page CMS). */
+/**
+ * Map CMS gallery wall items (same source as `/gallery`) into home strip cards.
+ */
+export function galleryItemsToCatalogCards(
+  items: GalleryItem[],
+  locale: "en" | "ar" = "en"
+): CatalogMediaCard[] {
+  const cards: CatalogMediaCard[] = [];
+
+  for (const item of items) {
+    const url = selectDisplayUrl(item.media);
+    if (!url) continue;
+    cards.push({
+      id: item.key,
+      title: galleryItemTitle(item),
+      image: url,
+      alt: galleryItemAlt(item, locale),
+      href: "/gallery",
+    });
+  }
+
+  if (cards.length === 0) {
+    return [
+      {
+        id: "neutral-1",
+        title: "Zalina Arabian Village",
+        image: NEUTRAL_MEDIA_FALLBACK,
+        alt: "Zalina Arabian Village",
+        href: "/gallery",
+      },
+    ];
+  }
+
+  return cards;
+}
+
+/**
+ * @deprecated Prefer galleryItemsToCatalogCards from loadGalleryCatalog (Bubble Stays).
+ */
 export function buildEntityGlimpseItems(
   zones: ApiZone[],
   experiences: ApiExperience[],

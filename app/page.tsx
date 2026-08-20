@@ -10,49 +10,36 @@ import {
   LuxuryFooter,
   GlimpseGallery,
 } from "@/sections/home";
+import { getExperiences, getZones } from "@/lib/api";
 import {
-  getExperiences,
-  getZone,
-  getZones,
-  listAccommodationTypes,
-  listMediaForModel,
-} from "@/lib/api";
-import {
-  MARKET_ZONE_SLUG,
-  buildEntityGlimpseItems,
   experiencesToMomentCards,
+  filterGalleryItems,
   findMarketZone,
-  marketZoneGalleryToCards,
+  galleryItemsToCatalogCards,
+  loadGalleryCatalog,
+  marketZoneCoverCard,
 } from "@/lib/media";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const [zones, experiences, accommodations] = await Promise.all([
+  const [zones, experiences, galleryCatalog] = await Promise.all([
     getZones(),
     getExperiences(),
-    listAccommodationTypes(),
+    loadGalleryCatalog("en"),
   ]);
 
   const moments = experiencesToMomentCards(experiences);
 
-  // Market strip uses Al-Souk gallery — never the full zones catalog.
-  const marketFromList = findMarketZone(zones);
-  const marketDetail = await getZone(
-    marketFromList?.slug_en || MARKET_ZONE_SLUG
-  );
-  const marketZone = marketDetail ?? marketFromList ?? null;
-  const marketMedia = marketZone
-    ? await listMediaForModel("zone", marketZone.id)
-    : [];
-  const stalls = marketZoneGalleryToCards(marketZone, marketMedia);
+  // Same Al-Souk cover as /zones Main Zones card (mapZoneToUi / resolveCoverImage)
+  const marketZone = findMarketZone(zones) ?? null;
   const marketZoneName =
     marketZone?.name_en?.trim() || "Al-Souk Village";
+  const stalls = [marketZoneCoverCard(marketZone)];
 
-  const glimpseItems = buildEntityGlimpseItems(
-    zones,
-    experiences,
-    accommodations
+  // Same CMS source as /gallery → "Scenes Made to Be Remembered" → Bubble Stays
+  const glimpseItems = galleryItemsToCatalogCards(
+    filterGalleryItems(galleryCatalog.items, "bubbles")
   );
 
   return (

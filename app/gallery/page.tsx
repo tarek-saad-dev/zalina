@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/layout/Footer";
+import { LuxuryFooter } from "@/sections/home";
 import { GalleryPageContent } from "@/sections/gallery/GalleryPageContent";
 import { loadGalleryCatalog } from "@/lib/media";
 
@@ -26,7 +26,7 @@ export default async function GalleryPage() {
         items={catalog.items}
         availableFilters={catalog.availableFilters}
       />
-      <Footer />
+      <LuxuryFooter />
     </>
   );
 }
