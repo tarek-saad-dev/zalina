@@ -3,6 +3,7 @@ import "./globals.css";
 import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://zalinaarabianvillage.com"),
   title: "Zalina Arabian Village | Cultural Experiences in Luxor, Egypt",
   description:
     "An immersive cultural village in Luxor, Egypt — Egyptian cuisine, live cooking, entertainment and hospitality beside the Nile.",
