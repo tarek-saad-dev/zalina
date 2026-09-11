@@ -167,7 +167,7 @@ export const BOOKING_CARDS: BookingCard[] = [
     description:
       "Full wedding planning — ceremonies, receptions, and coordination in our most prestigious venues.",
     cta: "Plan Your Wedding",
-    href: "/book-now",
+    href: "/weddings",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {

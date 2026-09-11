@@ -4,6 +4,7 @@ import {
   buildBubbleStayManualPayload,
   buildBubbleStayRandomPayload,
   buildDayUseBookingPayload,
+  buildWeddingBookingPayload,
   normalizeBooking,
   type RawApiBooking,
 } from "./adapters";
@@ -13,11 +14,15 @@ import type {
   CreateBubbleStayManualPayload,
   CreateBubbleStayRandomPayload,
   CreateDayUseBookingPayload,
+  CreateWeddingBookingPayload,
 } from "./booking-types";
 import { resolveApiLocale } from "./locale";
 
 function postBooking(
-  payload: CreateDayUseBookingPayload | CreateBubbleStayBookingPayload,
+  payload:
+    | CreateDayUseBookingPayload
+    | CreateBubbleStayBookingPayload
+    | CreateWeddingBookingPayload,
   locale?: string
 ): Promise<ApiBooking> {
   assertNoLegacyBookingFields(payload as unknown as Record<string, unknown>);
@@ -99,6 +104,20 @@ export async function createBubbleStayRandomBooking(
   locale?: string
 ): Promise<ApiBooking> {
   return createBubbleStayBooking(buildBubbleStayRandomPayload(fields), locale);
+}
+
+/** POST /bookings — Wedding product (Book + Pay). */
+export async function createWeddingBooking(
+  input:
+    | Omit<CreateWeddingBookingPayload, "product_type">
+    | CreateWeddingBookingPayload,
+  locale?: string
+): Promise<ApiBooking> {
+  const payload: CreateWeddingBookingPayload =
+    "product_type" in input && input.product_type === "wedding"
+      ? input
+      : buildWeddingBookingPayload(input);
+  return postBooking(payload, locale);
 }
 
 /** GET /bookings/{reference} — public poll surface; guest PII may be absent. */

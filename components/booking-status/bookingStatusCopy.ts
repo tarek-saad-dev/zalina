@@ -90,6 +90,9 @@ export function productTypeLabel(
   if (product === "bubble_stay") {
     return pick(locale, { en: "Bubble Stay", ar: "إقامة الفقاعات" });
   }
+  if (product === "wedding") {
+    return pick(locale, { en: "Wedding", ar: "حفل زفاف" });
+  }
   return pick(locale, { en: "Experience", ar: "تجربة" });
 }
 

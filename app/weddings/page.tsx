@@ -1,41 +1,31 @@
 import type { Metadata } from "next";
 import { FEATURE_FLAGS } from "@/lib/featureFlags";
-import {
-  WeddingHero,
-  EmotionalIntro,
-  WeddingVenues,
-  SignatureExperience,
-  WeddingTimeline,
-  WeddingDetails,
-  CelebrationStyles,
-  WeddingGallery,
-  WhyZalina,
-  ConsultationCTA,
-} from "@/sections/weddings";
+import { getWeddings } from "@/lib/api";
 import { LuxuryFooter } from "@/sections/home";
 import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
+import { WeddingsPageClient } from "@/sections/weddings/WeddingsPageClient";
+import { isWeddingPrimaryImageryReady } from "@/sections/weddings/content/weddingMedia";
 
 export const metadata: Metadata = {
   title: "Weddings | Zalina Arabian Village",
   description:
-    "Plan a cinematic wedding celebration beneath lanterns, palms, heritage architecture, and stars at Zalina Arabian Village.",
+    "Celebrate a destination wedding at Zalina Arabian Village in Luxor — elegant stage, Arabian gardens, dining and entertainment in one unforgettable night.",
   keywords: [
     "Zalina weddings",
-    "luxury wedding venue",
-    "Arabian wedding",
-    "destination wedding Egypt",
-    "cinematic wedding",
-    "heritage wedding venue",
+    "destination wedding Luxor",
+    "Arabian wedding venue",
+    "Zalina Signature Wedding",
   ],
   openGraph: {
     title: "Weddings | Zalina Arabian Village",
     description:
-      "Plan a cinematic wedding celebration beneath lanterns, palms, heritage architecture, and stars at Zalina Arabian Village.",
+      "Your wedding. One Arabian village. One unforgettable night at Zalina.",
     type: "website",
   },
 };
 
-export default function WeddingsPage() {
+export default async function WeddingsPage() {
+  // Keep kill switch OFF until final QA + production imagery are ready.
   if (!FEATURE_FLAGS.WEDDINGS_ACTIVE) {
     return (
       <main className="zones-page min-h-screen overflow-x-hidden">
@@ -49,18 +39,29 @@ export default function WeddingsPage() {
     );
   }
 
+  if (!isWeddingPrimaryImageryReady()) {
+    return (
+      <main className="zones-page min-h-screen overflow-x-hidden">
+        <ComingSoonOverlay
+          title="Weddings at Zalina"
+          subtitle="Final wedding imagery is being prepared. The celebration experience will open shortly."
+          variant="full"
+        />
+        <LuxuryFooter />
+      </main>
+    );
+  }
+
+  let packages: Awaited<ReturnType<typeof getWeddings>> = [];
+  try {
+    packages = await getWeddings();
+  } catch {
+    packages = [];
+  }
+
   return (
     <main className="zones-page min-h-screen overflow-x-hidden">
-      <WeddingHero />
-      <EmotionalIntro />
-      <WeddingVenues />
-      <SignatureExperience />
-      <WeddingTimeline />
-      <WeddingDetails />
-      <CelebrationStyles />
-      <WeddingGallery />
-      <WhyZalina />
-      <ConsultationCTA />
+      <WeddingsPageClient packages={packages} />
       <LuxuryFooter />
     </main>
   );

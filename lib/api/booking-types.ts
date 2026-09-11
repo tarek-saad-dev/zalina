@@ -1,7 +1,7 @@
 import type { MediaAsset } from "@/lib/media";
 
 /** Booking Domain V2 product types (contract constants). */
-export type BookingProductType = "day_use" | "bubble_stay";
+export type BookingProductType = "day_use" | "bubble_stay" | "wedding";
 
 /** Guest-facing / admin booking lifecycle statuses from the V2 brief. */
 export type BookingStatus =
@@ -21,7 +21,48 @@ export type PaymentGateway = "paymob" | "mock";
 
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded" | (string & {});
 
-export type TicketType = "day_use" | "bubble" | (string & {});
+export type TicketType = "day_use" | "bubble" | "wedding" | (string & {});
+
+/* ─── Wedding catalog & availability ─────────────────────── */
+
+export interface WeddingPackage {
+  id: number;
+  slug: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string;
+  description_ar: string;
+  price_per_guest: string;
+  currency: string;
+  minimum_guests: number;
+  maximum_guests: number;
+  premium_ok: boolean;
+  display_order: number;
+  is_active: boolean;
+}
+
+export interface WeddingAvailability {
+  available: boolean;
+  reason: string | null;
+  is_premium_date: boolean;
+  is_friday: boolean;
+  is_saturday: boolean;
+  is_peak_date: boolean;
+  price_per_guest: string;
+  base_total: string;
+  premium_date_minimum_spend: string | null;
+  total_estimate: string;
+  currency: string;
+}
+
+export interface WeddingPackageSummary {
+  id: number;
+  slug?: string;
+  name_en: string;
+  name_ar: string;
+  price_per_guest?: string;
+  currency?: string;
+}
 
 /* ─── Day Use settings ───────────────────────────────────── */
 
@@ -135,9 +176,20 @@ export type CreateBubbleStayBookingPayload =
   | CreateBubbleStayManualPayload
   | CreateBubbleStayRandomPayload;
 
+export interface CreateWeddingBookingPayload {
+  product_type: "wedding";
+  wedding_package_id: number;
+  wedding_date: string;
+  guests: number;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+}
+
 export type CreateBookingV2Payload =
   | CreateDayUseBookingPayload
-  | CreateBubbleStayBookingPayload;
+  | CreateBubbleStayBookingPayload
+  | CreateWeddingBookingPayload;
 
 /** Keys removed in Booking Domain V2 — must never appear on create payloads. */
 export const LEGACY_BOOKING_PAYLOAD_KEYS = [
@@ -208,6 +260,10 @@ export interface ApiBooking {
   guest_name?: string;
   guest_email?: string;
   guest_phone?: string;
+  /** Present on wedding bookings when the API returns them. */
+  wedding_date?: string | null;
+  wedding_package_id?: number | null;
+  wedding_package?: WeddingPackageSummary | null;
 }
 
 export interface ApiPaymentSession {

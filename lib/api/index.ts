@@ -31,8 +31,11 @@ export {
   createDayUseBookingFromFields,
   createBubbleStayManualBooking,
   createBubbleStayRandomBooking,
+  createWeddingBooking,
   getBooking,
 } from "./bookings";
+
+export { getWeddings, getWeddingAvailability } from "./weddings";
 
 export { initiatePayment } from "./payments";
 export { getTicketByBookingCode } from "./tickets";
@@ -63,6 +66,9 @@ export {
   buildDayUseBookingPayload,
   buildBubbleStayManualPayload,
   buildBubbleStayRandomPayload,
+  buildWeddingBookingPayload,
+  normalizeWeddingPackage,
+  normalizeWeddingAvailability,
   assertNoLegacyBookingFields,
   LEGACY_BOOKING_PAYLOAD_KEY_LIST,
 } from "./adapters";

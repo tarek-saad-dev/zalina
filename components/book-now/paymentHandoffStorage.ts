@@ -69,7 +69,11 @@ export function parsePendingPaymentHandoff(
     return null;
   }
   if (typeof c.booking_code !== "string" || !c.booking_code) return null;
-  if (c.product_type !== "day_use" && c.product_type !== "bubble_stay") {
+  if (
+    c.product_type !== "day_use" &&
+    c.product_type !== "bubble_stay" &&
+    c.product_type !== "wedding"
+  ) {
     return null;
   }
 

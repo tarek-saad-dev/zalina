@@ -200,11 +200,11 @@ export function WeddingShowcase() {
               Explore Weddings
             </Link>
             <Link 
-              href="/contact" 
+              href="/weddings#plan" 
               className="lux-btn-secondary"
               style={{ borderColor: "rgba(212,175,55,0.5)" }}
             >
-              Request Consultation
+              Check Your Date
             </Link>
           </motion.div>
         </div>

@@ -22,6 +22,7 @@ import { useBookingStatusPoll } from "./useBookingStatusPoll";
 import { useBookingTicket } from "./useBookingTicket";
 import { usePaymentRetry } from "./usePaymentRetry";
 import { sanitizeBookingReference } from "./bookingReference";
+import { WeddingConciergeUpsell } from "./WeddingConciergeUpsell";
 
 interface BookingStatusPageProps {
   /** From route — authoritative when valid. */
@@ -224,6 +225,11 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
               </p>
             )}
 
+            {(bucket === "confirmed_ready" || bucket === "active_visit") &&
+            booking.product_type === "wedding" ? (
+              <WeddingConciergeUpsell locale={locale} />
+            ) : null}
+
             <div className="flex flex-wrap gap-3 pt-2">
               {(bucket === "waiting" ||
                 bucket === "confirmed_preparing_ticket" ||
@@ -253,7 +259,14 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
               {(bucket === "expired" ||
                 bucket === "cancelled" ||
                 (bucket === "failed" && !retryAllowed)) && (
-                <ActionLink href="/book-now" primary>
+                <ActionLink
+                  href={
+                    booking.product_type === "wedding"
+                      ? "/weddings#plan"
+                      : "/book-now"
+                  }
+                  primary
+                >
                   {t(locale, "startNew")}
                 </ActionLink>
               )}
@@ -261,7 +274,14 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
               {(bucket === "confirmed_ready" || bucket === "active_visit") && (
                 <>
                   <ActionLink href="/">{t(locale, "backHome")}</ActionLink>
-                  <ActionLink href="/book-now" primary>
+                  <ActionLink
+                    href={
+                      booking.product_type === "wedding"
+                        ? "/weddings#plan"
+                        : "/book-now"
+                    }
+                    primary
+                  >
                     {t(locale, "bookAnother")}
                   </ActionLink>
                 </>

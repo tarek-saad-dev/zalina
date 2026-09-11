@@ -9,10 +9,14 @@ import type {
   CreateBubbleStayManualPayload,
   CreateBubbleStayRandomPayload,
   CreateDayUseBookingPayload,
+  CreateWeddingBookingPayload,
   DayUseSettings,
   PhysicalBubble,
   TicketBubble,
   TicketGuest,
+  WeddingAvailability,
+  WeddingPackage,
+  WeddingPackageSummary,
 } from "./booking-types";
 import {
   LEGACY_BOOKING_PAYLOAD_KEYS as LEGACY_KEYS,
@@ -88,10 +92,40 @@ export interface RawBookingBubble {
   };
 }
 
+export interface RawWeddingPackage {
+  id: number;
+  slug?: string;
+  name_en: string;
+  name_ar: string;
+  description_en?: string | null;
+  description_ar?: string | null;
+  price_per_guest: string | number;
+  currency: string;
+  minimum_guests: number;
+  maximum_guests: number;
+  premium_ok?: boolean;
+  display_order?: number;
+  is_active?: boolean;
+}
+
+export interface RawWeddingAvailability {
+  available: boolean;
+  reason?: string | null;
+  is_premium_date?: boolean;
+  is_friday?: boolean;
+  is_saturday?: boolean;
+  is_peak_date?: boolean;
+  price_per_guest?: string | number;
+  base_total?: string | number;
+  premium_date_minimum_spend?: string | number | null;
+  total_estimate?: string | number;
+  currency?: string;
+}
+
 export interface RawApiBooking {
   booking_reference: string;
   booking_code: string;
-  product_type: "day_use" | "bubble_stay";
+  product_type: "day_use" | "bubble_stay" | "wedding";
   status: string;
   operational_status?: string | null;
   total: string;
@@ -117,12 +151,22 @@ export interface RawApiBooking {
   guest_name?: string;
   guest_email?: string;
   guest_phone?: string;
+  wedding_date?: string | null;
+  wedding_package_id?: number | null;
+  wedding_package?: {
+    id: number;
+    slug?: string;
+    name_en: string;
+    name_ar: string;
+    price_per_guest?: string | number;
+    currency?: string;
+  } | null;
 }
 
 export interface RawTicketLookup {
   booking_code: string;
   booking_reference: string;
-  product_type: "day_use" | "bubble_stay";
+  product_type: "day_use" | "bubble_stay" | "wedding";
   status: string;
   payment_status?: string;
   guests: number;
@@ -297,6 +341,64 @@ function normalizeTicketSummary(
   };
 }
 
+function moneyString(value: string | number | null | undefined): string {
+  if (value == null) return "";
+  return String(value);
+}
+
+function normalizeWeddingPackageSummary(
+  raw: NonNullable<RawApiBooking["wedding_package"]>
+): WeddingPackageSummary {
+  return {
+    id: raw.id,
+    slug: raw.slug,
+    name_en: raw.name_en,
+    name_ar: raw.name_ar,
+    price_per_guest:
+      raw.price_per_guest != null ? moneyString(raw.price_per_guest) : undefined,
+    currency: raw.currency,
+  };
+}
+
+export function normalizeWeddingPackage(raw: RawWeddingPackage): WeddingPackage {
+  return {
+    id: raw.id,
+    slug: raw.slug ?? "",
+    name_en: raw.name_en,
+    name_ar: raw.name_ar,
+    description_en: raw.description_en ?? "",
+    description_ar: raw.description_ar ?? "",
+    price_per_guest: moneyString(raw.price_per_guest),
+    currency: raw.currency,
+    minimum_guests: raw.minimum_guests,
+    maximum_guests: raw.maximum_guests,
+    premium_ok: Boolean(raw.premium_ok),
+    display_order: raw.display_order ?? 0,
+    is_active: raw.is_active !== false,
+  };
+}
+
+export function normalizeWeddingAvailability(
+  raw: RawWeddingAvailability
+): WeddingAvailability {
+  return {
+    available: Boolean(raw.available),
+    reason: raw.reason ?? null,
+    is_premium_date: Boolean(raw.is_premium_date),
+    is_friday: Boolean(raw.is_friday),
+    is_saturday: Boolean(raw.is_saturday),
+    is_peak_date: Boolean(raw.is_peak_date),
+    price_per_guest: moneyString(raw.price_per_guest),
+    base_total: moneyString(raw.base_total),
+    premium_date_minimum_spend:
+      raw.premium_date_minimum_spend == null
+        ? null
+        : moneyString(raw.premium_date_minimum_spend),
+    total_estimate: moneyString(raw.total_estimate),
+    currency: raw.currency ?? "",
+  };
+}
+
 export function normalizeBooking(raw: RawApiBooking): ApiBooking {
   return {
     booking_reference: raw.booking_reference,
@@ -323,6 +425,11 @@ export function normalizeBooking(raw: RawApiBooking): ApiBooking {
     guest_name: raw.guest_name,
     guest_email: raw.guest_email,
     guest_phone: raw.guest_phone,
+    wedding_date: raw.wedding_date ?? null,
+    wedding_package_id: raw.wedding_package_id ?? null,
+    wedding_package: raw.wedding_package
+      ? normalizeWeddingPackageSummary(raw.wedding_package)
+      : null,
   };
 }
 
@@ -475,6 +582,27 @@ export function buildBubbleStayRandomPayload(input: {
     }
     assertNoLegacyBookingFields(line as unknown as Record<string, unknown>);
   }
+  return payload;
+}
+
+export function buildWeddingBookingPayload(input: {
+  wedding_package_id: number;
+  wedding_date: string;
+  guests: number;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+}): CreateWeddingBookingPayload {
+  const payload: CreateWeddingBookingPayload = {
+    product_type: "wedding",
+    wedding_package_id: input.wedding_package_id,
+    wedding_date: input.wedding_date,
+    guests: input.guests,
+    guest_name: input.guest_name,
+    guest_email: input.guest_email,
+    guest_phone: input.guest_phone,
+  };
+  assertNoLegacyBookingFields(payload as unknown as Record<string, unknown>);
   return payload;
 }
 

@@ -179,6 +179,23 @@ export function DigitalTicket({ booking, ticket, locale }: DigitalTicketProps) {
               </p>
             )}
 
+            {booking.product_type === "wedding" && (
+              <div style={{ fontSize: "14px", color: MUTED, lineHeight: 1.7 }}>
+                {booking.wedding_package ? (
+                  <p style={{ color: TEXT, fontWeight: 500, marginBottom: "4px" }}>
+                    {localizedName(booking.wedding_package, locale)}
+                  </p>
+                ) : null}
+                <p>
+                  {booking.wedding_date
+                    ? booking.wedding_date
+                    : formatBookingDateRange(validFrom, validTo, locale)}
+                  {" · "}
+                  {guests} {t(locale, "guests").toLowerCase()}
+                </p>
+              </div>
+            )}
+
             <p
               style={{
                 marginTop: "20px",

@@ -81,6 +81,22 @@ export function BookingDetails({ booking, locale }: BookingDetailsProps) {
         value={paymentStatusLabel(booking.payment?.status, locale)}
       />
       <Row label={t(locale, "guests")} value={String(booking.guests)} />
+      {booking.product_type === "wedding" && (
+        <>
+          {booking.wedding_package ? (
+            <Row
+              label={locale === "ar" ? "الباقة" : "Package"}
+              value={localizedName(booking.wedding_package, locale)}
+            />
+          ) : null}
+          {booking.wedding_date ? (
+            <Row
+              label={locale === "ar" ? "تاريخ الزفاف" : "Wedding date"}
+              value={booking.wedding_date}
+            />
+          ) : null}
+        </>
+      )}
       <Row
         label={t(locale, "valid")}
         value={formatBookingDateRange(
