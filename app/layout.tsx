@@ -3,6 +3,7 @@ import "./globals.css";
 import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://zalinaarabianvillage.com"),
   title: "Zalina Arabian Village | Luxury Heritage Experience",
   description: "An immersive Arabian luxury destination where heritage meets elegance. Experience authentic hospitality in a breathtaking setting.",
   keywords: ["Arabian village", "luxury resort", "heritage", "hospitality", "dubai", "authentic experience"],
