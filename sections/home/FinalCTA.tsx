@@ -79,9 +79,9 @@ export function FinalCTA() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="lux-display mb-8"
           >
-            Your Arabian
+            Your Luxor
             <br />
-            <span className="lux-shimmer">Escape Awaits</span>
+            <span className="lux-shimmer">Experience Awaits</span>
           </motion.h2>
 
           {/* Divider */}
@@ -102,7 +102,7 @@ export function FinalCTA() {
             className="lux-heading-md mb-12"
             style={{ color: "var(--lux-muted)" }}
           >
-            Stay. Celebrate. Belong.
+            Dine. Explore. Celebrate.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -113,11 +113,11 @@ export function FinalCTA() {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/book" className="lux-btn-primary">
+            <Link href="/book-now" className="lux-btn-primary">
               Reserve Your Experience
             </Link>
-            <Link href="/contact" className="lux-btn-secondary">
-              Contact Concierge
+            <Link href="/experiences" className="lux-btn-secondary">
+              Explore Experiences
             </Link>
           </motion.div>
 

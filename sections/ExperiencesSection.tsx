@@ -57,7 +57,7 @@ export function ExperiencesSection({
           <SectionHeading
             subtitle="Curated Moments"
             title="Signature Experiences"
-            description="Immersive journeys crafted to celebrate Arabian heritage and desert hospitality."
+            description="Immersive journeys crafted to celebrate Egyptian heritage and Luxor hospitality."
             align="center"
           />
         </div>

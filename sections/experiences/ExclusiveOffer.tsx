@@ -85,15 +85,15 @@ export function ExclusiveOffer() {
                     fontWeight: 500,
                   }}
                 >
-                  Sunset & Dine Package
+                  Sunset Dining in Luxor
                 </h2>
 
                 <p
                   className="mb-7 max-w-md text-sm leading-relaxed sm:mb-8 sm:text-[0.9375rem]"
                   style={{ color: "rgba(26,18,8,0.78)" }}
                 >
-                  Experience the magic of golden hour followed by an intimate
-                  dinner beneath the stars.
+                  Golden Luxor light, Egyptian hospitality and an evening of
+                  dining in the heart of the village.
                 </p>
 
                 <Link

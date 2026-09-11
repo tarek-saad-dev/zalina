@@ -98,7 +98,7 @@ export function marketZoneCoverCard(
       id: "neutral",
       title: "Al-Souk Village",
       image: NEUTRAL_MEDIA_FALLBACK,
-      alt: "Zalina Arabian Village",
+      alt: "Zalina Arabian Village in Luxor",
       href: "/zones",
       size: "hero",
     };
@@ -129,10 +129,10 @@ export function marketZoneGalleryToCards(
     return [
       {
         id: "neutral",
-        title: "Zalina Arabian Village",
+        title: "Zalina Arabian Village in Luxor",
         subtitle: "Market gallery from the CMS",
         image: NEUTRAL_MEDIA_FALLBACK,
-        alt: "Zalina Arabian Village",
+        alt: "Zalina Arabian Village in Luxor",
         size: "hero",
       },
     ];
@@ -195,7 +195,7 @@ export function experiencesToMomentCards(
       String(item.id),
       title,
       resolved,
-      desc || undefined,
+      desc || "A curated experience at Zalina Arabian Village in Luxor.",
       "/experiences"
     );
   });
@@ -237,9 +237,9 @@ export function galleryItemsToCatalogCards(
     return [
       {
         id: "neutral-1",
-        title: "Zalina Arabian Village",
+        title: "Zalina Arabian Village in Luxor",
         image: NEUTRAL_MEDIA_FALLBACK,
-        alt: "Zalina Arabian Village",
+        alt: "Zalina Arabian Village in Luxor",
         href: "/gallery",
       },
     ];
@@ -290,9 +290,9 @@ export function buildEntityGlimpseItems(
     return [
       {
         id: "neutral-1",
-        title: "Zalina Arabian Village",
+        title: "Zalina Arabian Village in Luxor",
         image: NEUTRAL_MEDIA_FALLBACK,
-        alt: "Zalina Arabian Village",
+        alt: "Zalina Arabian Village in Luxor",
       },
     ];
   }

@@ -16,6 +16,7 @@ import { ApiError } from "../types";
 describe("Booking Domain V2 payloads", () => {
   it("Day Use payload contains only allowed V2 fields", () => {
     const payload = buildDayUseBookingPayload({
+      day_use_product_id: 12,
       visit_date: "2026-08-20",
       guests: 3,
       guest_name: "Layla Al-Harbi",
@@ -25,6 +26,7 @@ describe("Booking Domain V2 payloads", () => {
 
     expect(payload).toEqual({
       product_type: "day_use",
+      day_use_product_id: 12,
       visit_date: "2026-08-20",
       guests: 3,
       guest_name: "Layla Al-Harbi",
@@ -33,6 +35,7 @@ describe("Booking Domain V2 payloads", () => {
     });
     expect(Object.keys(payload).sort()).toEqual(
       [
+        "day_use_product_id",
         "guest_email",
         "guest_name",
         "guest_phone",
@@ -97,6 +100,7 @@ describe("Booking Domain V2 payloads", () => {
     }
 
     const dayUse = buildDayUseBookingPayload({
+      day_use_product_id: 1,
       visit_date: "2026-08-20",
       guests: 1,
       guest_name: "A",
@@ -244,6 +248,47 @@ describe("API client contract", () => {
     await apiFetch("/day-use", { locale: "en" });
     const initEn = fetchMock.mock.calls[1][1] as RequestInit;
     expect(new Headers(initEn.headers).get("Accept-Language")).toBe("en");
+  });
+
+  it("GET /day-use unwraps product array from response.data", async () => {
+    const { getDayUseProducts } = await import("../day-use");
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          message: "ok",
+          data: [
+            {
+              id: 1,
+              slug: "luxor-day",
+              name_en: "Zalina Luxor Day Experience",
+              name_ar: "تجربة زالينا الأقصر نهاراً",
+              description_en: "Day",
+              description_ar: "نهار",
+              price_per_guest: "65.00",
+              currency: "USD",
+              is_active: true,
+            },
+            {
+              id: 2,
+              slug: "night",
+              name_en: "Night",
+              name_ar: "ليل",
+              price_per_guest: "100.00",
+              currency: "USD",
+              is_active: false,
+            },
+          ],
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
+    );
+
+    const products = await getDayUseProducts("en");
+    expect(products).toHaveLength(1);
+    expect(products[0]?.id).toBe(1);
+    expect(products[0]?.price_per_guest).toBe("65.00");
   });
 
   it("API error envelope preserves validation errors", async () => {

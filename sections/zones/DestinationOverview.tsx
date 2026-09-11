@@ -53,9 +53,9 @@ export function DestinationOverview() {
             className="zones-body mx-auto"
             style={{ maxWidth: "620px", fontSize: "15px", lineHeight: "1.8" }}
           >
-            Zalina is designed as a collection of atmospheric spaces — each zone
-            shaped for a different kind of gathering, from intimate evenings to
-            grand celebrations beneath the stars.
+            Zalina is designed as a collection of atmospheric spaces in Luxor —
+            each zone shaped for a different kind of gathering, from daytime
+            exploration to cultural evenings and celebrations.
           </p>
         </motion.div>
 
@@ -88,7 +88,7 @@ export function DestinationOverview() {
           >
             <Image
               src={NEUTRAL_MEDIA_FALLBACK}
-              alt="Panoramic view of Zalina Arabian Village at dusk with heritage buildings and lantern-lit pathways"
+              alt="Panoramic view of Zalina Arabian Village in Luxor with heritage architecture and gardens"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 960px"

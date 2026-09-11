@@ -42,7 +42,7 @@ export function EditorialSpotlight() {
         >
           <p className="exp-eyebrow mb-3">Featured</p>
           <h2 id="featured-heading" className="exp-section-heading-lg">
-            Signature Dinner Experience
+            Zalina Arabian Village Night Experience
           </h2>
         </motion.div>
 
@@ -76,7 +76,7 @@ export function EditorialSpotlight() {
               >
                 <Image
                   src={NEUTRAL_MEDIA_FALLBACK}
-                  alt="Signature dinner experience in a lantern-lit majlis"
+                  alt="Egyptian dinner evening at Zalina Arabian Village in Luxor"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover scale-[1.08]"
@@ -118,7 +118,7 @@ export function EditorialSpotlight() {
                     color: "var(--exp-gold-soft)",
                   }}
                 >
-                  From sunset to starlight
+                  A cultural evening in Luxor
                 </p>
               </motion.div>
             </div>
@@ -154,12 +154,13 @@ export function EditorialSpotlight() {
                   fontWeight: 400,
                 }}
               >
-                An Evening to Remember
+                A Cultural Evening in Luxor
               </h3>
 
               <p className="exp-body mb-7 sm:mb-8">
-                Indulge in a curated dining experience where every detail speaks
-                of luxury, warmth, and Arabian heritage.
+                Egyptian dinner, live cooking, Nubian rhythms, Sufi and Tanoura,
+                and illuminated village courtyards — hospitality shaped for a
+                memorable night in Luxor.
               </p>
 
               <ul className="mb-8 space-y-3.5 sm:mb-9 sm:space-y-4">

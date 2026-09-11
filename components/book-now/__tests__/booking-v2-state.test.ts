@@ -109,7 +109,7 @@ describe("Product switching", () => {
 
   it("switching product clears incompatible state via factory helpers", () => {
     const dayFilled = withProduct("day_use", {
-      dayUse: { visitDate: "2099-08-20", guests: 3 },
+      dayUse: { productId: 1, visitDate: "2099-08-20", guests: 3 },
       bubbleStay: {
         checkIn: "2099-08-10",
         checkOut: "2099-08-12",
@@ -148,7 +148,10 @@ describe("Product switching", () => {
 describe("Day Use validation", () => {
   it("requires visitDate + guests", () => {
     expect(
-      validateDayUseDates({ visitDate: null, guests: 1 }, new Date("2026-08-13"))
+      validateDayUseDates(
+        { productId: 1, visitDate: null, guests: 1 },
+        new Date("2026-08-13")
+      )
     ).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ code: "invalid_visit_date" }),
@@ -156,7 +159,7 @@ describe("Day Use validation", () => {
     );
     expect(
       validateDayUseDates(
-        { visitDate: "2099-08-20", guests: 0 },
+        { productId: 1, visitDate: "2099-08-20", guests: 0 },
         new Date("2026-08-13")
       )
     ).toEqual(
@@ -166,7 +169,7 @@ describe("Day Use validation", () => {
     );
     expect(
       validateDayUseDates(
-        { visitDate: "2099-08-20", guests: 2 },
+        { productId: 1, visitDate: "2099-08-20", guests: 2 },
         new Date("2026-08-13")
       )
     ).toEqual([]);
@@ -458,7 +461,7 @@ describe("No legacy pricing / journey paths", () => {
 
   it("payload inputs never include evening/private/add-on fields", () => {
     const day = withProduct("day_use", {
-      dayUse: { visitDate: "2099-08-20", guests: 2 },
+      dayUse: { productId: 1, visitDate: "2099-08-20", guests: 2 },
       guest: {
         name: "Layla",
         email: "layla@example.com",
@@ -527,7 +530,7 @@ describe("Legacy persistence rejection", () => {
       schemaVersion: 2,
       productType: "day_use",
       currentStepIndex: 1,
-      dayUse: { visitDate: "2099-08-20", guests: 3 },
+      dayUse: { productId: 1, visitDate: "2099-08-20", guests: 3 },
       bubbleStay: {
         checkIn: null,
         checkOut: null,

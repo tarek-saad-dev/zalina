@@ -45,7 +45,7 @@ describe("findMarketZone", () => {
 
   it("matches souk/market by name when slug differs", () => {
     const zones = [
-      zone({ id: 9, name_en: "Desert Market", slug_en: "desert-market" }),
+      zone({ id: 9, name_en: "Village Market", slug_en: "village-market" }),
     ];
     expect(findMarketZone(zones)?.id).toBe(9);
   });

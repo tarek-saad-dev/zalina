@@ -51,18 +51,18 @@ export const GALLERY_FILTER_OPTIONS: GalleryFilterOption[] = [
 /** Text-only reasons — no images. */
 export const GALLERY_REASONS = [
   {
-    title: "Premium Storytelling",
+    title: "Luxor Storytelling",
     description:
-      "Each frame reflects the atmosphere, detail, and emotion of Zalina.",
+      "Each frame reflects the atmosphere, detail and emotion of Zalina in Luxor.",
   },
   {
-    title: "Emotional Atmosphere",
+    title: "Village Atmosphere",
     description:
-      "A visual journey through warmth, celebration, and memory.",
+      "A visual journey through dining, celebration, craft and evening light.",
   },
   {
-    title: "Curated Hospitality",
+    title: "Egyptian Hospitality",
     description:
-      "Moments shaped by service, culture, and refined design.",
+      "Moments shaped by service, culture and refined guest experience.",
   },
 ] as const;

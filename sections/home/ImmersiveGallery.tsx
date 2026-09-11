@@ -27,7 +27,7 @@ const DEFAULT_SIZES: GallerySize[] = [
 
 const FALLBACK_ITEMS: ImmersiveGalleryItem[] = [
   { id: "arabian-architecture", title: "Arabian Architecture", image: NEUTRAL_MEDIA_FALLBACK, alt: "Arabian Architecture" },
-  { id: "desert-sunset", title: "Desert Sunset", image: NEUTRAL_MEDIA_FALLBACK, alt: "Desert Sunset" },
+  { id: "luxor-evening", title: "Luxor Evening", image: NEUTRAL_MEDIA_FALLBACK, alt: "Evening light at Zalina Arabian Village in Luxor" },
   { id: "traditional-courtyard", title: "Traditional Courtyard", image: NEUTRAL_MEDIA_FALLBACK, alt: "Traditional Courtyard" },
   { id: "luxury-interior", title: "Luxury Interior", image: NEUTRAL_MEDIA_FALLBACK, alt: "Luxury Interior" },
   { id: "night-ambiance", title: "Night Ambiance", image: NEUTRAL_MEDIA_FALLBACK, alt: "Night Ambiance" },

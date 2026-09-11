@@ -55,7 +55,10 @@ export interface ApiExperience {
   name_ar: string;
   slug_en?: string;
   slug_ar?: string;
-  type: string;
+  /** Legacy type field; live CMS often uses `category` instead. */
+  type?: string;
+  /** Live CMS day/night (and similar) grouping. */
+  category?: string;
   /** Present on some CMS payloads; never used in V2 booking totals. */
   price_per_person?: string;
   description_en?: string | null;

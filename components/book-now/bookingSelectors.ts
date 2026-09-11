@@ -82,6 +82,7 @@ export function getDayUseBookingInput(
   state: BookingState
 ): CreateDayUseBookingPayload | null {
   if (state.productType !== "day_use") return null;
+  if (state.dayUse.productId == null) return null;
   if (!state.dayUse.visitDate) return null;
   if (state.dayUse.guests < 1) return null;
   if (!state.guest.name.trim() || !state.guest.email.trim() || !state.guest.phone.trim()) {
@@ -89,6 +90,7 @@ export function getDayUseBookingInput(
   }
 
   return buildDayUseBookingPayload({
+    day_use_product_id: state.dayUse.productId,
     visit_date: state.dayUse.visitDate,
     guests: state.dayUse.guests,
     guest_name: state.guest.name.trim(),

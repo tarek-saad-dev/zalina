@@ -11,6 +11,7 @@ export const PRODUCT_STEP: BookingStepDefinition = {
 
 export const DAY_USE_STEPS: BookingStepDefinition[] = [
   PRODUCT_STEP,
+  { id: "day_use_product", label: "Day Use", shortLabel: "Product" },
   { id: "date_guests", label: "Date & Guests", shortLabel: "Date" },
   { id: "guest_details", label: "Your Details", shortLabel: "Details" },
   { id: "review", label: "Review", shortLabel: "Review" },
@@ -53,19 +54,21 @@ export const PRODUCT_OPTIONS: Array<{
   title: string;
   description: string;
   tag: string;
+  comingSoon?: boolean;
 }> = [
   {
     id: "bubble_stay",
     title: "Bubble Stay",
     description:
-      "An overnight escape in Zalina's private bubbles — choose one or more, allocate your guests, and settle into the desert night.",
+      "An overnight stay in Zalina’s private bubbles — choose your bubbles, allocate guests, and settle into a quiet Luxor night.",
     tag: "OVERNIGHT",
+    comingSoon: true,
   },
   {
     id: "day_use",
     title: "Day Use",
     description:
-      "A single-day visit to experience Zalina without an overnight stay. Pricing follows live Day Use settings.",
+      "A daytime visit to Zalina’s cultural village in Luxor — dining, exploration and hospitality without an overnight stay.",
     tag: "DAY VISIT",
   },
 ];

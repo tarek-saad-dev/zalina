@@ -64,7 +64,7 @@ export function HomeHero() {
                 className="text-[#D4A95A] text-[10px] tracking-[0.3em] uppercase font-medium"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
-                Midnight Arabian Luxury
+                Cultural Village in Luxor
               </span>
             </div>
 
@@ -107,14 +107,16 @@ export function HomeHero() {
               className="text-[#F5E9DA]/70 text-[13px] leading-[1.65] max-w-[420px] mb-8 animate-fade-in-up animation-delay-300"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              Step into Zalina Arabian Village — where the spirit of Arabia comes alive through timeless architecture, rich traditions, and world-class hospitality.
+              Step into Zalina Arabian Village in Luxor — where Egyptian
+              hospitality, heritage architecture and contemporary comfort come
+              together beside the Nile.
             </p>
 
             {/* CTA Buttons - Slimmer, cleaner */}
             <div className="flex flex-col sm:flex-row gap-3 animate-fade-in-up animation-delay-400">
               {/* Primary Gold Button */}
               <Link
-                href="/book"
+                href="/book-now"
                 className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#D4A95A] text-[#0B0B0F] text-[11px] font-semibold tracking-[0.12em] uppercase rounded-sm transition-all duration-300 hover:bg-[#E2BF7A]"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >

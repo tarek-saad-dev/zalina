@@ -22,17 +22,17 @@ const STARS = [
 ];
 
 const SIGNATURE_MOMENTS = [
-  { num: "01", label: "Desert Dining" },
-  { num: "02", label: "Private Majlis" },
-  { num: "03", label: "Arabian Rituals" },
+  { num: "01", label: "Egyptian Dining" },
+  { num: "02", label: "Village Gatherings" },
+  { num: "03", label: "Cultural Evenings" },
   { num: "04", label: "Wedding Nights" },
 ];
 
 const RAIL_ITEMS = [
-  { num: "01", label: "Desert Dining",    sub: "Beneath the open sky",   href: "#experiences" },
-  { num: "02", label: "Private Majlis",   sub: "Intimate gatherings",     href: "#experiences" },
-  { num: "03", label: "Arabian Rituals",  sub: "Ancient heritage alive",  href: "#experiences" },
-  { num: "04", label: "Wedding Nights",   sub: "Unforgettable ceremonies", href: "#weddings" },
+  { num: "01", label: "Egyptian Dining",    sub: "Lunch, dinner & live cooking", href: "#experiences" },
+  { num: "02", label: "Village Gatherings", sub: "Courtyards & celebration",     href: "#experiences" },
+  { num: "03", label: "Cultural Evenings",  sub: "Music, performance & light",   href: "#experiences" },
+  { num: "04", label: "Wedding Nights",     sub: "Destination celebrations",     href: "#weddings" },
 ];
 
 export function LuxuryHero() {
@@ -57,7 +57,7 @@ export function LuxuryHero() {
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Zalina Arabian Village at Night"
+          alt="Zalina Arabian Village illuminated evening in Luxor"
           fill
           className="object-cover object-center"
           priority
@@ -152,21 +152,11 @@ export function LuxuryHero() {
                 className="text-[10px] tracking-[0.24em] uppercase"
                 style={{ color: "#D4AF37", fontFamily: "var(--font-body, sans-serif)" }}
               >
-                Arabian Desert, Egypt
+                Luxor, Egypt
               </span>
             </motion.div>
 
-            {/* Eyebrow */}
-            {/* <motion.p
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.22 }}
-              className="lux-eyebrow mb-6"
-            >
-              Midnight Arabian Luxury
-            </motion.p> */}
-
-            {/* Headline */}
+            {/* Headline — intentional 3-line break on all viewports */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -180,33 +170,16 @@ export function LuxuryHero() {
                 letterSpacing: "-0.01em",
               }}
             >
-              An Arabian Night
+              In the Heart
               <br />
               <span className="lux-shimmer" style={{ fontSize: "clamp(42px, 5.8vw, 86px)" }}>
-                Designed to Be
+                of Luxor.
               </span>
               <br />
               <span style={{ color: "#D4AF37", fontStyle: "italic" }}>
-                Remembered.
+                Along the Nile.
               </span>
             </motion.h1>
-
-            {/* Intro detail */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.9, delay: 0.9 }}
-              className="mt-5 mb-1"
-              style={{
-                fontFamily: "var(--font-display, serif)",
-                fontStyle: "italic",
-                fontSize: "clamp(12px, 1.1vw, 14px)",
-                color: "rgba(212,175,55,0.55)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              A living Arabian destination beneath the stars
-            </motion.p>
 
             {/* Gold divider */}
             <motion.div
@@ -217,7 +190,7 @@ export function LuxuryHero() {
               style={{ transformOrigin: "left", maxWidth: "180px" }}
             />
 
-            {/* Subtitle */}
+            {/* Supporting line — single text block below the headline */}
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -227,11 +200,11 @@ export function LuxuryHero() {
                 fontSize: "clamp(14px, 1.35vw, 17px)",
                 color: "rgba(248,245,237,0.68)",
                 lineHeight: 1.8,
-                maxWidth: "500px",
+                maxWidth: "34rem",
               }}
             >
-              Discover immersive desert dining, private celebrations, cultural
-              rituals, and unforgettable Arabian hospitality beneath the stars.
+              An immersive Egyptian cultural village of hospitality, dining,
+              live cooking and performance.
             </motion.p>
 
             {/* CTAs — primary Book Now; secondary desktop-only (distinct from booking) */}

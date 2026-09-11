@@ -106,9 +106,9 @@ export function MarketShowcase({
             className="lux-body mx-auto"
             style={{ fontSize: "0.98rem", opacity: 0.82, maxWidth: "36rem" }}
           >
-            A living Arabian souk at the heart of Zalina — stalls, courtyards,
-            and lanes ready for embassies and partners seeking a distinguished
-            presence in the village market.
+            A country market at the heart of the village — Egyptian crafts,
+            local flavours and lanes made for wandering, shopping and
+            photography in Luxor.
           </motion.p>
         </div>
 
@@ -271,8 +271,8 @@ export function MarketShowcase({
             className="lux-body text-sm max-w-md"
             style={{ opacity: 0.72 }}
           >
-            Secure a stall for your embassy or cultural house — and be seen where
-            guests already gather.
+            Explore crafts, flavours and village lanes — a country market
+            experience at the heart of Zalina in Luxor.
           </p>
           <Link
             href="/zones"

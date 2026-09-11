@@ -89,7 +89,7 @@ export function AboutFooter() {
                 className="text-sm"
                 style={{ color: "rgba(214, 210, 203, 0.6)" }}
               >
-                +971 4 123 4567
+                +1 623 204 1074
               </p>
             </div>
 

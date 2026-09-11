@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { dayUseProductToSettings } from "@/lib/api";
 import { useBookingState, type BookingCatalog } from "./useBookingState";
 import { BookingHero } from "./BookingHero";
 import { BookingProgress } from "./BookingProgress";
@@ -24,13 +25,6 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     enabled: true,
     locale,
   });
-  const dayUsePrice = parseMoney(dayUseQuery.settings?.price_per_guest);
-  const dayUseActiveOption =
-    dayUseQuery.status === "ready"
-      ? (dayUseQuery.settings?.is_active ?? false)
-      : dayUseQuery.status === "error"
-        ? false
-        : null;
 
   const {
     state,
@@ -44,6 +38,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     jumpToStepId,
     setProductType,
     setVisitDate,
+    setDayUseProductId,
     setDayUseGuests,
     setBubbleStayDates,
     setBubbleStayGuests,
@@ -56,9 +51,21 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     markBookingCreated,
     canProceed,
   } = useBookingState(catalog, {
-    dayUsePricePerGuest: dayUsePrice,
-    dayUseActive: dayUseActiveOption,
+    dayUseProducts: dayUseQuery.products,
+    dayUseProductsStatus: dayUseQuery.status,
   });
+
+  const selectedDayUseProduct = useMemo(() => {
+    if (state.dayUse.productId == null) return null;
+    return (
+      dayUseQuery.products.find((p) => p.id === state.dayUse.productId) ?? null
+    );
+  }, [dayUseQuery.products, state.dayUse.productId]);
+
+  const dayUseSettings = selectedDayUseProduct
+    ? dayUseProductToSettings(selectedDayUseProduct)
+    : null;
+  const dayUsePrice = parseMoney(selectedDayUseProduct?.price_per_guest);
 
   const {
     getEntry,
@@ -253,10 +260,12 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   allocatedGuests={derived.allocatedGuests}
                   remainingGuests={derived.remainingGuests}
                   estimatedTotal={derived.estimatedTotal}
-                  dayUseSettings={dayUseQuery.settings}
+                  dayUseProducts={dayUseQuery.products}
+                  dayUseSettings={dayUseSettings}
                   dayUseSettingsStatus={dayUseQuery.status}
                   dayUseSettingsError={dayUseQuery.error}
                   onReloadDayUseSettings={() => void dayUseQuery.reload()}
+                  onSelectDayUseProduct={setDayUseProductId}
                   getAvailability={getAvailability}
                   fetchAvailability={(input) => fetchAvailability(input)}
                   onNext={handleNext}
@@ -298,7 +307,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                 estimatedTotal={derived.estimatedTotal}
                 allocatedGuests={derived.allocatedGuests}
                 remainingGuests={derived.remainingGuests}
-                dayUseSettings={dayUseQuery.settings}
+                dayUseSettings={dayUseSettings}
                 checkout={checkout}
                 onContinue={
                   isLastStep ? handleCheckoutCta : () => handleNext()
@@ -320,7 +329,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         state={state}
         estimatedTotal={derived.estimatedTotal}
         allocatedGuests={derived.allocatedGuests}
-        dayUseCurrency={dayUseQuery.settings?.currency}
+        dayUseCurrency={dayUseSettings?.currency}
         checkout={checkout}
         onContinue={isLastStep ? handleCheckoutCta : handleNext}
         canProceed={

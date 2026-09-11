@@ -4,7 +4,7 @@
  */
 export const NEUTRAL_MEDIA_FALLBACK = "/assets/zalina-hero-bg.png";
 
-export const NEUTRAL_MEDIA_ALT = "Zalina Arabian Village";
+export const NEUTRAL_MEDIA_ALT = "Zalina Arabian Village in Luxor, Egypt";
 
 /** @deprecated Use NEUTRAL_MEDIA_FALLBACK — type/slug image maps are forbidden. */
 export function zoneFallbackImage(_type?: string): string {

@@ -212,10 +212,10 @@ describe("gallery / thumbnail / alt / dedupe", () => {
 
   it("alt_text beats entity name; rejects filenames", () => {
     const media = normalizeMediaAsset(
-      asset(1, "https://cdn.example/x.jpg", { alt_text: "Private majlis at dusk" })
+      asset(1, "https://cdn.example/x.jpg", { alt_text: "Private lounge at dusk" })
     )!;
     expect(resolveMediaAlt(media, { entityName: "VIP Zone" })).toBe(
-      "Private majlis at dusk"
+      "Private lounge at dusk"
     );
     const filenameAlt = normalizeMediaAsset(
       asset(2, "https://cdn.example/y.jpg", { alt_text: "IMG_3882.jpg" })

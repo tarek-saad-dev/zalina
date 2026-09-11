@@ -10,6 +10,7 @@ import type {
   CreateBubbleStayRandomPayload,
   CreateDayUseBookingPayload,
   CreateWeddingBookingPayload,
+  DayUseProduct,
   DayUseSettings,
   PhysicalBubble,
   TicketBubble,
@@ -71,6 +72,19 @@ export interface RawAccommodationAvailability {
   bubbles?: RawPhysicalBubble[];
 }
 
+export interface RawDayUseProduct {
+  id: number;
+  slug?: string;
+  name_en: string;
+  name_ar: string;
+  description_en?: string | null;
+  description_ar?: string | null;
+  price_per_guest: string | number;
+  currency: string;
+  is_active?: boolean;
+}
+
+/** @deprecated Legacy single-object day-use payload shape. */
 export interface RawDayUseSettings {
   price_per_guest: string;
   currency: string;
@@ -310,12 +324,38 @@ export function normalizeAccommodationAvailability(
   };
 }
 
+export function normalizeDayUseProduct(raw: RawDayUseProduct): DayUseProduct {
+  return {
+    id: raw.id,
+    slug: raw.slug ?? "",
+    name_en: raw.name_en,
+    name_ar: raw.name_ar,
+    description_en: raw.description_en ?? "",
+    description_ar: raw.description_ar ?? "",
+    price_per_guest: moneyString(raw.price_per_guest),
+    currency: raw.currency,
+    is_active: raw.is_active !== false,
+  };
+}
+
 export function normalizeDayUseSettings(raw: RawDayUseSettings): DayUseSettings {
   return {
     price_per_guest: String(raw.price_per_guest),
     currency: raw.currency,
     is_active: Boolean(raw.is_active),
     booking_notice: raw.booking_notice ?? null,
+  };
+}
+
+/** Map a selected Day Use product into the legacy settings shape used by estimate UI. */
+export function dayUseProductToSettings(
+  product: DayUseProduct
+): DayUseSettings {
+  return {
+    price_per_guest: product.price_per_guest,
+    currency: product.currency,
+    is_active: product.is_active,
+    booking_notice: null,
   };
 }
 
@@ -502,6 +542,7 @@ export function assertNoLegacyBookingFields(
 }
 
 export function buildDayUseBookingPayload(input: {
+  day_use_product_id: number;
   visit_date: string;
   guests: number;
   guest_name: string;
@@ -510,6 +551,7 @@ export function buildDayUseBookingPayload(input: {
 }): CreateDayUseBookingPayload {
   const payload: CreateDayUseBookingPayload = {
     product_type: "day_use",
+    day_use_product_id: input.day_use_product_id,
     visit_date: input.visit_date,
     guests: input.guests,
     guest_name: input.guest_name,

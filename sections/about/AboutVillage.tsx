@@ -41,7 +41,7 @@ export function AboutVillage() {
             >
               <Image
                 src={NEUTRAL_MEDIA_FALLBACK}
-                alt="Arabian hospitality detail"
+                alt="Egyptian hospitality detail"
                 fill
                 className="object-cover"
               />
@@ -78,11 +78,11 @@ export function AboutVillage() {
 
             {/* Description */}
             <p className="body-text-about mb-6">
-              Nestled in the heart of the Arabian landscape, Zalina is more than
-              a destination—it is a sanctuary where time slows and senses awaken.
-              Our village embraces the timeless traditions of Arabian hospitality
-              while offering contemporary luxury that speaks to the modern
-              traveler.
+              In the heart of Luxor, Zalina is more than a destination—it is a
+              cultural village where Egyptian hospitality, craft and evening light
+              come together. Our village embraces living traditions of cuisine,
+              craft and gathering while offering contemporary comfort for the
+              modern traveller.
             </p>
 
             <p className="body-text-about">

@@ -64,8 +64,21 @@ export interface WeddingPackageSummary {
   currency?: string;
 }
 
-/* ─── Day Use settings ───────────────────────────────────── */
+/* ─── Day Use products ───────────────────────────────────── */
 
+export interface DayUseProduct {
+  id: number;
+  slug: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string;
+  description_ar: string;
+  price_per_guest: string;
+  currency: string;
+  is_active: boolean;
+}
+
+/** @deprecated Prefer DayUseProduct — kept for estimate/currency display helpers. */
 export interface DayUseSettings {
   price_per_guest: string;
   currency: string;
@@ -131,6 +144,7 @@ export interface AccommodationAvailability {
 
 export interface CreateDayUseBookingPayload {
   product_type: "day_use";
+  day_use_product_id: number;
   visit_date: string;
   guests: number;
   guest_name: string;

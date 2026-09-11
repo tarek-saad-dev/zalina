@@ -16,7 +16,7 @@ export {
 
 export { clearMediaRequestCache, UnsupportedMediaOwnerError } from "./media";
 
-export { getDayUseSettings } from "./day-use";
+export { getDayUseProducts, getDayUseSettings } from "./day-use";
 
 export {
   listAccommodationTypes,
@@ -59,7 +59,9 @@ export {
 export {
   normalizeAccommodationType,
   normalizeAccommodationAvailability,
+  normalizeDayUseProduct,
   normalizeDayUseSettings,
+  dayUseProductToSettings,
   normalizeBooking,
   normalizeTicketLookup,
   normalizePhysicalBubble,

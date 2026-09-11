@@ -63,6 +63,7 @@ export async function createBubbleStayBooking(
 /** Convenience: build + create Day Use from field bag. */
 export async function createDayUseBookingFromFields(
   fields: {
+    day_use_product_id: number;
     visit_date: string;
     guests: number;
     guest_name: string;

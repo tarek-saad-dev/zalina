@@ -77,6 +77,21 @@ export function isGuestAllocationComplete(
   );
 }
 
+export function validateDayUseProduct(
+  dayUse: DayUseState
+): BookingValidationIssue[] {
+  if (dayUse.productId == null || !Number.isInteger(dayUse.productId)) {
+    return [
+      {
+        code: "missing_day_use_product",
+        message: "Choose a Day Use experience.",
+        field: "productId",
+      },
+    ];
+  }
+  return [];
+}
+
 export function validateDayUseDates(
   dayUse: DayUseState,
   now = new Date()
@@ -283,6 +298,7 @@ export function validateFullBookingReadiness(
   if (!state.productType) return issues;
 
   if (state.productType === "day_use") {
+    issues.push(...validateDayUseProduct(state.dayUse));
     issues.push(...validateDayUseDates(state.dayUse, now));
   } else {
     issues.push(...validateBubbleStayDates(state.bubbleStay, now));

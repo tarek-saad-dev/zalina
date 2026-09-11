@@ -7,19 +7,19 @@ import { WeddingsPageClient } from "@/sections/weddings/WeddingsPageClient";
 import { isWeddingPrimaryImageryReady } from "@/sections/weddings/content/weddingMedia";
 
 export const metadata: Metadata = {
-  title: "Weddings | Zalina Arabian Village",
+  title: "Weddings | Zalina Arabian Village Luxor",
   description:
-    "Celebrate a destination wedding at Zalina Arabian Village in Luxor — elegant stage, Arabian gardens, dining and entertainment in one unforgettable night.",
+    "Celebrate a destination wedding at Zalina Arabian Village in Luxor — gardens, village atmosphere, Egyptian hospitality, dining and entertainment in one unforgettable night.",
   keywords: [
     "Zalina weddings",
     "destination wedding Luxor",
-    "Arabian wedding venue",
-    "Zalina Signature Wedding",
+    "Luxor wedding venue",
+    "Egyptian wedding celebration",
   ],
   openGraph: {
-    title: "Weddings | Zalina Arabian Village",
+    title: "Weddings | Zalina Arabian Village Luxor",
     description:
-      "Your wedding. One Arabian village. One unforgettable night at Zalina.",
+      "Your wedding. One village in Luxor. One unforgettable night at Zalina.",
     type: "website",
   },
 };
@@ -31,7 +31,7 @@ export default async function WeddingsPage() {
       <main className="zones-page min-h-screen overflow-x-hidden">
         <ComingSoonOverlay
           title="Weddings at Zalina"
-          subtitle="We are crafting an extraordinary celebration experience. Stay tuned for something truly unforgettable."
+          subtitle="A destination celebration experience in Luxor is on its way."
           variant="full"
         />
         <LuxuryFooter />
@@ -44,7 +44,7 @@ export default async function WeddingsPage() {
       <main className="zones-page min-h-screen overflow-x-hidden">
         <ComingSoonOverlay
           title="Weddings at Zalina"
-          subtitle="Final wedding imagery is being prepared. The celebration experience will open shortly."
+          subtitle="Final photography is being prepared for the Luxor wedding experience."
           variant="full"
         />
         <LuxuryFooter />

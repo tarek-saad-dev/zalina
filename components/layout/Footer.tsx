@@ -123,26 +123,25 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-accent-gold mt-0.5 shrink-0" />
                 <span className="text-sm text-text-muted">
-                  Desert Road, Al Ain Region<br />
-                  Abu Dhabi, United Arab Emirates
+                  Luxor, Egypt
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-accent-gold shrink-0" />
                 <a 
-                  href="tel:+971234567890" 
+                  href="tel:+16232041074" 
                   className="text-sm text-text-muted hover:text-accent-gold transition-colors"
                 >
-                  +971 2 345 6789
+                  +1 623 204 1074
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-accent-gold shrink-0" />
                 <a 
-                  href="mailto:reservations@zalina.ae" 
+                  href="mailto:hanan.freestyledevelopmentllc@gmail.com" 
                   className="text-sm text-text-muted hover:text-accent-gold transition-colors"
                 >
-                  reservations@zalina.ae
+                  hanan.freestyledevelopmentllc@gmail.com
                 </a>
               </li>
             </ul>

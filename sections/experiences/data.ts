@@ -2,13 +2,13 @@ import type { ExperienceCategory, ExperienceItem } from "./types";
 import { parseExperienceCategory } from "./types";
 
 export const BOOK_NOW_HREF = "/book-now";
-export const CONTACT_HREF = "/contact";
+export const CONTACT_HREF = "/experiences";
 
 export const FEATURED_DINNER_HIGHLIGHTS = [
-  "Award-inspired culinary team",
-  "Bespoke atmosphere design",
-  "Personalized service excellence",
-  "Lantern-lit courtyard ambience",
+  "Egyptian & regional dinner buffet",
+  "Live charcoal BBQ and brick-oven cooking",
+  "Cultural performance and live music",
+  "Illuminated courtyards and village atmosphere",
 ] as const;
 
 /** @deprecated Prefer API-mapped experiences passed as props. */

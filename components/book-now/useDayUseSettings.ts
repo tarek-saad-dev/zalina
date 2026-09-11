@@ -2,24 +2,26 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  getDayUseSettings,
-  type DayUseSettings,
+  getDayUseProducts,
+  type DayUseProduct,
   ApiError,
 } from "@/lib/api";
 
-export type DayUseSettingsStatus =
+export type DayUseProductsStatus =
   | "idle"
   | "loading"
   | "ready"
   | "error";
+
+export type DayUseSettingsStatus = DayUseProductsStatus;
 
 export function useDayUseSettings(options: {
   enabled: boolean;
   locale?: string;
 }) {
   const { enabled, locale } = options;
-  const [status, setStatus] = useState<DayUseSettingsStatus>("idle");
-  const [settings, setSettings] = useState<DayUseSettings | null>(null);
+  const [status, setStatus] = useState<DayUseProductsStatus>("idle");
+  const [products, setProducts] = useState<DayUseProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -27,15 +29,15 @@ export function useDayUseSettings(options: {
     setStatus("loading");
     setError(null);
     try {
-      const data = await getDayUseSettings(locale);
-      setSettings(data);
+      const data = await getDayUseProducts(locale);
+      setProducts(data);
       setStatus("ready");
     } catch (err) {
       const message =
         err instanceof ApiError
           ? err.message
-          : "Could not load Day Use settings.";
-      setSettings(null);
+          : "Could not load Day Use products.";
+      setProducts([]);
       setError(message);
       setStatus("error");
     }
@@ -51,7 +53,9 @@ export function useDayUseSettings(options: {
 
   return {
     status,
-    settings,
+    products,
+    /** @deprecated Use products — single settings object no longer returned. */
+    settings: null as null,
     error,
     reload: load,
   };

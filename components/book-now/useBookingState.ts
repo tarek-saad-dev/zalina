@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import type { BookingProductType } from "@/lib/api";
+import type { BookingProductType, DayUseProduct } from "@/lib/api";
 import { getActiveSteps, getStepDefinition } from "./bookingSteps";
 import {
   selectAllocatedGuests,
@@ -21,10 +21,12 @@ import {
   validateBubbleSelections,
   validateBubbleStayDates,
   validateDayUseDates,
+  validateDayUseProduct,
   validateFullBookingReadiness,
   validateGuestDetails,
   validateProductStep,
 } from "./bookingValidation";
+import { parseMoney } from "./bookingMedia";
 import type {
   AccommodationTypeMeta,
   AssignmentMode,
@@ -47,14 +49,43 @@ function newSelectionKey(): string {
 export function useBookingState(
   catalog: BookingCatalog,
   options: {
+    dayUseProducts?: DayUseProduct[];
+    dayUseProductsStatus?: "idle" | "loading" | "ready" | "error";
+    /** @deprecated Prefer dayUseProducts — kept for tests. */
     dayUsePricePerGuest?: number | null;
+    /** @deprecated Prefer dayUseProducts — kept for tests. */
     dayUseActive?: boolean | null;
   } = {}
 ) {
-  const { dayUsePricePerGuest = null, dayUseActive = null } = options;
+  const {
+    dayUseProducts = [],
+    dayUseProductsStatus = "idle",
+    dayUsePricePerGuest: dayUsePriceOverride = null,
+    dayUseActive: dayUseActiveOverride = null,
+  } = options;
   const [state, setState] = useState<BookingState>(() =>
     createInitialBookingState()
   );
+
+  const selectedDayUseProduct = useMemo(() => {
+    if (state.dayUse.productId == null) return null;
+    return (
+      dayUseProducts.find((p) => p.id === state.dayUse.productId) ?? null
+    );
+  }, [dayUseProducts, state.dayUse.productId]);
+
+  const dayUsePricePerGuest =
+    dayUsePriceOverride ?? parseMoney(selectedDayUseProduct?.price_per_guest);
+
+  const dayUseActive =
+    dayUseActiveOverride ??
+    (dayUseProductsStatus === "ready"
+      ? selectedDayUseProduct != null
+        ? selectedDayUseProduct.is_active
+        : dayUseProducts.length > 0
+      : dayUseProductsStatus === "error"
+        ? false
+        : null);
 
   const accommodationTypes = catalog.accommodationTypes;
   const activeSteps = useMemo(
@@ -92,6 +123,14 @@ export function useBookingState(
     setState((prev) => ({
       ...prev,
       dayUse: { ...prev.dayUse, visitDate },
+      submissionError: null,
+    }));
+  }, []);
+
+  const setDayUseProductId = useCallback((productId: number | null) => {
+    setState((prev) => ({
+      ...prev,
+      dayUse: { ...prev.dayUse, productId },
       submissionError: null,
     }));
   }, []);
@@ -373,6 +412,8 @@ export function useBookingState(
       switch (step.id) {
         case "product":
           return validateProductStep(state).length === 0;
+        case "day_use_product":
+          return validateDayUseProduct(state.dayUse).length === 0;
         case "date_guests":
           if (dayUseActive === false) return false;
           return validateDayUseDates(state.dayUse).length === 0;
@@ -429,6 +470,7 @@ export function useBookingState(
     derived,
     setProductType,
     setVisitDate,
+    setDayUseProductId,
     setDayUseGuests,
     setCheckIn,
     setCheckOut,

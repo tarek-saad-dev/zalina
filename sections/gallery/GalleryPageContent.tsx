@@ -203,7 +203,7 @@ export function GalleryPageContent({
         >
           <Image
             src={NEUTRAL_MEDIA_FALLBACK}
-            alt="Zalina Arabian Village"
+            alt="Zalina Arabian Village in Luxor"
             fill
             priority
             sizes="100vw"
@@ -297,8 +297,8 @@ export function GalleryPageContent({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
           >
-            A living gallery of experiences, zones, and bubble stays — curated
-            from the Zalina CMS and refreshed as new moments are added.
+            A living gallery of experiences, village spaces and bubble stays in
+            Luxor — curated from Zalina and refreshed as new moments are added.
           </motion.p>
           <motion.div
             className="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4"

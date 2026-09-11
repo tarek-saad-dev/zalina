@@ -14,19 +14,15 @@ const footerLinks = {
   ],
   occasions: [
     { label: "Weddings", href: "/weddings" },
-    { label: "Private Events", href: "/events/private" },
-    { label: "Celebrations", href: "/events/celebrations" },
   ],
   discover: [
-    { label: "Day Experiences", href: "/experiences/day" },
-    { label: "Night Experiences", href: "/experiences/night" },
-    { label: "Dining", href: "/dining" },
-    { label: "Wellness", href: "/wellness" },
+    { label: "Day Experience", href: "/experiences" },
+    { label: "Night Experience", href: "/experiences" },
+    { label: "Book Now", href: "/book-now" },
   ],
   information: [
-    { label: "Contact Us", href: "/contact" },
-    { label: "Reservations", href: "/book" },
-    { label: "FAQs", href: "/faq" },
+    { label: "Reservations", href: "/book-now" },
+    { label: "Gallery", href: "/gallery" },
   ],
 };
 
@@ -89,18 +85,18 @@ export function LuxuryFooter() {
                 className="text-sm mb-4 tracking-wide"
                 style={{ color: "var(--lux-gold)", fontFamily: "var(--font-display, serif)" }}
               >
-                Where Ancient Egypt Meets Modern Luxury
+                An immersive cultural village in Luxor
               </p>
 
               <p className="lux-body mb-6 max-w-sm text-sm" style={{ lineHeight: 1.6 }}>
-                An immersive destination inspired by the legends, beauty, and timeless grandeur of Ancient Egypt.
+                Egyptian hospitality, cuisine, craft and evening entertainment in the heart of Luxor — inspired by heritage, shaped for today.
               </p>
 
               {/* Contact Info */}
               <div className="space-y-2">
                 <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Location:</span>{" "}
-                  Egypt
+                  Luxor, Egypt
                 </p>
                 <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
                   <span style={{ color: "var(--lux-gold)" }}>Email:</span>{" "}

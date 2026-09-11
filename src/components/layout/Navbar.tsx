@@ -17,7 +17,7 @@ const navItems: NavItem[] = [
   { label: "Experiences", href: "/experiences" },
   { label: "Occasions", href: "/occasions" },
   { label: "Gallery", href: "/gallery" },
-  { label: "Dining", href: "/dining" },
+  { label: "Dining", href: "/experiences" },
   { label: "Stay", href: "/stay" },
   { label: "Contact", href: "/contact" },
 ];
@@ -78,7 +78,7 @@ export function Navbar() {
           {/* CTA Button - Refined */}
           <div className="hidden lg:block">
             <Link
-              href="/book"
+              href="/book-now"
               className="inline-flex items-center px-7 py-3.5 bg-[#D4A95A] text-[#0B0B0F] text-xs font-semibold tracking-[0.12em] uppercase rounded-sm transition-all duration-300 hover:bg-[#E2BF7A] hover:shadow-[0_0_30px_rgba(212,169,90,0.25)]"
             >
               Book Now
@@ -122,7 +122,7 @@ export function Navbar() {
           ))}
           <div className="pt-6 border-t border-[#D4A95A]/20">
             <Link
-              href="/book"
+              href="/book-now"
               onClick={() => setIsMobileMenuOpen(false)}
               className="inline-flex items-center px-7 py-3.5 bg-[#D4A95A] text-[#0B0B0F] text-xs font-semibold tracking-[0.12em] uppercase rounded-sm transition-all duration-300 hover:bg-[#E2BF7A]"
             >

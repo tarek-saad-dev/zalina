@@ -23,7 +23,7 @@ const occasions = [
     title: "Corporate Experiences",
     subtitle: "Business Excellence",
     description:
-      "Elevate your corporate events with world-class facilities and impeccable service. Where business meets Arabian hospitality.",
+      "Elevate your corporate events with world-class facilities and impeccable service. Where business meets Egyptian hospitality in Luxor.",
     features: ["Conference Halls", "Team Building", "Executive Dining"],
   },
   {

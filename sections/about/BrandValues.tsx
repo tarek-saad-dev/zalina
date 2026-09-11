@@ -8,13 +8,13 @@ const brandValues = [
     icon: Coffee,
     title: "Hospitality",
     description:
-      "Authentic Arabian warmth in every interaction, creating a sense of belonging",
+      "Authentic Egyptian warmth in every interaction, creating a sense of belonging",
   },
   {
     icon: Sun,
     title: "Heritage",
     description:
-      "Preserving and celebrating the rich cultural traditions of the Arabian Peninsula",
+      "Celebrating Egyptian culture and hospitality inspired by Luxor",
   },
   {
     icon: Shield,

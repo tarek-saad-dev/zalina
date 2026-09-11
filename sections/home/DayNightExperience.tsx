@@ -122,7 +122,7 @@ export function DayNightExperience() {
                 className="lux-heading-lg mb-3"
                 style={{ fontSize: "clamp(24px, 3vw, 36px)" }}
               >
-                Day Experience
+                Zalina Luxor Day Experience
               </motion.h3>
 
               {/* Description */}
@@ -134,8 +134,9 @@ export function DayNightExperience() {
                 className="lux-body mb-5"
                 style={{ fontSize: "0.9rem" }}
               >
-                Bask in the golden warmth of Arabian sunshine. From serene
-                morning rituals to leisurely afternoon gatherings.
+                A Luxor day centered on Egyptian lunch, live charcoal cooking,
+                village exploration and the easy rhythm of the afternoon —
+                roughly three to four hours of hospitality and atmosphere.
               </motion.p>
 
               {/* CTA */}
@@ -221,7 +222,7 @@ export function DayNightExperience() {
                 className="lux-heading-lg mb-3"
                 style={{ fontSize: "clamp(24px, 3vw, 36px)" }}
               >
-                Night Experience
+                Zalina Arabian Village Night Experience
               </motion.h3>
 
               {/* Description */}
@@ -233,8 +234,9 @@ export function DayNightExperience() {
                 className="lux-body mb-5"
                 style={{ fontSize: "0.9rem" }}
               >
-                As stars emerge over the desert sky, the village transforms
-                into an enchanting realm of pure magic.
+                As evening settles over Luxor, the village comes alive —
+                Egyptian dinner, live cooking, Nubian rhythms, Sufi and Tanoura,
+                music and illuminated courtyards in one cultural night.
               </motion.p>
 
               {/* CTA */}

@@ -13,7 +13,7 @@ export function WeddingShowcase() {
     return (
       <ComingSoonOverlay
         title="Weddings at Zalina"
-        subtitle="An extraordinary celebration experience is on its way."
+        subtitle="A destination celebration experience in Luxor is on its way."
         variant="section"
       />
     );
@@ -24,7 +24,7 @@ export function WeddingShowcase() {
       <div className="absolute inset-0">
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Luxury Wedding Ceremony at Zalina - Ancient Egyptian Heritage Resort by Lagoon at Sunset"
+          alt="Destination wedding celebration at Zalina Arabian Village in Luxor"
           fill
           className="object-cover"
           quality={100}
@@ -145,9 +145,9 @@ export function WeddingShowcase() {
             className="lux-body-lg mb-10 max-w-lg"
             style={{ color: "rgba(255,255,255,0.85)", lineHeight: 1.7 }}
           >
-            Exchange vows beneath ancient skies by a tranquil lagoon illuminated 
-            by golden lanterns. Where pharaonic heritage meets world-class luxury, 
-            creating an unforgettable destination wedding experience.
+            Celebrate in Luxor with gardens, village atmosphere, Egyptian
+            hospitality, exceptional dining and live entertainment — a complete
+            destination wedding experience at Zalina.
           </motion.p>
 
           {/* Premium Wedding Features */}
@@ -159,10 +159,10 @@ export function WeddingShowcase() {
             className="flex flex-wrap gap-5 mb-12"
           >
             {[
-              { label: "Lagoon Ceremony", icon: "🌅" },
-              { label: "Ancient Egyptian Venue", icon: "🏛️" },
+              { label: "Luxor Setting", icon: "🌅" },
+              { label: "Village Atmosphere", icon: "🏛️" },
               { label: "Bespoke Planning", icon: "✨" },
-              { label: "World-Class Catering", icon: "🥂" },
+              { label: "Egyptian Hospitality", icon: "🥂" },
             ].map((feature) => (
               <span
                 key={feature.label}

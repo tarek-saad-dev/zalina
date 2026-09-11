@@ -56,9 +56,9 @@ export function HeroSection() {
 
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-            An immersive destination where authentic Arabian heritage meets 
-            uncompromising luxury. Experience the magic of the desert under 
-            a blanket of stars.
+            An immersive cultural village in Luxor where Egyptian heritage meets
+            contemporary hospitality. Discover dining, entertainment and warm
+            evenings beside the Nile.
           </p>
 
           {/* CTA Buttons */}

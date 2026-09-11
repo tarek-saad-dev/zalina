@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import type { BookingProductType, DayUseSettings } from "@/lib/api";
+import type { BookingProductType, DayUseProduct, DayUseSettings } from "@/lib/api";
 import type {
   AccommodationTypeMeta,
   AssignmentMode,
@@ -11,6 +11,7 @@ import type {
   GuestDetailsState,
 } from "./types";
 import { StepProduct } from "./StepProduct";
+import { StepDayUseProduct } from "./StepDayUseProduct";
 import { StepDayUseDateGuests } from "./StepDayUseDateGuests";
 import { StepBubbleStayDatesGuests } from "./StepBubbleStayDatesGuests";
 import { StepBubbles } from "./StepBubbles";
@@ -28,10 +29,12 @@ interface StepShellProps {
   allocatedGuests: number;
   remainingGuests: number;
   estimatedTotal: number | null;
+  dayUseProducts: DayUseProduct[];
   dayUseSettings: DayUseSettings | null;
   dayUseSettingsStatus: "idle" | "loading" | "ready" | "error";
   dayUseSettingsError: string | null;
   onReloadDayUseSettings: () => void;
+  onSelectDayUseProduct: (productId: number) => void;
   getAvailability: (slug: string, guests: number) => AvailabilityEntry;
   fetchAvailability: (input: {
     slug: string;
@@ -87,6 +90,8 @@ export function StepShell(props: StepShellProps) {
     canProceed,
   } = props;
   const reduceMotion = useReducedMotion();
+  const enterFrom =
+    reduceMotion === false ? { opacity: 0, y: 10 } : false;
   const isFirstStep = state.currentStepIndex === 0;
   const isLastStep = state.currentStepIndex === activeSteps.length - 1;
   const isReview = currentStep.id === "review";
@@ -95,7 +100,7 @@ export function StepShell(props: StepShellProps) {
     <div>
       <motion.div
         key={`${state.productType ?? "none"}-${currentStep.id}`}
-        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+        initial={enterFrom}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28 }}
       >
@@ -103,6 +108,17 @@ export function StepShell(props: StepShellProps) {
           <StepProduct
             state={state}
             onSetProductType={props.onSetProductType}
+          />
+        )}
+        {currentStep.id === "day_use_product" && (
+          <StepDayUseProduct
+            state={state}
+            products={props.dayUseProducts}
+            status={props.dayUseSettingsStatus}
+            error={props.dayUseSettingsError}
+            locale={props.locale}
+            onReload={props.onReloadDayUseSettings}
+            onSelectProduct={props.onSelectDayUseProduct}
           />
         )}
         {currentStep.id === "date_guests" && (
@@ -114,7 +130,6 @@ export function StepShell(props: StepShellProps) {
             onReloadSettings={props.onReloadDayUseSettings}
             onSetVisitDate={props.onSetVisitDate}
             onSetDayUseGuests={props.onSetDayUseGuests}
-            onSwitchToBubbleStay={() => props.onSetProductType("bubble_stay")}
           />
         )}
         {currentStep.id === "dates_guests" && (

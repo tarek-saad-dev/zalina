@@ -19,7 +19,7 @@ const FEATURES = [
   {
     icon: Landmark,
     title: "Authentic Atmosphere",
-    description: "Immersive Arabian ambience.",
+    description: "Immersive Luxor atmosphere.",
   },
   {
     icon: Gem,

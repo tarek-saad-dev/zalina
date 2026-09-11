@@ -9,7 +9,7 @@ import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 export const WEDDING_VENUE_IDS = [
   "royal-wedding-court",
   "banquet-hall",
-  "desert-lounge",
+  "garden-lounge",
   "poolside-pavilion",
 ] as const;
 
@@ -58,11 +58,11 @@ export const WEDDING_VENUES: WeddingVenue[] = [
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
-    id: "desert-lounge",
+    id: "garden-lounge",
     number: "03",
-    title: "The Desert Lounge",
+    title: "The Garden Lounge",
     description:
-      "An intimate setting for pre-wedding gatherings, family nights, and private celebrations.",
+      "An intimate setting for pre-wedding gatherings, family nights, and private celebrations in Luxor.",
     capacity: "Up to 80 guests",
     mood: "Intimate / Warm / Relaxed",
     bestFor: "Henna nights, engagement dinners, private gatherings",
@@ -131,7 +131,7 @@ export const WEDDING_JOURNEY_STEPS: WeddingJourneyStep[] = [
     number: 4,
     title: "The Celebration",
     description:
-      "Music, movement, and atmosphere beneath the stars.",
+      "Music, movement, and atmosphere under Luxor evening light.",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
@@ -206,7 +206,7 @@ export const CELEBRATION_STYLES: CelebrationStyle[] = [
     id: "destination",
     title: "Destination Wedding",
     description:
-      "For couples seeking an immersive celebration beneath the stars.",
+      "For couples seeking an immersive celebration in Luxor.",
     image: NEUTRAL_MEDIA_FALLBACK,
     cta: "Inquire",
   },
@@ -232,7 +232,7 @@ export const GALLERY_MOMENTS: GalleryMoment[] = [
   { caption: "Palace gate entrance", image: NEUTRAL_MEDIA_FALLBACK },
   { caption: "Dinner tables", image: NEUTRAL_MEDIA_FALLBACK },
   { caption: "Bride and groom silhouette", image: NEUTRAL_MEDIA_FALLBACK },
-  { caption: "Dance beneath the stars", image: NEUTRAL_MEDIA_FALLBACK },
+  { caption: "Dance under Luxor evening light", image: NEUTRAL_MEDIA_FALLBACK },
   { caption: "Coffee ritual", image: NEUTRAL_MEDIA_FALLBACK },
   { caption: "Palm-lit courtyard", image: NEUTRAL_MEDIA_FALLBACK },
   { caption: "Golden reception", image: NEUTRAL_MEDIA_FALLBACK },
@@ -279,7 +279,7 @@ export const REASONS_TO_CHOOSE: ReasonCard[] = [
 // ── SIGNATURE FEATURES ──────────────────────
 
 export const SIGNATURE_FEATURES: string[] = [
-  "Ceremony beneath the stars",
+  "Ceremony in Luxor",
   "Lantern-lit dinner setting",
   "Curated entrance moment",
   "Live entertainment atmosphere",

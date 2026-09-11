@@ -44,7 +44,7 @@ export function ZonesSection({ zones: initialZones }: ZonesSectionProps) {
           <SectionHeading
             subtitle="Distinctive Spaces"
             title="Explore Our Zones"
-            description="Unique destinations within Zalina, each offering a different facet of Arabian hospitality and culture."
+            description="Unique destinations within Zalina, each offering a different facet of Egyptian hospitality and culture in Luxor."
             align="center"
           />
         </div>

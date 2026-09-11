@@ -86,9 +86,10 @@ export function HeritageStory() {
             className="lux-body"
             style={{ maxWidth: "650px", margin: "0 auto", fontSize: "0.95rem" }}
           >
-            Nestled within the golden dunes, Zalina Arabian Village is more than
-            a destination—it is a journey through time, where ancient caravans blend
-            with Arabian hospitality and every corner tells a story of timeless elegance.
+            In the heart of Luxor, Zalina Arabian Village brings Egyptian hospitality,
+            heritage craft and contemporary comfort together in a living cultural
+            village — gardens, courtyards and evening light shaped for gathering,
+            dining and celebration.
           </motion.p>
 
           {/* Decorative Bottom Ornament */}

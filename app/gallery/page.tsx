@@ -6,13 +6,13 @@ import { loadGalleryCatalog } from "@/lib/media";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Gallery | Zalina Arabian Village",
+  title: "Gallery | Zalina Arabian Village Luxor",
   description:
-    "Explore Zalina Arabian Village through experiences, zones, and bubble stays — a living CMS-driven gallery.",
+    "Explore Zalina Arabian Village in Luxor through experiences, village zones, dining atmosphere and bubble stays.",
   openGraph: {
-    title: "Gallery | Zalina Arabian Village",
+    title: "Gallery | Zalina Arabian Village Luxor",
     description:
-      "A cinematic visual journey through experiences, zones, and bubble stays at Zalina Arabian Village.",
+      "A visual journey through Egyptian hospitality, village atmosphere and evenings in Luxor.",
     type: "website",
   },
 };

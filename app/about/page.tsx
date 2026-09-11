@@ -3,22 +3,21 @@ import { AboutPageContent } from "@/sections/about";
 import { LuxuryFooter } from "@/sections/home";
 
 export const metadata: Metadata = {
-  title: "About Zalina | Our Story, Heritage & Vision",
+  title: "About Zalina | A Cultural Village in Luxor, Egypt",
   description:
-    "Discover the soul of Zalina Arabian Village — a living luxury destination where Arabian heritage, cinematic atmosphere, and unforgettable celebrations come together beneath the stars.",
+    "Discover Zalina Arabian Village in Luxor — an immersive cultural destination shaped by Egyptian hospitality, cuisine, craft and evening entertainment beside the Nile.",
   keywords: [
     "Zalina Arabian Village",
-    "about",
-    "Arabian heritage",
-    "luxury destination",
-    "Egypt",
+    "about Zalina",
+    "Luxor cultural village",
+    "Egyptian hospitality",
+    "Luxor Egypt",
     "brand story",
-    "hospitality",
   ],
   openGraph: {
-    title: "About Zalina | Our Story, Heritage & Vision",
+    title: "About Zalina | A Cultural Village in Luxor, Egypt",
     description:
-      "A living Arabian experience where heritage, hospitality, and celebration come together beneath the stars.",
+      "Egyptian hospitality, dining, music and celebration in the heart of Luxor — inspired by heritage, designed for today.",
     type: "website",
     images: [{ url: "/assets/zalina-hero-bg.png", width: 1200, height: 630 }],
   },

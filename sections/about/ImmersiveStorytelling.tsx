@@ -19,7 +19,7 @@ export function ImmersiveStorytelling() {
             >
               <Image
                 src={NEUTRAL_MEDIA_FALLBACK}
-                alt="Immersive Arabian storytelling experience"
+                alt="Immersive cultural storytelling at Zalina in Luxor"
                 fill
                 className="object-cover"
               />
@@ -36,9 +36,9 @@ export function ImmersiveStorytelling() {
             {/* Description */}
             <p className="body-text-about">
               Every experience at Zalina is a chapter in a larger narrative—one
-              that weaves together the threads of Arabian heritage, contemporary
-              luxury, and personal discovery. From the moment you arrive, you become
-              part of a story that has been unfolding for generations.
+              that weaves together Egyptian heritage, contemporary hospitality,
+              and personal discovery in Luxor. From the moment you arrive, you
+              become part of a story shaped for gathering, dining and celebration.
             </p>
           </div>
 
@@ -51,7 +51,7 @@ export function ImmersiveStorytelling() {
             >
               <Image
                 src={NEUTRAL_MEDIA_FALLBACK}
-                alt="Arabian cultural experience"
+                alt="Egyptian cultural experience at Zalina"
                 fill
                 className="object-cover"
               />
@@ -64,7 +64,7 @@ export function ImmersiveStorytelling() {
             >
               <Image
                 src={NEUTRAL_MEDIA_FALLBACK}
-                alt="Traditional Arabian hospitality"
+                alt="Traditional Egyptian hospitality"
                 fill
                 className="object-cover"
               />
@@ -77,7 +77,7 @@ export function ImmersiveStorytelling() {
             >
               <Image
                 src={NEUTRAL_MEDIA_FALLBACK}
-                alt="Luxury desert retreat detail"
+                alt="Heritage detail at Zalina Arabian Village"
                 fill
                 className="object-cover"
               />

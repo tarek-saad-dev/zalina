@@ -79,7 +79,7 @@ describe("buildGalleryCatalog", () => {
       experiences: [
         experience({
           id: 1,
-          name_en: "Traditional Bedouin Dinner",
+          name_en: "Traditional Egyptian Dinner",
           cover_image: asset(13, "https://api.example/media/assets/13"),
           media: [asset(13, "https://api.example/media/assets/13")],
         }),

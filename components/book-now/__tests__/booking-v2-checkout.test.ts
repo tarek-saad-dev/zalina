@@ -48,7 +48,7 @@ function dayUseReady(): BookingState {
   return {
     ...createInitialBookingState(),
     productType: "day_use",
-    dayUse: { visitDate: "2026-12-15", guests: 2 },
+    dayUse: { productId: 7, visitDate: "2026-12-15", guests: 2 },
     guest: {
       name: "Guest One",
       email: "guest@example.com",
@@ -139,6 +139,7 @@ describe("prepareBookingPayload V2", () => {
     expect(prepared?.product).toBe("day_use");
     expect(prepared?.payload).toEqual({
       product_type: "day_use",
+      day_use_product_id: 7,
       visit_date: "2026-12-15",
       guests: 2,
       guest_name: "Guest One",

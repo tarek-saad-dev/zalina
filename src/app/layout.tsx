@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Zalina Arabian Village | Midnight Arabian Luxury",
-  description: "Step into Zalina Arabian Village — where the spirit of Arabia comes alive through timeless architecture, rich traditions, and world-class hospitality.",
+  title: "Zalina Arabian Village | Cultural Experiences in Luxor, Egypt",
+  description:
+    "An immersive cultural village in Luxor, Egypt — Egyptian cuisine, live cooking, entertainment and hospitality beside the Nile.",
 };
 
 export default function RootLayout({

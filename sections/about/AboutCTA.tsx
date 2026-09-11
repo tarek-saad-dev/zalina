@@ -37,7 +37,7 @@ export function AboutCTA() {
 
           {/* CTA Button */}
           <Link
-            href="/book"
+            href="/book-now"
             className="inline-flex items-center justify-center font-medium text-base transition-all duration-300 hover:shadow-xl"
             style={{
               height: "56px",

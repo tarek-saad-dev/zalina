@@ -148,7 +148,7 @@ export function EmotionalIntro() {
                 }}
               >
                 &ldquo;Every celebration is composed like a story — from the
-                first lantern glow to the final dance beneath the stars.&rdquo;
+                first lantern glow to the final dance of a Luxor evening.&rdquo;
               </p>
             </motion.blockquote>
           </motion.div>

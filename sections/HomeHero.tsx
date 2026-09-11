@@ -61,7 +61,7 @@ export function HomeHero() {
               {/* Eyebrow Text */}
               <div className="mb-6 animate-fade-in">
                 <span className="text-[#D4A95A] text-xs sm:text-sm tracking-[0.3em] uppercase font-medium">
-                  Midnight Arabian Luxury
+                  Cultural Village in Luxor
                 </span>
               </div>
 
@@ -84,17 +84,19 @@ export function HomeHero() {
 
               {/* Body Text */}
               <p className="text-[#F5E9DA]/80 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl mb-10 animate-fade-in-up animation-delay-300">
-                Step into Zalina Arabian Village — where the spirit of Arabia comes alive through timeless architecture, rich traditions, and world-class hospitality.
+                Step into Zalina Arabian Village in Luxor — where Egyptian
+                hospitality, heritage architecture and contemporary comfort come
+                together beside the Nile.
               </p>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 animate-fade-in-up animation-delay-400">
                 {/* Primary Button */}
                 <Link
-                  href="/book"
+                  href="/book-now"
                   className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#D4A95A] text-[#0B0B0F] font-medium tracking-[0.1em] uppercase text-sm rounded-sm transition-all duration-300 hover:bg-[#E2BF7A] hover:shadow-[0_0_40px_rgba(212,169,90,0.35)] hover:-translate-y-0.5"
                 >
-                  Book Your Escape
+                  Book Your Experience
                   <ArrowRight 
                     size={18} 
                     className="transition-transform duration-300 group-hover:translate-x-1" 

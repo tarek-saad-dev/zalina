@@ -106,7 +106,8 @@ export function BookingHero() {
             marginBottom: "22px",
           }}
         >
-          Choose Day Use or Bubble Stay, then complete your booking details.
+          Choose Day Use or Bubble Stay for your visit to Zalina Arabian Village
+          in Luxor, then complete your booking details.
         </motion.p>
 
         {/* Luxury tags */}

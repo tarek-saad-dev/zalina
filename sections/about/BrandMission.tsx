@@ -22,12 +22,11 @@ export function BrandMission() {
           className="body-text-about max-w-2xl mx-auto"
           style={{ fontSize: "16px" }}
         >
-          To preserve and celebrate the rich tapestry of Arabian culture while
-          providing an unparalleled luxury hospitality experience. We are committed
-          to creating spaces where heritage and modernity coexist harmoniously,
-          where every guest discovers the profound beauty of authentic Arabian
-          hospitality, and where moments become cherished memories that last a
-          lifetime.
+          To celebrate Egyptian culture and hospitality while creating an
+          unforgettable guest experience in Luxor. We are committed to spaces
+          where heritage and contemporary comfort coexist — where every guest
+          discovers the beauty of Egyptian hospitality, and where moments become
+          cherished memories.
         </p>
 
         {/* Decorative Line */}

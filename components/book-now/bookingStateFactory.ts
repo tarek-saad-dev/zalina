@@ -10,6 +10,7 @@ export const BOOKING_STORAGE_KEY = "zalina.booking.state";
 
 export function createEmptyDayUseState(): DayUseState {
   return {
+    productId: null,
     visitDate: null,
     guests: 1,
   };

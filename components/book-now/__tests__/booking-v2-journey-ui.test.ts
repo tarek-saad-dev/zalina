@@ -49,7 +49,7 @@ describe("Phase 3 journey UI helpers", () => {
   it("Day Use estimate uses API price_per_guest", () => {
     const s = state({
       productType: "day_use",
-      dayUse: { visitDate: "2099-08-20", guests: 3 },
+      dayUse: { productId: 1, visitDate: "2099-08-20", guests: 3 },
     });
     expect(selectEstimatedTotal(s, [], 150)).toBe(450);
     expect(selectEstimatedTotal(s, [], null)).toBeNull();
@@ -58,6 +58,7 @@ describe("Phase 3 journey UI helpers", () => {
   it("progress labels match product-specific journeys", () => {
     expect(DAY_USE_STEPS.map((s) => s.label)).toEqual([
       "Experience",
+      "Day Use",
       "Date & Guests",
       "Your Details",
       "Review",
@@ -76,6 +77,10 @@ describe("Phase 3 journey UI helpers", () => {
       "bubble_stay",
       "day_use",
     ]);
+    expect(PRODUCT_OPTIONS.find((o) => o.id === "bubble_stay")?.comingSoon).toBe(
+      true
+    );
+    expect(PRODUCT_OPTIONS.find((o) => o.id === "day_use")?.comingSoon).toBeFalsy();
   });
 
   it("accommodation types render from API metadata without frontend constants", () => {

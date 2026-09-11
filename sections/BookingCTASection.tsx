@@ -43,27 +43,27 @@ export function BookingCTASection() {
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-text-primary leading-tight mb-6">
             Reserve Your
             <br />
-            <span className="text-gradient-gold">Arabian Escape</span>
+            <span className="text-gradient-gold">Luxor Experience</span>
           </h2>
 
           {/* Description */}
           <p className="text-text-secondary text-lg md:text-xl leading-relaxed mb-10 max-w-2xl mx-auto">
-            Whether you seek a peaceful retreat, an adventure-filled escape, or a 
-            celebration to remember, our concierge team is ready to craft your 
-            perfect Zalina experience.
+            Whether you seek a cultural day visit, an evening of dining and
+            entertainment, or a celebration to remember, our team is ready to
+            craft your perfect Zalina experience in Luxor.
           </p>
 
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <PrimaryButton href="#" size="large">
+            <PrimaryButton href="/book-now" size="large">
               Book Now
             </PrimaryButton>
             <a 
-              href="tel:+971234567890" 
+              href="tel:+16232041074" 
               className="text-text-secondary hover:text-accent-gold transition-colors duration-300"
             >
               <span className="text-sm tracking-wide">Or call us at</span>
-              <span className="block text-lg font-medium">+971 2 345 6789</span>
+              <span className="block text-lg font-medium">+1 623 204 1074</span>
             </a>
           </div>
 

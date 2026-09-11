@@ -32,7 +32,7 @@ export function Hero() {
       >
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Aerial view of Zalina Arabian Village at night with heritage architecture, lanterns, and palms"
+          alt="Zalina Arabian Village in Luxor — heritage architecture, lanterns and palms"
           fill
           className="object-cover"
           priority
@@ -124,7 +124,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.9, delay: 0.5 }}
         >
-          Explore the World of Zalina
+          Explore the Spaces of Zalina
         </motion.h1>
 
         {/* Subtitle */}
@@ -135,8 +135,8 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.8 }}
         >
-          Four distinct spaces, each crafted for a different kind of gathering
-          — from open-air celebrations to royal indoor occasions.
+          Distinct spaces in Luxor — arrival, market and dining — each crafted
+          for hospitality, exploration and celebration.
         </motion.p>
 
         {/* Buttons */}

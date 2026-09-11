@@ -110,7 +110,7 @@ export const JOURNEY_STEPS: JourneyStep[] = [
   {
     number: 1,
     title: "Arrival & Welcome",
-    description: "Step through the grand gates into a world of Arabian elegance",
+    description: "Step through the gates into a world of Egyptian hospitality",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {

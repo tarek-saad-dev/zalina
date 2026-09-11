@@ -73,7 +73,7 @@ export function CTASection() {
               id="final-cta-heading"
               className="exp-section-heading-lg mb-8 sm:mb-10"
             >
-              Choose Your Next Signature Experience
+              Choose Your Next Luxor Experience
             </h2>
 
             <div className="flex w-full max-w-xs flex-col items-stretch justify-center gap-2.5 mx-auto sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-3.5">
@@ -81,7 +81,7 @@ export function CTASection() {
                 Book Now
               </Link>
               <Link href={CONTACT_HREF} className="exp-btn-secondary">
-                Contact Us
+                View Experiences
               </Link>
             </div>
           </div>

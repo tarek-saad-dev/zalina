@@ -1,15 +1,36 @@
 import { apiFetch } from "./client";
-import { normalizeDayUseSettings, type RawDayUseSettings } from "./adapters";
-import type { DayUseSettings } from "./booking-types";
+import {
+  normalizeDayUseProduct,
+  type RawDayUseProduct,
+} from "./adapters";
+import type { DayUseProduct } from "./booking-types";
 import { resolveApiLocale } from "./locale";
 
-/** GET /day-use — public Day Use product settings for checkout. */
-export async function getDayUseSettings(
+function asDayUseProductList(raw: unknown): RawDayUseProduct[] {
+  if (Array.isArray(raw)) return raw as RawDayUseProduct[];
+  if (raw && typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    if (Array.isArray(obj.data)) return obj.data as RawDayUseProduct[];
+  }
+  return [];
+}
+
+/** GET /day-use — public Day Use product catalog (array in response.data). */
+export async function getDayUseProducts(
   locale?: string
-): Promise<DayUseSettings> {
-  const raw = await apiFetch<RawDayUseSettings>("/day-use", {
+): Promise<DayUseProduct[]> {
+  const raw = await apiFetch<unknown>("/day-use", {
     locale: resolveApiLocale(locale),
     cache: "no-store",
   });
-  return normalizeDayUseSettings(raw);
+  return asDayUseProductList(raw)
+    .map(normalizeDayUseProduct)
+    .filter((product) => product.is_active);
+}
+
+/** @deprecated Use getDayUseProducts — endpoint now returns an array. */
+export async function getDayUseSettings(
+  locale?: string
+): Promise<DayUseProduct[]> {
+  return getDayUseProducts(locale);
 }

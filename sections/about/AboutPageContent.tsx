@@ -31,53 +31,53 @@ const STARS = [
 const MANIFESTO = [
   {
     num: "01",
-    title: "Heritage Reimagined",
-    body: "Ancient Arabian character interpreted through contemporary luxury — every element speaks of a culture worth celebrating.",
+    title: "Heritage Inspired",
+    body: "Egyptian character interpreted through contemporary hospitality — craft, cuisine and atmosphere rooted in Luxor’s cultural world.",
   },
   {
     num: "02",
     title: "Hospitality with Presence",
-    body: "A warm, attentive experience designed around comfort, detail, and memory — where every guest feels genuinely seen.",
+    body: "A warm, attentive experience designed around comfort, detail, and memory — where every guest feels genuinely welcomed.",
   },
   {
     num: "03",
-    title: "Nights Made to Last",
-    body: "Dining, rituals, weddings, and gatherings shaped into unforgettable moments that outlast the evening itself.",
+    title: "Evenings Made to Last",
+    body: "Dining, performance, markets and gatherings shaped into unforgettable Luxor moments that outlast the evening itself.",
   },
 ];
 
 const PILLARS = [
   {
     title: "Heritage",
-    desc: "Rooted in the grandeur of Ancient Arabian culture.",
+    desc: "Inspired by Egyptian culture and the spirit of Luxor.",
     img: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     title: "Atmosphere",
-    desc: "A cinematic night setting unlike anywhere else.",
+    desc: "Gardens, courtyards and evening light shaped for gathering.",
     img: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     title: "Celebration",
-    desc: "From intimate dinners to grand wedding nights.",
+    desc: "From cultural dinners to destination wedding nights.",
     img: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
 const STORIES = [
-  "Desert Dining",
-  "Private Majlis",
-  "Arabian Rituals",
+  "Egyptian Dining",
+  "Village Gatherings",
+  "Cultural Evenings",
   "Wedding Nights",
-  "VIP Gatherings",
+  "Private Celebrations",
 ];
 
 const DIFFERENCE = [
-  "Immersive Arabian atmosphere crafted with intention",
-  "Curated cultural experiences rooted in authenticity",
-  "Premium hospitality with personal attention to every detail",
-  "Cinematic night setting designed for memory-making",
-  "Purpose-built for dining, weddings & private events",
+  "Immersive Luxor atmosphere crafted with intention",
+  "Curated cultural experiences rooted in Egyptian hospitality",
+  "Premium service with personal attention to every detail",
+  "Evening setting designed for dining, music and memory-making",
+  "Purpose-built for experiences, weddings and private events",
 ];
 
 /* ─── Section: Hero ─────────────────────────────────────── */
@@ -134,8 +134,8 @@ function AboutHeroSection() {
           variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.8, delay: 0.85 }}
           style={{ fontFamily: "var(--font-body, sans-serif)", fontSize: "clamp(15px, 1.4vw, 18px)", color: "rgba(248,245,237,0.68)", lineHeight: 1.8, maxWidth: "600px" }}
         >
-          Zalina is a living Arabian experience where heritage, hospitality,
-          and celebration come together beneath the stars.
+          Zalina is an immersive cultural village in Luxor — where Egyptian
+          hospitality, dining, music and celebration come together.
         </motion.p>
 
         {/* Scroll cue */}
@@ -171,12 +171,12 @@ function BrandStorySection() {
           >
             {/* Back image */}
             <div className="absolute" style={{ top: 0, left: "10%", width: "72%", height: "380px", border: "1px solid rgba(212,175,55,0.2)", boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
-              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Twilight Gatherings at Zalina" fill className="object-cover" />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Evening gatherings at Zalina Arabian Village in Luxor" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.35) 0%, transparent 60%)" }} />
             </div>
             {/* Front image */}
             <div className="absolute" style={{ bottom: 0, right: 0, width: "58%", height: "280px", border: "1px solid rgba(212,175,55,0.25)", boxShadow: "0 32px 64px rgba(0,0,0,0.7)", zIndex: 2 }}>
-              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Arabian Flavors at Zalina" fill className="object-cover" />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Egyptian flavours and hospitality at Zalina" fill className="object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.25) 0%, transparent 70%)" }} />
             </div>
             {/* Gold accent dot */}
@@ -206,11 +206,10 @@ function BrandStorySection() {
               variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.25 }}
               style={{ fontFamily: "var(--font-body)", fontSize: "clamp(14px, 1.3vw, 16px)", color: "rgba(248,245,237,0.65)", lineHeight: 1.85, marginBottom: "32px" }}
             >
-              Zalina Arabian Village was conceived as a sanctuary — a place where
-              the richness of Arabian heritage isn&apos;t preserved behind glass, but
-              lived and felt. From curated desert dining under open skies to intimate
-              cultural rituals and grand wedding celebrations, every corner of Zalina
-              carries warmth, intention, and timeless beauty.
+              Zalina Arabian Village was created as a place to experience Luxor
+              through hospitality — Egyptian flavours, live cooking, craft and
+              performance, set within a village of courtyards and evening light.
+              Inspired by heritage. Designed for today.
             </motion.p>
 
             {/* Pull quote */}
@@ -220,7 +219,7 @@ function BrandStorySection() {
               style={{ borderLeft: "2px solid rgba(212,175,55,0.45)" }}
             >
               <p style={{ fontFamily: "var(--font-display, serif)", fontSize: "clamp(16px, 1.6vw, 20px)", fontStyle: "italic", color: "rgba(212,175,55,0.85)", lineHeight: 1.6 }}>
-                &ldquo;Every detail is designed to make the night feel timeless.&rdquo;
+                &ldquo;Every detail is designed to make a Luxor evening feel unforgettable.&rdquo;
               </p>
             </motion.blockquote>
           </div>
@@ -355,9 +354,9 @@ function ImmersiveStoriesSection() {
               variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}
               style={{ fontFamily: "var(--font-body)", fontSize: "clamp(14px, 1.3vw, 16px)", color: "rgba(248,245,237,0.62)", lineHeight: 1.85, marginBottom: "36px" }}
             >
-              From the first lantern glow to the final moment under the stars,
-              Zalina turns every visit into a layered Arabian story — felt, not
-              just experienced.
+              From the first welcome drink to the final notes of the evening,
+              Zalina turns every visit into a layered Luxor story — felt through
+              food, music, craft and hospitality.
             </motion.p>
 
             {/* Story list */}
@@ -382,7 +381,7 @@ function ImmersiveStoriesSection() {
             style={{ minHeight: "580px" }}
           >
             <div className="relative w-full h-full" style={{ minHeight: "580px" }}>
-              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Immersive Arabian Stories at Zalina" fill className="object-cover" style={{ border: "1px solid rgba(212,175,55,0.18)" }} />
+              <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Immersive cultural stories at Zalina Arabian Village in Luxor" fill className="object-cover" style={{ border: "1px solid rgba(212,175,55,0.18)" }} />
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(5,5,5,0.3) 0%, transparent 60%)" }} />
               {/* decorative frame corner */}
               <div className="absolute top-4 left-4 w-10 h-10 pointer-events-none" style={{ borderTop: "1px solid rgba(212,175,55,0.5)", borderLeft: "1px solid rgba(212,175,55,0.5)" }} />
@@ -466,7 +465,7 @@ function AboutCTASection() {
     <section className="w-full relative overflow-hidden" style={{ paddingTop: "120px", paddingBottom: "120px" }}>
       {/* Background */}
       <div className="absolute inset-0">
-        <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Zalina Starlit Night" fill className="object-cover" />
+        <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Evening illumination at Zalina Arabian Village in Luxor" fill className="object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.7) 50%, rgba(5,5,5,0.92) 100%)" }} />
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 65% 50% at 50% 50%, rgba(212,175,55,0.09) 0%, transparent 70%)" }} />
       </div>
@@ -507,7 +506,7 @@ function AboutCTASection() {
             Explore Experiences
           </Link>
           <Link
-            href="/book"
+            href="/book-now"
             className="inline-flex items-center justify-center px-10 py-4 text-xs font-medium uppercase transition-all duration-300"
             style={{ fontFamily: "var(--font-body)", background: "transparent", color: "rgba(248,245,237,0.8)", border: "1px solid rgba(212,175,55,0.38)", borderRadius: "2px", letterSpacing: "0.18em" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "#D4AF37"; (e.currentTarget as HTMLElement).style.color = "#D4AF37"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}

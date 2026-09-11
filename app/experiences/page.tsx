@@ -16,21 +16,20 @@ import { getExperiences, mapExperienceToCatalogItem } from "@/lib/api";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Experiences | Zalina Arabian Village",
+  title: "Experiences | Zalina Arabian Village Luxor",
   description:
-    "Discover curated luxury experiences at Zalina Arabian Village. From signature dining to sunset celebrations, create unforgettable memories beneath the stars.",
+    "Discover Luxor cultural experiences at Zalina Arabian Village — Egyptian dining, live cooking, entertainment and village exploration.",
   keywords: [
-    "Zalina experiences",
-    "luxury dining",
-    "Arabian hospitality",
-    "desert experiences",
-    "signature events",
-    "Egypt luxury destination",
+    "Zalina Luxor experiences",
+    "Luxor dinner experience",
+    "Luxor cultural experience",
+    "Egyptian hospitality Luxor",
+    "things to do in Luxor",
   ],
   openGraph: {
-    title: "Experiences | Zalina Arabian Village",
+    title: "Experiences | Zalina Arabian Village Luxor",
     description:
-      "Signature moments crafted with elegance, heritage, and Arabian warmth.",
+      "Egyptian cuisine, cultural evenings and village hospitality in the heart of Luxor.",
     type: "website",
     images: [{ url: "/assets/zalina-hero-bg.png", width: 1200, height: 630 }],
   },

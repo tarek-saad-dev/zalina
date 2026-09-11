@@ -455,8 +455,8 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             className="lux-body max-w-2xl mx-auto"
             style={{ fontSize: "0.95rem", opacity: 0.8 }}
           >
-            Discover the atmosphere, architecture, and unforgettable moments that
-            define the Zalina experience.
+            Discover the atmosphere, architecture and unforgettable moments of
+            Zalina Arabian Village in Luxor.
           </motion.p>
         </div>
       </div>

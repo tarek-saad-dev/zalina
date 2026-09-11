@@ -20,7 +20,6 @@ interface StepDayUseDateGuestsProps {
   onReloadSettings: () => void;
   onSetVisitDate: (date: string | null) => void;
   onSetDayUseGuests: (n: number) => void;
-  onSwitchToBubbleStay: () => void;
 }
 
 export function StepDayUseDateGuests({
@@ -31,7 +30,6 @@ export function StepDayUseDateGuests({
   onReloadSettings,
   onSetVisitDate,
   onSetDayUseGuests,
-  onSwitchToBubbleStay,
 }: StepDayUseDateGuestsProps) {
   if (settingsStatus === "loading" || settingsStatus === "idle") {
     return (
@@ -81,7 +79,7 @@ export function StepDayUseDateGuests({
     );
   }
 
-  if (settings && !settings.is_active) {
+  if (!settings || !settings.is_active) {
     return (
       <div>
         <StepHeading />
@@ -110,19 +108,11 @@ export function StepDayUseDateGuests({
               fontSize: "14px",
               color: TEXT_MUTED,
               lineHeight: 1.7,
-              marginBottom: "20px",
             }}
           >
-            {settings.booking_notice?.trim() ||
-              "Please choose Bubble Stay, or return when Day Use opens again."}
+            {settings?.booking_notice?.trim() ||
+              "Please select a Day Use experience, or return when Day Use opens again."}
           </p>
-          <button
-            type="button"
-            onClick={onSwitchToBubbleStay}
-            style={primaryButtonStyle}
-          >
-            Choose Bubble Stay
-          </button>
         </div>
       </div>
     );
@@ -292,20 +282,5 @@ const ghostButtonStyle: CSSProperties = {
   border: "1px solid rgba(255,255,255,0.14)",
   borderRadius: "9px",
   padding: "10px 16px",
-  cursor: "pointer",
-};
-
-const primaryButtonStyle: CSSProperties = {
-  fontFamily: "var(--font-body)",
-  fontSize: "12px",
-  fontWeight: 600,
-  letterSpacing: "0.1em",
-  textTransform: "uppercase",
-  color: "#0D0B08",
-  background:
-    "linear-gradient(135deg, rgba(212,175,55,0.95), rgba(232,199,102,0.95))",
-  border: "none",
-  borderRadius: "9px",
-  padding: "12px 20px",
   cursor: "pointer",
 };

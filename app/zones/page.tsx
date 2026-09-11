@@ -16,21 +16,20 @@ import { getZones, mapZoneToUi } from "@/lib/api";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Zones & Venues | Zalina Arabian Village",
+  title: "Zones & Venues | Zalina Arabian Village Luxor",
   description:
-    "Discover our signature zones and venues at Zalina Arabian Village. From the Royal Wedding Court to the Desert Lounge, find the perfect space for your event.",
+    "Explore the spaces of Zalina Arabian Village in Luxor — Arrival Plaza, Al-Souk Village market, and Food & Entertainment.",
   keywords: [
     "Zalina zones",
-    "wedding venues",
-    "event spaces",
-    "Arabian village",
-    "luxury venues",
-    "Royal Wedding Court",
+    "Luxor village spaces",
+    "Al-Souk Village",
+    "event spaces Luxor",
+    "Zalina Arabian Village",
   ],
   openGraph: {
-    title: "Zones & Venues | Zalina Arabian Village",
+    title: "Zones & Venues | Zalina Arabian Village Luxor",
     description:
-      "Discover our signature zones and venues at Zalina Arabian Village.",
+      "Discover the village spaces of Zalina in Luxor — market, dining and gathering areas shaped for hospitality.",
     type: "website",
   },
 };

@@ -43,7 +43,7 @@ export function Hero() {
       <motion.div className="absolute inset-0 will-change-transform" style={{ y, scale }}>
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Lantern-lit Arabian courtyard under a starlit desert sky"
+          alt="Courtyards and evening light at Zalina Arabian Village in Luxor"
           fill
           priority
           sizes="100vw"
@@ -112,7 +112,7 @@ export function Hero() {
         <div className="exp-container flex max-w-3xl flex-col items-center">
           <div className="exp-enter exp-enter-delay-1 mb-6 flex items-center gap-3 sm:mb-8 sm:gap-4">
             <span className="exp-editorial-line" aria-hidden="true" />
-            <p className="exp-eyebrow">Curated Experiences</p>
+            <p className="exp-eyebrow">Experiences in Luxor</p>
             <span className="exp-editorial-line" aria-hidden="true" />
           </div>
 
@@ -120,15 +120,16 @@ export function Hero() {
             className="exp-enter exp-enter-delay-2 exp-heading mb-5 max-w-[16ch] sm:mb-6 sm:max-w-3xl"
             style={{ textShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
           >
-            Designed to Be Remembered
+            Dining, Culture &amp; Evenings to Remember
           </h1>
 
           <p
             className="exp-enter exp-enter-delay-3 exp-body mb-8 max-w-md sm:mb-10 sm:max-w-lg"
             style={{ textShadow: "0 2px 16px rgba(0,0,0,0.45)" }}
           >
-            Discover signature moments crafted with elegance, heritage, and
-            Arabian warmth beneath the stars.
+            Egyptian cuisine, live cooking, village exploration and cultural
+            performance — experiences shaped for guests, hotels and travellers
+            discovering Luxor.
           </p>
 
           <div className="exp-enter exp-enter-delay-4 flex w-full max-w-xs flex-col items-stretch justify-center gap-2.5 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-3.5">

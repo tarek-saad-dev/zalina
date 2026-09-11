@@ -3,27 +3,52 @@ import type { Zone } from "@/sections/zones/zones.data";
 import { resolveCoverImage } from "@/lib/media";
 import type { ApiExperience, ApiZone } from "./types";
 
+/** Luxor-safe fallbacks when CMS descriptions are empty. Prefer CMS text when present. */
 const ZONE_COPY: Record<
   string,
   { description: string; bestFor: string; mood: string }
 > = {
   souk: {
     description:
-      "An authentic Arabian marketplace village with tents, dining, and heritage atmosphere.",
+      "A living country market village with dining, crafts and heritage atmosphere in Luxor.",
     bestFor: "Stays, dining, cultural evenings",
     mood: "Warm / Vibrant / Heritage",
   },
   vip: {
     description:
-      "An exclusive oasis of private cabanas and elevated hospitality for refined gatherings.",
+      "Private spaces and elevated hospitality for refined gatherings in Luxor.",
     bestFor: "VIP stays, private dining, celebrations",
     mood: "Private / Luxurious / Intimate",
   },
   arena: {
     description:
-      "A dramatic desert arena for shows, gatherings, and cinematic night spectaculars.",
+      "A dramatic performance space for shows, gatherings and cinematic evening spectaculars.",
     bestFor: "Shows, large gatherings, night events",
-    mood: "Grand / Theatrical / Desert night",
+    mood: "Grand / Theatrical / Evening",
+  },
+};
+
+const SLUG_ZONE_COPY: Record<
+  string,
+  { description: string; bestFor: string; mood: string }
+> = {
+  "arrival-plaza": {
+    description:
+      "The welcoming threshold of Zalina — where guests arrive into the village atmosphere of Luxor.",
+    bestFor: "Arrival, welcome moments, photography",
+    mood: "Open / Welcoming / First impression",
+  },
+  "al-souk-village": {
+    description:
+      "A country market at the heart of the village — Egyptian crafts, flavours and lanes made for wandering.",
+    bestFor: "Shopping, exploration, daytime visits",
+    mood: "Warm / Vibrant / Heritage",
+  },
+  "food-&-entertainment": {
+    description:
+      "The dining and performance heart of Zalina — Egyptian cuisine, live cooking and cultural evenings.",
+    bestFor: "Dining, shows, night experiences",
+    mood: "Lively / Culinary / Celebratory",
   },
 };
 
@@ -43,27 +68,44 @@ function titleCaseType(type: string): string {
   return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 }
 
+function pickLocalized(
+  locale: "en" | "ar",
+  ar: string | null | undefined,
+  en: string | null | undefined
+): string {
+  const preferred = locale === "ar" ? ar || en : en || ar;
+  return (preferred || "").trim();
+}
+
 export function mapZoneToUi(zone: ApiZone, locale: "en" | "ar" = "en"): Zone {
   const typeKey = (zone.type || "").toLowerCase();
-  const copy = ZONE_COPY[typeKey] ?? {
-    description:
-      (locale === "ar"
-        ? zone.description_ar || zone.description_en
-        : zone.description_en || zone.description_ar) ||
-      `${zone.name_en} at Zalina Arabian Village.`,
-    bestFor: zone.is_bookable_online
-      ? "Online booking available"
-      : "Inquire to book",
-    mood: titleCaseType(zone.type || "Zone"),
-  };
+  const slugKey = (zone.slug_en || "").toLowerCase();
+  const cmsDescription = pickLocalized(
+    locale,
+    zone.description_ar,
+    zone.description_en
+  );
+
+  const typedFallback = ZONE_COPY[typeKey];
+  const slugFallback = SLUG_ZONE_COPY[slugKey];
+  const fallback =
+    typedFallback ??
+    slugFallback ?? {
+      description: `${zone.name_en} at Zalina Arabian Village in Luxor.`,
+      bestFor: zone.is_bookable_online
+        ? "Online booking available"
+        : "Inquire to book",
+      mood: titleCaseType(zone.type || "Zone"),
+    };
+
   const title = locale === "ar" ? zone.name_ar || zone.name_en : zone.name_en;
   const cover = resolveCoverImage(zone, { entityName: title });
   return {
     id: zone.slug_en,
     title,
-    description: copy.description,
-    bestFor: copy.bestFor,
-    mood: copy.mood,
+    description: cmsDescription || fallback.description,
+    bestFor: fallback.bestFor,
+    mood: fallback.mood,
     image: cover.url,
     imageAlt: cover.alt,
     apiId: zone.id,
@@ -78,14 +120,16 @@ export function mapExperienceToCatalogItem(
   item: ApiExperience,
   locale: "en" | "ar" = "en"
 ): ExperienceItem {
-  const typeKey = (item.type || "").toLowerCase();
+  const typeKey = (item.type || item.category || "").toLowerCase();
   const labelMap: Record<string, ExperienceItem["label"]> = {
     dinner: "Dinner",
     show: "Show",
     ritual: "Ritual",
+    day: "Day",
+    night: "Night",
   };
-  const label = labelMap[typeKey] ?? titleCaseType(item.type);
-  const category =
+  const label = labelMap[typeKey] ?? titleCaseType(typeKey || "Experience");
+  const filterCategory =
     label === "Dinner" || label === "Show" || label === "Ritual"
       ? label
       : null;
@@ -96,26 +140,38 @@ export function mapExperienceToCatalogItem(
       ? item.zone?.name_ar || item.zone?.name_en || ""
       : item.zone?.name_en || "";
   const price = parsePrice(item.price_per_person);
+  const cmsDescription = pickLocalized(
+    locale,
+    item.description_ar,
+    item.description_en
+  );
 
   const categories: ExperienceItem["categories"] = ["All Experiences"];
-  if (category) categories.push(category);
+  if (filterCategory) categories.push(filterCategory);
 
   const cover = resolveCoverImage(item, { entityName: title });
+
+  let description = cmsDescription;
+  if (!description) {
+    description =
+      price > 0
+        ? `${formatEgp(price)} per person · ${zoneName || "Luxor"}`
+        : zoneName
+          ? `${zoneName} · Zalina Arabian Village, Luxor`
+          : "Zalina Arabian Village, Luxor";
+  }
 
   return {
     id: String(item.id),
     title,
-    description:
-      price > 0
-        ? `${formatEgp(price)} per person · ${zoneName}`
-        : zoneName || "Zalina Arabian Village",
+    description,
     image: cover.url,
     imageAlt: cover.alt,
     label,
     categories,
-    tags: [label, zoneName].filter(Boolean),
+    tags: [label, zoneName, "Luxor"].filter(Boolean),
     href: "/book-now",
-    type: item.type,
+    type: item.type || item.category,
     price,
   };
 }

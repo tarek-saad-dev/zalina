@@ -4,6 +4,7 @@ import type { MediaAsset } from "@/lib/media";
 /** Semantic wizard step IDs (product-specific flows). */
 export type BookingStepId =
   | "product"
+  | "day_use_product"
   | "date_guests"
   | "dates_guests"
   | "bubbles"
@@ -29,6 +30,8 @@ export interface BubbleSelection {
 }
 
 export interface DayUseState {
+  /** Selected Day Use catalog product id (numeric API id, never slug). */
+  productId: number | null;
   visitDate: string | null;
   guests: number;
 }
@@ -104,6 +107,7 @@ export interface BookingStepDefinition {
 
 export type BookingValidationCode =
   | "missing_product"
+  | "missing_day_use_product"
   | "invalid_visit_date"
   | "invalid_guest_count"
   | "invalid_check_in"

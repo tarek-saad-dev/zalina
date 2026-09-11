@@ -9,7 +9,7 @@ const features = [
   {
     icon: Heart,
     title: "Romantic Setting",
-    description: "Breathtaking desert backdrop for your special day",
+    description: "A breathtaking Luxor backdrop for your special day",
   },
   {
     icon: Sparkles,

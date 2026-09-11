@@ -103,6 +103,7 @@ describe("DAY USE integration hardening", () => {
     const createDayUse = vi.fn(async (payload: unknown) => {
       expect(payload).toEqual({
         product_type: "day_use",
+        day_use_product_id: 7,
         visit_date: "2099-08-20",
         guests: 2,
         guest_name: "Guest",
@@ -131,7 +132,7 @@ describe("DAY USE integration hardening", () => {
 
     const state = guestReady({
       productType: "day_use",
-      dayUse: { visitDate: "2099-08-20", guests: 2 },
+      dayUse: { productId: 7, visitDate: "2099-08-20", guests: 2 },
     });
     await runner.reserveAndPay(state, TYPES, 150);
     expect(runner.state.booking?.total).toBe("320.00");
@@ -155,7 +156,7 @@ describe("DAY USE integration hardening", () => {
     await runner.reserveAndPay(
       guestReady({
         productType: "day_use",
-        dayUse: { visitDate: "2099-08-20", guests: 1 },
+        dayUse: { productId: 7, visitDate: "2099-08-20", guests: 1 },
       }),
       TYPES,
       150
@@ -546,7 +547,7 @@ describe("timezone / midnight date-only", () => {
   it("past visit date rejected relative to local today", () => {
     const now = new Date(2026, 7, 13, 1, 0, 0);
     const issues = validateDayUseDates(
-      { visitDate: "2026-08-12", guests: 1 },
+      { productId: 1, visitDate: "2026-08-12", guests: 1 },
       now
     );
     expect(issues.some((i) => i.code === "invalid_visit_date")).toBe(true);
@@ -599,7 +600,7 @@ describe("security contract", () => {
     const day = prepareBookingPayload(
       guestReady({
         productType: "day_use",
-        dayUse: { visitDate: "2099-08-20", guests: 1 },
+        dayUse: { productId: 7, visitDate: "2099-08-20", guests: 1 },
       }),
       TYPES
     );
@@ -623,7 +624,7 @@ describe("network uncertainty after create", () => {
     await runner.reserveAndPay(
       guestReady({
         productType: "day_use",
-        dayUse: { visitDate: "2099-08-20", guests: 1 },
+        dayUse: { productId: 7, visitDate: "2099-08-20", guests: 1 },
       }),
       TYPES,
       100

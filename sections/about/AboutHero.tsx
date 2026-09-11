@@ -12,7 +12,7 @@ export function AboutHero() {
       <div className="absolute inset-0">
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Zalina Arabian Village - Luxury Desert Hospitality"
+          alt="Zalina Arabian Village — Egyptian hospitality in Luxor"
           fill
           className="object-cover"
           priority
@@ -84,7 +84,7 @@ export function AboutHero() {
           className="body-text-about max-w-2xl"
           style={{ color: "rgba(214, 210, 203, 0.9)" }}
         >
-          Where Arabian heritage meets contemporary luxury, creating timeless
+          Where Egyptian heritage meets contemporary hospitality, creating timeless
           moments of connection and wonder
         </p>
       </div>
