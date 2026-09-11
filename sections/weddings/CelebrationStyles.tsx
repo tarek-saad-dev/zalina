@@ -107,7 +107,7 @@ export function CelebrationStyles() {
                   {style.description}
                 </p>
                 <Link
-                  href="/book-now"
+                  href="/weddings#plan"
                   className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)]"
                   style={{ height: "34px", paddingInline: "18px" }}
                 >

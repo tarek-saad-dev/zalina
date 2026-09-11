@@ -104,7 +104,7 @@ export function ConsultationCTA() {
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/book-now"
+                href="/weddings#plan"
                 className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{ height: "44px", paddingInline: "28px" }}
               >
