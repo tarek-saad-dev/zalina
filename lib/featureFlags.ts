@@ -5,5 +5,5 @@
 
 export const FEATURE_FLAGS = {
   /** When false, all wedding pages/sections show a "Coming Soon" overlay. */
-  WEDDINGS_ACTIVE: false,
+  WEDDINGS_ACTIVE: true,
 } as const;

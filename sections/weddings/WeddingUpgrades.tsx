@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import {
@@ -9,12 +10,14 @@ import {
 import { WEDDING_COPY } from "./content/weddingCopy";
 import { pickLocale } from "./content/locale";
 import { BESPOKE_UPGRADES } from "./content/bespokeUpgrades";
+import { resolveWeddingMediaSrc, WEDDING_MEDIA } from "./content/weddingMedia";
 
 export function WeddingUpgrades() {
   const locale = useBookingLocale();
   const prefersReduced = useReducedMotion();
   const conciergeHref = getWeddingConciergeHref();
   const conciergeReady = isWeddingConciergeConfigured();
+  const hospitalitySrc = resolveWeddingMediaSrc("upgradesHospitality");
 
   return (
     <section
@@ -22,32 +25,47 @@ export function WeddingUpgrades() {
       aria-labelledby="wedding-upgrades-title"
     >
       <div className="zones-container">
-        <div className="max-w-2xl mb-10">
-          <p
-            className="text-[11px] tracking-[0.28em] uppercase mb-4"
-            style={{ color: "var(--zones-gold)" }}
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] items-start mb-10">
+          <div>
+            <p
+              className="text-[11px] tracking-[0.28em] uppercase mb-4"
+              style={{ color: "var(--zones-gold)" }}
+            >
+              {pickLocale(locale, WEDDING_COPY.upgradesEyebrow)}
+            </p>
+            <h2
+              id="wedding-upgrades-title"
+              className="zones-section-title mb-4"
+              style={{ color: "#F8F2E7" }}
+            >
+              {pickLocale(locale, WEDDING_COPY.upgradesHeadline)}
+            </h2>
+            <p
+              className="zones-body mb-3"
+              style={{ color: "rgba(248,242,231,0.7)" }}
+            >
+              {pickLocale(locale, WEDDING_COPY.upgradesSupport)}
+            </p>
+            <p className="text-sm" style={{ color: "rgba(212,175,55,0.85)" }}>
+              {pickLocale(locale, WEDDING_COPY.upgradesNote)}
+            </p>
+          </div>
+          <motion.div
+            className="relative aspect-[16/10] overflow-hidden"
+            style={{ borderRadius: "2px" }}
+            initial={!prefersReduced ? { opacity: 0, y: 16 } : undefined}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.6 }}
           >
-            {pickLocale(locale, WEDDING_COPY.upgradesEyebrow)}
-          </p>
-          <h2
-            id="wedding-upgrades-title"
-            className="zones-section-title mb-4"
-            style={{ color: "#F8F2E7" }}
-          >
-            {pickLocale(locale, WEDDING_COPY.upgradesHeadline)}
-          </h2>
-          <p
-            className="zones-body mb-3"
-            style={{ color: "rgba(248,242,231,0.7)" }}
-          >
-            {pickLocale(locale, WEDDING_COPY.upgradesSupport)}
-          </p>
-          <p
-            className="text-sm"
-            style={{ color: "rgba(212,175,55,0.85)" }}
-          >
-            {pickLocale(locale, WEDDING_COPY.upgradesNote)}
-          </p>
+            <Image
+              src={hospitalitySrc}
+              alt={pickLocale(locale, WEDDING_MEDIA.upgradesHospitality.alt)}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 45vw"
+            />
+          </motion.div>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">

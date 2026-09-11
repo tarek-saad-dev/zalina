@@ -1,12 +1,15 @@
 /**
  * Typed Wedding media map.
  *
- * Primary production story requires cleaned assets under /public/assets/weddings/.
- * Set `productionReady: true` only after cleaned Image 1 / 3 / 4 are on disk
- * without diagram annotations.
+ * Primary production story uses cleaned Zalina concept assets under
+ * /public/assets/weddings/.
  *
- * `/assets/wedding.png` is a local-dev fallback only — never treat it as
- * production-ready primary imagery for enabling WEDDINGS_ACTIVE.
+ * Source files 1–5.jpeg remain as originals.
+ * Canonical production files:
+ * - 01-hero-evening-wide.jpg (Image 1 cropped above SIDE VIEW annotation)
+ * - 03-stage-performance-portrait.jpg (Image 3, clean)
+ * - 04-kosha-musicians-portrait.jpg (Image 4, clean)
+ * - 02 / 05 hospitality crops (optional; labels removed by top crop)
  */
 
 export type WeddingMediaSlot =
@@ -37,7 +40,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Evening wedding celebration at Zalina Arabian Village with illuminated stage and dining",
       ar: "احتفال زفاف مسائي في قرية زالينا العربية مع المسرح المضاء وقاعة العشاء",
     },
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
   experience: {
@@ -46,7 +49,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Cultural performance on the Zalina wedding stage with guests dining in the foreground",
       ar: "عرض ثقافي على مسرح زفاف زالينا مع الضيوف على الموائد في المقدمة",
     },
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
   signature: {
@@ -55,7 +58,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Floral wedding kosha with live musicians and dining at Zalina",
       ar: "كوشة زفاف مزهرة مع موسيقيين وموائد في زالينا",
     },
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
   visualStoryPrimary: {
@@ -64,7 +67,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Wide view of a Zalina destination wedding evening",
       ar: "منظر واسع لأمسية زفاف في وجهة زالينا",
     },
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
   visualStorySecondary: {
@@ -73,7 +76,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Portrait of celebration and performance at Zalina",
       ar: "صورة للاحتفال والعرض في زالينا",
     },
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
   finalCta: {
@@ -82,7 +85,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Romantic wedding kosha and celebration atmosphere at Zalina",
       ar: "أجواء رومانسية لكوشة الزفاف والاحتفال في زالينا",
     },
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
   upgradesHospitality: {
@@ -91,8 +94,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
       en: "Hospitality and dining atmosphere for bespoke wedding upgrades",
       ar: "أجواء الضيافة والعشاء لترقيات الزفاف الخاصة",
     },
-    /** Diagram images stay false until labels are removed. */
-    productionReady: false,
+    productionReady: true,
     devFallback: DEV_FALLBACK,
   },
 };

@@ -65,8 +65,8 @@ describe("Wedding catalog normalization", () => {
       name_ar: "حفل زفاف زالينا سيجنتشر",
       description_en: "Complete experience",
       description_ar: "تجربة كاملة",
-      price_per_guest: "4850.00",
-      currency: "EGP",
+      price_per_guest: "95.00",
+      currency: "USD",
       minimum_guests: 150,
       maximum_guests: 500,
       premium_ok: true,
@@ -75,8 +75,8 @@ describe("Wedding catalog normalization", () => {
     });
 
     expect(pkg.slug).toBe("zalina-signature-wedding");
-    expect(pkg.price_per_guest).toBe("4850.00");
-    expect(pkg.currency).toBe("EGP");
+    expect(pkg.price_per_guest).toBe("95.00");
+    expect(pkg.currency).toBe("USD");
     expect(pkg.minimum_guests).toBe(150);
     expect(pkg.premium_ok).toBe(true);
   });
@@ -89,24 +89,24 @@ describe("Wedding catalog normalization", () => {
       is_friday: true,
       is_saturday: false,
       is_peak_date: false,
-      price_per_guest: "4850.00",
-      base_total: "727500.00",
-      premium_date_minimum_spend: "900000.00",
-      total_estimate: "900000.00",
-      currency: "EGP",
+      price_per_guest: "95.00",
+      base_total: "14250.00",
+      premium_date_minimum_spend: "18000.00",
+      total_estimate: "18000.00",
+      currency: "USD",
     });
 
     expect(avail.available).toBe(true);
     expect(avail.is_premium_date).toBe(true);
-    expect(avail.total_estimate).toBe("900000.00");
-    expect(avail.premium_date_minimum_spend).toBe("900000.00");
+    expect(avail.total_estimate).toBe("18000.00");
+    expect(avail.premium_date_minimum_spend).toBe("18000.00");
   });
 
   it("maps unavailable reason from API", () => {
     const avail = normalizeWeddingAvailability({
       available: false,
       reason: "This date is already booked for a wedding.",
-      currency: "EGP",
+      currency: "USD",
     });
     expect(avail.available).toBe(false);
     expect(avail.reason).toContain("already booked");
@@ -126,8 +126,8 @@ describe("Wedding payment handoff", () => {
       created_at: "2026-09-11T12:00:00Z",
       hold_expires_at: null,
       payment_expires_at: null,
-      total: "900000.00",
-      currency: "EGP",
+      total: "18000.00",
+      currency: "USD",
     });
     expect(handoff?.product_type).toBe("wedding");
     expect(handoff?.booking_reference).toBe("ZLN-W-1");
