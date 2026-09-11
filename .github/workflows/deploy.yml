@@ -1,0 +1,52 @@
+name: Deploy Zalina Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: zalina-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ZALINA_VPS_SSH_KEY }}
+          SSH_HOST: ${{ secrets.ZALINA_VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          SSH_HOST: ${{ secrets.ZALINA_VPS_HOST }}
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            zalina@"$SSH_HOST"
+
+      - name: Verify production
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --retry 5 \
+            --retry-delay 3 \
+            https://zalinaarabianvillage.com/ \
+            > /dev/null
+
+          echo "Production verification passed."
