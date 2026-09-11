@@ -61,7 +61,9 @@ export function LuxuryHero() {
           fill
           className="object-cover object-center"
           priority
-          quality={100}
+          fetchPriority="high"
+          sizes="100vw"
+          quality={82}
         />
       </motion.div>
 
@@ -315,18 +317,17 @@ export function LuxuryHero() {
                     }}
                   >
                     <span
-                      className="text-[9px] font-medium flex-shrink-0"
-                      style={{ color: "rgba(212,175,55,0.42)", fontFamily: "var(--font-body)", minWidth: "18px" }}
+                      className="text-[9px] tabular-nums"
+                      style={{ color: "rgba(212,175,55,0.42)", fontFamily: "var(--font-body)" }}
                     >
                       {m.num}
                     </span>
-                    <div className="w-4 h-px flex-shrink-0" style={{ background: "rgba(212,175,55,0.18)" }} />
                     <span
                       style={{
-                        fontFamily: "var(--font-display, serif)",
-                        fontSize: "13px",
+                        fontFamily: "var(--font-body, sans-serif)",
+                        fontSize: "12px",
                         color: "rgba(248,245,237,0.72)",
-                        letterSpacing: "0.02em",
+                        letterSpacing: "0.04em",
                       }}
                     >
                       {m.label}
@@ -334,166 +335,35 @@ export function LuxuryHero() {
                   </div>
                 ))}
               </div>
-
-              <div className="px-6 py-4" style={{ borderTop: "1px solid rgba(212,175,55,0.08)" }}>
-                <Link
-                  href="/experiences"
-                  className="flex items-center justify-between w-full transition-colors duration-300"
-                  style={{ color: "rgba(212,175,55,0.45)", fontFamily: "var(--font-body)", fontSize: "10px", letterSpacing: "0.2em" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#D4AF37")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.45)")}
-                >
-                  <span className="uppercase tracking-widest text-[9px]">Discover All</span>
-                  <span className="text-xs">→</span>
-                </Link>
-              </div>
-
-              <div style={{ height: "1px", background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)" }} />
             </div>
           </motion.div> */}
         </div>
       </motion.div>
 
-      {/* ── LAYER 5: Experience Preview Rail ─────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 1.7, ease: "easeOut" }}
-        className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 lg:px-20 pb-6"
-      >
-        <div className="max-w-5xl mx-auto">
-          {/* Thin gold top line */}
-          <div
-            className="mb-0"
-            style={{ height: "1px", background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.35), transparent)", marginBottom: "0" }}
-          />
-          <div
-            style={{
-              background: "rgba(5,5,5,0.72)",
-              border: "1px solid rgba(212,175,55,0.14)",
-              borderTop: "none",
-              backdropFilter: "blur(22px)",
-              WebkitBackdropFilter: "blur(22px)",
-            }}
-          >
-            {/* Desktop: horizontal row */}
-            <div className="hidden sm:grid grid-cols-4">
-              {RAIL_ITEMS.map((item, i) => (
-                <Link
-                  key={item.num}
-                  href={item.href}
-                  className="group relative flex flex-col justify-center px-6 py-5 transition-all duration-400 overflow-hidden"
-                  style={{
-                    borderRight: i < RAIL_ITEMS.length - 1 ? "1px solid rgba(212,175,55,0.1)" : "none",
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.06)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                  }}
-                >
-                  {/* Number */}
-                  <span
-                    className="text-[9px] mb-2 block"
-                    style={{ color: "rgba(212,175,55,0.4)", fontFamily: "var(--font-body)", letterSpacing: "0.15em" }}
-                  >
-                    {item.num}
-                  </span>
-                  {/* Label */}
-                  <span
-                    className="block mb-1 transition-colors duration-300 group-hover:text-[#D4AF37]"
-                    style={{
-                      fontFamily: "var(--font-display, serif)",
-                      fontSize: "15px",
-                      color: "rgba(248,245,237,0.82)",
-                      letterSpacing: "0.01em",
-                    }}
-                  >
+      {/* ── Bottom Rail ───────────────────────────────── */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 lg:px-20 pb-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
+          {RAIL_ITEMS.map((item) => (
+            <Link
+              key={item.num}
+              href={item.href}
+              className="group bg-black/30 backdrop-blur-sm px-5 py-4 hover:bg-black/50 transition-colors"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-[10px] text-[#D4AF37]/60 mt-0.5">{item.num}</span>
+                <div>
+                  <p className="text-xs text-white/80 group-hover:text-[#D4AF37] transition-colors">
                     {item.label}
-                  </span>
-                  {/* Sub */}
-                  <span
-                    className="text-[10px] tracking-wider"
-                    style={{ color: "rgba(248,245,237,0.35)", fontFamily: "var(--font-body)" }}
-                  >
+                  </p>
+                  <p className="text-[10px] text-white/45 mt-1 hidden sm:block">
                     {item.sub}
-                  </span>
-                  {/* Hover bottom line */}
-                  <div
-                    className="absolute bottom-0 left-6 right-6 h-px transition-opacity duration-400 opacity-0 group-hover:opacity-100"
-                    style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)" }}
-                  />
-                </Link>
-              ))}
-            </div>
-
-            {/* Mobile: 2×2 grid */}
-            <div className="grid grid-cols-2 sm:hidden">
-              {RAIL_ITEMS.map((item, i) => (
-                <Link
-                  key={item.num}
-                  href={item.href}
-                  className="flex flex-col justify-center px-5 py-4"
-                  style={{
-                    borderRight: i % 2 === 0 ? "1px solid rgba(212,175,55,0.1)" : "none",
-                    borderBottom: i < 2 ? "1px solid rgba(212,175,55,0.1)" : "none",
-                  }}
-                >
-                  <span
-                    className="text-[8px] mb-1.5 block"
-                    style={{ color: "rgba(212,175,55,0.4)", fontFamily: "var(--font-body)", letterSpacing: "0.15em" }}
-                  >
-                    {item.num}
-                  </span>
-                  <span
-                    className="block"
-                    style={{
-                      fontFamily: "var(--font-display, serif)",
-                      fontSize: "13px",
-                      color: "rgba(248,245,237,0.78)",
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
-      </motion.div>
-
-      {/* ── Scroll Indicator ──────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2.1 }}
-        className="absolute z-20 hidden md:flex flex-col items-center gap-3"
-        style={{ bottom: "180px", right: "2.5rem" }}
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-3"
-        >
-          <span
-            style={{
-              fontSize: "8px",
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              color: "rgba(212,175,55,0.45)",
-              fontFamily: "var(--font-body, sans-serif)",
-              writingMode: "vertical-rl",
-            }}
-          >
-            Discover
-          </span>
-          <div
-            className="w-px"
-            style={{ height: "44px", background: "linear-gradient(to bottom, rgba(212,175,55,0.45), transparent)" }}
-          />
-        </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }
