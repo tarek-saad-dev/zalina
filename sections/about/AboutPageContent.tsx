@@ -6,6 +6,11 @@ import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
+import {
+  HERO_BLUR_DATA_URL,
+  HERO_IMAGE_QUALITY,
+} from "@/components/media/heroImage";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -83,6 +88,7 @@ const DIFFERENCE = [
 /* ─── Section: Hero ─────────────────────────────────────── */
 function AboutHeroSection() {
   const ref = useRef<HTMLDivElement>(null);
+  const markHeroReady = useMarkHeroReady();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const bgY     = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.07]);
@@ -92,7 +98,19 @@ function AboutHeroSection() {
     <section ref={ref} className="relative w-full overflow-hidden" style={{ minHeight: "100vh", background: "transparent" }}>
       {/* BG */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
-        <Image src={NEUTRAL_MEDIA_FALLBACK} alt="Zalina Arabian Village" fill className="object-cover object-center" priority quality={100} />
+        <Image
+          src={NEUTRAL_MEDIA_FALLBACK}
+          alt="Zalina Arabian Village"
+          fill
+          className="object-cover object-center"
+          priority
+          fetchPriority="high"
+          quality={HERO_IMAGE_QUALITY}
+          sizes="100vw"
+          placeholder="blur"
+          blurDataURL={HERO_BLUR_DATA_URL}
+          onLoadingComplete={markHeroReady}
+        />
       </motion.div>
 
       {/* Overlays */}

@@ -6,10 +6,16 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
+import {
+  HERO_BLUR_DATA_URL,
+  HERO_IMAGE_QUALITY,
+} from "@/components/media/heroImage";
 
 export function Hero() {
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
+  const markHeroReady = useMarkHeroReady();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -36,7 +42,12 @@ export function Hero() {
           fill
           className="object-cover"
           priority
+          fetchPriority="high"
+          quality={HERO_IMAGE_QUALITY}
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL={HERO_BLUR_DATA_URL}
+          onLoadingComplete={markHeroReady}
         />
       </motion.div>
 

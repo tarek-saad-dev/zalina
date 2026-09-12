@@ -20,6 +20,8 @@ type CmsImageBase = {
   preferThumbnail?: boolean;
   fallbackSrc?: string;
   className?: string;
+  /** Soft fade-in after load (default true). */
+  fadeIn?: boolean;
 };
 
 type CmsImageFill = CmsImageBase & {
@@ -67,16 +69,20 @@ export function CmsImage({
   height,
   sizes,
   priority,
+  fadeIn = true,
+  onLoadingComplete,
   ...rest
 }: CmsImageProps) {
   const resolvedFromMedia = selectDisplayUrl(media, preferThumbnail);
   const initial = asSafeUrl(src ?? resolvedFromMedia, fallbackSrc);
   const [currentSrc, setCurrentSrc] = useState(initial);
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setCurrentSrc(asSafeUrl(src ?? resolvedFromMedia, fallbackSrc));
     setFailed(false);
+    setLoaded(false);
   }, [src, resolvedFromMedia, fallbackSrc]);
 
   const resolvedAlt =
@@ -95,8 +101,23 @@ export function CmsImage({
     }
     if (currentSrc !== fallbackSrc) {
       setCurrentSrc(fallbackSrc);
+      setLoaded(false);
     }
   };
+
+  const handleLoadingComplete: NonNullable<ImageProps["onLoadingComplete"]> = (
+    img
+  ) => {
+    setLoaded(true);
+    onLoadingComplete?.(img);
+  };
+
+  const fadeClass =
+    fadeIn && !priority
+      ? `transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`
+      : undefined;
+
+  const mergedClassName = [className, fadeClass].filter(Boolean).join(" ");
 
   if (fill) {
     return (
@@ -107,8 +128,10 @@ export function CmsImage({
         fill
         sizes={sizes}
         priority={priority}
-        className={className}
+        loading={priority ? undefined : "lazy"}
+        className={mergedClassName}
         onError={onError}
+        onLoadingComplete={handleLoadingComplete}
       />
     );
   }
@@ -122,8 +145,10 @@ export function CmsImage({
       height={height ?? h ?? 800}
       sizes={sizes}
       priority={priority}
-      className={className}
+      loading={priority ? undefined : "lazy"}
+      className={mergedClassName}
       onError={onError}
+      onLoadingComplete={handleLoadingComplete}
     />
   );
 }

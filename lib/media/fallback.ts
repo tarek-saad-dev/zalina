@@ -2,7 +2,7 @@
  * Single neutral Zalina placeholder.
  * NOT a per-entity / per-slug business photo map.
  */
-export const NEUTRAL_MEDIA_FALLBACK = "/assets/zalina-hero-bg.png";
+export const NEUTRAL_MEDIA_FALLBACK = "/assets/zalina-hero-bg.webp";
 
 export const NEUTRAL_MEDIA_ALT = "Zalina Arabian Village in Luxor, Egypt";
 

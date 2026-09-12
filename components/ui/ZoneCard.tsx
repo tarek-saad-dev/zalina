@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
@@ -30,10 +31,13 @@ export function ZoneCard({
     >
       {/* Background Image */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-bg-main/40 to-transparent" />
       </div>
@@ -43,16 +47,18 @@ export function ZoneCard({
         <span className="text-xs tracking-[0.2em] uppercase text-accent-gold mb-2">
           {subtitle}
         </span>
-        <h3 className={cn(
-          "font-display text-text-primary mb-3",
-          size === "large" ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"
-        )}>
+        <h3
+          className={cn(
+            "font-display text-text-primary mb-3",
+            size === "large" ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"
+          )}
+        >
           {title}
         </h3>
         <p className="text-text-secondary text-sm md:text-base leading-relaxed mb-6 max-w-md">
           {description}
         </p>
-        
+
         <a
           href="#"
           className="inline-flex items-center gap-2 text-accent-gold font-medium group/link"

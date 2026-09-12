@@ -5,6 +5,7 @@ import { LuxuryFooter } from "@/sections/home";
 import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
 import { WeddingsPageClient } from "@/sections/weddings/WeddingsPageClient";
 import { isWeddingPrimaryImageryReady } from "@/sections/weddings/content/weddingMedia";
+import { HeroRevealGate } from "@/components/media/HeroRevealGate";
 
 export const metadata: Metadata = {
   title: "Weddings | Zalina Arabian Village Luxor",
@@ -60,9 +61,11 @@ export default async function WeddingsPage() {
   }
 
   return (
-    <main className="zones-page min-h-screen overflow-x-hidden">
-      <WeddingsPageClient packages={packages} />
-      <LuxuryFooter />
-    </main>
+    <HeroRevealGate>
+      <main className="zones-page min-h-screen overflow-x-hidden">
+        <WeddingsPageClient packages={packages} />
+        <LuxuryFooter />
+      </main>
+    </HeroRevealGate>
   );
 }

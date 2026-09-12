@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AboutPageContent } from "@/sections/about";
 import { LuxuryFooter } from "@/sections/home";
+import { HeroRevealGate } from "@/components/media/HeroRevealGate";
 
 export const metadata: Metadata = {
   title: "About Zalina | A Cultural Village in Luxor, Egypt",
@@ -25,9 +26,11 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="w-full min-h-screen" style={{ background: "#050505" }}>
-      <AboutPageContent />
-      <LuxuryFooter />
-    </main>
+    <HeroRevealGate>
+      <main className="w-full min-h-screen" style={{ background: "#050505" }}>
+        <AboutPageContent />
+        <LuxuryFooter />
+      </main>
+    </HeroRevealGate>
   );
 }

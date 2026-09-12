@@ -7,6 +7,11 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { ChevronDown } from "lucide-react";
 import { BOOK_NOW_HREF } from "./data";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
+import {
+  HERO_BLUR_DATA_URL,
+  HERO_IMAGE_QUALITY,
+} from "@/components/media/heroImage";
 
 const PARTICLE_POSITIONS = [
   { left: "12%", top: "22%", delay: "0s", duration: "14s" },
@@ -21,6 +26,7 @@ export function Hero() {
   const prefersReducedMotion = useReducedMotion();
   const reduce = Boolean(prefersReducedMotion);
   const [isMobile, setIsMobile] = useState(false);
+  const markHeroReady = useMarkHeroReady();
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -46,7 +52,12 @@ export function Hero() {
           alt="Courtyards and evening light at Zalina Arabian Village in Luxor"
           fill
           priority
+          fetchPriority="high"
+          quality={HERO_IMAGE_QUALITY}
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL={HERO_BLUR_DATA_URL}
+          onLoadingComplete={markHeroReady}
           className="object-cover object-center"
         />
       </motion.div>

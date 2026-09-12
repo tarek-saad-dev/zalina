@@ -5,11 +5,12 @@
  * /public/assets/weddings/.
  *
  * Source files 1–5.jpeg remain as originals.
- * Canonical production files:
- * - 01-hero-evening-wide.jpg (Image 1 cropped above SIDE VIEW annotation)
- * - 03-stage-performance-portrait.jpg (Image 3, clean)
- * - 04-kosha-musicians-portrait.jpg (Image 4, clean)
+ * Canonical production files (WebP):
+ * - 01-hero-evening-wide.webp (Image 1 cropped above SIDE VIEW annotation)
+ * - 03-stage-performance-portrait.webp (Image 3, clean)
+ * - 04-kosha-musicians-portrait.webp (Image 4, clean)
  * - 02 / 05 hospitality crops (optional; labels removed by top crop)
+ * Source JPG/JPEG originals remain beside the WebP files.
  */
 
 export type WeddingMediaSlot =
@@ -35,7 +36,7 @@ const DEV_FALLBACK = "/assets/wedding.png";
 
 export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
   hero: {
-    src: "/assets/weddings/01-hero-evening-wide.jpg",
+    src: "/assets/weddings/01-hero-evening-wide.webp",
     alt: {
       en: "Evening wedding celebration at Zalina Arabian Village with illuminated stage and dining",
       ar: "احتفال زفاف مسائي في قرية زالينا العربية مع المسرح المضاء وقاعة العشاء",
@@ -44,7 +45,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
     devFallback: DEV_FALLBACK,
   },
   experience: {
-    src: "/assets/weddings/03-stage-performance-portrait.jpg",
+    src: "/assets/weddings/03-stage-performance-portrait.webp",
     alt: {
       en: "Cultural performance on the Zalina wedding stage with guests dining in the foreground",
       ar: "عرض ثقافي على مسرح زفاف زالينا مع الضيوف على الموائد في المقدمة",
@@ -53,7 +54,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
     devFallback: DEV_FALLBACK,
   },
   signature: {
-    src: "/assets/weddings/04-kosha-musicians-portrait.jpg",
+    src: "/assets/weddings/04-kosha-musicians-portrait.webp",
     alt: {
       en: "Floral wedding kosha with live musicians and dining at Zalina",
       ar: "كوشة زفاف مزهرة مع موسيقيين وموائد في زالينا",
@@ -62,7 +63,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
     devFallback: DEV_FALLBACK,
   },
   visualStoryPrimary: {
-    src: "/assets/weddings/01-hero-evening-wide.jpg",
+    src: "/assets/weddings/01-hero-evening-wide.webp",
     alt: {
       en: "Wide view of a Zalina destination wedding evening",
       ar: "منظر واسع لأمسية زفاف في وجهة زالينا",
@@ -71,7 +72,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
     devFallback: DEV_FALLBACK,
   },
   visualStorySecondary: {
-    src: "/assets/weddings/03-stage-performance-portrait.jpg",
+    src: "/assets/weddings/03-stage-performance-portrait.webp",
     alt: {
       en: "Portrait of celebration and performance at Zalina",
       ar: "صورة للاحتفال والعرض في زالينا",
@@ -80,7 +81,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
     devFallback: DEV_FALLBACK,
   },
   finalCta: {
-    src: "/assets/weddings/04-kosha-musicians-portrait.jpg",
+    src: "/assets/weddings/04-kosha-musicians-portrait.webp",
     alt: {
       en: "Romantic wedding kosha and celebration atmosphere at Zalina",
       ar: "أجواء رومانسية لكوشة الزفاف والاحتفال في زالينا",
@@ -89,7 +90,7 @@ export const WEDDING_MEDIA: Record<WeddingMediaSlot, WeddingMediaAsset> = {
     devFallback: DEV_FALLBACK,
   },
   upgradesHospitality: {
-    src: "/assets/weddings/02-hospitality-clean.jpg",
+    src: "/assets/weddings/02-hospitality-clean.webp",
     alt: {
       en: "Hospitality and dining atmosphere for bespoke wedding upgrades",
       ar: "أجواء الضيافة والعشاء لترقيات الزفاف الخاصة",

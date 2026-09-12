@@ -12,6 +12,7 @@ import {
   CTASection,
 } from "@/sections/experiences";
 import { getExperiences, mapExperienceToCatalogItem } from "@/lib/api";
+import { HeroRevealGate } from "@/components/media/HeroRevealGate";
 
 export const revalidate = 60;
 
@@ -42,17 +43,19 @@ export default async function ExperiencesPage() {
     .map((e) => mapExperienceToCatalogItem(e));
 
   return (
-    <main className="exp-page min-h-screen w-full">
-      <Hero />
-      <ExperiencesCatalog experiences={experiences} />
-      <EditorialSpotlight />
-      <ExclusiveOffer />
-      <WhyChooseZalina />
-      <ExperienceJourney />
-      <MicroInfoPreview />
-      <FuturePackages />
-      <CTASection />
-      <LuxuryFooter />
-    </main>
+    <HeroRevealGate>
+      <main className="exp-page min-h-screen w-full">
+        <Hero />
+        <ExperiencesCatalog experiences={experiences} />
+        <EditorialSpotlight />
+        <ExclusiveOffer />
+        <WhyChooseZalina />
+        <ExperienceJourney />
+        <MicroInfoPreview />
+        <FuturePackages />
+        <CTASection />
+        <LuxuryFooter />
+      </main>
+    </HeroRevealGate>
   );
 }

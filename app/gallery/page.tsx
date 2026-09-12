@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LuxuryFooter } from "@/sections/home";
 import { GalleryPageContent } from "@/sections/gallery/GalleryPageContent";
 import { loadGalleryCatalog } from "@/lib/media";
+import { HeroRevealGate } from "@/components/media/HeroRevealGate";
 
 export const revalidate = 60;
 
@@ -21,12 +22,12 @@ export default async function GalleryPage() {
   const catalog = await loadGalleryCatalog("en");
 
   return (
-    <>
+    <HeroRevealGate>
       <GalleryPageContent
         items={catalog.items}
         availableFilters={catalog.availableFilters}
       />
       <LuxuryFooter />
-    </>
+    </HeroRevealGate>
   );
 }

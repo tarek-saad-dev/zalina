@@ -153,6 +153,7 @@ export const WEDDING_COPY = {
   planPricePerGuest: { en: "Price per guest", ar: "السعر لكل ضيف" },
   planEstimate: { en: "Estimated total", ar: "الإجمالي التقديري" },
   planPremiumBadge: { en: "Premium date", ar: "تاريخ مميز" },
+  planDetailsEyebrow: { en: "Your details", ar: "بيانات التواصل" },
   planGuestName: { en: "Full name", ar: "الاسم الكامل" },
   planGuestEmail: { en: "Email", ar: "البريد الإلكتروني" },
   planGuestPhone: { en: "Phone", ar: "الهاتف" },

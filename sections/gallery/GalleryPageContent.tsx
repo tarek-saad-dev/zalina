@@ -29,6 +29,11 @@ import {
   type GalleryItem,
 } from "@/lib/media";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
+import {
+  HERO_BLUR_DATA_URL,
+  HERO_IMAGE_QUALITY,
+} from "@/components/media/heroImage";
 import {
   GALLERY_FILTER_OPTIONS,
   GALLERY_I18N_KEYS,
@@ -60,6 +65,7 @@ export function GalleryPageContent({
   availableFilters,
 }: GalleryPageContentProps) {
   const prefersReduced = useReducedMotion();
+  const markHeroReady = useMarkHeroReady();
   const initialFilter: GalleryFilterId =
     availableFilters.includes("all")
       ? "all"
@@ -206,7 +212,12 @@ export function GalleryPageContent({
             alt="Zalina Arabian Village in Luxor"
             fill
             priority
+            fetchPriority="high"
+            quality={HERO_IMAGE_QUALITY}
             sizes="100vw"
+            placeholder="blur"
+            blurDataURL={HERO_BLUR_DATA_URL}
+            onLoadingComplete={markHeroReady}
             className="object-cover"
           />
         </motion.div>

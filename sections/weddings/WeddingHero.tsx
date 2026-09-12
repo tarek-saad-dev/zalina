@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
+import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
+import { HERO_IMAGE_QUALITY } from "@/components/media/heroImage";
 import { WEDDING_COPY } from "./content/weddingCopy";
 import { pickLocale } from "./content/locale";
 import { resolveWeddingMediaSrc, WEDDING_MEDIA } from "./content/weddingMedia";
@@ -17,6 +19,7 @@ export function WeddingHero() {
   const locale = useBookingLocale();
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
+  const markHeroReady = useMarkHeroReady();
   const src = resolveWeddingMediaSrc("hero");
   const alt = pickLocale(locale, WEDDING_MEDIA.hero.alt);
 
@@ -43,11 +46,14 @@ export function WeddingHero() {
           alt={alt}
           fill
           priority
+          fetchPriority="high"
+          quality={HERO_IMAGE_QUALITY}
           className="object-cover"
           style={{
             objectPosition: isMobile ? "62% center" : "center center",
           }}
           sizes="100vw"
+          onLoadingComplete={markHeroReady}
         />
       </motion.div>
 

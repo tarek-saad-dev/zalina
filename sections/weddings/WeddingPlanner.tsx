@@ -9,6 +9,7 @@ import {
   type CSSProperties,
   type FormEvent,
 } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import type {
   ApiLocale,
   WeddingAvailability,
@@ -53,6 +54,7 @@ export function WeddingPlanner({
   onSelectPackageId,
 }: WeddingPlannerProps) {
   const locale = useBookingLocale();
+  const prefersReduced = useReducedMotion();
   const selected = useMemo(
     () => packages.find((p) => p.id === selectedPackageId) ?? null,
     [packages, selectedPackageId]
@@ -83,11 +85,9 @@ export function WeddingPlanner({
     guestsNumber >= selected.minimum_guests &&
     guestsNumber <= selected.maximum_guests;
 
-  const canCheck =
-    selected != null && Boolean(date) && guestsValid;
+  const canCheck = selected != null && Boolean(date) && guestsValid;
 
-  const showGuestDetails =
-    availability?.available === true && canCheck;
+  const showGuestDetails = availability?.available === true && canCheck;
 
   const runAvailability = useCallback(
     async (pkg: WeddingPackage, weddingDate: string, guestCount: number) => {
@@ -145,9 +145,7 @@ export function WeddingPlanner({
       void runAvailability(selected, date, guestsNumber);
     };
 
-    // Package/date: immediate. Guest count: debounce.
     if (guestsDebounceRef.current) clearTimeout(guestsDebounceRef.current);
-
     guestsDebounceRef.current = setTimeout(immediate, 300);
 
     return () => {
@@ -196,26 +194,29 @@ export function WeddingPlanner({
       }
       return;
     }
-    // Redirect in progress — keep busy state.
   }
 
   const fieldStyle: CSSProperties = {
     width: "100%",
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: "4px",
+    background: "rgba(255,255,255,0.045)",
+    border: "1px solid rgba(255,255,255,0.14)",
+    borderRadius: "2px",
     color: "#F8F2E7",
-    padding: "12px 14px",
+    padding: "14px 16px",
     fontSize: "15px",
+    fontFamily: "var(--font-body)",
+    colorScheme: "dark",
+    outline: "none",
+    transition: "border-color 180ms ease, background 180ms ease",
   };
 
   const labelStyle: CSSProperties = {
     display: "block",
     fontSize: "11px",
-    letterSpacing: "0.16em",
+    letterSpacing: "0.18em",
     textTransform: "uppercase",
     color: "rgba(248,242,231,0.55)",
-    marginBottom: "8px",
+    marginBottom: "10px",
   };
 
   return (
@@ -223,9 +224,19 @@ export function WeddingPlanner({
       id="plan"
       className="zones-section scroll-mt-24"
       aria-labelledby="wedding-plan-title"
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 28%)",
+      }}
     >
       <div className="zones-container">
-        <div className="max-w-2xl mb-8">
+        <motion.div
+          className="max-w-2xl mb-10"
+          initial={!prefersReduced ? { opacity: 0, y: 18 } : undefined}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55 }}
+        >
           <p
             className="text-[11px] tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
@@ -235,231 +246,285 @@ export function WeddingPlanner({
           <h2
             id="wedding-plan-title"
             className="zones-section-title mb-4"
-            style={{ color: "#F8F2E7" }}
+            style={{
+              color: "#F8F2E7",
+              fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
+              lineHeight: 1.15,
+            }}
           >
             {pickLocale(locale, WEDDING_COPY.planHeadline)}
           </h2>
-        </div>
-
-        <div
-          className="mb-10 max-w-2xl"
-          style={{
-            borderTop: "1px solid rgba(212,175,55,0.25)",
-            paddingTop: "20px",
-          }}
-        >
           <p
-            className="text-[11px] tracking-[0.22em] uppercase mb-2"
-            style={{ color: "var(--zones-gold)" }}
-          >
-            {pickLocale(locale, WEDDING_COPY.premiumEyebrow)}
-          </p>
-          <h3
-            className="mb-2"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "1.4rem",
-              color: "#F8F2E7",
-              fontWeight: 400,
-            }}
-          >
-            {pickLocale(locale, WEDDING_COPY.premiumHeadline)}
-          </h3>
-          <p
-            className="text-[14px] leading-relaxed mb-2"
+            className="text-[15px] leading-relaxed"
             style={{ color: "rgba(248,242,231,0.68)" }}
           >
-            {pickLocale(locale, WEDDING_COPY.premiumBody)}
+            {pickLocale(locale, WEDDING_COPY.planSelectPrompt)}
           </p>
-          <p
-            className="text-[13px]"
-            style={{ color: "rgba(212,175,55,0.85)" }}
-          >
-            {pickLocale(locale, WEDDING_COPY.premiumFloorNote)}
-          </p>
-        </div>
+        </motion.div>
 
         {packages.length === 0 ? (
           <p role="status" style={{ color: "rgba(248,242,231,0.65)" }}>
             {pickLocale(locale, WEDDING_COPY.planCatalogEmpty)}
           </p>
         ) : (
-          <form
+          <motion.form
             onSubmit={onSecure}
-            className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"
+            className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.85fr)] lg:gap-8 items-start"
+            initial={!prefersReduced ? { opacity: 0, y: 20 } : undefined}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.6, delay: 0.05 }}
           >
-            <div className="space-y-5">
+            <div
+              className="space-y-7 p-5 sm:p-7"
+              style={{
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: "2px",
+                background:
+                  "linear-gradient(165deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015))",
+              }}
+            >
               <div>
-                <label htmlFor="wedding-package" style={labelStyle}>
+                <p style={labelStyle} id="wedding-package-label">
                   {pickLocale(locale, WEDDING_COPY.planPackage)}
-                </label>
-                <select
-                  id="wedding-package"
-                  value={selectedPackageId ?? ""}
-                  onChange={(e) => {
-                    const id = Number(e.target.value);
-                    if (Number.isFinite(id)) onSelectPackageId(id);
-                  }}
-                  style={fieldStyle}
-                  required
+                </p>
+                <div
+                  className="grid gap-2.5 sm:grid-cols-3"
+                  role="radiogroup"
+                  aria-labelledby="wedding-package-label"
                 >
-                  <option value="" disabled>
-                    —
-                  </option>
-                  {packages.map((pkg) => (
-                    <option key={pkg.id} value={pkg.id}>
-                      {localizedName(pkg, locale)}
-                    </option>
-                  ))}
-                </select>
+                  {packages.map((pkg) => {
+                    const active = selectedPackageId === pkg.id;
+                    return (
+                      <button
+                        key={pkg.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => onSelectPackageId(pkg.id)}
+                        className="text-start px-3.5 py-3.5 transition-colors"
+                        style={{
+                          borderRadius: "2px",
+                          border: active
+                            ? "1px solid rgba(212,175,55,0.72)"
+                            : "1px solid rgba(255,255,255,0.12)",
+                          background: active
+                            ? "rgba(212,175,55,0.1)"
+                            : "rgba(0,0,0,0.18)",
+                          color: "#F8F2E7",
+                          boxShadow: active
+                            ? "inset 0 0 0 1px rgba(212,175,55,0.18)"
+                            : undefined,
+                        }}
+                      >
+                        <span
+                          className="block text-[13px] sm:text-[14px] leading-snug"
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {localizedName(pkg, locale)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {selected ? (
-                <div>
-                  <label htmlFor="wedding-date" style={labelStyle}>
-                    {pickLocale(locale, WEDDING_COPY.planDate)}
-                  </label>
-                  <input
-                    id="wedding-date"
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    style={fieldStyle}
-                    required
-                  />
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="wedding-date" style={labelStyle}>
+                      {pickLocale(locale, WEDDING_COPY.planDate)}
+                    </label>
+                    <input
+                      id="wedding-date"
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      style={fieldStyle}
+                      required
+                      className="wedding-plan-field"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="wedding-guests" style={labelStyle}>
+                      {pickLocale(locale, WEDDING_COPY.planGuests)}
+                    </label>
+                    <input
+                      id="wedding-guests"
+                      type="number"
+                      inputMode="numeric"
+                      min={selected.minimum_guests}
+                      max={selected.maximum_guests}
+                      value={guests}
+                      onChange={(e) => setGuests(e.target.value)}
+                      style={fieldStyle}
+                      required
+                      aria-describedby="wedding-guests-hint"
+                      className="wedding-plan-field"
+                    />
+                    <p
+                      id="wedding-guests-hint"
+                      className="mt-2 text-[13px]"
+                      style={{ color: "rgba(248,242,231,0.5)" }}
+                    >
+                      {guestRangeCopy(
+                        locale,
+                        selected.minimum_guests,
+                        selected.maximum_guests
+                      )}
+                    </p>
+                  </div>
                 </div>
               ) : null}
 
-              {selected && date ? (
-                <div>
-                  <label htmlFor="wedding-guests" style={labelStyle}>
-                    {pickLocale(locale, WEDDING_COPY.planGuests)}
-                  </label>
-                  <input
-                    id="wedding-guests"
-                    type="number"
-                    inputMode="numeric"
-                    min={selected.minimum_guests}
-                    max={selected.maximum_guests}
-                    value={guests}
-                    onChange={(e) => setGuests(e.target.value)}
-                    style={fieldStyle}
-                    required
-                    aria-describedby="wedding-guests-hint"
-                  />
-                  <p
-                    id="wedding-guests-hint"
-                    className="mt-2 text-sm"
-                    style={{ color: "rgba(248,242,231,0.55)" }}
-                  >
-                    {guestRangeCopy(
-                      locale,
-                      selected.minimum_guests,
-                      selected.maximum_guests
-                    )}
-                  </p>
-                </div>
-              ) : null}
+              <div
+                className="pt-1"
+                style={{
+                  borderTop: "1px solid rgba(212,175,55,0.22)",
+                }}
+              >
+                <p
+                  className="pt-4 text-[12px] leading-relaxed"
+                  style={{ color: "rgba(248,242,231,0.58)" }}
+                >
+                  <span style={{ color: "rgba(212,175,55,0.9)" }}>
+                    {pickLocale(locale, WEDDING_COPY.premiumEyebrow)}
+                    {": "}
+                  </span>
+                  {pickLocale(locale, WEDDING_COPY.premiumBody)}{" "}
+                  <span style={{ color: "rgba(212,175,55,0.8)" }}>
+                    {pickLocale(locale, WEDDING_COPY.premiumFloorNote)}
+                  </span>
+                </p>
+              </div>
 
               {showGuestDetails ? (
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <label htmlFor="wedding-guest-name" style={labelStyle}>
-                      {pickLocale(locale, WEDDING_COPY.planGuestName)}
-                    </label>
-                    <input
-                      id="wedding-guest-name"
-                      type="text"
-                      autoComplete="name"
-                      value={guestName}
-                      onChange={(e) => setGuestName(e.target.value)}
-                      style={fieldStyle}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="wedding-guest-email" style={labelStyle}>
-                      {pickLocale(locale, WEDDING_COPY.planGuestEmail)}
-                    </label>
-                    <input
-                      id="wedding-guest-email"
-                      type="email"
-                      autoComplete="email"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      style={fieldStyle}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="wedding-guest-phone" style={labelStyle}>
-                      {pickLocale(locale, WEDDING_COPY.planGuestPhone)}
-                    </label>
-                    <input
-                      id="wedding-guest-phone"
-                      type="tel"
-                      autoComplete="tel"
-                      value={guestPhone}
-                      onChange={(e) => setGuestPhone(e.target.value)}
-                      style={fieldStyle}
-                      required
-                    />
+                <div
+                  className="space-y-4 pt-2"
+                  style={{
+                    borderTop: "1px solid rgba(255,255,255,0.08)",
+                  }}
+                >
+                  <p
+                    className="pt-5 text-[11px] tracking-[0.18em] uppercase"
+                    style={{ color: "var(--zones-gold)" }}
+                  >
+                    {pickLocale(locale, WEDDING_COPY.planDetailsEyebrow)}
+                  </p>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label htmlFor="wedding-guest-name" style={labelStyle}>
+                        {pickLocale(locale, WEDDING_COPY.planGuestName)}
+                      </label>
+                      <input
+                        id="wedding-guest-name"
+                        type="text"
+                        autoComplete="name"
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        style={fieldStyle}
+                        required
+                        className="wedding-plan-field"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="wedding-guest-email" style={labelStyle}>
+                        {pickLocale(locale, WEDDING_COPY.planGuestEmail)}
+                      </label>
+                      <input
+                        id="wedding-guest-email"
+                        type="email"
+                        autoComplete="email"
+                        value={guestEmail}
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                        style={fieldStyle}
+                        required
+                        className="wedding-plan-field"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="wedding-guest-phone" style={labelStyle}>
+                        {pickLocale(locale, WEDDING_COPY.planGuestPhone)}
+                      </label>
+                      <input
+                        id="wedding-guest-phone"
+                        type="tel"
+                        autoComplete="tel"
+                        value={guestPhone}
+                        onChange={(e) => setGuestPhone(e.target.value)}
+                        style={fieldStyle}
+                        required
+                        className="wedding-plan-field"
+                      />
+                    </div>
                   </div>
                 </div>
               ) : null}
             </div>
 
             <aside
-              className="p-6"
+              className="p-6 sm:p-7 lg:sticky lg:top-28"
               style={{
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "4px",
-                background: "rgba(255,255,255,0.03)",
-                alignSelf: "start",
+                border: "1px solid rgba(212,175,55,0.28)",
+                borderRadius: "2px",
+                background:
+                  "linear-gradient(180deg, rgba(36,28,16,0.55), rgba(10,8,6,0.72))",
               }}
               aria-live="polite"
             >
               <p
-                className="text-[11px] tracking-[0.18em] uppercase mb-4"
+                className="text-[11px] tracking-[0.18em] uppercase mb-5"
                 style={{ color: "var(--zones-gold)" }}
               >
                 {pickLocale(locale, WEDDING_COPY.planSummary)}
               </p>
 
               {!canCheck && !availLoading ? (
-                <p style={{ color: "rgba(248,242,231,0.6)", fontSize: "14px" }}>
+                <p
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: "rgba(248,242,231,0.62)" }}
+                >
                   {pickLocale(locale, WEDDING_COPY.planSelectPrompt)}
                 </p>
               ) : null}
 
               {availLoading ? (
-                <p style={{ color: "rgba(248,242,231,0.7)", fontSize: "14px" }}>
+                <p
+                  className="text-[14px]"
+                  style={{ color: "rgba(248,242,231,0.72)" }}
+                >
                   {pickLocale(locale, WEDDING_COPY.planChecking)}
                 </p>
               ) : null}
 
               {availError ? (
-                <p role="alert" style={{ color: "rgba(240,170,140,0.95)", fontSize: "14px" }}>
+                <p
+                  role="alert"
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: "rgba(240,170,140,0.95)" }}
+                >
                   {availError}
                 </p>
               ) : null}
 
               {availability && !availLoading ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {availability.available ? (
                     <p
-                      style={{
-                        color: "rgba(180,220,170,0.95)",
-                        fontSize: "15px",
-                        fontWeight: 500,
-                      }}
+                      className="text-[15px] font-medium"
+                      style={{ color: "rgba(180,220,170,0.95)" }}
                     >
                       {pickLocale(locale, WEDDING_COPY.planAvailable)}
                     </p>
                   ) : (
                     <p
                       role="status"
-                      style={{ color: "rgba(240,200,160,0.95)", fontSize: "14px", lineHeight: 1.6 }}
+                      className="text-[14px] leading-relaxed"
+                      style={{ color: "rgba(240,200,160,0.95)" }}
                     >
                       {availability.reason ||
                         (locale === "ar"
@@ -470,15 +535,22 @@ export function WeddingPlanner({
 
                   {availability.is_premium_date ? (
                     <p
-                      className="text-[11px] tracking-[0.14em] uppercase"
-                      style={{ color: "var(--zones-gold)" }}
+                      className="inline-block text-[10px] tracking-[0.16em] uppercase px-2.5 py-1"
+                      style={{
+                        color: "#0c0906",
+                        background: "rgba(212,175,55,0.9)",
+                        borderRadius: "999px",
+                      }}
                     >
                       {pickLocale(locale, WEDDING_COPY.planPremiumBadge)}
                     </p>
                   ) : null}
 
                   {selected ? (
-                    <p style={{ color: "rgba(248,242,231,0.7)", fontSize: "14px" }}>
+                    <p
+                      className="text-[14px] leading-relaxed"
+                      style={{ color: "rgba(248,242,231,0.7)" }}
+                    >
                       {localizedName(selected, locale)}
                       {date ? ` · ${date}` : ""}
                       {guestsValid ? ` · ${guestsNumber}` : ""}
@@ -486,37 +558,54 @@ export function WeddingPlanner({
                   ) : null}
 
                   <div
-                    className="flex justify-between gap-4 text-sm"
-                    style={{ color: "rgba(248,242,231,0.7)" }}
+                    className="space-y-3 pt-1"
+                    style={{
+                      borderTop: "1px solid rgba(255,255,255,0.1)",
+                      paddingTop: "16px",
+                    }}
                   >
-                    <span>{pickLocale(locale, WEDDING_COPY.planPricePerGuest)}</span>
-                    <span style={{ color: "#F8F2E7" }}>
-                      {moneyLabel(
-                        availability.price_per_guest || selected?.price_per_guest || "",
-                        availability.currency || selected?.currency || ""
-                      )}
-                    </span>
-                  </div>
-                  {availability.available && availability.total_estimate ? (
                     <div
                       className="flex justify-between gap-4 text-sm"
-                      style={{ color: "rgba(248,242,231,0.7)" }}
+                      style={{ color: "rgba(248,242,231,0.68)" }}
                     >
-                      <span>{pickLocale(locale, WEDDING_COPY.planEstimate)}</span>
-                      <span
-                        style={{
-                          color: "var(--zones-gold)",
-                          fontFamily: "var(--font-display)",
-                          fontSize: "1.35rem",
-                        }}
-                      >
+                      <span>
+                        {pickLocale(locale, WEDDING_COPY.planPricePerGuest)}
+                      </span>
+                      <span style={{ color: "#F8F2E7" }}>
                         {moneyLabel(
-                          availability.total_estimate,
+                          availability.price_per_guest ||
+                            selected?.price_per_guest ||
+                            "",
                           availability.currency || selected?.currency || ""
                         )}
                       </span>
                     </div>
-                  ) : null}
+
+                    {availability.available && availability.total_estimate ? (
+                      <div className="flex justify-between items-end gap-4">
+                        <span
+                          className="text-sm"
+                          style={{ color: "rgba(248,242,231,0.68)" }}
+                        >
+                          {pickLocale(locale, WEDDING_COPY.planEstimate)}
+                        </span>
+                        <span
+                          style={{
+                            color: "var(--zones-gold)",
+                            fontFamily: "var(--font-display)",
+                            fontSize: "clamp(1.45rem, 2.4vw, 1.75rem)",
+                            lineHeight: 1,
+                            fontWeight: 500,
+                          }}
+                        >
+                          {moneyLabel(
+                            availability.total_estimate,
+                            availability.currency || selected?.currency || ""
+                          )}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
 
                   {availability.is_premium_date ? (
                     <p
@@ -532,8 +621,8 @@ export function WeddingPlanner({
               {checkoutError ? (
                 <p
                   role="alert"
-                  className="mt-4"
-                  style={{ color: "rgba(240,170,140,0.95)", fontSize: "14px" }}
+                  className="mt-4 text-[14px] leading-relaxed"
+                  style={{ color: "rgba(240,170,140,0.95)" }}
                 >
                   {checkoutError}
                 </p>
@@ -542,7 +631,7 @@ export function WeddingPlanner({
               {showGuestDetails ? (
                 <button
                   type="submit"
-                  className="zones-btn-gold w-full mt-6 justify-center"
+                  className="zones-btn-gold zones-radius-pill inline-flex w-full items-center justify-center h-12 mt-7 px-7 text-[12px] font-medium tracking-[0.14em] uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)] disabled:opacity-60 disabled:pointer-events-none"
                   disabled={checkoutBusy}
                 >
                   {checkoutBusy
@@ -551,9 +640,21 @@ export function WeddingPlanner({
                 </button>
               ) : null}
             </aside>
-          </form>
+          </motion.form>
         )}
       </div>
+
+      <style jsx global>{`
+        .wedding-plan-field:focus {
+          border-color: rgba(212, 175, 55, 0.55) !important;
+          background: rgba(255, 255, 255, 0.06) !important;
+        }
+        .wedding-plan-field::-webkit-calendar-picker-indicator {
+          filter: invert(0.85) sepia(0.35) saturate(2.2) hue-rotate(5deg);
+          cursor: pointer;
+          opacity: 0.85;
+        }
+      `}</style>
     </section>
   );
 }

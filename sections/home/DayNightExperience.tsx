@@ -6,12 +6,12 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 const DAY_IMAGES = [
-  "/assets/day-experience.png",
-  "/assets/day-experience-2.png",
+  "/assets/day-experience.webp",
+  "/assets/day-experience-2.webp",
 ] as const;
 const NIGHT_IMAGES = [
-  "/assets/night-experience.png",
-  "/assets/night-experience-2.png",
+  "/assets/night-experience.webp",
+  "/assets/night-experience-2.webp",
 ] as const;
 const IMAGE_ROTATION_MS = 4200;
 

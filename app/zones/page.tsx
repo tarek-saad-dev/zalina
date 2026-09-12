@@ -12,6 +12,7 @@ import {
 } from "@/sections/zones";
 import { LuxuryFooter } from "@/sections/home";
 import { getZones, mapZoneToUi } from "@/lib/api";
+import { HeroRevealGate } from "@/components/media/HeroRevealGate";
 
 export const revalidate = 60;
 
@@ -41,19 +42,19 @@ export default async function ZonesPage() {
     zones.find((z) => z.isBookableOnline) ?? zones[0] ?? null;
 
   return (
-    <main
-      className="zones-page min-h-screen overflow-x-hidden"
-    >
-      <Hero />
-      <DestinationOverview />
-      <MainZones zones={zones} />
-      <FeaturedZone zone={featured} />
-      <ZoneDifferentiation />
-      <ImmersiveJourney zones={zones} />
-      <WhyZonesMatter />
-      <BookingConnection />
-      <FinalCTA />
-      <LuxuryFooter />
-    </main>
+    <HeroRevealGate>
+      <main className="zones-page min-h-screen overflow-x-hidden">
+        <Hero />
+        <DestinationOverview />
+        <MainZones zones={zones} />
+        <FeaturedZone zone={featured} />
+        <ZoneDifferentiation />
+        <ImmersiveJourney zones={zones} />
+        <WhyZonesMatter />
+        <BookingConnection />
+        <FinalCTA />
+        <LuxuryFooter />
+      </main>
+    </HeroRevealGate>
   );
 }

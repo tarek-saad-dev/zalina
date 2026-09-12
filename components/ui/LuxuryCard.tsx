@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LuxuryCardProps {
@@ -51,10 +52,13 @@ export function LuxuryCardImage({
 }: LuxuryCardImageProps) {
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      <img
+      <Image
         src={src}
         alt={alt}
-        className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className="object-cover transition-transform duration-700 hover:scale-105"
+        loading="lazy"
       />
       {overlay && (
         <div className="absolute inset-0 bg-gradient-to-t from-bg-main/60 via-transparent to-transparent" />

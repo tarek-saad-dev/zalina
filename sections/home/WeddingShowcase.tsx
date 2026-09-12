@@ -27,7 +27,9 @@ export function WeddingShowcase() {
           alt="Destination wedding celebration at Zalina Arabian Village in Luxor"
           fill
           className="object-cover"
-          quality={100}
+          quality={85}
+          sizes="100vw"
+          loading="lazy"
         />
       </div>
 

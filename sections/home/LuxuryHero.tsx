@@ -5,6 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
+import {
+  HERO_BLUR_DATA_URL,
+  HERO_IMAGE_QUALITY,
+} from "@/components/media/heroImage";
 
 const STARS = [
   { top: "8%",  left: "12%", size: 2,   delay: "0s",   dur: "3.2s" },
@@ -37,6 +42,7 @@ const RAIL_ITEMS = [
 
 export function LuxuryHero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const markHeroReady = useMarkHeroReady();
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -61,7 +67,12 @@ export function LuxuryHero() {
           fill
           className="object-cover object-center"
           priority
-          quality={100}
+          fetchPriority="high"
+          quality={HERO_IMAGE_QUALITY}
+          sizes="100vw"
+          placeholder="blur"
+          blurDataURL={HERO_BLUR_DATA_URL}
+          onLoadingComplete={markHeroReady}
         />
       </motion.div>
 

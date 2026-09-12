@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 
@@ -30,20 +31,23 @@ export function ExperienceCard({
     >
       {/* Image */}
       <div className="relative h-64 overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg-surface via-bg-surface/20 to-transparent" />
-        
+
         {/* Duration Badge */}
         {duration && (
           <div className="absolute top-4 left-4 px-3 py-1.5 bg-bg-main/80 backdrop-blur-sm rounded-full">
             <span className="text-xs text-text-secondary tracking-wide">{duration}</span>
           </div>
         )}
-        
+
         {/* Price Badge */}
         {price && (
           <div className="absolute top-4 right-4 px-3 py-1.5 bg-accent-gold/90 rounded-full">
@@ -60,7 +64,7 @@ export function ExperienceCard({
         <p className="text-text-muted text-sm leading-relaxed mb-4 line-clamp-2">
           {description}
         </p>
-        
+
         {/* CTA */}
         <a
           href="#"

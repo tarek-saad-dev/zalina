@@ -19,6 +19,7 @@ import {
   loadGalleryCatalog,
   marketZoneCoverCard,
 } from "@/lib/media";
+import { HeroRevealGate } from "@/components/media/HeroRevealGate";
 
 export const revalidate = 60;
 
@@ -43,17 +44,19 @@ export default async function Home() {
   );
 
   return (
-    <main className="lux-page min-h-screen">
-      <LuxuryHero />
-      <HeritageStory />
-      <SignatureMoments moments={moments} />
-      <DayNightExperience />
-      <MarketShowcase stalls={stalls} zoneName={marketZoneName} />
-      <GlimpseGallery items={glimpseItems} />
-      <ZalinaPromise />
-      <WeddingShowcase />
-      <FinalCTA />
-      <LuxuryFooter />
-    </main>
+    <HeroRevealGate>
+      <main className="lux-page min-h-screen">
+        <LuxuryHero />
+        <HeritageStory />
+        <SignatureMoments moments={moments} />
+        <DayNightExperience />
+        <MarketShowcase stalls={stalls} zoneName={marketZoneName} />
+        <GlimpseGallery items={glimpseItems} />
+        <ZalinaPromise />
+        <WeddingShowcase />
+        <FinalCTA />
+        <LuxuryFooter />
+      </main>
+    </HeroRevealGate>
   );
 }

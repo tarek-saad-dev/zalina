@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { OrnamentalDivider } from "@/components/ui/OrnamentalDivider";
@@ -10,13 +11,14 @@ export function BookingCTASection() {
     <section id="booking" className="relative py-24 md:py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <div 
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: `url("${NEUTRAL_MEDIA_FALLBACK}")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+        <Image
+          src={NEUTRAL_MEDIA_FALLBACK}
+          alt=""
+          fill
+          sizes="100vw"
+          quality={75}
+          className="object-cover opacity-30"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-bg-main via-bg-main/95 to-bg-main/90" />
         <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-transparent to-bg-main" />
@@ -58,8 +60,8 @@ export function BookingCTASection() {
             <PrimaryButton href="/book-now" size="large">
               Book Now
             </PrimaryButton>
-            <a 
-              href="tel:+16232041074" 
+            <a
+              href="tel:+16232041074"
               className="text-text-secondary hover:text-accent-gold transition-colors duration-300"
             >
               <span className="text-sm tracking-wide">Or call us at</span>
