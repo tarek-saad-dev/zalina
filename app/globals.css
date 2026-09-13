@@ -9,37 +9,73 @@
    ============================================ */
 
 :root {
+  /* ——— Canonical Zalina tokens (Phase -1 visual foundation) ——— */
+  --zalina-bg: #050505;
+  --zalina-surface: #0a0908;
+  --zalina-text: #f6f0e8;
+  --zalina-text-muted: #c4beb6;
+  --zalina-gold: #c9a35c;
+  --zalina-gold-highlight: #e1be82;
+  --zalina-gold-soft: rgba(201, 163, 92, 0.2);
+  --zalina-border: rgba(201, 163, 92, 0.25);
+
+  /* Typography scale (clamp ranges for future homepage work) */
+  --zalina-text-hero: clamp(2.5rem, 4.5vw + 1rem, 5.75rem); /* ~40–92px */
+  --zalina-text-section: clamp(1.875rem, 2.5vw + 0.75rem, 3.5rem); /* ~30–56px */
+  --zalina-text-body: clamp(0.96875rem, 0.35vw + 0.875rem, 1.125rem); /* ~15.5–18px */
+  --zalina-text-eyebrow: clamp(0.6875rem, 0.15vw + 0.65rem, 0.75rem); /* ~11–12px */
+
+  /* Section spacing tiers */
+  --zalina-space-cinematic: clamp(4.5rem, 6vw + 2rem, 8.75rem); /* ~72–140px */
+  --zalina-space-standard: clamp(3.5rem, 4vw + 1.5rem, 6.5rem); /* ~56–104px */
+  --zalina-space-compact: clamp(2rem, 2vw + 1rem, 3.5rem); /* ~32–56px */
+
+  /* Phase 2.5 — mobile editorial rhythm (used under max-width 767) */
+  --mobile-section-tight: 40px;
+  --mobile-section-normal: 48px;
+  --mobile-section-generous: 56px;
+  --zalina-nav-height: 80px;
+
+  /* Layout grid */
+  --zalina-container-max: 80rem; /* 1280px */
+  --zalina-gutter: clamp(1.25rem, 3.5vw, 4rem); /* ~20–64px */
+
+  /* Button foundation */
+  --zalina-btn-height: 3.25rem; /* 52px — within 48–56 */
+  --zalina-btn-radius: 2px; /* editorial luxury — prefer over mixed pills */
+  --zalina-touch-min: 3rem; /* 48px */
+
   /* Background Colors — deep like Home, with warm gold atmosphere */
-  --bg-main: #050505;
-  --bg-section: #0a0908;
+  --bg-main: var(--zalina-bg);
+  --bg-section: var(--zalina-surface);
   --bg-surface: #100e0c;
   /* Primary Backgrounds (darker navy / كحلي أغمق) */
   --bg-primary: #06080f;
   --bg-secondary: #0a0e18;
-  --page-bg: #050505;
+  --page-bg: var(--zalina-bg);
   --page-bg-navy: #06080f;
-  --page-gold-glow: rgba(212, 175, 55, 0.11);
-  --page-gold-glow-soft: rgba(199, 163, 106, 0.06);
+  --page-gold-glow: rgba(201, 163, 92, 0.11);
+  --page-gold-glow-soft: rgba(201, 163, 92, 0.06);
   --page-bronze-glow: rgba(139, 90, 47, 0.07);
-  /* Text Colors */
-  --text-primary: #f3ebdd;
-  --text-secondary: #c8b8a4;
+  /* Text Colors — bridged toward canonical */
+  --text-primary: var(--zalina-text);
+  --text-secondary: var(--zalina-text-muted);
   --text-muted: #a8937a;
   --text-body: #d6d2cb;
   --text-white: #f8f6f2;
-  /* Accent Colors */
-  --accent-gold: #c7a36a;
-  --accent-gold-hover: #d7b47d;
+  /* Accent Colors — gold consolidated toward --zalina-gold */
+  --accent-gold: var(--zalina-gold);
+  --accent-gold-hover: var(--zalina-gold-highlight);
   --accent-sand: #dcc7a3;
   --accent-bronze: #9b6a4a;
-  /* Luxury Gold Palette */
-  --luxury-gold: #d9b073;
-  --light-gold: #e7c58e;
+  /* Luxury Gold Palette (legacy aliases → canonical) */
+  --luxury-gold: var(--zalina-gold-highlight);
+  --light-gold: var(--zalina-gold-highlight);
   --bronze: #8a5a2f;
   --cream: #f4efe8;
   /* Border Colors */
   --border-subtle: #342a24;
-  --border-gold-soft: rgba(199, 163, 106, 0.32);
+  --border-gold-soft: var(--zalina-border);
   /* Status Colors */
   --status-success: #7a9b6a;
   --status-warning: #b88a4a;
@@ -47,12 +83,12 @@
   /* Shadows */
   --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.25);
   --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.35);
-  --shadow-glow-gold: 0 0 40px rgba(199, 163, 106, 0.15);
-  --shadow-luxury-glow: 0 0 60px rgba(217, 176, 115, 0.15);
+  --shadow-glow-gold: 0 0 40px var(--zalina-gold-soft);
+  --shadow-luxury-glow: 0 0 60px rgba(225, 190, 130, 0.15);
   --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.18);
   /* Border Radius */
   --radius-card: 22px;
-  --radius-button: 14px;
+  --radius-button: 14px; /* legacy UI — new editorial CTAs use --zalina-btn-radius */
   /* Typography */
   --font-display: "Cormorant Garamond", serif;
   --font-heading-ar: "Alexandria", sans-serif;
@@ -85,6 +121,24 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Lenis owns wheel smoothing on desktop — avoid double-smooth */
+html.zalina-smooth-scroll {
+  scroll-behavior: auto;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 html[dir="rtl"] {
@@ -363,14 +417,136 @@ p {
     padding-top: var(--space-4xl);
     padding-bottom: var(--space-4xl);
   }
-  /* Container */
+  /* Container — legacy premium (kept); prefer .zalina-container for new work */
   .container-premium {
     width: 100%;
-    max-width: 1440px;
+    max-width: var(--zalina-container-max);
     margin-left: auto;
     margin-right: auto;
-    padding-left: clamp(1rem, 4vw, 3rem);
-    padding-right: clamp(1rem, 4vw, 3rem);
+    padding-left: var(--zalina-gutter);
+    padding-right: var(--zalina-gutter);
+  }
+
+  /* Phase -1 layout / type / space utilities (opt-in; do not force on all sections yet) */
+  .zalina-container {
+    width: 100%;
+    max-width: var(--zalina-container-max);
+    margin-inline: auto;
+    padding-inline: var(--zalina-gutter);
+  }
+
+  .zalina-section-cinematic {
+    padding-block: var(--zalina-space-cinematic);
+  }
+
+  .zalina-section-standard {
+    padding-block: var(--zalina-space-standard);
+  }
+
+  .zalina-section-compact {
+    padding-block: var(--zalina-space-compact);
+  }
+
+  .zalina-text-hero {
+    font-family: var(--font-display);
+    font-size: var(--zalina-text-hero);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--zalina-text);
+  }
+
+  .zalina-text-section {
+    font-family: var(--font-display);
+    font-size: var(--zalina-text-section);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--zalina-text);
+  }
+
+  .zalina-text-body {
+    font-family: var(--font-body);
+    font-size: var(--zalina-text-body);
+    line-height: 1.7;
+    color: var(--zalina-text-muted);
+  }
+
+  .zalina-text-eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--zalina-text-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--zalina-gold);
+  }
+
+  /* Reveal primitive: visible if JS fails — never rely on opacity:0 in CSS */
+  .zalina-reveal,
+  .zalina-text-reveal {
+    opacity: 1;
+  }
+
+  /* Button foundation (opt-in classes for Phase 1+) */
+  .zalina-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: max(var(--zalina-btn-height), var(--zalina-touch-min));
+    padding-inline: 1.75rem;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: var(--zalina-btn-radius);
+    cursor: pointer;
+    transition:
+      color var(--transition-base),
+      background-color var(--transition-base),
+      border-color var(--transition-base),
+      transform var(--transition-base),
+      box-shadow var(--transition-base);
+  }
+
+  .zalina-btn-primary {
+    background: linear-gradient(
+      135deg,
+      var(--zalina-gold) 0%,
+      #b8963e 100%
+    );
+    color: var(--zalina-bg);
+    border: none;
+  }
+
+  .zalina-btn-primary:hover {
+    background: var(--zalina-gold-highlight);
+    transform: translateY(-1px);
+  }
+
+  .zalina-btn-secondary {
+    background: transparent;
+    color: var(--zalina-text);
+    border: 1px solid var(--zalina-border);
+  }
+
+  .zalina-btn-secondary:hover {
+    border-color: var(--zalina-gold);
+    color: var(--zalina-gold);
+  }
+
+  .zalina-btn-text {
+    background: transparent;
+    border: none;
+    color: var(--zalina-gold);
+    min-height: var(--zalina-touch-min);
+    padding-inline: 0.25rem;
+    letter-spacing: 0.12em;
+  }
+
+  .zalina-btn-text:hover {
+    color: var(--zalina-gold-highlight);
   }
 }
 
@@ -1171,6 +1347,35 @@ a:hover {
   }
 }
 
+/* Phase -1: site-wide reduced motion — content always visible */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-bounce-slow,
+  .hero-star,
+  .hero-mist,
+  .hero-card-float,
+  .gold-shimmer,
+  .hover-lift:hover,
+  .hover-lift-card:hover,
+  .hover-lift-luxury:hover {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .zalina-reveal,
+  .zalina-text-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+}
+
 /* Legacy mobile helpers kept for other pages */
 
 .mobile-container {
@@ -1448,14 +1653,14 @@ a:hover {
    ============================================ */
 
 :root {
-  /* Luxury Color Palette */
-  --lux-bg: #050505;
+  /* Luxury homepage aliases → canonical Zalina tokens */
+  --lux-bg: var(--zalina-bg);
   --lux-surface: rgba(8, 8, 8, 0.88);
-  --lux-border: rgba(201, 163, 92, 0.25);
-  --lux-gold: #c9a35c;
-  --lux-gold-light: #d4b06a;
-  --lux-text: #f6f0e8;
-  --lux-muted: #c4beb6;
+  --lux-border: var(--zalina-border);
+  --lux-gold: var(--zalina-gold);
+  --lux-gold-light: var(--zalina-gold-highlight);
+  --lux-text: var(--zalina-text);
+  --lux-muted: var(--zalina-text-muted);
   --lux-overlay: rgba(5, 5, 5, 0.6);
 }
 
@@ -1485,24 +1690,12 @@ a:hover {
   background-attachment: fixed;
 }
 
-/* Luxury Container */
+/* Luxury Container — aligned to Phase -1 grid (1280 / gutters) */
 
 .lux-container {
-  max-width: 1440px;
+  max-width: var(--zalina-container-max);
   margin-inline: auto;
-  padding-inline: 80px;
-}
-
-@media (max-width: 1024px) {
-  .lux-container {
-    padding-inline: 48px;
-  }
-}
-
-@media (max-width: 768px) {
-  .lux-container {
-    padding-inline: 24px;
-  }
+  padding-inline: var(--zalina-gutter);
 }
 
 /* Luxury Typography */
@@ -1755,7 +1948,1141 @@ a:hover {
 }
 
 /* ============================================
-   HERO CINEMATIC ANIMATIONS
+   PHASE 1 — NAVBAR + CINEMATIC HERO
+   ============================================ */
+
+.zalina-navbar .zalina-nav-link:hover {
+  color: var(--zalina-text) !important;
+}
+
+.zalina-nav-soon {
+  margin-left: 0.4rem;
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 9999px;
+  background: var(--zalina-gold-soft);
+  border: 1px solid var(--zalina-border);
+  color: var(--zalina-gold-highlight);
+  vertical-align: super;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+
+.zalina-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.875rem; /* 46px */
+  padding-inline: 1.5rem;
+  border-radius: var(--zalina-btn-radius);
+  border: 1px solid var(--zalina-border);
+  background: rgba(246, 240, 232, 0.03);
+  color: var(--zalina-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-family: var(--font-body);
+  transition:
+    color var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.zalina-nav-cta:hover {
+  border-color: var(--zalina-gold);
+  color: var(--zalina-gold-highlight);
+  transform: translateY(-1px);
+}
+
+.zalina-nav-cta:focus-visible {
+  outline: 2px solid var(--zalina-gold);
+  outline-offset: 3px;
+}
+
+.zalina-hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  background: var(--zalina-bg);
+}
+
+.zalina-hero-image {
+  object-position: 54% 40%;
+}
+
+@media (min-width: 768px) {
+  .zalina-hero-image {
+    object-position: 50% 42%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .zalina-hero-image {
+    object-position: center 45%;
+  }
+}
+
+.zalina-hero-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* A — readability behind left-weighted copy */
+.zalina-hero-overlay--read {
+  background: linear-gradient(
+    90deg,
+    rgba(5, 5, 5, 0.72) 0%,
+    rgba(5, 5, 5, 0.42) 38%,
+    rgba(5, 5, 5, 0.08) 68%,
+    transparent 100%
+  );
+}
+
+@media (max-width: 767px) {
+  .zalina-hero-overlay--read {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 5, 5, 0.55) 0%,
+      rgba(5, 5, 5, 0.28) 42%,
+      rgba(5, 5, 5, 0.45) 100%
+    );
+  }
+}
+
+/* B — soft vignette */
+.zalina-hero-overlay--vignette {
+  background: radial-gradient(
+    ellipse 75% 70% at 55% 45%,
+    transparent 35%,
+    rgba(5, 5, 5, 0.45) 100%
+  );
+}
+
+/* C — restrained warm atmosphere */
+.zalina-hero-overlay--glow {
+  background: radial-gradient(
+    ellipse 48% 36% at 52% 58%,
+    rgba(201, 163, 92, 0.1) 0%,
+    transparent 70%
+  );
+}
+
+/* Hero → Heritage dissolve (no hard cut) */
+.zalina-hero-overlay--exit {
+  background: linear-gradient(
+    180deg,
+    transparent 48%,
+    rgba(5, 5, 5, 0.35) 72%,
+    rgba(10, 9, 8, 0.82) 88%,
+    var(--zalina-bg) 100%
+  );
+}
+
+.zalina-hero-eyebrow {
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(201, 163, 92, 0.08);
+  border: 1px solid var(--zalina-border);
+}
+
+.zalina-hero-eyebrow-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--zalina-gold);
+  flex-shrink: 0;
+}
+
+.zalina-hero-headline {
+  font-family: var(--font-display);
+  font-size: var(--zalina-text-hero);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  color: var(--zalina-text);
+  margin: 0;
+}
+
+.zalina-hero-headline-gold {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--zalina-gold);
+  /* light-reactive, not a looping shimmer */
+  background: linear-gradient(
+    105deg,
+    var(--zalina-gold) 0%,
+    var(--zalina-gold-highlight) 42%,
+    var(--zalina-gold) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.zalina-hero-divider {
+  width: min(11rem, 40%);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--zalina-gold) 0%,
+    rgba(201, 163, 92, 0.15) 100%
+  );
+}
+
+.zalina-hero-copy {
+  font-family: var(--font-body);
+  font-size: clamp(0.96875rem, 0.4vw + 0.9rem, 1.0625rem);
+  line-height: 1.7;
+  color: rgba(246, 240, 232, 0.72);
+  max-width: 34rem;
+  margin: 0;
+}
+
+.zalina-hero-cta-primary {
+  min-height: 3.25rem;
+  padding-inline: 2rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.16em;
+  box-shadow: 0 10px 28px rgba(201, 163, 92, 0.22);
+  transition:
+    transform 280ms ease,
+    box-shadow 280ms ease,
+    background-color 280ms ease;
+  will-change: transform;
+}
+
+@media (min-width: 768px) {
+  .zalina-hero-cta-primary {
+    min-height: 3.375rem;
+  }
+}
+
+.zalina-hero-cta-primary:hover {
+  box-shadow: 0 12px 32px rgba(201, 163, 92, 0.32);
+}
+
+.zalina-hero-cta-primary:focus-visible {
+  outline: 2px solid var(--zalina-gold-highlight);
+  outline-offset: 3px;
+}
+
+.zalina-hero-cta-secondary {
+  min-height: 3.375rem;
+  padding-inline: 1.75rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.16em;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .zalina-hero-cta-secondary {
+    display: inline-flex;
+  }
+}
+
+.zalina-hero-cta-secondary:focus-visible {
+  outline: 2px solid var(--zalina-gold);
+  outline-offset: 3px;
+}
+
+.zalina-hero-rail-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+
+.zalina-hero-rail-inner {
+  width: 100%;
+  max-width: var(--zalina-container-max);
+  margin-inline: auto;
+  padding-inline: var(--zalina-gutter);
+}
+
+.zalina-hero-rail {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border: 1px solid rgba(246, 240, 232, 0.1);
+  background: rgba(5, 5, 5, 0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.zalina-hero-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.zalina-hero-rail-sep {
+  width: 1px;
+  flex-shrink: 0;
+  background: rgba(246, 240, 232, 0.1);
+  align-self: stretch;
+}
+
+.zalina-hero-rail-item {
+  flex: 1 0 auto;
+  min-width: 11.5rem;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  text-decoration: none;
+  transition: background-color 280ms ease;
+}
+
+@media (min-width: 1024px) {
+  .zalina-hero-rail {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .zalina-hero-rail-item {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 1.05rem 1.25rem;
+  }
+}
+
+.zalina-hero-rail-item:hover {
+  background: rgba(201, 163, 92, 0.08);
+}
+
+.zalina-hero-rail-item:focus-visible {
+  outline: 2px solid var(--zalina-gold);
+  outline-offset: -2px;
+}
+
+.zalina-hero-rail-num {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: rgba(201, 163, 92, 0.65);
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.zalina-hero-rail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.zalina-hero-rail-label {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: rgba(246, 240, 232, 0.88);
+  letter-spacing: 0.02em;
+  transition: color 280ms ease;
+}
+
+.zalina-hero-rail-item:hover .zalina-hero-rail-label {
+  color: var(--zalina-gold-highlight);
+}
+
+.zalina-hero-rail-sub {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  color: rgba(246, 240, 232, 0.45);
+  line-height: 1.35;
+}
+
+@media (max-width: 639px) {
+  .zalina-hero-rail-sub {
+    display: none;
+  }
+
+  .zalina-hero-rail-item {
+    min-width: 9.75rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zalina-hero-cta-primary,
+  .zalina-nav-cta,
+  .zalina-hero-rail-item {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .zalina-hero-headline .line,
+  .zalina-hero-headline [class*="line"] {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+}
+
+/* ============================================
+   PHASE 2 — HERITAGE + SIGNATURE MOMENTS
+   ============================================ */
+
+.zalina-heritage {
+  background: transparent;
+  padding-top: clamp(3.5rem, 5vw + 1.5rem, 6.5rem); /* ~56–104px breathing */
+  padding-bottom: clamp(3.25rem, 4vw + 1.25rem, 5.5rem);
+}
+
+.zalina-heritage-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 0%,
+    rgba(201, 163, 92, 0.05) 0%,
+    transparent 65%
+  );
+}
+
+.zalina-heritage-inner {
+  max-width: 46rem; /* ~736px within 680–760 */
+}
+
+.zalina-heritage-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.125rem, 2.8vw + 0.9rem, 3.75rem); /* ~34–60px */
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: var(--zalina-text);
+  margin: 0;
+}
+
+.zalina-heritage-headline-gold {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--zalina-gold);
+  background: linear-gradient(
+    105deg,
+    var(--zalina-gold) 0%,
+    var(--zalina-gold-highlight) 45%,
+    var(--zalina-gold) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.zalina-heritage-divider {
+  width: min(5.5rem, 28%);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--zalina-gold) 20%,
+    var(--zalina-gold) 80%,
+    transparent
+  );
+}
+
+.zalina-heritage-copy {
+  font-family: var(--font-body);
+  font-size: clamp(0.96875rem, 0.35vw + 0.9rem, 1.125rem); /* ~15.5–18px */
+  line-height: 1.75;
+  color: var(--zalina-text-muted);
+  max-width: 40rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zalina-heritage-headline .line,
+  .zalina-heritage-headline [class*="line"] {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+}
+
+/* —— Signature Moments —— */
+
+.zalina-moments {
+  background: var(--zalina-surface);
+  padding-top: clamp(3.5rem, 4.5vw + 1.25rem, 6rem);
+  padding-bottom: clamp(3.25rem, 4vw + 1.25rem, 5.5rem);
+}
+
+.zalina-moments-title {
+  margin: 0;
+  max-width: 16ch;
+}
+
+.zalina-moments-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--zalina-btn-radius);
+  border: 1px solid var(--zalina-border);
+  background: rgba(246, 240, 232, 0.03);
+  color: var(--zalina-text);
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    color var(--transition-base),
+    opacity var(--transition-base);
+}
+
+.zalina-moments-nav-btn:hover:not(:disabled) {
+  border-color: var(--zalina-gold);
+  color: var(--zalina-gold-highlight);
+  background: var(--zalina-gold-soft);
+}
+
+.zalina-moments-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.zalina-moments-nav-btn:focus-visible {
+  outline: 2px solid var(--zalina-gold);
+  outline-offset: 2px;
+}
+
+.zalina-moments-track {
+  display: flex;
+  gap: 1.15rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-left: var(--zalina-gutter);
+  padding-right: 0;
+}
+
+@media (min-width: 1280px) {
+  .zalina-moments-track {
+    padding-left: max(
+      var(--zalina-gutter),
+      calc((100vw - var(--zalina-container-max)) / 2 + var(--zalina-gutter))
+    );
+  }
+}
+
+.zalina-moments-track::-webkit-scrollbar {
+  display: none;
+}
+
+.zalina-moments-track:focus-visible {
+  outline: 2px solid var(--zalina-gold);
+  outline-offset: -2px;
+}
+
+.zalina-moments-track-end {
+  flex: 0 0 max(1.25rem, var(--zalina-gutter));
+}
+
+.zalina-moments-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(86vw, 20.5rem);
+  height: clamp(23.5rem, 58vw, 27rem);
+  scroll-snap-align: start;
+  overflow: hidden;
+  background: #0a0908;
+}
+
+@media (min-width: 768px) {
+  .zalina-moments-card {
+    width: clamp(18.75rem, 28vw, 22.5rem);
+    height: clamp(26rem, 38vw, 31rem);
+  }
+
+  .zalina-moments-card[data-featured="true"] {
+    width: clamp(21rem, 31vw, 26rem);
+    height: clamp(29rem, 42vw, 34rem);
+  }
+}
+
+.zalina-moments-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.zalina-moments-img {
+  transform: scale(1.04);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .zalina-moments-card:hover .zalina-moments-img,
+  .zalina-moments-card[data-active="true"] .zalina-moments-img {
+    transform: scale(1);
+  }
+}
+
+.zalina-moments-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(5, 5, 5, 0.88) 0%,
+    rgba(5, 5, 5, 0.35) 42%,
+    rgba(5, 5, 5, 0.12) 100%
+  );
+  pointer-events: none;
+}
+
+.zalina-moments-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.35rem 1.35rem 1.5rem;
+  z-index: 1;
+}
+
+.zalina-moments-num {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  color: rgba(201, 163, 92, 0.7);
+  margin-bottom: 0.55rem;
+}
+
+.zalina-moments-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.2vw + 0.9rem, 1.75rem); /* ~22–28px */
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--zalina-text);
+  margin: 0 0 0.4rem;
+  transition: color 280ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .zalina-moments-card:hover .zalina-moments-card-title {
+    color: var(--zalina-gold-highlight);
+  }
+}
+
+.zalina-moments-card-sub {
+  font-family: var(--font-body);
+  font-size: clamp(0.9375rem, 0.2vw + 0.88rem, 1rem);
+  line-height: 1.5;
+  color: rgba(246, 240, 232, 0.72);
+  margin: 0;
+  max-width: 28ch;
+}
+
+.zalina-moments-accent {
+  display: block;
+  margin-top: 0.9rem;
+  width: 2.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--zalina-gold), transparent);
+  transform-origin: left center;
+  transition: width 400ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .zalina-moments-card:hover .zalina-moments-accent,
+  .zalina-moments-card[data-active="true"] .zalina-moments-accent {
+    width: 3.75rem;
+  }
+}
+
+.zalina-moments-progress {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: rgba(246, 240, 232, 0.45);
+  margin: 0;
+}
+
+.zalina-moments-progress-sep {
+  margin-inline: 0.35rem;
+  color: rgba(201, 163, 92, 0.55);
+}
+
+.zalina-hero-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100svh;
+}
+
+.zalina-hero-copyblock {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 5.5rem;
+  padding-bottom: 7.5rem;
+}
+
+@media (min-width: 768px) {
+  .zalina-hero-copyblock {
+    padding-bottom: 9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .zalina-hero-copyblock {
+    padding-bottom: 10rem;
+  }
+}
+
+.zalina-hero-copyinner {
+  max-width: 42rem;
+}
+
+.zalina-hero-rail-label-short {
+  display: none;
+}
+
+.zalina-hero-rail-arrow {
+  display: none;
+}
+
+.zalina-hero-peek {
+  display: none;
+}
+
+.zalina-heritage-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: var(--zalina-bg);
+  opacity: 0;
+}
+
+.zalina-heritage-l1,
+.zalina-heritage-l2,
+.zalina-heritage-l3 {
+  display: block;
+}
+
+.zalina-heritage-ornament {
+  margin-bottom: 1.75rem;
+}
+
+.zalina-heritage-divider {
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zalina-moments-img,
+  .zalina-moments-accent,
+  .zalina-moments-card-title {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .zalina-moments-img {
+    transform: none !important;
+  }
+}
+
+/* ============================================
+   PHASE 2.5 — MOBILE EXPERIENCE ART DIRECTION
+   Desktop rules above remain the source of truth.
+   ============================================ */
+
+@media (max-width: 767px) {
+  :root {
+    --zalina-nav-height: 72px;
+    --zalina-text-hero: clamp(2.375rem, 8.2vw + 0.4rem, 2.875rem); /* ~38–46 */
+  }
+
+  /* —— Navbar —— */
+  .zalina-navbar {
+    height: var(--zalina-nav-height);
+  }
+
+  /* —— Hero: denser cinematic fold —— */
+  .zalina-hero {
+    isolation: isolate;
+    z-index: 1;
+  }
+
+  .zalina-hero-image {
+    object-position: 58% 38%;
+  }
+
+  .zalina-hero-overlay--exit {
+    background: linear-gradient(
+      180deg,
+      transparent 38%,
+      rgba(5, 5, 5, 0.4) 62%,
+      rgba(10, 9, 8, 0.88) 84%,
+      var(--zalina-bg) 100%
+    );
+  }
+
+  .zalina-hero-stage {
+    min-height: 100svh;
+    justify-content: flex-start;
+  }
+
+  .zalina-hero-copyblock {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    padding-top: calc(var(--zalina-nav-height) + 1.75rem);
+    padding-bottom: 5.75rem;
+  }
+
+  .zalina-hero-eyebrow {
+    padding: 0.3rem 0.65rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .zalina-hero-headline {
+    font-size: clamp(2.375rem, 8.5vw, 2.75rem);
+    line-height: 1.05;
+  }
+
+  .zalina-hero-divider {
+    width: min(8.5rem, 42%);
+    margin-top: 1.1rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .zalina-hero-copy {
+    font-size: 0.96875rem;
+    line-height: 1.55;
+    max-width: 28ch;
+  }
+
+  .zalina-hero-cta-row {
+    margin-top: 1.35rem;
+  }
+
+  .zalina-hero-cta-primary {
+    min-height: 3rem;
+    padding-inline: 1.65rem;
+  }
+
+  /* Edge-to-edge discovery ticker at Hero → Heritage seam */
+  .zalina-hero-rail-wrap {
+    padding-bottom: 0;
+    bottom: -1px;
+    z-index: 25;
+    transform: translateY(42%);
+  }
+
+  .zalina-hero-rail-inner {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .zalina-hero-rail {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(10, 9, 8, 0.55) 0%,
+      rgba(5, 5, 5, 0.88) 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .zalina-hero-rail-item {
+    min-width: auto;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem 1.15rem;
+  }
+
+  .zalina-hero-rail-label-full {
+    display: none;
+  }
+
+  .zalina-hero-rail-label-short {
+    display: inline;
+  }
+
+  .zalina-hero-rail-sub {
+    display: none;
+  }
+
+  .zalina-hero-rail-arrow {
+    display: inline;
+    margin-left: 0.15rem;
+    color: rgba(201, 163, 92, 0.7);
+    font-size: 0.85rem;
+  }
+
+  .zalina-hero-rail-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .zalina-hero-rail-num {
+    margin-top: 0;
+  }
+
+  /* Heritage first word peeks as Hero exits */
+  .zalina-hero-peek {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 3.4rem;
+    z-index: 15;
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+    color: rgba(246, 240, 232, 0.42);
+    pointer-events: none;
+  }
+
+  /* —— Heritage: compact editorial fold (~420–520px feel) —— */
+  .zalina-heritage {
+    z-index: 2;
+    margin-top: -36px;
+    padding-top: var(--mobile-section-generous);
+    padding-bottom: var(--mobile-section-tight);
+  }
+
+  .zalina-heritage-glow {
+    background: radial-gradient(
+      ellipse 80% 50% at 50% 8%,
+      rgba(201, 163, 92, 0.06) 0%,
+      transparent 60%
+    );
+  }
+
+  .zalina-heritage-veil {
+    z-index: 3;
+  }
+
+  .zalina-heritage-inner {
+    position: relative;
+    z-index: 4;
+    max-width: 22rem;
+  }
+
+  .zalina-heritage-ornament {
+    margin-bottom: 0.85rem;
+  }
+
+  .zalina-heritage-ornament svg {
+    width: 48px;
+    height: 14px;
+  }
+
+  .zalina-heritage-headline {
+    font-size: clamp(2.25rem, 9vw, 2.625rem); /* 36–42 */
+    line-height: 1.14;
+  }
+
+  /* Two-line mobile composition: Heritage / Feeling + Story */
+  .zalina-heritage-l1 {
+    display: block;
+  }
+
+  .zalina-heritage-l2 {
+    display: inline;
+  }
+
+  .zalina-heritage-l3 {
+    display: inline;
+    margin-left: 0.28em;
+  }
+
+  .zalina-heritage-divider {
+    margin-top: 1.15rem;
+    margin-bottom: 1.15rem;
+    width: min(4.25rem, 26%);
+  }
+
+  .zalina-heritage-copy {
+    font-size: 0.96875rem; /* 15.5 */
+    line-height: 1.6;
+    max-width: 34ch;
+  }
+
+  /* —— Signature: overlap + denser cards —— */
+  .zalina-moments {
+    z-index: 2;
+    margin-top: -28px;
+    padding-top: var(--mobile-section-normal);
+    padding-bottom: var(--mobile-section-generous);
+  }
+
+  .zalina-moments-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.125rem);
+    max-width: 12ch;
+  }
+
+  .zalina-moments-card {
+    width: min(84vw, 19.5rem);
+    height: clamp(21rem, 54vw, 24.5rem);
+  }
+
+  .zalina-moments-content {
+    padding: 1.15rem 1.15rem 1.25rem;
+  }
+
+  .zalina-moments-card-sub {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .zalina-moments-progress {
+    margin-top: 0.15rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .zalina-hero-peek {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   PHASE 2.6 — CINEMATIC SCROLL TRANSITION SYSTEM
+   Layer model: scene base 0 → next 10 → gold frame 20 → navbar 50+
+   ============================================ */
+
+.zalina-scene-hs {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.zalina-scene-hs .zalina-heritage {
+  position: relative;
+  z-index: 0;
+}
+
+.zalina-scene-hs .zalina-moments {
+  position: relative;
+  z-index: 10;
+  /* Surface fades in via scrub — avoids hard seam from Heritage */
+  background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zalina-scene-hs .zalina-moments {
+    background-color: var(--zalina-surface);
+  }
+}
+
+/* Shared gold frame (TYPE A) — transform-only morph seed */
+.zalina-gold-frame {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid rgba(201, 163, 92, 0.72);
+  background: #050505;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.zalina-gold-frame-stroke {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(201, 163, 92, 0.2);
+}
+
+.zalina-gold-frame-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.zalina-gold-frame-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Gold thread language — thin, secondary, never neon */
+.zalina-gold-thread {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 163, 92, 0.35) 18%,
+    var(--zalina-gold) 50%,
+    rgba(201, 163, 92, 0.35) 82%,
+    transparent 100%
+  );
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.zalina-gold-thread--hero {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 5.75rem;
+  z-index: 16;
+  opacity: 0.35;
+}
+
+@media (min-width: 768px) {
+  .zalina-gold-thread--hero {
+    left: 8%;
+    right: 42%;
+    bottom: 7.5rem;
+    max-width: 18rem;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Strengthen Phase 2.5 overlap for scene feed-through */
+  .zalina-scene-hs .zalina-heritage {
+    margin-top: -36px;
+    padding-bottom: 32px;
+  }
+
+  .zalina-scene-hs .zalina-moments {
+    margin-top: -40px;
+    padding-top: 36px;
+  }
+
+  .zalina-gold-thread--hero {
+    bottom: 4.85rem;
+    left: 10%;
+    right: 10%;
+  }
+}
+
+/* ============================================
+   HERO CINEMATIC ANIMATIONS (legacy — unused by Phase 1 Hero)
    ============================================ */
 
 @keyframes hero-star-twinkle {

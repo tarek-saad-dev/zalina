@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { FEATURE_FLAGS } from "@/lib/featureFlags";
+import { motionConfig } from "@/lib/motion/motionConfig";
 
 interface NavItem {
   label: string;
@@ -17,30 +20,37 @@ const navItems: NavItem[] = [
   { label: "About", href: "/about" },
   { label: "Experiences", href: "/experiences" },
   { label: "Zones", href: "/zones" },
-  { label: "Weddings", href: "/weddings", comingSoon: !FEATURE_FLAGS.WEDDINGS_ACTIVE },
+  {
+    label: "Weddings",
+    href: "/weddings",
+    comingSoon: !FEATURE_FLAGS.WEDDINGS_ACTIVE,
+  },
   { label: "Gallery", href: "/gallery" },
 ];
 
+/** Desktop height; mobile uses --zalina-nav-height (72px) via CSS. */
+const NAV_HEIGHT = "var(--zalina-nav-height, 80px)";
+
 export function LuxuryNavbar() {
   const pathname = usePathname();
+  const reduceMotion = useReducedMotion();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [language, setLanguage] = useState<"EN" | "AR">("EN");
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 36);
     };
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Prevent scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -53,121 +63,89 @@ export function LuxuryNavbar() {
   }, [isMobileMenuOpen]);
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
+    if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
+
+  const duration = reduceMotion ? 0 : motionConfig.duration.fast;
 
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-[9999] transition-all duration-500 ease-out"
+        className="zalina-navbar fixed top-0 left-0 right-0 z-[9999]"
         style={{
-          height: "80px",
+          height: NAV_HEIGHT,
           background: isScrolled
-            ? "rgba(20,20,22,0.15)"
-            : "rgba(20,20,22,0.08)",
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
-          backdropFilter: isScrolled ? "blur(24px) saturate(200%)" : "blur(20px) saturate(180%)",
-          WebkitBackdropFilter: isScrolled ? "blur(24px) saturate(200%)" : "blur(20px) saturate(180%)",
+            ? "rgba(10, 9, 8, 0.72)"
+            : "rgba(5, 5, 5, 0.12)",
+          borderBottom: isScrolled
+            ? "1px solid var(--zalina-border)"
+            : "1px solid rgba(246, 240, 232, 0.06)",
+          backdropFilter: isScrolled
+            ? "blur(18px) saturate(160%)"
+            : "blur(10px) saturate(140%)",
+          WebkitBackdropFilter: isScrolled
+            ? "blur(18px) saturate(160%)"
+            : "blur(10px) saturate(140%)",
+          boxShadow: isScrolled ? "0 12px 40px rgba(0,0,0,0.28)" : "none",
+          transition:
+            "background 420ms ease, border-color 420ms ease, box-shadow 420ms ease, backdrop-filter 420ms ease",
         }}
       >
-        {/* Blue Glow Bottom */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at center bottom, rgba(52,120,255,0.18) 0%, transparent 70%)",
-            height: "2px",
-          }}
-        />
-
-        {/* Container */}
-        <div
-          className="h-full mx-auto flex items-center justify-between"
-          style={{
-            maxWidth: "1280px",
-            paddingInline: "40px",
-          }}
-        >
-          {/* Logo Left */}
+        <div className="zalina-container h-full flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="flex-shrink-0 transition-transform duration-300 hover:scale-105"
+            className="relative flex-shrink-0 flex items-center"
+            aria-label="Zalina Arabian Village home"
           >
-            {/* <span
-              className="text-2xl font-medium tracking-wider"
-              style={{
-                fontFamily: "var(--font-display)",
-                background: "linear-gradient(135deg, #F7E6C7 0%, #D8B27B 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Zalina
-            </span> */}
-            <img src="/assets/zalina-logo-full.png" alt="Zalina" className="h-30" />
+            <Image
+              src="/assets/zalina-logo-full.png"
+              alt="Zalina Arabian Village"
+              width={180}
+              height={56}
+              priority
+              className="h-14 w-auto object-contain"
+              style={{ height: 56, width: "auto" }}
+            />
           </Link>
 
-          {/* Navigation Center */}
-          <nav className="hidden lg:flex items-center" style={{ gap: "38px" }}>
+          <nav
+            className="hidden lg:flex items-center"
+            style={{ gap: "1.75rem" }}
+            aria-label="Primary"
+          >
             {navItems.map((item) => {
               const active = isActive(item.href);
               return (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="relative transition-colors duration-300 ease-out"
+                  className="zalina-nav-link relative py-1 transition-colors duration-300"
                   style={{
-                    fontSize: "15px",
+                    fontSize: "0.9rem",
                     fontWeight: 400,
+                    letterSpacing: "0.02em",
                     color: active
-                      ? "#FFFFFF"
-                      : "rgba(255,255,255,0.78)",
+                      ? "var(--zalina-text)"
+                      : "rgba(246, 240, 232, 0.72)",
                     fontFamily: "var(--font-body)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#FFFFFF";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!active) {
-                      e.currentTarget.style.color = "rgba(255,255,255,0.78)";
-                    }
                   }}
                 >
                   {item.label}
                   {item.comingSoon && (
-                    <span
-                      style={{
-                        marginLeft: "6px",
-                        fontSize: "8px",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        padding: "2px 6px",
-                        borderRadius: "9999px",
-                        background: "rgba(212,175,55,0.12)",
-                        border: "1px solid rgba(212,175,55,0.25)",
-                        color: "rgba(212,175,55,0.85)",
-                        verticalAlign: "super",
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Soon
-                    </span>
+                    <span className="zalina-nav-soon">Soon</span>
                   )}
                   {active && (
                     <span
-                      className="absolute -bottom-1 left-1/2 -translate-x-1/2"
+                      className="absolute left-1/2 -translate-x-1/2"
                       style={{
-                        width: "28px",
-                        height: "2px",
-                        background:
-                          "linear-gradient(90deg, #E3C18D, #F6E8C5)",
-                        borderRadius: "1px",
+                        bottom: -2,
+                        width: 22,
+                        height: 1,
+                        background: "var(--zalina-gold)",
+                        opacity: 0.9,
                       }}
+                      aria-hidden
                     />
                   )}
                 </Link>
@@ -175,180 +153,158 @@ export function LuxuryNavbar() {
             })}
           </nav>
 
-          {/* Right: Language + CTA */}
-          <div className="hidden lg:flex items-center gap-5">
-            {/* Language Switch */}
-
-
-            {/* Book Now Button */}
-            <Link
-              href="/book-now"
-              className="inline-flex items-center justify-center font-medium transition-all duration-300"
-              style={{
-                height: "48px",
-                paddingInline: "30px",
-                borderRadius: "999px",
-                border: "1px solid rgba(230,196,144,0.45)",
-                background: "rgba(255,255,255,0.03)",
-                color: "#F2E6D4",
-                fontSize: "14px",
-                fontFamily: "var(--font-body)",
-                boxShadow:
-                  "0 0 25px rgba(224,188,120,0.18), 0 0 60px rgba(224,188,120,0.08)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow =
-                  "0 0 35px rgba(224,188,120,0.28), 0 0 80px rgba(224,188,120,0.14)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 0 25px rgba(224,188,120,0.18), 0 0 60px rgba(224,188,120,0.08)";
-              }}
-            >
+          <div className="hidden lg:flex items-center gap-4">
+            <Link href="/book-now" className="zalina-nav-cta">
               Book Now
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 transition-colors duration-300"
-            style={{ color: "rgba(255,255,255,0.78)" }}
+            type="button"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            className="lg:hidden inline-flex items-center justify-center"
+            style={{
+              width: 44,
+              height: 44,
+              color: "var(--zalina-text)",
+              marginInlineEnd: -6,
+            }}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="zalina-mobile-menu"
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`lg:hidden fixed inset-0 z-[9998] transition-all duration-500 ${isMobileMenuOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-          }`}
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(20,20,22,0.98) 0%, rgba(14,14,18,0.98) 100%)",
-          backdropFilter: "blur(20px)",
-          top: "80px",
-        }}
-      >
-        <div
-          className={`flex flex-col items-center justify-center h-full px-8 transition-all duration-500 ${isMobileMenuOpen
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-8"
-            }`}
-        >
-          {/* Mobile Navigation Links */}
-          <nav className="flex flex-col items-center gap-8 mb-12">
-            {navItems.map((item, index) => {
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="relative transition-all duration-300"
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: 400,
-                    color: active ? "#FFFFFF" : "rgba(255,255,255,0.78)",
-                    fontFamily: "var(--font-display)",
-                    letterSpacing: "0.05em",
-                    transitionDelay: isMobileMenuOpen ? `${index * 75}ms` : "0ms",
-                  }}
-                >
-                  {item.label}
-                  {item.comingSoon && (
-                    <span
-                      style={{
-                        marginLeft: "8px",
-                        fontSize: "10px",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        padding: "2px 8px",
-                        borderRadius: "9999px",
-                        background: "rgba(212,175,55,0.12)",
-                        border: "1px solid rgba(212,175,55,0.25)",
-                        color: "rgba(212,175,55,0.85)",
-                        verticalAlign: "super",
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            id="zalina-mobile-menu"
+            key="mobile-menu"
+            className="lg:hidden fixed inset-0 z-[9998] flex flex-col"
+            style={{
+              top: NAV_HEIGHT,
+              background: "var(--zalina-surface)",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+          >
+            <motion.div
+              className="zalina-container flex flex-1 flex-col justify-center py-10"
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: 10 }}
+              transition={{
+                duration: reduceMotion ? 0 : motionConfig.duration.normal,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              <nav className="flex flex-col gap-6" aria-label="Mobile">
+                {navItems.map((item, index) => {
+                  const active = isActive(item.href);
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: reduceMotion ? 0 : 0.04 + index * 0.05,
+                        duration: reduceMotion ? 0 : motionConfig.duration.normal,
+                        ease: [0.22, 1, 0.36, 1],
                       }}
                     >
-                      Soon
-                    </span>
-                  )}
-                  {active && (
-                    <span
-                      className="absolute -bottom-2 left-1/2 -translate-x-1/2"
-                      style={{
-                        width: "40px",
-                        height: "2px",
-                        background:
-                          "linear-gradient(90deg, #E3C18D, #F6E8C5)",
-                        borderRadius: "1px",
-                      }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="relative inline-flex items-baseline gap-3"
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "clamp(1.625rem, 6vw, 2rem)",
+                          lineHeight: 1.15,
+                          color: active
+                            ? "var(--zalina-text)"
+                            : "rgba(246, 240, 232, 0.78)",
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        {item.label}
+                        {item.comingSoon && (
+                          <span className="zalina-nav-soon">Soon</span>
+                        )}
+                        {active && (
+                          <span
+                            className="absolute -bottom-1 left-0"
+                            style={{
+                              width: 36,
+                              height: 1,
+                              background: "var(--zalina-gold)",
+                            }}
+                            aria-hidden
+                          />
+                        )}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
 
-          {/* Mobile Language Switch */}
-          <div className="flex items-center gap-4 mb-8">
-            <button
-              onClick={() => setLanguage("EN")}
-              className="transition-colors duration-300"
-              style={{
-                fontSize: "18px",
-                fontWeight: 500,
-                color: language === "EN" ? "#FFFFFF" : "rgba(255,255,255,0.5)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              EN
-            </button>
-            <span style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
-            <button
-              onClick={() => setLanguage("AR")}
-              className="transition-colors duration-300"
-              style={{
-                fontSize: "18px",
-                fontWeight: 500,
-                color: language === "AR" ? "#FFFFFF" : "rgba(255,255,255,0.5)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              AR
-            </button>
-          </div>
+              <div className="mt-12 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setLanguage("EN")}
+                  className="transition-colors duration-300"
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 500,
+                    color:
+                      language === "EN"
+                        ? "var(--zalina-text)"
+                        : "rgba(246, 240, 232, 0.45)",
+                    fontFamily: "var(--font-body)",
+                  }}
+                  aria-pressed={language === "EN"}
+                >
+                  EN
+                </button>
+                <span style={{ color: "rgba(246, 240, 232, 0.25)" }}>/</span>
+                <button
+                  type="button"
+                  onClick={() => setLanguage("AR")}
+                  className="transition-colors duration-300"
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 500,
+                    color:
+                      language === "AR"
+                        ? "var(--zalina-text)"
+                        : "rgba(246, 240, 232, 0.45)",
+                    fontFamily: "var(--font-body)",
+                  }}
+                  aria-pressed={language === "AR"}
+                >
+                  AR
+                </button>
+              </div>
 
-          {/* Mobile Book Now Button */}
-          <Link
-            href="/book-now"
-            className="inline-flex items-center justify-center font-medium transition-all duration-300"
-            style={{
-              height: "56px",
-              paddingInline: "40px",
-              borderRadius: "999px",
-              border: "1px solid rgba(230,196,144,0.45)",
-              background: "rgba(255,255,255,0.03)",
-              color: "#F2E6D4",
-              fontSize: "16px",
-              fontFamily: "var(--font-body)",
-              boxShadow:
-                "0 0 25px rgba(224,188,120,0.18), 0 0 60px rgba(224,188,120,0.08)",
-            }}
-          >
-            Book Now
-          </Link>
-        </div>
-      </div>
-
+              <Link
+                href="/book-now"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="zalina-btn zalina-btn-primary mt-10 w-full sm:w-auto sm:self-start"
+                style={{ minHeight: 52 }}
+              >
+                Book Now
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

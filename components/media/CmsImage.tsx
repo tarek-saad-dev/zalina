@@ -69,6 +69,7 @@ export function CmsImage({
   height,
   sizes,
   priority,
+  loading,
   fadeIn = true,
   onLoadingComplete,
   ...rest
@@ -112,8 +113,11 @@ export function CmsImage({
     onLoadingComplete?.(img);
   };
 
+  const resolvedLoading = priority ? undefined : loading ?? "lazy";
+  const skipFade = Boolean(priority) || resolvedLoading === "eager";
+
   const fadeClass =
-    fadeIn && !priority
+    fadeIn && !skipFade
       ? `transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`
       : undefined;
 
@@ -128,7 +132,7 @@ export function CmsImage({
         fill
         sizes={sizes}
         priority={priority}
-        loading={priority ? undefined : "lazy"}
+        loading={resolvedLoading}
         className={mergedClassName}
         onError={onError}
         onLoadingComplete={handleLoadingComplete}
@@ -145,7 +149,7 @@ export function CmsImage({
       height={height ?? h ?? 800}
       sizes={sizes}
       priority={priority}
-      loading={priority ? undefined : "lazy"}
+      loading={resolvedLoading}
       className={mergedClassName}
       onError={onError}
       onLoadingComplete={handleLoadingComplete}

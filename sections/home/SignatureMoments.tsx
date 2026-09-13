@@ -163,50 +163,58 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 src={moment.image}
                 alt={moment.alt || moment.title}
                 fill
-                sizes="400px"
+                sizes="(max-width: 768px) 85vw, 400px"
                 className="object-cover"
-                priority={index < 2}
+                priority={index < 3}
+                loading={index < 3 ? undefined : "eager"}
+                fadeIn={false}
+                quality={75}
               />
             </div>
 
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 pointer-events-none"
               style={{
                 background: `
                   linear-gradient(
                     to top,
-                    rgba(0,0,0,0.85) 0%,
-                    rgba(0,0,0,0.5) 40%,
-                    rgba(0,0,0,0.2) 100%
+                    rgba(5,5,5,0.92) 0%,
+                    rgba(5,5,5,0.72) 28%,
+                    rgba(5,5,5,0.35) 52%,
+                    rgba(5,5,5,0.08) 72%,
+                    transparent 100%
                   )
                 `,
               }}
             />
 
             <div className="absolute bottom-0 left-0 right-0 p-6">
-              <h3
-                className="text-white leading-tight mb-2"
-                style={{
-                  fontFamily: "var(--font-display, 'Playfair Display', Georgia, serif)",
-                  fontSize: "1.5rem",
-                  fontWeight: 400,
-                  letterSpacing: "0.02em",
-                  textShadow: "0 2px 20px rgba(0,0,0,0.8)",
-                }}
-              >
-                {moment.title}
-              </h3>
-              {moment.subtitle ? (
-                <p
-                  className="text-white/80 leading-relaxed"
+              <div className="flex flex-col" style={{ minHeight: "5.75rem" }}>
+                <h3
+                  className="text-white leading-tight mb-2 line-clamp-1"
                   style={{
-                    fontSize: "1rem",
-                    fontFamily: "var(--font-body, sans-serif)",
+                    fontFamily: "var(--font-display, 'Playfair Display', Georgia, serif)",
+                    fontSize: "1.35rem",
+                    fontWeight: 400,
+                    letterSpacing: "0.02em",
+                    minHeight: "1.6rem",
+                    textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7)",
                   }}
                 >
-                  {moment.subtitle}
+                  {moment.title}
+                </h3>
+                <p
+                  className="text-white/90 leading-snug line-clamp-2"
+                  style={{
+                    fontSize: "0.9rem",
+                    fontFamily: "var(--font-body, sans-serif)",
+                    minHeight: "2.7rem",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.85)",
+                  }}
+                >
+                  {moment.subtitle || "\u00A0"}
                 </p>
-              ) : null}
+              </div>
 
               <div
                 className="mt-4 h-[2px] w-12"
