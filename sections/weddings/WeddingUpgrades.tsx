@@ -111,7 +111,7 @@ export function WeddingUpgrades() {
                 ? "noopener noreferrer"
                 : undefined
             }
-            className="zones-btn-gold inline-flex"
+            className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center h-11 px-7 text-[12px] font-medium tracking-[0.14em] uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
           >
             {pickLocale(locale, WEDDING_COPY.contactConcierge)}
           </a>

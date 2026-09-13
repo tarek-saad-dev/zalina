@@ -73,6 +73,24 @@ export const WEDDING_COPY = {
   perGuest: { en: "per guest", ar: "لكل ضيف" },
   guestsRange: { en: "Guests", ar: "الضيوف" },
   from: { en: "From", ar: "من" },
+  chooseThisExperience: {
+    en: "Choose this experience",
+    ar: "اختاروا هذه التجربة",
+  },
+  selectedExperience: { en: "Selected", ar: "مختارة" },
+  yourExperience: { en: "Your Experience", ar: "تجربتكم" },
+  changeExperience: {
+    en: "Change experience",
+    ar: "تغيير التجربة",
+  },
+  planInvite: {
+    en: "Choose one of the three wedding experiences above to begin checking your date.",
+    ar: "اختاروا إحدى تجارب الزفاف الثلاث أعلاه للبدء بالتحقق من تاريخكم.",
+  },
+  premiumContextualSpend: {
+    en: "This date carries a minimum celebration spend of {amount}.",
+    ar: "يحمل هذا التاريخ حداً أدنى لإنفاق الاحتفال قدره {amount}.",
+  },
   comparisonEyebrow: { en: "Package Comparison", ar: "مقارنة الباقات" },
   comparisonHeadline: {
     en: "See What Distinguishes Each Celebration",
@@ -133,7 +151,18 @@ export const WEDDING_COPY = {
   },
   planPackage: { en: "Package", ar: "الباقة" },
   planDate: { en: "Wedding Date", ar: "تاريخ الزفاف" },
-  planGuests: { en: "Guest Count", ar: "عدد الضيوف" },
+  planDatePlaceholder: {
+    en: "Select your wedding date",
+    ar: "اختاروا تاريخ زفافكم",
+  },
+  planDatePrevMonth: { en: "Previous month", ar: "الشهر السابق" },
+  planDateNextMonth: { en: "Next month", ar: "الشهر التالي" },
+  planDateClose: { en: "Close calendar", ar: "إغلاق التقويم" },
+  planDatePremiumHint: {
+    en: "Friday & Saturday evenings are often premium dates",
+    ar: "أمسيات الجمعة والسبت غالباً تواريخ مميزة",
+  },
+  planGuests: { en: "Number of Guests", ar: "عدد الضيوف" },
   planGuestMinMax: {
     en: "This package accepts {min}–{max} guests.",
     ar: "تقبل هذه الباقة من {min} إلى {max} ضيفاً.",
@@ -142,13 +171,17 @@ export const WEDDING_COPY = {
     en: "Your date is available.",
     ar: "تاريخكم متاح.",
   },
+  planUnavailable: {
+    en: "This date is unavailable.",
+    ar: "هذا التاريخ غير متاح.",
+  },
   planChecking: {
-    en: "Checking availability…",
-    ar: "جاري التحقق من التوافر…",
+    en: "Checking your date…",
+    ar: "جاري التحقق من تاريخكم…",
   },
   planSelectPrompt: {
-    en: "Select a package, date and guest count to see your estimate.",
-    ar: "اختاروا الباقة والتاريخ وعدد الضيوف لعرض التقدير.",
+    en: "Select your date and guest count to see your estimate.",
+    ar: "اختاروا التاريخ وعدد الضيوف لعرض التقدير.",
   },
   planPricePerGuest: { en: "Price per guest", ar: "السعر لكل ضيف" },
   planEstimate: { en: "Estimated total", ar: "الإجمالي التقديري" },

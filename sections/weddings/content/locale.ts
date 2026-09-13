@@ -7,7 +7,7 @@ export function pickLocale(locale: ApiLocale, copy: LocaleCopy): string {
   return locale === "ar" ? copy.ar : copy.en;
 }
 
-/** Client-side locale from <html lang>, same pattern as booking. */
+/** Client-side locale helper — prefer URL-driven useBookingLocale in UI. */
 export function readDocumentLocale(): ApiLocale {
   if (typeof document === "undefined") return "en";
   return resolveApiLocale(document.documentElement.lang);

@@ -32,6 +32,7 @@ export function WeddingPackageCards({
       id="packages"
       className="zones-section scroll-mt-24"
       aria-labelledby="wedding-packages-title"
+      style={{ paddingBottom: "40px" }}
     >
       <div className="zones-container">
         <div className="max-w-2xl mb-12">
@@ -74,28 +75,41 @@ export function WeddingPackageCards({
                   key={pkg.id}
                   type="button"
                   onClick={() => onSelect(pkg)}
-                  className="text-start relative flex flex-col p-6 md:p-7"
+                  className="text-start relative flex flex-col p-6 md:p-7 transition-[border-color,background,box-shadow,transform] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,175,55,0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                   style={{
                     borderRadius: "4px",
                     border: selected
-                      ? "1px solid rgba(212,175,55,0.7)"
+                      ? "1px solid rgba(212,175,55,0.78)"
                       : isSignature
-                        ? "1px solid rgba(212,175,55,0.45)"
+                        ? "1px solid rgba(212,175,55,0.42)"
                         : "1px solid rgba(255,255,255,0.1)",
-                    background: isSignature
-                      ? "linear-gradient(165deg, rgba(36,28,16,0.95), rgba(10,8,6,0.98))"
-                      : "rgba(255,255,255,0.03)",
-                    transform: isSignature && !prefersReduced ? "scale(1.02)" : undefined,
-                    boxShadow: isSignature
-                      ? "0 24px 60px rgba(0,0,0,0.35)"
-                      : undefined,
-                    outline: selected ? "2px solid rgba(212,175,55,0.35)" : undefined,
-                    outlineOffset: "2px",
+                    background: selected
+                      ? "linear-gradient(165deg, rgba(42,32,16,0.98), rgba(12,10,7,0.98))"
+                      : isSignature
+                        ? "linear-gradient(165deg, rgba(36,28,16,0.95), rgba(10,8,6,0.98))"
+                        : "rgba(255,255,255,0.03)",
+                    transform:
+                      isSignature && !prefersReduced && !selected
+                        ? "scale(1.02)"
+                        : undefined,
+                    boxShadow: selected
+                      ? "0 0 0 1px rgba(212,175,55,0.22), 0 20px 48px rgba(0,0,0,0.38)"
+                      : isSignature
+                        ? "0 24px 60px rgba(0,0,0,0.35)"
+                        : undefined,
                   }}
                   initial={!prefersReduced ? { opacity: 0, y: 24 } : undefined}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.55, delay: index * 0.08 }}
+                  whileHover={
+                    !prefersReduced && !selected
+                      ? {
+                          borderColor: "rgba(212,175,55,0.5)",
+                          backgroundColor: "rgba(255,255,255,0.045)",
+                        }
+                      : undefined
+                  }
                   aria-pressed={selected}
                 >
                   {positioning.badge ? (
@@ -111,6 +125,15 @@ export function WeddingPackageCards({
                     </span>
                   ) : null}
 
+                  {selected ? (
+                    <span
+                      className="absolute top-4 start-4 text-[10px] tracking-[0.18em] uppercase"
+                      style={{ color: "rgba(212,175,55,0.95)" }}
+                    >
+                      {pickLocale(locale, WEDDING_COPY.selectedExperience)}
+                    </span>
+                  ) : null}
+
                   <h3
                     className="mb-3 pe-16"
                     style={{
@@ -118,6 +141,7 @@ export function WeddingPackageCards({
                       fontSize: isSignature ? "1.65rem" : "1.4rem",
                       color: "#F8F2E7",
                       fontWeight: 400,
+                      marginTop: selected ? "18px" : undefined,
                     }}
                   >
                     {localizedName(pkg, locale)}
@@ -145,12 +169,27 @@ export function WeddingPackageCards({
                     {pickLocale(locale, WEDDING_COPY.perGuest)}
                   </p>
                   <p
-                    className="text-sm"
+                    className="text-sm mb-5"
                     style={{ color: "rgba(248,242,231,0.62)" }}
                   >
                     {pickLocale(locale, WEDDING_COPY.guestsRange)}:{" "}
                     {pkg.minimum_guests}–{pkg.maximum_guests}
                   </p>
+
+                  <span
+                    className="mt-auto text-[11px] tracking-[0.16em] uppercase"
+                    style={{
+                      color: selected
+                        ? "rgba(212,175,55,0.92)"
+                        : "rgba(248,242,231,0.72)",
+                      borderTop: "1px solid rgba(255,255,255,0.08)",
+                      paddingTop: "14px",
+                    }}
+                  >
+                    {selected
+                      ? pickLocale(locale, WEDDING_COPY.selectedExperience)
+                      : pickLocale(locale, WEDDING_COPY.chooseThisExperience)}
+                  </span>
                 </motion.button>
               );
             })}

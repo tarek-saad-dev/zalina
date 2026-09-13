@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
 import { InitialPageLoader } from "@/components/layout/InitialPageLoader";
+import { DocumentLocaleSync } from "@/components/layout/DocumentLocaleSync";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zalinaarabianvillage.com"),
@@ -90,6 +91,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-screen bg-bg-main">
+        <DocumentLocaleSync />
         <InitialPageLoader />
         <LuxuryNavbar />
         {children}

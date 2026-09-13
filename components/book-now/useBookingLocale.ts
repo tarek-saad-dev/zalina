@@ -1,29 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { ApiLocale } from "@/lib/api";
-import { resolveApiLocale } from "@/lib/api";
+import { DEFAULT_API_LOCALE } from "@/lib/api/locale";
+import {
+  applyDocumentLocale,
+  BOOKING_LOCALE_EVENT,
+  resolveBookingPageLocale,
+} from "./bookingLocale";
 
 /**
- * Prefer ?lang= query, then <html lang>, then site default.
- * When ?lang=ar|en is present, sync document lang/dir for RTL + Accept-Language callers.
+ * Booking/wedding locale from ?lang= only; site default is English.
+ * Document lang/dir sync is shared with DocumentLocaleSync in the root layout.
  */
 export function useBookingLocale(): ApiLocale {
-  const [locale, setLocale] = useState<ApiLocale>("en");
+  const pathname = usePathname();
+  const [locale, setLocale] = useState<ApiLocale>(DEFAULT_API_LOCALE);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromQuery = params.get("lang");
-    const fromHtml = document.documentElement.lang;
-    const resolved = resolveApiLocale(fromQuery || fromHtml);
+    const syncFromUrl = () => {
+      const resolved = resolveBookingPageLocale(
+        new URLSearchParams(window.location.search).get("lang")
+      );
+      applyDocumentLocale(resolved);
+      setLocale(resolved);
+    };
 
-    if (fromQuery === "ar" || fromQuery === "en") {
-      document.documentElement.lang = resolved;
-      document.documentElement.dir = resolved === "ar" ? "rtl" : "ltr";
-    }
+    const onLocaleEvent = (event: Event) => {
+      const detail = (event as CustomEvent<ApiLocale>).detail;
+      if (detail === "ar" || detail === "en") setLocale(detail);
+    };
 
-    setLocale(resolved);
-  }, []);
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    window.addEventListener(BOOKING_LOCALE_EVENT, onLocaleEvent);
+
+    return () => {
+      window.removeEventListener("popstate", syncFromUrl);
+      window.removeEventListener(BOOKING_LOCALE_EVENT, onLocaleEvent);
+    };
+  }, [pathname]);
 
   return locale;
 }
