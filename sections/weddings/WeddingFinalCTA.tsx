@@ -63,19 +63,6 @@ export function WeddingFinalCTA() {
             <button
               type="button"
               className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center h-11 px-7 text-[12px] font-medium tracking-[0.14em] uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
-              onClick={() => scrollToId("plan")}
-            >
-              {pickLocale(locale, WEDDING_COPY.ctaCheckDate)}
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center h-11 px-7 text-[12px] font-medium tracking-[0.14em] uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(248,242,231,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
-              style={{
-                borderRadius: "999px",
-                border: "1px solid rgba(248,242,231,0.35)",
-                color: "#F8F2E7",
-                background: "rgba(0,0,0,0.25)",
-              }}
               onClick={() => scrollToId("packages")}
             >
               {pickLocale(locale, WEDDING_COPY.ctaExplorePackages)}

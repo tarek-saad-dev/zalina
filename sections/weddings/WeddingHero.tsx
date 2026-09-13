@@ -111,19 +111,6 @@ export function WeddingHero() {
             >
               {pickLocale(locale, WEDDING_COPY.ctaExplorePackages)}
             </button>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center h-11 px-7 text-[12px] font-medium tracking-[0.14em] uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(248,242,231,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
-              style={{
-                borderRadius: "999px",
-                border: "1px solid rgba(248,242,231,0.35)",
-                color: "#F8F2E7",
-                background: "rgba(0,0,0,0.25)",
-              }}
-              onClick={() => scrollToId("plan")}
-            >
-              {pickLocale(locale, WEDDING_COPY.ctaCheckDate)}
-            </button>
           </div>
         </motion.div>
       </div>

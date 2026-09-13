@@ -258,7 +258,6 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   }, [applyTransform]);
 
   useEffect(() => {
-    if (isMobile) return;
     measure();
     const viewport = viewportRef.current;
     const loop = loopRef.current;
@@ -271,7 +270,6 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   }, [measure, items, copyCount, isMobile]);
 
   useEffect(() => {
-    if (isMobile) return;
     const viewport = viewportRef.current;
     if (!viewport || typeof IntersectionObserver === "undefined") return;
 
@@ -283,7 +281,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
     );
     observer.observe(viewport);
     return () => observer.disconnect();
-  }, [isMobile]);
+  }, []);
 
   useEffect(() => {
     const onVisibility = () => {
@@ -295,9 +293,12 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   }, []);
 
   useEffect(() => {
-    if (prefersReduced || isMobile) return;
+    if (prefersReduced) return;
 
     let last = performance.now();
+    const speed = isMobile
+      ? MOBILE_AUTO_SPEED_PX_PER_SEC
+      : AUTO_SPEED_PX_PER_SEC;
 
     const tick = (now: number) => {
       const dt = Math.min(now - last, 48);
@@ -305,6 +306,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
 
       if (
         !draggingRef.current &&
+        !pointerActiveRef.current &&
         inViewRef.current &&
         pageVisibleRef.current &&
         loopWidthRef.current > 0
@@ -316,9 +318,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             velocityRef.current = 0;
           }
         } else {
-          offsetRef.current -=
-            (isMobile ? MOBILE_AUTO_SPEED_PX_PER_SEC : AUTO_SPEED_PX_PER_SEC) *
-            (dt / 1000);
+          offsetRef.current -= speed * (dt / 1000);
         }
 
         offsetRef.current = wrapOffset(
