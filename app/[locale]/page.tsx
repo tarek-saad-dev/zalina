@@ -50,7 +50,7 @@ export default async function Home({ params }: Props) {
     loadGalleryCatalog(apiLocale),
   ]);
 
-  const moments = experiencesToMomentCards(experiences);
+  const moments = experiencesToMomentCards(experiences, apiLocale);
 
   // Same Al-Souk cover as /zones Main Zones card (mapZoneToUi / resolveCoverImage)
   const marketZone = findMarketZone(zones) ?? null;
@@ -62,7 +62,8 @@ export default async function Home({ params }: Props) {
 
   // Same CMS source as /gallery → "Scenes Made to Be Remembered" → Bubble Stays
   const glimpseItems = galleryItemsToCatalogCards(
-    filterGalleryItems(galleryCatalog.items, "bubbles")
+    filterGalleryItems(galleryCatalog.items, "bubbles"),
+    apiLocale
   );
 
   return (

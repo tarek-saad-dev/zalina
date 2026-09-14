@@ -191,11 +191,15 @@ export function experiencesToMomentCards(
         ? item.description_ar || item.description_en
         : item.description_en || item.description_ar) || "";
     const resolved = resolveCoverImage(item, { entityName: title });
+    const fallbackSubtitle =
+      locale === "ar"
+        ? "تجربة مختارة في قرية زالينا العربية بالأقصر."
+        : "A curated experience at Zalina Arabian Village in Luxor.";
     return cardFromResolved(
       String(item.id),
       title,
       resolved,
-      desc || "A curated experience at Zalina Arabian Village in Luxor.",
+      desc || fallbackSubtitle,
       "/experiences"
     );
   });
@@ -226,7 +230,7 @@ export function galleryItemsToCatalogCards(
     if (!url) continue;
     cards.push({
       id: item.key,
-      title: galleryItemTitle(item),
+      title: galleryItemTitle(item, locale),
       image: url,
       alt: galleryItemAlt(item, locale),
       href: "/gallery",
@@ -234,12 +238,16 @@ export function galleryItemsToCatalogCards(
   }
 
   if (cards.length === 0) {
+    const neutral =
+      locale === "ar"
+        ? "قرية زالينا العربية في الأقصر"
+        : "Zalina Arabian Village in Luxor";
     return [
       {
         id: "neutral-1",
-        title: "Zalina Arabian Village in Luxor",
+        title: neutral,
         image: NEUTRAL_MEDIA_FALLBACK,
-        alt: "Zalina Arabian Village in Luxor",
+        alt: neutral,
         href: "/gallery",
       },
     ];

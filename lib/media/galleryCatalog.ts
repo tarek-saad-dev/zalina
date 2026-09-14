@@ -279,11 +279,17 @@ export function galleryItemAlt(
   });
 }
 
-export function galleryItemTitle(item: GalleryItem): string {
+export function galleryItemTitle(
+  item: GalleryItem,
+  locale: "en" | "ar" = "en"
+): string {
   const title = item.media.title?.trim();
   if (title) return title;
   const caption = item.caption?.trim() || item.media.caption?.trim();
   if (caption) return caption;
+  if (locale === "ar" && item.sourceNameAr?.trim()) {
+    return item.sourceNameAr.trim();
+  }
   return item.sourceName;
 }
 

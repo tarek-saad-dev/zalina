@@ -8,7 +8,7 @@ import {
   type TouchEvent as ReactTouchEvent,
 } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -62,6 +62,7 @@ export function GalleryPageContent({
   availableFilters,
 }: GalleryPageContentProps) {
   const t = useTranslations("gallery");
+  const locale = useLocale() === "ar" ? "ar" : "en";
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
   const initialFilter: GalleryFilterId =
@@ -453,8 +454,8 @@ export function GalleryPageContent({
                 {visibleItems.map((item, index) => {
                   const thumb =
                     selectDisplayUrl(item.media, true) || item.media.url;
-                  const alt = galleryItemAlt(item);
-                  const title = galleryItemTitle(item);
+                  const alt = galleryItemAlt(item, locale);
+                  const title = galleryItemTitle(item, locale);
                   return (
                     <motion.button
                       key={item.key}
@@ -709,7 +710,7 @@ export function GalleryPageContent({
             role="dialog"
             aria-modal="true"
             aria-label={t("a11y.lightboxLabel", {
-              title: galleryItemTitle(selectedLightboxItem),
+              title: galleryItemTitle(selectedLightboxItem, locale),
             })}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -756,7 +757,7 @@ export function GalleryPageContent({
               >
                 <Image
                   src={selectedLightboxItem.media.url}
-                  alt={galleryItemAlt(selectedLightboxItem)}
+                  alt={galleryItemAlt(selectedLightboxItem, locale)}
                   fill
                   sizes="90vw"
                   className="object-contain"
@@ -777,7 +778,7 @@ export function GalleryPageContent({
                     className="text-sm"
                     style={{ color: "var(--zones-text-light)" }}
                   >
-                    {galleryItemTitle(selectedLightboxItem)}
+                    {galleryItemTitle(selectedLightboxItem, locale)}
                   </p>
                   {(selectedLightboxItem.caption ||
                     selectedLightboxItem.media.caption) && (
