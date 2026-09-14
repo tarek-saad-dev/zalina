@@ -60,7 +60,8 @@ export function LuxuryHero() {
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
 
-  const accentPhrase = `${t("headlineAccent1")} ${t("headlineAccent2")}`;
+  const leadPhrase = t("headlineLead");
+  const accentPhrase = t("headlineLine3");
 
   return (
     <section
@@ -164,14 +165,14 @@ export function LuxuryHero() {
         style={{ opacity: fadeOut }}
       >
         <div className="w-full max-w-7xl mx-auto">
-          <div className="flex-1 max-w-xl md:max-w-2xl mt-6 md:mt-10">
+          <div className="lux-hero-copy mt-6 md:mt-10">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: 0.08 }}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
               style={{
-                marginBottom: "var(--space-6)",
+                marginBottom: "var(--space-4)",
                 background: "rgba(212,175,55,0.06)",
                 border: "1px solid rgba(212,175,55,0.18)",
               }}
@@ -193,52 +194,45 @@ export function LuxuryHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.95, delay: 0.28 }}
               className="lux-hero-headline"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "stretch",
+                gap: "var(--space-4)",
+              }}
             >
+              {/* Lead: في قلب الأقصر. / In the Heart of Luxor. */}
               <span
                 className="block"
                 style={{
                   fontFamily: leadFont,
-                  fontSize: "clamp(1.5rem, 2.8vw + 0.4rem, 2.5rem)",
+                  fontSize: "clamp(1.45rem, 2.4vw + 0.45rem, 2.35rem)",
                   fontWeight: 400,
-                  lineHeight: isArabic ? 1.4 : 1.2,
+                  lineHeight: isArabic ? 1.35 : 1.2,
                   color: "rgba(248,245,237,0.92)",
                   letterSpacing: isArabic ? "0" : "-0.01em",
+                  maxWidth: "100%",
                 }}
               >
-                {t("headlineLine1")}
-              </span>
-              <span
-                className="block"
-                style={{
-                  fontFamily: leadFont,
-                  fontSize: "clamp(1.5rem, 2.8vw + 0.4rem, 2.5rem)",
-                  fontWeight: 400,
-                  lineHeight: isArabic ? 1.4 : 1.2,
-                  color: "rgba(248,245,237,0.92)",
-                  letterSpacing: isArabic ? "0" : "-0.01em",
-                  marginTop: "0.2em",
-                  marginInlineStart: "var(--space-3)",
-                }}
-              >
-                {t("headlineLine2")}
+                {leadPhrase}
               </span>
 
-              {/* Single-line LAXR / display accent */}
+              {/* Accent: على ضفاف النيل. — sized to column via cqi clamp */}
               <span
-                className={isArabic ? "lux-laxr lux-laxr--hero block" : "block"}
+                className={
+                  isArabic ? "lux-laxr lux-laxr--hero" : "lux-laxr--hero"
+                }
                 style={{
                   fontFamily: accentFont,
                   fontSize: isArabic
                     ? undefined
-                    : "clamp(2rem, 4.5vw + 0.35rem, 3.75rem)",
+                    : "clamp(1.45rem, 8.8cqi, 2.4rem)",
                   fontWeight: 400,
-                  lineHeight: isArabic ? undefined : 0.92,
+                  lineHeight: isArabic ? undefined : 0.95,
                   color: "#D4AF37",
                   fontStyle: isArabic ? "normal" : "italic",
                   letterSpacing: isArabic ? "0" : "-0.02em",
-                  marginTop: "var(--space-5)",
-                  marginInlineStart: "var(--space-4)",
-                  whiteSpace: "nowrap",
+                  maxWidth: "100%",
                 }}
               >
                 {accentPhrase}
@@ -251,8 +245,8 @@ export function LuxuryHero() {
               transition={{ duration: 0.95, delay: 0.82 }}
               className="lux-divider"
               style={{
-                marginTop: "var(--space-6)",
-                marginBottom: "var(--space-5)",
+                marginTop: "var(--space-5)",
+                marginBottom: "var(--space-4)",
                 transformOrigin: isArabic ? "right" : "left",
                 maxWidth: "7.5rem",
                 opacity: 0.8,
@@ -269,7 +263,7 @@ export function LuxuryHero() {
                 fontWeight: 300,
                 color: "rgba(248,245,237,0.5)",
                 lineHeight: 1.8,
-                maxWidth: "26rem",
+                maxWidth: "100%",
               }}
             >
               {t("supporting")}
@@ -281,8 +275,8 @@ export function LuxuryHero() {
               transition={{ duration: 0.7, delay: 1.1 }}
               className="relative z-30 flex flex-col sm:flex-row sm:items-center"
               style={{
-                gap: "var(--space-5)",
-                marginTop: "var(--space-7)",
+                gap: "var(--space-4)",
+                marginTop: "var(--space-6)",
               }}
             >
               <Link
