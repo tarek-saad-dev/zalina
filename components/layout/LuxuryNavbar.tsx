@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
 ];
 
 /** Desktop height; mobile uses --zalina-nav-height via CSS. */
-const NAV_HEIGHT = "var(--zalina-nav-height, 64px)";
+const NAV_HEIGHT = "var(--zalina-nav-height, 80px)";
 
 export function LuxuryNavbar() {
   const t = useTranslations("nav");
@@ -117,11 +117,11 @@ export function LuxuryNavbar() {
             <Image
               src="/assets/zalina-logo-full.png"
               alt={t("logoAlt")}
-              width={148}
-              height={44}
+              width={180}
+              height={56}
               priority
-              className="w-auto object-contain"
-              style={{ height: 40, width: "auto" }}
+              className="h-14 w-auto object-contain"
+              style={{ height: 56, width: "auto" }}
             />
           </Link>
 

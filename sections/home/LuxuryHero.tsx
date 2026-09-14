@@ -206,9 +206,10 @@ export function LuxuryHero() {
                 className="block"
                 style={{
                   fontFamily: leadFont,
-                  fontSize: "clamp(1.45rem, 2.4vw + 0.45rem, 2.35rem)",
+                  /* Desktop scale restored from 817ae38 */
+                  fontSize: "clamp(1.85rem, 3.6vw, 3.15rem)",
                   fontWeight: 400,
-                  lineHeight: isArabic ? 1.35 : 1.2,
+                  lineHeight: isArabic ? 1.35 : 1.12,
                   color: "rgba(248,245,237,0.92)",
                   letterSpacing: isArabic ? "0" : "-0.01em",
                   maxWidth: "100%",
@@ -217,7 +218,7 @@ export function LuxuryHero() {
                 {leadPhrase}
               </span>
 
-              {/* Accent: على ضفاف النيل. — sized to column via cqi clamp */}
+              {/* Accent: على ضفاف النيل. / Along the Nile. */}
               <span
                 className={
                   isArabic ? "lux-laxr lux-laxr--hero" : "lux-laxr--hero"
@@ -226,9 +227,9 @@ export function LuxuryHero() {
                   fontFamily: accentFont,
                   fontSize: isArabic
                     ? undefined
-                    : "clamp(1.45rem, 8.8cqi, 2.4rem)",
+                    : "clamp(2.65rem, 6.4vw, 5.1rem)",
                   fontWeight: 400,
-                  lineHeight: isArabic ? undefined : 0.95,
+                  lineHeight: isArabic ? undefined : 0.96,
                   color: "#D4AF37",
                   fontStyle: isArabic ? "normal" : "italic",
                   letterSpacing: isArabic ? "0" : "-0.02em",

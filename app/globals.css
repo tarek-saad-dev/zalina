@@ -51,16 +51,16 @@
   --zalina-space-standard: clamp(3rem, 3.5vw + 1rem, 5rem); /* ~48–80 */
   --zalina-space-compact: clamp(2rem, 2vw + 0.75rem, 3rem); /* ~32–48 */
 
-  /* LAXR — signature display; size to available column width (cqi) */
-  --laxr-size-hero: clamp(1.35rem, 9.2cqi, 2.4rem);
-  --laxr-size-section: clamp(1.35rem, 6cqi, 2.25rem);
-  --laxr-lh: 0.92;
+  /* LAXR — cinematic hero scale (from 817ae38 / d4a1dce), column-aware */
+  --laxr-size-hero: clamp(2.1rem, 5.5vw + 0.35rem, 4.75rem);
+  --laxr-size-section: clamp(1.5rem, 2.4vw + 0.5rem, 2.75rem);
+  --laxr-lh: 0.96;
 
   /* Phase 2.5 — mobile editorial rhythm (used under max-width 767) */
   --mobile-section-tight: 40px;
   --mobile-section-normal: 48px;
   --mobile-section-generous: 56px;
-  --zalina-nav-height: 64px;
+  --zalina-nav-height: 80px;
 
   /* Layout grid */
   --zalina-container-max: 80rem; /* 1280px */
@@ -335,17 +335,17 @@ html[dir="rtl"] .lux-eyebrow {
   font-size: var(--laxr-size-section);
 }
 
-/* Hero editorial column — container for cqi-based LAXR sizing */
+/* Hero editorial column — shared alignment edge for badge → CTAs */
 .lux-hero-copy {
   container-type: inline-size;
   container-name: hero-copy;
   width: 100%;
-  max-width: min(26.5rem, 100%);
+  max-width: min(36rem, 100%);
 }
 
 @supports not (width: 1cqi) {
   .lux-laxr--hero {
-    font-size: clamp(1.3rem, 4.2vw + 0.35rem, 2.25rem);
+    font-size: clamp(2rem, 5.2vw + 0.35rem, 4.5rem);
   }
 }
 
@@ -355,17 +355,41 @@ html[dir="rtl"] .lux-eyebrow {
   }
 
   .lux-laxr--hero {
-    font-size: clamp(1.25rem, 6.2vw, 1.65rem);
+    /* Preserve readable mobile scale from d4a1dce era */
+    font-size: clamp(1.65rem, 7.5vw, 2.15rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .lux-hero-copy {
+    max-width: min(42rem, 48vw);
   }
 }
 
 @media (min-width: 1440px) {
   .lux-hero-copy {
-    max-width: 27.5rem;
+    max-width: min(46rem, 44vw);
   }
 
   .lux-laxr--hero {
-    font-size: clamp(1.7rem, 8.2cqi, 2.5rem);
+    font-size: clamp(2.65rem, 4.8vw + 0.5rem, 5.1rem);
+  }
+}
+
+html[dir="rtl"] .lux-laxr--hero {
+  /* Arabic LAXR glyphs run wider — keep cinematic but one-line-safe */
+  font-size: clamp(1.95rem, 4.6vw + 0.25rem, 4rem);
+}
+
+@media (min-width: 1440px) {
+  html[dir="rtl"] .lux-laxr--hero {
+    font-size: clamp(2.35rem, 3.8vw + 0.6rem, 4.35rem);
+  }
+}
+
+@media (max-width: 430px) {
+  html[dir="rtl"] .lux-laxr--hero {
+    font-size: clamp(1.55rem, 7vw, 1.95rem);
   }
 }
 
@@ -2886,7 +2910,7 @@ a:hover {
 
 @media (max-width: 767px) {
   :root {
-    --zalina-nav-height: 60px;
+    --zalina-nav-height: 72px;
     --zalina-text-hero: clamp(2.375rem, 8.2vw + 0.4rem, 2.875rem); /* ~38–46 */
   }
 
