@@ -120,19 +120,15 @@ export function mapExperienceToCatalogItem(
   item: ApiExperience,
   locale: "en" | "ar" = "en"
 ): ExperienceItem {
-  const typeKey = (item.type || item.category || "").toLowerCase();
+  // Prefer CMS `category` (day/night); fall back to legacy `type`.
+  const categoryKey = (item.category || item.type || "").toLowerCase();
   const labelMap: Record<string, ExperienceItem["label"]> = {
-    dinner: "Dinner",
-    show: "Show",
-    ritual: "Ritual",
     day: "Day",
     night: "Night",
   };
-  const label = labelMap[typeKey] ?? titleCaseType(typeKey || "Experience");
+  const label = labelMap[categoryKey] ?? titleCaseType(categoryKey || "Experience");
   const filterCategory =
-    label === "Dinner" || label === "Show" || label === "Ritual"
-      ? label
-      : null;
+    label === "Day" || label === "Night" ? label : null;
   const title =
     locale === "ar" ? item.name_ar || item.name_en : item.name_en;
   const zoneName =

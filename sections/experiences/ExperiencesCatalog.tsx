@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FilterTabs } from "./FilterTabs";
 import { ExperienceCard } from "./ExperienceCard";
@@ -27,16 +28,33 @@ function gridClassForCount(count: number): string {
 
 interface ExperiencesCatalogProps {
   experiences: ExperienceItem[];
+  initialCategory?: string | null;
 }
 
-export function ExperiencesCatalog({ experiences }: ExperiencesCatalogProps) {
+export function ExperiencesCatalog({
+  experiences,
+  initialCategory,
+}: ExperiencesCatalogProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [activeCategory, setActiveCategory] = useState<ExperienceCategory>(
-    getDefaultCategory()
+    () =>
+      initialCategory
+        ? parseExperienceCategory(initialCategory)
+        : getDefaultCategory()
   );
   const { fadeUp, transition } = useExpMotion();
 
   const handleCategoryChange = (category: ExperienceCategory) => {
-    setActiveCategory(parseExperienceCategory(category));
+    const safe = parseExperienceCategory(category);
+    setActiveCategory(safe);
+
+    const params = new URLSearchParams();
+    if (safe !== "All Experiences") {
+      params.set("category", safe);
+    }
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
   const filtered = filterExperiences(experiences, activeCategory);

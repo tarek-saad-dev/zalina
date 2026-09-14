@@ -16,8 +16,8 @@ const footerLinks = {
     { label: "Weddings", href: "/weddings" },
   ],
   discover: [
-    { label: "Day Experience", href: "/experiences" },
-    { label: "Night Experience", href: "/experiences" },
+    { label: "Day Experience", href: "/experiences?category=Day" },
+    { label: "Night Experience", href: "/experiences?category=Night" },
     { label: "Book Now", href: "/book-now" },
   ],
   information: [

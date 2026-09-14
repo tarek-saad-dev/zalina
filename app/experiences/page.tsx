@@ -36,7 +36,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ExperiencesPage() {
+export default async function ExperiencesPage({
+  searchParams,
+}: {
+  searchParams?: { category?: string };
+}) {
   const apiExperiences = await getExperiences();
   const experiences = apiExperiences
     .filter((e) => e.is_active)
@@ -46,7 +50,10 @@ export default async function ExperiencesPage() {
     <HeroRevealGate>
       <main className="exp-page min-h-screen w-full">
         <Hero />
-        <ExperiencesCatalog experiences={experiences} />
+        <ExperiencesCatalog
+          experiences={experiences}
+          initialCategory={searchParams?.category}
+        />
         <EditorialSpotlight />
         <ExclusiveOffer />
         <WhyChooseZalina />

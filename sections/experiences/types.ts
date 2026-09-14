@@ -1,8 +1,7 @@
 export const EXPERIENCE_CATEGORIES = [
   "All Experiences",
-  "Dinner",
-  "Show",
-  "Ritual",
+  "Day",
+  "Night",
 ] as const;
 
 export type ExperienceCategory = (typeof EXPERIENCE_CATEGORIES)[number];
@@ -32,17 +31,23 @@ export function isExperienceCategory(
 export function parseExperienceCategory(
   value: string | null | undefined
 ): ExperienceCategory {
-  if (value && isExperienceCategory(value)) {
-    return value;
+  if (!value) return "All Experiences";
+  if (isExperienceCategory(value)) return value;
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "day") return "Day";
+  if (normalized === "night") return "Night";
+  if (normalized === "all" || normalized === "all experiences") {
+    return "All Experiences";
   }
+
   return "All Experiences";
 }
 
 const CATEGORY_HEADINGS: Record<ExperienceCategory, string> = {
   "All Experiences": "Our Experiences",
-  Dinner: "Dinner Experiences",
-  Show: "Show Experiences",
-  Ritual: "Ritual Experiences",
+  Day: "Day Experiences",
+  Night: "Night Experiences",
 };
 
 export function getCategoryHeading(

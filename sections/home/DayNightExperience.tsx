@@ -146,7 +146,7 @@ export function DayNightExperience() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
-                <Link href="/experiences" className="lux-btn-secondary">
+                <Link href="/experiences?category=Day" className="lux-btn-secondary">
                   Explore Day
                 </Link>
               </motion.div>
@@ -246,7 +246,7 @@ export function DayNightExperience() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.7 }}
               >
-                <Link href="/experiences" className="lux-btn-primary">
+                <Link href="/experiences?category=Night" className="lux-btn-primary">
                   Explore Night
                 </Link>
               </motion.div>

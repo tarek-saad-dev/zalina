@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, Fragment } from "react";
+import { useMemo, useState, useEffect, Fragment } from "react";
 import type { WeddingPackage } from "@/lib/api";
 import { localizedName } from "@/components/book-now/bookingMedia";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
@@ -14,6 +14,8 @@ import {
 
 interface WeddingPackageComparisonProps {
   packages: WeddingPackage[];
+  /** When set, mobile tab switches to this package column. */
+  selectedPackageId?: number | null;
 }
 
 type ColumnKey = "wedding" | "signature" | "royal";
@@ -40,6 +42,7 @@ function resolveColumns(packages: WeddingPackage[]): {
 
 export function WeddingPackageComparison({
   packages,
+  selectedPackageId = null,
 }: WeddingPackageComparisonProps) {
   const locale = useBookingLocale();
   const columns = useMemo(() => resolveColumns(packages), [packages]);
@@ -48,9 +51,16 @@ export function WeddingPackageComparison({
     PACKAGE_COMPARISON[0]?.id ?? "venue"
   );
 
+  useEffect(() => {
+    if (selectedPackageId == null) return;
+    const match = columns.find((col) => col.pkg?.id === selectedPackageId);
+    if (match) setMobileCol(match.key);
+  }, [selectedPackageId, columns]);
+
   return (
     <section
-      className="zones-section"
+      id="comparison"
+      className="zones-section scroll-mt-24"
       aria-labelledby="wedding-comparison-title"
     >
       <div className="zones-container">
