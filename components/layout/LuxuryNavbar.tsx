@@ -29,8 +29,8 @@ const navItems: NavItem[] = [
   { key: "gallery", href: "/gallery" },
 ];
 
-/** Desktop height; mobile uses --zalina-nav-height (72px) via CSS. */
-const NAV_HEIGHT = "var(--zalina-nav-height, 80px)";
+/** Desktop height; mobile uses --zalina-nav-height via CSS. */
+const NAV_HEIGHT = "var(--zalina-nav-height, 64px)";
 
 export function LuxuryNavbar() {
   const t = useTranslations("nav");
@@ -45,7 +45,7 @@ export function LuxuryNavbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 36);
+      setIsScrolled(window.scrollY > 28);
     };
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -80,6 +80,10 @@ export function LuxuryNavbar() {
   };
 
   const duration = reduceMotion ? 0 : motionConfig.duration.fast;
+  const uiFont =
+    locale === "ar"
+      ? "var(--font-body-ar), 'Alexandria', sans-serif"
+      : "var(--font-body)";
 
   return (
     <>
@@ -88,23 +92,23 @@ export function LuxuryNavbar() {
         style={{
           height: NAV_HEIGHT,
           background: isScrolled
-            ? "rgba(10, 9, 8, 0.72)"
-            : "rgba(5, 5, 5, 0.12)",
+            ? "rgba(10, 9, 8, 0.58)"
+            : "rgba(5, 5, 5, 0.06)",
           borderBottom: isScrolled
-            ? "1px solid var(--zalina-border)"
-            : "1px solid rgba(246, 240, 232, 0.06)",
+            ? "1px solid rgba(201, 163, 92, 0.14)"
+            : "1px solid transparent",
           backdropFilter: isScrolled
-            ? "blur(18px) saturate(160%)"
-            : "blur(10px) saturate(140%)",
+            ? "blur(14px) saturate(140%)"
+            : "blur(6px) saturate(120%)",
           WebkitBackdropFilter: isScrolled
-            ? "blur(18px) saturate(160%)"
-            : "blur(10px) saturate(140%)",
-          boxShadow: isScrolled ? "0 12px 40px rgba(0,0,0,0.28)" : "none",
+            ? "blur(14px) saturate(140%)"
+            : "blur(6px) saturate(120%)",
+          boxShadow: isScrolled ? "0 8px 28px rgba(0,0,0,0.18)" : "none",
           transition:
             "background 420ms ease, border-color 420ms ease, box-shadow 420ms ease, backdrop-filter 420ms ease",
         }}
       >
-        <div className="zalina-container h-full flex items-center justify-between gap-4">
+        <div className="zalina-container h-full flex items-center justify-between gap-6">
           <Link
             href="/"
             className="relative flex-shrink-0 flex items-center"
@@ -113,17 +117,17 @@ export function LuxuryNavbar() {
             <Image
               src="/assets/zalina-logo-full.png"
               alt={t("logoAlt")}
-              width={180}
-              height={56}
+              width={148}
+              height={44}
               priority
-              className="h-14 w-auto object-contain"
-              style={{ height: 56, width: "auto" }}
+              className="w-auto object-contain"
+              style={{ height: 40, width: "auto" }}
             />
           </Link>
 
           <nav
             className="hidden lg:flex items-center"
-            style={{ gap: "1.75rem" }}
+            style={{ gap: "2.35rem" }}
             aria-label={t("primaryAria")}
           >
             {navItems.map((item) => {
@@ -135,13 +139,13 @@ export function LuxuryNavbar() {
                   href={item.href}
                   className="zalina-nav-link relative py-1 transition-colors duration-300"
                   style={{
-                    fontSize: "0.9rem",
+                    fontSize: "0.8125rem",
                     fontWeight: 400,
-                    letterSpacing: "0.02em",
+                    letterSpacing: locale === "ar" ? "0.01em" : "0.04em",
                     color: active
                       ? "var(--zalina-text)"
-                      : "rgba(246, 240, 232, 0.72)",
-                    fontFamily: "var(--font-body)",
+                      : "rgba(246, 240, 232, 0.58)",
+                    fontFamily: uiFont,
                   }}
                 >
                   {label}
@@ -153,10 +157,10 @@ export function LuxuryNavbar() {
                       className="absolute left-1/2 -translate-x-1/2"
                       style={{
                         bottom: -2,
-                        width: 22,
+                        width: 16,
                         height: 1,
                         background: "var(--zalina-gold)",
-                        opacity: 0.9,
+                        opacity: 0.75,
                       }}
                       aria-hidden
                     />
@@ -166,38 +170,40 @@ export function LuxuryNavbar() {
             })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-4">
-            <div className="flex items-center gap-2" role="group" aria-label="Language">
+          <div className="hidden lg:flex items-center gap-6">
+            <div className="flex items-center gap-2.5" role="group" aria-label="Language">
               <button
                 type="button"
                 onClick={() => switchLocale("en")}
                 className="transition-colors duration-300"
                 style={{
-                  fontSize: "0.8rem",
+                  fontSize: "0.72rem",
                   fontWeight: 500,
+                  letterSpacing: "0.08em",
                   color:
                     locale === "en"
                       ? "var(--zalina-text)"
-                      : "rgba(246, 240, 232, 0.45)",
-                  fontFamily: "var(--font-body)",
+                      : "rgba(246, 240, 232, 0.38)",
+                  fontFamily: uiFont,
                 }}
                 aria-pressed={locale === "en"}
               >
                 {tCommon("langEn")}
               </button>
-              <span style={{ color: "rgba(246, 240, 232, 0.25)" }}>/</span>
+              <span style={{ color: "rgba(246, 240, 232, 0.2)" }}>/</span>
               <button
                 type="button"
                 onClick={() => switchLocale("ar")}
                 className="transition-colors duration-300"
                 style={{
-                  fontSize: "0.8rem",
+                  fontSize: "0.72rem",
                   fontWeight: 500,
+                  letterSpacing: "0.08em",
                   color:
                     locale === "ar"
                       ? "var(--zalina-text)"
-                      : "rgba(246, 240, 232, 0.45)",
-                  fontFamily: "var(--font-body)",
+                      : "rgba(246, 240, 232, 0.38)",
+                  fontFamily: uiFont,
                 }}
                 aria-pressed={locale === "ar"}
               >

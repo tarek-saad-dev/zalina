@@ -44,7 +44,7 @@
   --mobile-section-tight: 40px;
   --mobile-section-normal: 48px;
   --mobile-section-generous: 56px;
-  --zalina-nav-height: 80px;
+  --zalina-nav-height: 64px;
 
   /* Layout grid */
   --zalina-container-max: 80rem; /* 1280px */
@@ -2044,15 +2044,15 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 2.875rem; /* 46px */
-  padding-inline: 1.5rem;
+  height: 2.375rem; /* 38px — quieter than before */
+  padding-inline: 1.15rem;
   border-radius: var(--zalina-btn-radius);
-  border: 1px solid var(--zalina-border);
-  background: rgba(246, 240, 232, 0.03);
+  border: 1px solid rgba(201, 163, 92, 0.28);
+  background: transparent;
   color: var(--zalina-text);
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
   font-family: var(--font-body);
@@ -2772,7 +2772,7 @@ a:hover {
 
 @media (max-width: 767px) {
   :root {
-    --zalina-nav-height: 72px;
+    --zalina-nav-height: 60px;
     --zalina-text-hero: clamp(2.375rem, 8.2vw + 0.4rem, 2.875rem); /* ~38–46 */
   }
 
