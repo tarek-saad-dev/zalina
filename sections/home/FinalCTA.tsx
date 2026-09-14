@@ -33,7 +33,8 @@ export function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center mb-12"
+            className="flex justify-center"
+            style={{ marginBottom: "var(--space-6)" }}
           >
             <svg
               width="100"
@@ -69,7 +70,8 @@ export function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lux-eyebrow mb-8"
+            className="lux-eyebrow"
+            style={{ marginBottom: "var(--space-5)" }}
           >
             {t("eyebrow")}
           </motion.p>
@@ -80,7 +82,8 @@ export function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="lux-display mb-8"
+            className="lux-display"
+            style={{ marginBottom: "var(--space-5)" }}
           >
             {t("headline")}
             <br />
@@ -93,7 +96,8 @@ export function FinalCTA() {
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="lux-divider mx-auto mb-10"
+            className="lux-divider mx-auto"
+            style={{ marginBottom: "var(--space-6)" }}
           />
 
           {/* Tagline */}
@@ -102,8 +106,8 @@ export function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="lux-heading-md mb-12"
-            style={{ color: "var(--lux-muted)" }}
+            className="lux-heading-md"
+            style={{ color: "var(--lux-muted)", marginBottom: "var(--space-7)" }}
           >
             {t("tagline")}
           </motion.p>
@@ -114,7 +118,8 @@ export function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center"
+            style={{ gap: "var(--space-4)" }}
           >
             <Link href="/book-now" className="lux-btn-primary">
               {t("ctaPrimary")}
@@ -130,7 +135,8 @@ export function FinalCTA() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.9 }}
-            className="flex justify-center mt-20"
+            className="flex justify-center"
+            style={{ marginTop: "var(--space-8)" }}
           >
             <div className="lux-ornament">
               <svg

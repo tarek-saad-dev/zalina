@@ -35,10 +35,26 @@
   --zalina-text-body: clamp(0.96875rem, 0.35vw + 0.875rem, 1.125rem); /* ~15.5–18px */
   --zalina-text-eyebrow: clamp(0.6875rem, 0.15vw + 0.65rem, 0.75rem); /* ~11–12px */
 
+  /* Editorial spacing scale: 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 */
+  --space-1: 0.5rem;   /* 8 */
+  --space-2: 0.75rem;  /* 12 */
+  --space-3: 1rem;     /* 16 */
+  --space-4: 1.5rem;   /* 24 */
+  --space-5: 2rem;     /* 32 */
+  --space-6: 3rem;     /* 48 */
+  --space-7: 4rem;     /* 64 */
+  --space-8: 5rem;     /* 80 */
+  --space-9: 6rem;     /* 96 */
+
   /* Section spacing tiers */
-  --zalina-space-cinematic: clamp(4.5rem, 6vw + 2rem, 8.75rem); /* ~72–140px */
-  --zalina-space-standard: clamp(3.5rem, 4vw + 1.5rem, 6.5rem); /* ~56–104px */
-  --zalina-space-compact: clamp(2rem, 2vw + 1rem, 3.5rem); /* ~32–56px */
+  --zalina-space-cinematic: clamp(4rem, 5vw + 1.5rem, 6rem); /* ~64–96 */
+  --zalina-space-standard: clamp(3rem, 3.5vw + 1rem, 5rem); /* ~48–80 */
+  --zalina-space-compact: clamp(2rem, 2vw + 0.75rem, 3rem); /* ~32–48 */
+
+  /* LAXR — signature display only; keep phrases on one line */
+  --laxr-size-hero: clamp(1.75rem, 4.2vw + 0.4rem, 3.75rem); /* ~28–60 */
+  --laxr-size-section: clamp(1.5rem, 2.4vw + 0.5rem, 2.75rem); /* ~24–44 */
+  --laxr-lh: 0.86;
 
   /* Phase 2.5 — mobile editorial rhythm (used under max-width 767) */
   --mobile-section-tight: 40px;
@@ -103,7 +119,7 @@
   --font-display: "Cormorant Garamond", serif;
   /* Static fallbacks — next/font --font-laxr-loaded is applied on <body> */
   --font-laxr: "LAXR", "Alexandria", sans-serif;
-  --font-heading-ar: var(--font-laxr), "Alexandria", sans-serif;
+  --font-heading-ar: "Alexandria", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-body-ar: "Alexandria", "Inter", sans-serif;
   /* Spacing Scale */
@@ -165,7 +181,7 @@ html[dir="ltr"] {
 body {
   /* Prefer next/font local variable when present (set on <body class>) */
   --font-laxr: var(--font-laxr-loaded), "LAXR", "Alexandria", sans-serif;
-  --font-heading-ar: var(--font-laxr), "Alexandria", sans-serif;
+  --font-heading-ar: "Alexandria", sans-serif;
   background-color: var(--page-bg);
   background-image:
     radial-gradient(
@@ -267,14 +283,14 @@ p {
   line-height: 1.7;
 }
 
-/* Arabic Typography — LAXR for display headings only */
+/* Arabic Typography — Alexandria for UI/headings; LAXR only via .lux-laxr */
 [lang="ar"] h1,
 [lang="ar"] h2,
 [lang="ar"] h3,
 [lang="ar"] h4,
 [lang="ar"] h5,
 [lang="ar"] h6 {
-  font-family: var(--font-laxr), var(--font-heading-ar);
+  font-family: var(--font-body-ar), "Alexandria", sans-serif;
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -282,19 +298,47 @@ p {
 html[dir="rtl"] .lux-heading-xl,
 html[dir="rtl"] .lux-heading-lg,
 html[dir="rtl"] .lux-heading-md,
-html[dir="rtl"] .lux-heading-hero {
-  font-family: var(--font-laxr), var(--font-heading-ar);
+html[dir="rtl"] .lux-heading-hero,
+html[dir="rtl"] .lux-display {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif;
   letter-spacing: 0;
 }
 
+html[dir="rtl"] .lux-body,
+html[dir="rtl"] .lux-body-lg,
+html[dir="rtl"] .lux-eyebrow {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif;
+}
+
+/**
+ * Controlled LAXR signature — one-line phrases only.
+ * Prefer for short accent lines (e.g. Nile), never long headings.
+ */
+.lux-laxr,
 .font-laxr {
   font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0;
+  line-height: var(--laxr-lh);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.lux-laxr--hero {
+  font-size: var(--laxr-size-hero);
+}
+
+.lux-laxr--section {
+  font-size: var(--laxr-size-section);
 }
 
 /*
- * Hero typography pair (all pages):
- * EN — Cormorant display + Inter support
- * AR — LAXR display + Alexandria support
+ * Hero typography pair:
+ * EN — Cormorant + Inter
+ * AR — Alexandria (support/lead); LAXR only on .lux-laxr accents
  */
 .zalina-hero-display {
   font-family: var(--font-display), "Cormorant Garamond", serif;
@@ -307,7 +351,7 @@ html[dir="rtl"] .lux-heading-hero {
 html[dir="rtl"] .zalina-hero-display,
 html[dir="rtl"] .exp-heading,
 html[dir="rtl"] .zones-hero-title {
-  font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif !important;
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
   letter-spacing: 0 !important;
   font-weight: 400;
 }
@@ -315,7 +359,6 @@ html[dir="rtl"] .zones-hero-title {
 html[dir="rtl"] .zalina-hero-display *,
 html[dir="rtl"] .exp-heading *,
 html[dir="rtl"] .zones-hero-title * {
-  font-family: inherit !important;
   font-style: normal !important;
   letter-spacing: 0 !important;
 }
@@ -325,12 +368,61 @@ html[dir="rtl"] .exp-body,
 html[dir="rtl"] .zones-body {
   font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
   letter-spacing: 0;
+  line-height: 1.75;
 }
 
 html[dir="rtl"] .exp-eyebrow,
 html[dir="rtl"] .zalina-hero-eyebrow {
   font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
   letter-spacing: 0.12em;
+}
+
+/* Landing-page rhythm */
+.lux-page .lux-section {
+  padding-block: var(--zalina-space-standard);
+}
+
+.lux-page .lux-section-compact {
+  padding-block: var(--zalina-space-compact);
+}
+
+html[dir="rtl"] .lux-page .lux-body,
+html[dir="rtl"] .lux-page .lux-body-lg {
+  line-height: 1.75;
+  max-width: 36rem;
+}
+
+html[dir="rtl"] .lux-page .lux-heading-xl {
+  font-size: clamp(1.625rem, 2.8vw + 0.5rem, 2.5rem);
+  line-height: 1.28;
+}
+
+html[dir="rtl"] .lux-page .lux-heading-lg {
+  font-size: clamp(1.4rem, 2.1vw + 0.45rem, 2.15rem);
+  line-height: 1.32;
+}
+
+html[dir="rtl"] .lux-page .lux-display {
+  font-size: clamp(1.75rem, 3.4vw + 0.4rem, 3rem);
+  line-height: 1.22;
+}
+
+html[dir="rtl"] .lux-page .lux-promise-label,
+html[dir="rtl"] .lux-page [data-ar-ui] {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif;
+}
+
+/* Prevent accidental LAXR wrapping on any leftover large display */
+@media (max-width: 430px) {
+  .lux-laxr--hero {
+    font-size: clamp(1.35rem, 7.2vw, 1.85rem);
+  }
+}
+
+@media (min-width: 1440px) {
+  .lux-laxr--hero {
+    font-size: clamp(2.25rem, 2.2vw + 1rem, 3.5rem);
+  }
 }
 
 /* ============================================
@@ -1771,47 +1863,47 @@ a:hover {
 
 .lux-display {
   font-family: var(--font-display);
-  font-size: clamp(48px, 8vw, 96px);
+  font-size: clamp(2.25rem, 5vw, 4rem);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--lux-text);
   letter-spacing: -0.02em;
 }
 
 .lux-heading-xl {
   font-family: var(--font-display);
-  font-size: clamp(40px, 6vw, 72px);
-  font-weight: 400;
-  line-height: 1.15;
-  color: var(--lux-text);
-}
-
-.lux-heading-lg {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 56px);
+  font-size: clamp(1.875rem, 4vw, 3rem);
   font-weight: 400;
   line-height: 1.2;
   color: var(--lux-text);
 }
 
+.lux-heading-lg {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 3vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--lux-text);
+}
+
 .lux-heading-md {
   font-family: var(--font-display);
-  font-size: clamp(24px, 3vw, 36px);
+  font-size: clamp(1.25rem, 2.2vw, 1.875rem);
   font-weight: 400;
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--lux-text);
 }
 
 .lux-body {
   font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: clamp(0.9375rem, 0.4vw + 0.85rem, 1.0625rem);
+  line-height: 1.75;
   color: var(--lux-muted);
 }
 
 .lux-body-lg {
   font-family: var(--font-body);
-  font-size: 18px;
+  font-size: clamp(1rem, 0.45vw + 0.9rem, 1.125rem);
   line-height: 1.8;
   color: var(--lux-muted);
 }

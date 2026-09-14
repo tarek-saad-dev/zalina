@@ -130,8 +130,8 @@ export function WeddingShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="lux-heading-xl mb-6"
-            style={{ fontSize: "clamp(36px, 5vw, 64px)" }}
+            className="lux-heading-xl"
+            style={{ marginBottom: "var(--space-5)" }}
           >
             {t("headline")}
             <br />

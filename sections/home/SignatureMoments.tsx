@@ -20,7 +20,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const t = useTranslations("home.signatureMoments");
   const isArabic = useLocale() === "ar";
   const titleFont = isArabic
-    ? "var(--font-laxr), 'LAXR', 'Alexandria', sans-serif"
+    ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-display), 'Cormorant Garamond', serif";
   const bodyFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
@@ -88,17 +88,18 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
 
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ background: "var(--lux-surface)", paddingTop: "50px", paddingBottom: "60px" }}
+      className="relative overflow-hidden lux-section-compact"
+      style={{ background: "var(--lux-surface)" }}
     >
-      <div className="lux-container mb-8">
+      <div className="lux-container" style={{ marginBottom: "var(--space-5)" }}>
         <div className="text-center relative">
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lux-eyebrow mb-3"
+            className="lux-eyebrow"
+            style={{ marginBottom: "var(--space-3)" }}
           >
             {t("eyebrow")}
           </motion.p>
@@ -108,7 +109,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="lux-heading-lg"
-            style={{ fontSize: "clamp(32px, 4vw, 52px)" }}
           >
             {t("title")}
           </motion.h2>
@@ -200,28 +200,30 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <div className="flex flex-col" style={{ minHeight: "5.75rem" }}>
                 <h3
-                  className="text-white leading-tight mb-2 line-clamp-1"
+                  className="text-white leading-tight line-clamp-1"
                   style={{
                     fontFamily: titleFont,
-                    fontSize: isArabic ? "1.2rem" : "1.35rem",
+                    fontSize: isArabic
+                      ? "clamp(0.95rem, 1.5vw + 0.5rem, 1.1rem)"
+                      : "clamp(1.05rem, 1.2vw + 0.6rem, 1.25rem)",
                     fontWeight: isArabic ? 500 : 400,
                     letterSpacing: isArabic ? "0" : "0.02em",
                     lineHeight: isArabic ? 1.45 : 1.25,
-                    minHeight: "1.6rem",
+                    marginBottom: "var(--space-2)",
                     textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7)",
                   }}
                 >
                   {moment.title}
                 </h3>
                 <p
-                  className="text-white/90 leading-snug line-clamp-2"
+                  className="line-clamp-2"
                   style={{
-                    fontSize: isArabic ? "0.875rem" : "0.9rem",
+                    fontSize: isArabic ? "0.8125rem" : "0.875rem",
                     fontFamily: bodyFont,
-                    fontWeight: isArabic ? 400 : 400,
+                    fontWeight: 400,
                     letterSpacing: isArabic ? "0" : undefined,
-                    lineHeight: isArabic ? 1.55 : 1.4,
-                    minHeight: "2.7rem",
+                    lineHeight: isArabic ? 1.7 : 1.55,
+                    color: "rgba(255,255,255,0.72)",
                     textShadow: "0 1px 8px rgba(0,0,0,0.85)",
                   }}
                 >

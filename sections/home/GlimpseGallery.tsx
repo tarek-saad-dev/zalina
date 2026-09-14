@@ -422,19 +422,19 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
 
   return (
     <section
-      className="relative overflow-hidden py-16"
+      className="relative overflow-hidden lux-section"
       style={{ background: "var(--lux-surface)" }}
       aria-labelledby="glimpse-gallery-title"
     >
-      <div className="lux-container mb-10">
+      <div className="lux-container" style={{ marginBottom: "var(--space-6)" }}>
         <div className="text-center">
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lux-eyebrow mb-3"
-            style={{ color: "var(--lux-gold)" }}
+            className="lux-eyebrow"
+            style={{ color: "var(--lux-gold)", marginBottom: "var(--space-3)" }}
           >
             {t("eyebrow")}
           </motion.p>

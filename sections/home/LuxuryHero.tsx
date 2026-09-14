@@ -60,13 +60,14 @@ export function LuxuryHero() {
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
 
+  const accentPhrase = `${t("headlineAccent1")} ${t("headlineAccent2")}`;
+
   return (
     <section
       ref={containerRef}
       className="relative w-full overflow-hidden"
       style={{ minHeight: "100vh", background: "transparent" }}
     >
-      {/* ── LAYER 1: Background Image ─────────────────── */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
@@ -83,7 +84,6 @@ export function LuxuryHero() {
         />
       </motion.div>
 
-      {/* ── LAYER 2: Cinematic Overlays ───────────────── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -98,7 +98,6 @@ export function LuxuryHero() {
             "linear-gradient(180deg, transparent 42%, rgba(5,5,5,0.7) 78%, #050505 100%)",
         }}
       />
-      {/* Stronger dark wash behind the copy (logical start = text side) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -145,7 +144,6 @@ export function LuxuryHero() {
         }}
       />
 
-      {/* ── LAYER 3: Stars ────────────────────────────── */}
       {STARS.map((s, i) => (
         <div
           key={i}
@@ -161,20 +159,19 @@ export function LuxuryHero() {
         />
       ))}
 
-      {/* ── LAYER 4: Main Content — lowered slightly ──── */}
       <motion.div
-        className="relative z-10 flex flex-col justify-center min-h-screen px-6 md:px-12 lg:px-20 pt-[132px] pb-[230px] sm:pt-[148px] sm:pb-[210px]"
+        className="relative z-10 flex flex-col justify-center min-h-screen px-5 sm:px-8 md:px-12 lg:px-20 pt-[calc(var(--zalina-nav-height)+3rem)] pb-[13.5rem] sm:pb-[12.5rem]"
         style={{ opacity: fadeOut }}
       >
-        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-14">
-          <div className="flex-1 max-w-2xl mt-8 md:mt-12">
-            {/* Badge */}
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="flex-1 max-w-xl md:max-w-2xl mt-6 md:mt-10">
             <motion.div
-              initial={{ opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="inline-flex items-center gap-2 mb-10 md:mb-12 px-3 py-1.5 rounded-full"
+              transition={{ duration: 0.65, delay: 0.08 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
               style={{
+                marginBottom: "var(--space-6)",
                 background: "rgba(212,175,55,0.06)",
                 border: "1px solid rgba(212,175,55,0.18)",
               }}
@@ -184,27 +181,26 @@ export function LuxuryHero() {
                 style={{ background: "#D4AF37" }}
               />
               <span
-                className="text-[10px] tracking-[0.22em] uppercase"
-                style={{ color: "rgba(212,175,55,0.9)", fontFamily: uiFont }}
+                className="text-[10px] tracking-[0.2em] uppercase"
+                style={{ color: "rgba(212,175,55,0.88)", fontFamily: uiFont }}
               >
                 {t("badge")}
               </span>
             </motion.div>
 
-            {/* Headline — Alexandria lead + LAXR accent (AR) */}
             <motion.h1
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.05, delay: 0.32 }}
+              transition={{ duration: 0.95, delay: 0.28 }}
               className="lux-hero-headline"
             >
               <span
-                className="lux-hero-lead block"
+                className="block"
                 style={{
                   fontFamily: leadFont,
-                  fontSize: "clamp(1.85rem, 3.6vw, 3.15rem)",
-                  fontWeight: isArabic ? 400 : 400,
-                  lineHeight: isArabic ? 1.35 : 1.12,
+                  fontSize: "clamp(1.5rem, 2.8vw + 0.4rem, 2.5rem)",
+                  fontWeight: 400,
+                  lineHeight: isArabic ? 1.4 : 1.2,
                   color: "rgba(248,245,237,0.92)",
                   letterSpacing: isArabic ? "0" : "-0.01em",
                 }}
@@ -212,98 +208,93 @@ export function LuxuryHero() {
                 {t("headlineLine1")}
               </span>
               <span
-                className="lux-hero-lead block"
+                className="block"
                 style={{
                   fontFamily: leadFont,
-                  fontSize: "clamp(1.85rem, 3.6vw, 3.15rem)",
-                  fontWeight: isArabic ? 400 : 400,
-                  lineHeight: isArabic ? 1.35 : 1.12,
+                  fontSize: "clamp(1.5rem, 2.8vw + 0.4rem, 2.5rem)",
+                  fontWeight: 400,
+                  lineHeight: isArabic ? 1.4 : 1.2,
                   color: "rgba(248,245,237,0.92)",
                   letterSpacing: isArabic ? "0" : "-0.01em",
-                  marginInlineStart: isArabic ? "0.55rem" : "0.85rem",
-                  marginTop: "0.12em",
+                  marginTop: "0.2em",
+                  marginInlineStart: "var(--space-3)",
                 }}
               >
                 {t("headlineLine2")}
               </span>
+
+              {/* Single-line LAXR / display accent */}
               <span
-                className="lux-hero-accent block"
+                className={isArabic ? "lux-laxr lux-laxr--hero block" : "block"}
                 style={{
                   fontFamily: accentFont,
-                  fontSize: "clamp(2.65rem, 6.4vw, 5.1rem)",
+                  fontSize: isArabic
+                    ? undefined
+                    : "clamp(2rem, 4.5vw + 0.35rem, 3.75rem)",
                   fontWeight: 400,
-                  lineHeight: isArabic ? 0.98 : 0.96,
+                  lineHeight: isArabic ? undefined : 0.92,
                   color: "#D4AF37",
                   fontStyle: isArabic ? "normal" : "italic",
                   letterSpacing: isArabic ? "0" : "-0.02em",
-                  marginTop: "0.28em",
-                  marginInlineStart: isArabic ? "1.1rem" : "1.45rem",
+                  marginTop: "var(--space-5)",
+                  marginInlineStart: "var(--space-4)",
+                  whiteSpace: "nowrap",
                 }}
               >
-                {t("headlineAccent1")}
-              </span>
-              <span
-                className="lux-hero-accent block"
-                style={{
-                  fontFamily: accentFont,
-                  fontSize: "clamp(2.65rem, 6.4vw, 5.1rem)",
-                  fontWeight: 400,
-                  lineHeight: isArabic ? 0.98 : 0.96,
-                  color: "#D4AF37",
-                  fontStyle: isArabic ? "normal" : "italic",
-                  letterSpacing: isArabic ? "0" : "-0.02em",
-                  marginInlineStart: isArabic ? "1.85rem" : "2.35rem",
-                  marginTop: "0.02em",
-                }}
-              >
-                {t("headlineAccent2")}
+                {accentPhrase}
               </span>
             </motion.h1>
 
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ duration: 1.05, delay: 0.88 }}
-              className="lux-divider mt-10 mb-8 md:mt-12 md:mb-10"
+              transition={{ duration: 0.95, delay: 0.82 }}
+              className="lux-divider"
               style={{
+                marginTop: "var(--space-6)",
+                marginBottom: "var(--space-5)",
                 transformOrigin: isArabic ? "right" : "left",
-                maxWidth: "140px",
-                opacity: 0.85,
+                maxWidth: "7.5rem",
+                opacity: 0.8,
               }}
             />
 
             <motion.p
-              initial={{ opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.0 }}
+              transition={{ duration: 0.7, delay: 0.95 }}
               style={{
                 fontFamily: uiFont,
-                fontSize: "clamp(13px, 1.1vw, 15px)",
+                fontSize: "clamp(0.8125rem, 0.35vw + 0.75rem, 0.9375rem)",
                 fontWeight: 300,
-                color: "rgba(248,245,237,0.52)",
-                lineHeight: 1.75,
-                maxWidth: "28rem",
+                color: "rgba(248,245,237,0.5)",
+                lineHeight: 1.8,
+                maxWidth: "26rem",
               }}
             >
               {t("supporting")}
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.18 }}
-              className="relative z-30 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8 mt-12 md:mt-14"
+              transition={{ duration: 0.7, delay: 1.1 }}
+              className="relative z-30 flex flex-col sm:flex-row sm:items-center"
+              style={{
+                gap: "var(--space-5)",
+                marginTop: "var(--space-7)",
+              }}
             >
               <Link
                 href="/book-now"
-                className="inline-flex items-center justify-center gap-2 px-9 py-[15px] text-[11px] font-medium uppercase transition-all duration-300 sm:w-auto w-full"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 text-[11px] font-medium uppercase transition-all duration-300 sm:w-auto w-full"
                 style={{
                   fontFamily: uiFont,
                   background: "linear-gradient(135deg, #D4AF37 0%, #B8963E 100%)",
                   color: "#050505",
                   borderRadius: "2px",
-                  letterSpacing: isArabic ? "0.06em" : "0.16em",
-                  boxShadow: "0 8px 28px rgba(212,175,55,0.22)",
+                  letterSpacing: isArabic ? "0.04em" : "0.14em",
+                  boxShadow: "0 8px 24px rgba(212,175,55,0.2)",
                 }}
               >
                 {t("ctaPrimary")}
@@ -314,16 +305,16 @@ export function LuxuryHero() {
                 className="hidden sm:inline-flex items-center gap-2 group text-[12px] transition-colors duration-300"
                 style={{
                   fontFamily: uiFont,
-                  color: "rgba(248,245,237,0.62)",
-                  letterSpacing: isArabic ? "0.02em" : "0.08em",
+                  color: "rgba(248,245,237,0.58)",
+                  letterSpacing: isArabic ? "0.01em" : "0.06em",
                 }}
               >
                 <span className="group-hover:text-[#D4AF37] transition-colors duration-300">
                   {t("ctaSecondary")}
                 </span>
                 <ArrowUpRight
-                  size={15}
-                  className="opacity-55 group-hover:opacity-100 group-hover:text-[#D4AF37] transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:-scale-x-100"
+                  size={14}
+                  className="opacity-50 group-hover:opacity-100 group-hover:text-[#D4AF37] transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:-scale-x-100"
                 />
               </Link>
             </motion.div>
@@ -331,14 +322,13 @@ export function LuxuryHero() {
         </div>
       </motion.div>
 
-      {/* ── Bottom Rail ───────────────────────────────── */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 lg:px-20 pb-8">
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 md:px-12 lg:px-20 pb-6 sm:pb-8">
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.07] border border-white/[0.08]">
           {RAIL_KEYS.map((item) => (
             <Link
               key={item.num}
               href={item.href}
-              className="group bg-black/25 backdrop-blur-sm px-5 py-4 hover:bg-black/45 transition-colors"
+              className="group bg-black/25 backdrop-blur-sm px-4 sm:px-5 py-3.5 sm:py-4 hover:bg-black/45 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <span className="text-[10px] text-[#D4AF37]/55 mt-0.5">

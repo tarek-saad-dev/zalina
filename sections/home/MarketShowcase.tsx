@@ -61,7 +61,7 @@ export function MarketShowcase({
 
   return (
     <section
-      className="relative overflow-hidden py-16 md:py-20"
+      className="relative overflow-hidden lux-section"
       style={{ background: "var(--lux-surface)" }}
       aria-labelledby="market-showcase-title"
       aria-roledescription="carousel"

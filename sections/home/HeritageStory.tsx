@@ -14,21 +14,22 @@ export function HeritageStory() {
 
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ background: "transparent", paddingTop: "40px", paddingBottom: "30px" }}
+      className="relative overflow-hidden lux-section-compact"
+      style={{ background: "transparent" }}
     >
       {/* Subtle Pattern Background */}
       <div className="absolute inset-0 lux-pattern opacity-50" />
 
       <div className="lux-container relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto text-center">
           {/* Decorative Top Ornament */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center mb-4"
+            className="flex justify-center"
+            style={{ marginBottom: "var(--space-5)" }}
           >
             <svg
               width="100"
@@ -70,8 +71,8 @@ export function HeritageStory() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lux-heading-xl mb-4"
-            style={{ fontSize: "clamp(28px, 4vw, 48px)", lineHeight: 1.2 }}
+            className="lux-heading-xl"
+            style={{ marginBottom: "var(--space-4)" }}
           >
             {beforeAccent}
             <span style={{ color: "var(--lux-gold)" }}>{accent}</span>
@@ -83,7 +84,8 @@ export function HeritageStory() {
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="lux-divider mx-auto mb-4"
+            className="lux-divider mx-auto"
+            style={{ marginBottom: "var(--space-5)" }}
           />
 
           {/* Story Text - Single Compact Paragraph */}
@@ -92,8 +94,8 @@ export function HeritageStory() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="lux-body"
-            style={{ maxWidth: "650px", margin: "0 auto", fontSize: "0.95rem" }}
+            className="lux-body mx-auto"
+            style={{ maxWidth: "36rem" }}
           >
             {t("body")}
           </motion.p>
@@ -104,7 +106,8 @@ export function HeritageStory() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="flex justify-center mt-5"
+            className="flex justify-center"
+            style={{ marginTop: "var(--space-6)" }}
           >
             <div className="lux-ornament">
               <svg

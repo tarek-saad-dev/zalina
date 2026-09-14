@@ -64,7 +64,7 @@ export function ZalinaPromise() {
                   <span
                     className="text-sm font-medium tracking-wide whitespace-nowrap"
                     style={{
-                      fontFamily: "var(--font-display, serif)",
+                      fontFamily: "var(--font-body-ar), var(--font-display), serif",
                       color: "var(--lux-text)",
                     }}
                   >
