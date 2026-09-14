@@ -9,48 +9,60 @@ function upstreamBase(): string {
 }
 
 async function proxy(req: NextRequest, pathParts: string[]) {
-  const target = new URL(
-    `/api/v1/${pathParts.map(encodeURIComponent).join("/")}`,
-    `${upstreamBase()}/`
-  );
-  target.search = req.nextUrl.search;
+  try {
+    const target = new URL(
+      `/api/v1/${pathParts.map(encodeURIComponent).join("/")}`,
+      `${upstreamBase()}/`
+    );
+    target.search = req.nextUrl.search;
 
-  const headers = new Headers();
-  const accept = req.headers.get("accept");
-  const acceptLanguage = req.headers.get("accept-language");
-  const contentType = req.headers.get("content-type");
-  if (accept) headers.set("Accept", accept);
-  else headers.set("Accept", "application/json");
-  if (acceptLanguage) headers.set("Accept-Language", acceptLanguage);
-  if (contentType) headers.set("Content-Type", contentType);
+    const headers = new Headers();
+    const accept = req.headers.get("accept");
+    const acceptLanguage = req.headers.get("accept-language");
+    const contentType = req.headers.get("content-type");
+    if (accept) headers.set("Accept", accept);
+    else headers.set("Accept", "application/json");
+    if (acceptLanguage) headers.set("Accept-Language", acceptLanguage);
+    if (contentType) headers.set("Content-Type", contentType);
 
-  // Do not forward Origin / Cookie — upstream currently 500s on
-  // Origin: http://localhost:3000 for POST /bookings.
-  const init: RequestInit = {
-    method: req.method,
-    headers,
-    cache: "no-store",
-  };
+    // Do not forward Origin / Cookie — upstream currently 500s on
+    // Origin: http://localhost:3000 for POST /bookings.
+    const init: RequestInit = {
+      method: req.method,
+      headers,
+      cache: "no-store",
+    };
 
-  if (req.method !== "GET" && req.method !== "HEAD") {
-    init.body = await req.text();
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      init.body = await req.text();
+    }
+
+    const upstream = await fetch(target.toString(), init);
+    const body = await upstream.arrayBuffer();
+
+    const responseHeaders = new Headers();
+    const upstreamType = upstream.headers.get("content-type");
+    if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
+    const requestId =
+      upstream.headers.get("X-Request-Id") ??
+      upstream.headers.get("x-request-id");
+    if (requestId) responseHeaders.set("X-Request-Id", requestId);
+
+    return new NextResponse(body, {
+      status: upstream.status,
+      headers: responseHeaders,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Proxy request failed";
+    console.error("[api/v1 proxy]", message);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Unable to reach the booking API. Please try again.",
+      },
+      { status: 502 }
+    );
   }
-
-  const upstream = await fetch(target.toString(), init);
-  const body = await upstream.arrayBuffer();
-
-  const responseHeaders = new Headers();
-  const upstreamType = upstream.headers.get("content-type");
-  if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
-  const requestId =
-    upstream.headers.get("X-Request-Id") ??
-    upstream.headers.get("x-request-id");
-  if (requestId) responseHeaders.set("X-Request-Id", requestId);
-
-  return new NextResponse(body, {
-    status: upstream.status,
-    headers: responseHeaders,
-  });
 }
 
 type Ctx = { params: { path: string[] } };

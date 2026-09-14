@@ -11,6 +11,7 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type {
+  ApiBooking,
   ApiLocale,
   WeddingAvailability,
   WeddingPackage,
@@ -85,6 +86,7 @@ export function WeddingPlanner({
   const [guestPhone, setGuestPhone] = useState("");
   const [checkoutBusy, setCheckoutBusy] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [heldBooking, setHeldBooking] = useState<ApiBooking | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
   const requestSeq = useRef(0);
@@ -176,6 +178,8 @@ export function WeddingPlanner({
     prevPackageIdRef.current = selected.id;
     if (!packageChanged) return;
 
+    setHeldBooking(null);
+    setCheckoutError(null);
     setGuests((prev) => {
       const n = Number.parseInt(prev, 10);
       if (
@@ -189,6 +193,10 @@ export function WeddingPlanner({
       return prev;
     });
   }, [selected]);
+
+  useEffect(() => {
+    setHeldBooking(null);
+  }, [date, guestsNumber]);
 
   async function onSecure(e: FormEvent) {
     e.preventDefault();
@@ -207,6 +215,7 @@ export function WeddingPlanner({
 
     const result = await runWeddingCheckout({
       locale,
+      existingBooking: heldBooking,
       payload: {
         wedding_package_id: selected.id,
         wedding_date: date,
@@ -219,6 +228,7 @@ export function WeddingPlanner({
 
     if (!result.ok) {
       setCheckoutBusy(false);
+      if (result.booking) setHeldBooking(result.booking);
       setCheckoutError(result.error.message);
       if (result.error.kind === "validation" || result.error.status === 422) {
         void runAvailability(selected, date, guestsNumber);
@@ -814,7 +824,11 @@ export function WeddingPlanner({
                     >
                       {checkoutBusy
                         ? pickLocale(locale, WEDDING_COPY.planSecuring)
-                        : pickLocale(locale, WEDDING_COPY.planSecure)}
+                        : heldBooking
+                          ? locale === "ar"
+                            ? "إعادة محاولة الدفع"
+                            : "Retry payment"
+                          : pickLocale(locale, WEDDING_COPY.planSecure)}
                     </button>
                   ) : null}
                 </aside>
