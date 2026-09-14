@@ -82,7 +82,7 @@ export function WeddingHero() {
             {pickLocale(locale, WEDDING_COPY.heroEyebrow)}
           </p>
           <h1
-            className="zones-hero-title mb-6"
+            className="zones-hero-title zalina-hero-display mb-6"
             style={{
               fontSize: "clamp(2.1rem, 5.5vw, 4.25rem)",
               lineHeight: 1.08,
@@ -92,7 +92,7 @@ export function WeddingHero() {
             {pickLocale(locale, WEDDING_COPY.heroHeadline)}
           </h1>
           <p
-            className="zones-body max-w-2xl mb-4"
+            className="zones-body zalina-hero-support max-w-2xl mb-4"
             style={{ color: "rgba(248,242,231,0.78)", fontSize: "clamp(1rem, 2vw, 1.15rem)" }}
           >
             {pickLocale(locale, WEDDING_COPY.heroSupport)}

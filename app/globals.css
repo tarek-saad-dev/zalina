@@ -291,6 +291,48 @@ html[dir="rtl"] .lux-heading-hero {
   font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif;
 }
 
+/*
+ * Hero typography pair (all pages):
+ * EN — Cormorant display + Inter support
+ * AR — LAXR display + Alexandria support
+ */
+.zalina-hero-display {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+}
+
+.zalina-hero-support {
+  font-family: var(--font-body), "Inter", sans-serif;
+}
+
+html[dir="rtl"] .zalina-hero-display,
+html[dir="rtl"] .exp-heading,
+html[dir="rtl"] .zones-hero-title {
+  font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif !important;
+  letter-spacing: 0 !important;
+  font-weight: 400;
+}
+
+html[dir="rtl"] .zalina-hero-display *,
+html[dir="rtl"] .exp-heading *,
+html[dir="rtl"] .zones-hero-title * {
+  font-family: inherit !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+}
+
+html[dir="rtl"] .zalina-hero-support,
+html[dir="rtl"] .exp-body,
+html[dir="rtl"] .zones-body {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .exp-eyebrow,
+html[dir="rtl"] .zalina-hero-eyebrow {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  letter-spacing: 0.12em;
+}
+
 /* ============================================
    SELECTION
    ============================================ */

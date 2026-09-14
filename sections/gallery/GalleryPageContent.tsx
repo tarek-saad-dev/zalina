@@ -290,7 +290,7 @@ export function GalleryPageContent({
             transition={{ duration: 0.6, delay: 0.35 }}
           />
           <motion.h1
-            className="zones-hero-title mb-4"
+            className="zones-hero-title zalina-hero-display mb-4"
             style={{ fontSize: "clamp(2.3rem, 5.6vw, 3.85rem)" }}
             initial={
               !prefersReduced
@@ -303,7 +303,7 @@ export function GalleryPageContent({
             {t("hero.title")}
           </motion.h1>
           <motion.p
-            className="zones-body mb-8 max-w-[590px]"
+            className="zones-body zalina-hero-support mb-8 max-w-[590px]"
             style={{ fontSize: "clamp(0.94rem, 1.2vw, 1.06rem)" }}
             initial={!prefersReduced ? { opacity: 0, y: 16 } : undefined}
             animate={{ opacity: 1, y: 0 }}

@@ -130,14 +130,14 @@ export function Hero() {
           </div>
 
           <h1
-            className="exp-enter exp-enter-delay-2 exp-heading mb-5 max-w-[16ch] sm:mb-6 sm:max-w-3xl"
+            className="exp-enter exp-enter-delay-2 exp-heading zalina-hero-display mb-5 max-w-[16ch] sm:mb-6 sm:max-w-3xl"
             style={{ textShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
           >
             {t("hero.title")}
           </h1>
 
           <p
-            className="exp-enter exp-enter-delay-3 exp-body mb-8 max-w-md sm:mb-10 sm:max-w-lg"
+            className="exp-enter exp-enter-delay-3 exp-body zalina-hero-support mb-8 max-w-md sm:mb-10 sm:max-w-lg"
             style={{ textShadow: "0 2px 16px rgba(0,0,0,0.45)" }}
           >
             {t("hero.subtitle")}

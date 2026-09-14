@@ -40,8 +40,8 @@ export function BookingStatusHero({
         Zalina
       </p>
       <h1
+        className="zalina-hero-display"
         style={{
-          fontFamily: "var(--font-display)",
           fontSize: "clamp(28px, 5vw, 44px)",
           fontWeight: 400,
           color: TEXT,
@@ -52,6 +52,7 @@ export function BookingStatusHero({
         {heroTitleForBucket(bucket, locale)}
       </h1>
       <p
+        className="zalina-hero-support"
         style={{
           fontSize: "15px",
           color: MUTED,

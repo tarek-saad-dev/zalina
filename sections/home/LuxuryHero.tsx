@@ -167,8 +167,8 @@ export function LuxuryHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.1, delay: 0.38 }}
+              className="zalina-hero-display"
               style={{
-                fontFamily: "var(--font-display, 'Cormorant Garamond', serif)",
                 fontSize: "clamp(44px, 6.2vw, 90px)",
                 fontWeight: 400,
                 lineHeight: 1.04,
@@ -201,8 +201,8 @@ export function LuxuryHero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.05 }}
+              className="zalina-hero-support"
               style={{
-                fontFamily: "var(--font-body, sans-serif)",
                 fontSize: "clamp(14px, 1.35vw, 17px)",
                 color: "rgba(248,245,237,0.68)",
                 lineHeight: 1.8,

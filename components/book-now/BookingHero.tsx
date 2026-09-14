@@ -82,8 +82,8 @@ export function BookingHero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+          className="zalina-hero-display"
           style={{
-            fontFamily: "var(--font-display)",
             fontSize: "clamp(28px, 4.5vw, 56px)",
             fontWeight: 400,
             lineHeight: 1.1,
@@ -100,8 +100,8 @@ export function BookingHero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+          className="zalina-hero-support"
           style={{
-            fontFamily: "var(--font-body)",
             fontSize: "clamp(13px, 1.4vw, 16px)",
             color: "rgba(248,242,231,0.60)",
             lineHeight: 1.65,

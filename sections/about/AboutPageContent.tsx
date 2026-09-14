@@ -149,8 +149,8 @@ function AboutHeroSection() {
           initial="hidden"
           animate="show"
           transition={{ duration: 0.9, delay: 0.3 }}
+          className="zalina-hero-display"
           style={{
-            fontFamily: "var(--font-display, 'Cormorant Garamond', serif)",
             fontSize: "clamp(46px, 7vw, 100px)",
             fontWeight: 400,
             lineHeight: 1.02,
@@ -179,8 +179,8 @@ function AboutHeroSection() {
           initial="hidden"
           animate="show"
           transition={{ duration: 0.8, delay: 0.85 }}
+          className="zalina-hero-support"
           style={{
-            fontFamily: "var(--font-body, sans-serif)",
             fontSize: "clamp(15px, 1.4vw, 18px)",
             color: "rgba(248,245,237,0.68)",
             lineHeight: 1.8,

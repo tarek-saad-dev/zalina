@@ -124,7 +124,7 @@ export function Hero() {
         />
 
         <motion.h1
-          className="zones-hero-title mb-4"
+          className="zones-hero-title zalina-hero-display mb-4"
           style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)" }}
           initial={
             !prefersReduced ? { opacity: 0, y: 24, filter: "blur(6px)" } : undefined
@@ -136,7 +136,7 @@ export function Hero() {
         </motion.h1>
 
         <motion.p
-          className="zones-body mb-7 max-w-[500px]"
+          className="zones-body zalina-hero-support mb-7 max-w-[500px]"
           style={{ fontSize: "clamp(0.9375rem, 1.2vw, 1rem)" }}
           initial={!prefersReduced ? { opacity: 0, y: 16 } : undefined}
           animate={{ opacity: 1, y: 0 }}
