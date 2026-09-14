@@ -1,4 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=Alexandria:wght@300;400;500;600;700&display=swap");
+
+/* Arabic display face — same as Cut Salon; headings only, not long UI copy */
+@font-face {
+  font-family: "LAXR";
+  src: url("/fonts/LAXR.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -91,8 +101,11 @@
   --radius-button: 14px; /* legacy UI — new editorial CTAs use --zalina-btn-radius */
   /* Typography */
   --font-display: "Cormorant Garamond", serif;
-  --font-heading-ar: "Alexandria", sans-serif;
+  /* Static fallbacks — next/font --font-laxr-loaded is applied on <body> */
+  --font-laxr: "LAXR", "Alexandria", sans-serif;
+  --font-heading-ar: var(--font-laxr), "Alexandria", sans-serif;
   --font-body: "Inter", sans-serif;
+  --font-body-ar: "Alexandria", "Inter", sans-serif;
   /* Spacing Scale */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
@@ -142,7 +155,7 @@ html.lenis body {
 }
 
 html[dir="rtl"] {
-  font-family: var(--font-heading-ar), var(--font-body), sans-serif;
+  font-family: var(--font-body-ar), sans-serif;
 }
 
 html[dir="ltr"] {
@@ -150,6 +163,9 @@ html[dir="ltr"] {
 }
 
 body {
+  /* Prefer next/font local variable when present (set on <body class>) */
+  --font-laxr: var(--font-laxr-loaded), "LAXR", "Alexandria", sans-serif;
+  --font-heading-ar: var(--font-laxr), "Alexandria", sans-serif;
   background-color: var(--page-bg);
   background-image:
     radial-gradient(
@@ -251,17 +267,28 @@ p {
   line-height: 1.7;
 }
 
-/* Arabic Typography */
-
+/* Arabic Typography — LAXR for display headings only */
 [lang="ar"] h1,
 [lang="ar"] h2,
 [lang="ar"] h3,
 [lang="ar"] h4,
 [lang="ar"] h5,
 [lang="ar"] h6 {
-  font-family: var(--font-heading-ar);
-  font-weight: 500;
+  font-family: var(--font-laxr), var(--font-heading-ar);
+  font-weight: 400;
   letter-spacing: 0;
+}
+
+html[dir="rtl"] .lux-heading-xl,
+html[dir="rtl"] .lux-heading-lg,
+html[dir="rtl"] .lux-heading-md,
+html[dir="rtl"] .lux-heading-hero {
+  font-family: var(--font-laxr), var(--font-heading-ar);
+  letter-spacing: 0;
+}
+
+.font-laxr {
+  font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif;
 }
 
 /* ============================================

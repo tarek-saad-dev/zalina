@@ -2,11 +2,26 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
+import localFont from "next/font/local";
 import { routing } from "@/i18n/routing";
 import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
 import { InitialPageLoader } from "@/components/layout/InitialPageLoader";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import "../globals.css";
+
+/** Local Arabic display face (from Cut Salon) — hero / section titles only. */
+const laxr = localFont({
+  src: [
+    {
+      path: "../../assets/fonts/LAXR.otf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-laxr-loaded",
+  display: "swap",
+  fallback: ["Alexandria", "sans-serif"],
+});
 
 type Props = {
   children: React.ReactNode;
@@ -82,7 +97,9 @@ export default async function LocaleLayout({ children, params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased min-h-screen bg-bg-main">
+      <body
+        className={`${laxr.variable} antialiased min-h-screen bg-bg-main`}
+      >
         <NextIntlClientProvider messages={messages}>
           <MotionProvider>
             <InitialPageLoader />

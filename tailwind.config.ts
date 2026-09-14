@@ -50,8 +50,11 @@ const config: Config = {
       },
       fontFamily: {
         display: ["Cormorant Garamond", "Georgia", "serif"],
-        "heading-ar": ["Alexandria", "sans-serif"],
+        /** Arabic display (LAXR) — headings / card titles, not long copy */
+        laxr: ["var(--font-laxr)", "LAXR", "Alexandria", "sans-serif"],
+        "heading-ar": ["var(--font-heading-ar)", "LAXR", "Alexandria", "sans-serif"],
         body: ["Inter", "system-ui", "sans-serif"],
+        "body-ar": ["Alexandria", "Inter", "sans-serif"],
         serif: ["Cormorant Garamond", "Georgia", "serif"],
       },
       maxWidth: {

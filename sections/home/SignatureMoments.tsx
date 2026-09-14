@@ -20,10 +20,10 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const t = useTranslations("home.signatureMoments");
   const isArabic = useLocale() === "ar";
   const titleFont = isArabic
-    ? "var(--font-heading-ar), 'Alexandria', sans-serif"
+    ? "var(--font-laxr), 'LAXR', 'Alexandria', sans-serif"
     : "var(--font-display), 'Cormorant Garamond', serif";
   const bodyFont = isArabic
-    ? "var(--font-heading-ar), 'Alexandria', sans-serif"
+    ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
