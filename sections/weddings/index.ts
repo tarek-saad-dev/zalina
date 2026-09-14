@@ -6,5 +6,6 @@ export { SignatureSpotlight } from "./SignatureSpotlight";
 export { WeddingVisualStory } from "./WeddingVisualStory";
 export { WeddingUpgrades } from "./WeddingUpgrades";
 export { WeddingPlanner } from "./WeddingPlanner";
+export { WeddingBookingModal } from "./WeddingBookingModal";
 export { WeddingFinalCTA } from "./WeddingFinalCTA";
 export { WeddingsPageClient } from "./WeddingsPageClient";

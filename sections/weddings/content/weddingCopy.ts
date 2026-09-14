@@ -74,14 +74,19 @@ export const WEDDING_COPY = {
   guestsRange: { en: "Guests", ar: "الضيوف" },
   from: { en: "From", ar: "من" },
   chooseThisExperience: {
-    en: "Choose this experience",
-    ar: "اختاروا هذه التجربة",
+    en: "Check date & book",
+    ar: "تحققوا من التاريخ واحجزوا",
   },
   selectedExperience: { en: "Selected", ar: "مختارة" },
   yourExperience: { en: "Your Experience", ar: "تجربتكم" },
   changeExperience: {
     en: "Change experience",
     ar: "تغيير التجربة",
+  },
+  planClose: { en: "Close", ar: "إغلاق" },
+  planBookingTitle: {
+    en: "Check Your Date & Secure Your Wedding",
+    ar: "تحققوا من تاريخكم وأمّنوا زفافكم",
   },
   planInvite: {
     en: "Choose one of the three wedding experiences above to begin checking your date.",

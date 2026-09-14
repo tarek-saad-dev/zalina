@@ -11,16 +11,10 @@ import { SignatureSpotlight } from "./SignatureSpotlight";
 import { WeddingVisualStory } from "./WeddingVisualStory";
 import { WeddingUpgrades } from "./WeddingUpgrades";
 import { WeddingFinalCTA } from "./WeddingFinalCTA";
+import { WeddingBookingModal } from "./WeddingBookingModal";
 
 interface WeddingsPageClientProps {
   packages: WeddingPackage[];
-}
-
-function scrollToComparison() {
-  document.getElementById("comparison")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
 }
 
 export function WeddingsPageClient({ packages }: WeddingsPageClientProps) {
@@ -28,6 +22,7 @@ export function WeddingsPageClient({ packages }: WeddingsPageClientProps) {
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
     null
   );
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   return (
     <div lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
@@ -46,9 +41,7 @@ export function WeddingsPageClient({ packages }: WeddingsPageClientProps) {
           selectedId={selectedPackageId}
           onSelect={(pkg) => {
             setSelectedPackageId(pkg.id);
-            requestAnimationFrame(() => {
-              scrollToComparison();
-            });
+            setBookingOpen(true);
           }}
         />
       </div>
@@ -61,6 +54,13 @@ export function WeddingsPageClient({ packages }: WeddingsPageClientProps) {
       <WeddingVisualStory />
       <WeddingUpgrades />
       <WeddingFinalCTA />
+
+      <WeddingBookingModal
+        open={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        packages={packages}
+        selectedPackageId={selectedPackageId}
+      />
     </div>
   );
 }

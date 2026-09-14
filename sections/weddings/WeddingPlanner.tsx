@@ -30,6 +30,9 @@ import { WeddingDatePicker } from "./WeddingDatePicker";
 interface WeddingPlannerProps {
   packages: WeddingPackage[];
   selectedPackageId: number | null;
+  /** `embedded` = form only, for use inside the booking popup. */
+  variant?: "section" | "embedded";
+  onChangeExperience?: () => void;
 }
 
 function moneyLabel(value: string, currency: string): string {
@@ -58,9 +61,12 @@ function scrollToPackages() {
 export function WeddingPlanner({
   packages,
   selectedPackageId,
+  variant = "section",
+  onChangeExperience,
 }: WeddingPlannerProps) {
   const locale = useBookingLocale();
   const prefersReduced = useReducedMotion();
+  const embedded = variant === "embedded";
   const selected = useMemo(
     () => packages.find((p) => p.id === selectedPackageId) ?? null,
     [packages, selectedPackageId]
@@ -264,40 +270,46 @@ export function WeddingPlanner({
 
   return (
     <section
-      id="plan"
-      className="scroll-mt-24"
-      aria-labelledby="wedding-plan-title"
-      style={{
-        paddingTop: "28px",
-        paddingBottom: "96px",
-      }}
+      id={embedded ? undefined : "plan"}
+      className={embedded ? undefined : "scroll-mt-24"}
+      aria-labelledby={embedded ? undefined : "wedding-plan-title"}
+      style={
+        embedded
+          ? undefined
+          : {
+              paddingTop: "28px",
+              paddingBottom: "96px",
+            }
+      }
     >
-      <div className="zones-container">
-        <motion.div
-          className="max-w-2xl mb-8"
-          initial={!prefersReduced ? { opacity: 0, y: 18 } : undefined}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.55 }}
-        >
-          <p
-            className="text-[11px] tracking-[0.28em] uppercase mb-4"
-            style={{ color: "var(--zones-gold)" }}
+      <div className={embedded ? undefined : "zones-container"}>
+        {!embedded ? (
+          <motion.div
+            className="max-w-2xl mb-8"
+            initial={!prefersReduced ? { opacity: 0, y: 18 } : undefined}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.55 }}
           >
-            {pickLocale(locale, WEDDING_COPY.planEyebrow)}
-          </p>
-          <h2
-            id="wedding-plan-title"
-            className="zones-section-title mb-4"
-            style={{
-              color: "#F8F2E7",
-              fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
-              lineHeight: 1.15,
-            }}
-          >
-            {pickLocale(locale, WEDDING_COPY.planHeadline)}
-          </h2>
-        </motion.div>
+            <p
+              className="text-[11px] tracking-[0.28em] uppercase mb-4"
+              style={{ color: "var(--zones-gold)" }}
+            >
+              {pickLocale(locale, WEDDING_COPY.planEyebrow)}
+            </p>
+            <h2
+              id="wedding-plan-title"
+              className="zones-section-title mb-4"
+              style={{
+                color: "#F8F2E7",
+                fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
+                lineHeight: 1.15,
+              }}
+            >
+              {pickLocale(locale, WEDDING_COPY.planHeadline)}
+            </h2>
+          </motion.div>
+        ) : null}
 
         {packages.length === 0 ? (
           <p role="status" style={{ color: "rgba(248,242,231,0.65)" }}>
@@ -306,6 +318,7 @@ export function WeddingPlanner({
         ) : (
           <AnimatePresence mode="wait" initial={false}>
             {!selected ? (
+              embedded ? null : (
               <motion.div
                 key="invite"
                 initial={
@@ -349,11 +362,16 @@ export function WeddingPlanner({
                   </p>
                 </div>
               </motion.div>
+              )
             ) : (
               <motion.form
                 key="planner"
                 onSubmit={onSecure}
-                className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.85fr)] lg:gap-8 items-start"
+                className={`grid gap-6 items-start ${
+                  embedded
+                    ? "grid-cols-1"
+                    : "lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.85fr)] lg:gap-8"
+                }`}
                 initial={
                   !prefersReduced ? { opacity: 0, y: 16 } : { opacity: 1 }
                 }
@@ -416,7 +434,10 @@ export function WeddingPlanner({
                     </div>
                     <button
                       type="button"
-                      onClick={scrollToPackages}
+                      onClick={() => {
+                        if (onChangeExperience) onChangeExperience();
+                        else scrollToPackages();
+                      }}
                       className="self-start sm:self-auto text-[12px] tracking-[0.14em] uppercase px-0 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,175,55,0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                       style={{
                         color: "rgba(212,175,55,0.95)",
@@ -616,7 +637,7 @@ export function WeddingPlanner({
                 </div>
 
                 <aside
-                  className="p-6 sm:p-7 lg:sticky lg:top-28"
+                  className={`p-6 sm:p-7 ${embedded ? "" : "lg:sticky lg:top-28"}`}
                   style={{
                     border: "1px solid rgba(212,175,55,0.28)",
                     borderRadius: "2px",
