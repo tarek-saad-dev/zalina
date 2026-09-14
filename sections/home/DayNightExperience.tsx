@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 const DAY_IMAGES = [
@@ -56,6 +57,8 @@ function ExperienceBackground({
 }
 
 export function DayNightExperience() {
+  const t = useTranslations("home.dayNight");
+
   return (
     <section
       className="relative overflow-hidden"
@@ -73,7 +76,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <ExperienceBackground
             images={DAY_IMAGES}
-            alt="Day Experience at Zalina"
+            alt={t("day.imageAlt")}
           />
 
           {/* Warm Day Overlay */}
@@ -122,7 +125,7 @@ export function DayNightExperience() {
                 className="lux-heading-lg mb-3"
                 style={{ fontSize: "clamp(24px, 3vw, 36px)" }}
               >
-                Zalina Luxor Day Experience
+                {t("day.title")}
               </motion.h3>
 
               {/* Description */}
@@ -134,9 +137,7 @@ export function DayNightExperience() {
                 className="lux-body mb-5"
                 style={{ fontSize: "0.9rem" }}
               >
-                A Luxor day centered on Egyptian lunch, live charcoal cooking,
-                village exploration and the easy rhythm of the afternoon —
-                roughly three to four hours of hospitality and atmosphere.
+                {t("day.body")}
               </motion.p>
 
               {/* CTA */}
@@ -147,7 +148,7 @@ export function DayNightExperience() {
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
                 <Link href="/experiences?category=Day" className="lux-btn-secondary">
-                  Explore Day
+                  {t("day.cta")}
                 </Link>
               </motion.div>
             </div>
@@ -173,7 +174,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <ExperienceBackground
             images={NIGHT_IMAGES}
-            alt="Night Experience at Zalina"
+            alt={t("night.imageAlt")}
           />
 
           {/* Cool Night Overlay */}
@@ -222,7 +223,7 @@ export function DayNightExperience() {
                 className="lux-heading-lg mb-3"
                 style={{ fontSize: "clamp(24px, 3vw, 36px)" }}
               >
-                Zalina Arabian Village Night Experience
+                {t("night.title")}
               </motion.h3>
 
               {/* Description */}
@@ -234,9 +235,7 @@ export function DayNightExperience() {
                 className="lux-body mb-5"
                 style={{ fontSize: "0.9rem" }}
               >
-                As evening settles over Luxor, the village comes alive —
-                Egyptian dinner, live cooking, Nubian rhythms, Sufi and Tanoura,
-                music and illuminated courtyards in one cultural night.
+                {t("night.body")}
               </motion.p>
 
               {/* CTA */}
@@ -247,7 +246,7 @@ export function DayNightExperience() {
                 transition={{ duration: 0.6, delay: 0.7 }}
               >
                 <Link href="/experiences?category=Night" className="lux-btn-primary">
-                  Explore Night
+                  {t("night.cta")}
                 </Link>
               </motion.div>
             </div>

@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { getValidZoneId } from "./zones.data";
 import type { Zone } from "./zones.data";
@@ -12,6 +13,7 @@ interface MainZonesProps {
 }
 
 export function MainZones({ zones }: MainZonesProps) {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
   const [activeZone, setActiveZone] = useState<string>(zones[0]?.id ?? "");
 
@@ -27,7 +29,7 @@ export function MainZones({ zones }: MainZonesProps) {
         id="main-zones"
       >
         <div className="zones-container relative z-10 text-center py-20">
-          <p className="zones-body">Zones are temporarily unavailable. Please try again shortly.</p>
+          <p className="zones-body">{t("main.empty")}</p>
         </div>
       </section>
     );
@@ -52,14 +54,14 @@ export function MainZones({ zones }: MainZonesProps) {
             className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
           >
-            SIGNATURE SPACES
+            {t("main.eyebrow")}
           </span>
           <h2
             id="main-zones-title"
             className="zones-section-title"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
-            Main Zones
+            {t("main.title")}
           </h2>
         </motion.div>
 
@@ -161,7 +163,7 @@ export function MainZones({ zones }: MainZonesProps) {
                             className="text-[11px] uppercase tracking-wider font-medium"
                             style={{ color: "var(--zones-gold)" }}
                           >
-                            Best for:
+                            {t("main.bestFor")}
                           </span>
                           <span
                             className="text-xs"
@@ -175,7 +177,7 @@ export function MainZones({ zones }: MainZonesProps) {
                             className="text-[11px] uppercase tracking-wider font-medium"
                             style={{ color: "var(--zones-gold)" }}
                           >
-                            Mood:
+                            {t("main.mood")}
                           </span>
                           <span
                             className="text-xs"
@@ -192,7 +194,9 @@ export function MainZones({ zones }: MainZonesProps) {
                         className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)]"
                         style={{ height: "36px", paddingInline: "20px" }}
                       >
-                        {zone.isBookableOnline ? "Book Now" : "Inquire Now"}
+                        {zone.isBookableOnline
+                          ? t("main.bookNow")
+                          : t("main.inquireNow")}
                       </Link>
                     </div>
                   </div>

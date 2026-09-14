@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Sun, Moon, Star, Briefcase, Heart } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { OCCASIONS } from "./zones.data";
@@ -15,6 +16,7 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export function ZoneDifferentiation() {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
 
   return (
@@ -24,7 +26,6 @@ export function ZoneDifferentiation() {
       aria-labelledby="zone-differentiation-title"
     >
       <div className="zones-container relative z-10">
-        {/* Section Header */}
         <motion.div
           className="text-center mb-10"
           initial={!prefersReduced ? { opacity: 0, y: 30 } : undefined}
@@ -36,18 +37,17 @@ export function ZoneDifferentiation() {
             className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
           >
-            BY OCCASION
+            {t("occasions.eyebrow")}
           </span>
           <h2
             id="zone-differentiation-title"
             className="zones-section-title"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
-            Zone Differentiation
+            {t("occasions.title")}
           </h2>
         </motion.div>
 
-        {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5">
           {OCCASIONS.map((occasion, index) => {
             const Icon = iconMap[occasion.id] || Star;
@@ -75,7 +75,6 @@ export function ZoneDifferentiation() {
                     : undefined
                 }
               >
-                {/* Soft inner glow on hover */}
                 <div
                   className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   aria-hidden="true"
@@ -85,7 +84,6 @@ export function ZoneDifferentiation() {
                   }}
                 />
 
-                {/* Icon circle */}
                 <div
                   className="w-14 h-14 rounded-full flex items-center justify-center mb-5 relative z-10 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(200,155,82,0.15)]"
                   style={{
@@ -100,7 +98,6 @@ export function ZoneDifferentiation() {
                   />
                 </div>
 
-                {/* Title */}
                 <h3
                   className="mb-2 relative z-10"
                   style={{
@@ -110,15 +107,14 @@ export function ZoneDifferentiation() {
                     color: "var(--zones-text-light)",
                   }}
                 >
-                  {occasion.title}
+                  {t(`occasions.items.${occasion.messageKey}.title`)}
                 </h3>
 
-                {/* Description */}
                 <p
                   className="text-[13px] leading-relaxed relative z-10"
                   style={{ color: "var(--zones-text-secondary)" }}
                 >
-                  {occasion.description}
+                  {t(`occasions.items.${occasion.messageKey}.description`)}
                 </p>
               </motion.div>
             );

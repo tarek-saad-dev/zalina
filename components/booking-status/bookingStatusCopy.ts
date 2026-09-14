@@ -249,6 +249,30 @@ export const statusCopy = {
     en: "Preparing secure payment…",
     ar: "جاري تجهيز الدفع الآمن…",
   },
+  paymentConfirmMoment: {
+    en: "Payment confirmation can take a moment.",
+    ar: "قد يستغرق تأكيد الدفع لحظات.",
+  },
+  backToBookNow: {
+    en: "Back to Book Now",
+    ar: "العودة للحجز",
+  },
+  weddingNextStep: {
+    en: "Next step",
+    ar: "الخطوة التالية",
+  },
+  weddingConciergeTitle: {
+    en: "Your Date Is Secured. Now Make It Yours.",
+    ar: "تم تأمين تاريخكم. الآن اجعلوه خاصاً بكم.",
+  },
+  weddingConciergeBody: {
+    en: "Our Wedding Concierge can now help personalize your celebration with bespoke florals, photography, film, entertainment, celebration effects and premium hospitality upgrades.",
+    ar: "يمكن لمنسق حفلات الزفاف في زالينا تخصيص احتفالكم بالزهور الاستثنائية، والتصوير، والفيديو، والترفيه، وتأثيرات الاحتفال، وترقيات الضيافة الفاخرة.",
+  },
+  weddingConciergeCta: {
+    en: "Speak to Our Wedding Concierge",
+    ar: "تحدث إلى منسق حفلات الزفاف",
+  },
 };
 
 export function t(locale: ApiLocale, key: keyof typeof statusCopy): string {

@@ -8,7 +8,8 @@ import {
   type TouchEvent as ReactTouchEvent,
 } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ChevronDown,
@@ -36,8 +37,8 @@ import {
 } from "@/components/media/heroImage";
 import {
   GALLERY_FILTER_OPTIONS,
-  GALLERY_I18N_KEYS,
-  GALLERY_REASONS,
+  GALLERY_FILTER_MESSAGE_KEYS,
+  GALLERY_REASON_KEYS,
 } from "./gallery.data";
 
 const sectionTitleStyle = { fontSize: "clamp(1.75rem, 4vw, 2.5rem)" };
@@ -49,11 +50,7 @@ const gallerySpans = {
   tall: "md:col-span-1 md:row-span-3",
 } as const;
 
-const CATEGORY_LABEL: Record<Exclude<GalleryFilterId, "all">, string> = {
-  experiences: "Experiences",
-  zones: "Zones",
-  bubbles: "Bubble Stays",
-};
+const REASON_ICONS = [Sparkles, Heart, HandHeart] as const;
 
 interface GalleryPageContentProps {
   items: GalleryItem[];
@@ -64,6 +61,7 @@ export function GalleryPageContent({
   items,
   availableFilters,
 }: GalleryPageContentProps) {
+  const t = useTranslations("gallery");
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
   const initialFilter: GalleryFilterId =
@@ -194,12 +192,14 @@ export function GalleryPageContent({
     navigateLightbox(delta < 0 ? 1 : -1);
   };
 
+  const categoryLabel = (id: Exclude<GalleryFilterId, "all">) =>
+    t(GALLERY_FILTER_MESSAGE_KEYS[id]);
+
   return (
     <main className="zones-page min-h-screen [overflow-x:clip]">
-      {/* Hero — GALLERY HERO PAGE MEDIA CONTRACT GAP: no CMS page owner; neutral only */}
       <section
         className="relative flex min-h-screen items-center justify-center overflow-hidden"
-        aria-label="Gallery hero"
+        aria-label={t("hero.ariaLabel")}
       >
         <motion.div
           className="absolute inset-0"
@@ -209,7 +209,7 @@ export function GalleryPageContent({
         >
           <Image
             src={NEUTRAL_MEDIA_FALLBACK}
-            alt="Zalina Arabian Village in Luxor"
+            alt={t("hero.imageAlt")}
             fill
             priority
             fetchPriority="high"
@@ -275,7 +275,7 @@ export function GalleryPageContent({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.25 }}
           >
-            THE VISUAL STORY
+            {t("hero.eyebrow")}
           </motion.span>
           <motion.div
             className="mb-5 h-px w-14"
@@ -299,7 +299,7 @@ export function GalleryPageContent({
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.85, delay: 0.45 }}
           >
-            Moments That Define Zalina
+            {t("hero.title")}
           </motion.h1>
           <motion.p
             className="zones-body mb-8 max-w-[590px]"
@@ -308,8 +308,7 @@ export function GalleryPageContent({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
           >
-            A living gallery of experiences, village spaces and bubble stays in
-            Luxor — curated from Zalina and refreshed as new moments are added.
+            {t("hero.subtitle")}
           </motion.p>
           <motion.div
             className="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4"
@@ -321,7 +320,7 @@ export function GalleryPageContent({
               href="#gallery-wall"
               className="zones-btn-gold zones-radius-pill flex h-11 w-full items-center justify-center px-7 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)] sm:w-auto"
             >
-              Explore the Gallery
+              {t("hero.ctaPrimary")}
             </a>
             <Link
               href="/book-now"
@@ -333,7 +332,7 @@ export function GalleryPageContent({
                 color: "var(--zones-text-light)",
               }}
             >
-              Book Now
+              {t("hero.ctaSecondary")}
             </Link>
           </motion.div>
         </div>
@@ -348,7 +347,7 @@ export function GalleryPageContent({
             className="text-[10px] tracking-[0.2em] uppercase"
             style={{ color: "var(--zones-text-muted)" }}
           >
-            Scroll
+            {t("hero.scroll")}
           </span>
           <ChevronDown
             size={18}
@@ -370,21 +369,20 @@ export function GalleryPageContent({
               className="mb-4 block text-[11px] font-medium tracking-[0.28em] uppercase"
               style={{ color: "var(--zones-gold)" }}
             >
-              THE MEMORY WALL
+              {t("wall.eyebrow")}
             </span>
             <h2
               id="gallery-wall-title"
               className="zones-section-title mb-4"
               style={sectionTitleStyle}
             >
-              Scenes Made to Be Remembered
+              {t("wall.title")}
             </h2>
             <p
               className="zones-body mx-auto max-w-[540px]"
               style={{ fontSize: "15px", lineHeight: "1.75" }}
             >
-              Browse real moments from experiences, zones, and bubble stays —
-              updated whenever the CMS gallery changes.
+              {t("wall.subtitle")}
             </p>
           </div>
 
@@ -392,7 +390,7 @@ export function GalleryPageContent({
             <div
               className="-mx-5 mb-8 flex gap-2 overflow-x-auto px-5 pb-2 sm:mx-0 sm:justify-center sm:px-0 scrollbar-hide"
               role="tablist"
-              aria-label="Gallery filters"
+              aria-label={t("filters.ariaLabel")}
             >
               {filters.map((category) => {
                 const active = selectedCategory === category.id;
@@ -413,7 +411,7 @@ export function GalleryPageContent({
                     aria-pressed={active}
                     data-i18n-key={category.labelKey}
                   >
-                    {category.label}
+                    {t(category.labelKey)}
                     {active && (
                       <span
                         className="absolute bottom-0 left-4 right-4 h-px"
@@ -436,8 +434,9 @@ export function GalleryPageContent({
               aria-live="polite"
               style={{ color: "var(--zones-text-muted)" }}
             >
-              {visibleItems.length}{" "}
-              {visibleItems.length === 1 ? "moment" : "moments"}
+              {visibleItems.length === 1
+                ? t("wall.countOne", { count: visibleItems.length })
+                : t("wall.countMany", { count: visibleItems.length })}
             </p>
           )}
 
@@ -507,7 +506,7 @@ export function GalleryPageContent({
                           className="mb-1 block text-[10px] font-medium tracking-[0.16em] uppercase"
                           style={{ color: "var(--zones-gold)" }}
                         >
-                          {CATEGORY_LABEL[item.category]}
+                          {categoryLabel(item.category)}
                         </span>
                         <span
                           className="block text-sm font-medium"
@@ -527,7 +526,7 @@ export function GalleryPageContent({
                   background: "rgba(9,12,20,0.7)",
                   border: "1px solid var(--zones-border)",
                 }}
-                data-i18n-key={GALLERY_I18N_KEYS.empty}
+                data-i18n-key="empty.title"
               >
                 <h3
                   className="mb-2"
@@ -536,14 +535,13 @@ export function GalleryPageContent({
                     color: "var(--zones-text-light)",
                   }}
                 >
-                  No moments in the gallery yet
+                  {t("empty.title")}
                 </h3>
                 <p
                   className="mb-5 text-sm"
                   style={{ color: "var(--zones-text-secondary)" }}
                 >
-                  When media is added in the CMS, it will appear here
-                  automatically.
+                  {t("empty.body")}
                 </p>
                 {availableFilters.includes("all") && (
                   <button
@@ -551,7 +549,7 @@ export function GalleryPageContent({
                     onClick={() => chooseCategory("all")}
                     className="zones-btn-gold zones-radius-pill h-9 px-5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)]"
                   >
-                    View All Moments
+                    {t("empty.cta")}
                   </button>
                 )}
               </div>
@@ -571,22 +569,22 @@ export function GalleryPageContent({
               className="mb-4 block text-[11px] font-medium tracking-[0.28em] uppercase"
               style={{ color: "var(--zones-gold)" }}
             >
-              WHY IT MATTERS
+              {t("reasons.eyebrow")}
             </span>
             <h2
               id="gallery-reasons-title"
               className="zones-section-title"
               style={sectionTitleStyle}
             >
-              Gallery Experience
+              {t("reasons.title")}
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {GALLERY_REASONS.map((reason, index) => {
-              const Icon = [Sparkles, Heart, HandHeart][index];
+            {GALLERY_REASON_KEYS.map((key, index) => {
+              const Icon = REASON_ICONS[index];
               return (
                 <div
-                  key={reason.title}
+                  key={key}
                   className="group rounded-xl p-6 text-center transition-transform duration-300 hover:-translate-y-1"
                   style={{
                     background: "rgba(9,12,20,0.7)",
@@ -607,13 +605,13 @@ export function GalleryPageContent({
                       color: "var(--zones-text-light)",
                     }}
                   >
-                    {reason.title}
+                    {t(`reasons.items.${key}.title`)}
                   </h3>
                   <p
                     className="text-[13px] leading-relaxed"
                     style={{ color: "var(--zones-text-secondary)" }}
                   >
-                    {reason.description}
+                    {t(`reasons.items.${key}.description`)}
                   </p>
                 </div>
               );
@@ -673,20 +671,20 @@ export function GalleryPageContent({
                   color: "var(--zones-text-light)",
                 }}
               >
-                See the Story. Live the Experience.
+                {t("cta.title")}
               </h2>
               <p
                 className="mb-7"
                 style={{ color: "var(--zones-text-secondary)", fontSize: "15px" }}
               >
-                Explore the moments, then step into the world behind them.
+                {t("cta.body")}
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
                   href="/book-now"
                   className="zones-btn-gold zones-radius-pill flex h-11 w-full items-center justify-center px-7 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] sm:w-auto"
                 >
-                  Book Now
+                  {t("cta.primary")}
                 </Link>
                 <Link
                   href="/experiences"
@@ -696,7 +694,7 @@ export function GalleryPageContent({
                     color: "var(--zones-text-light)",
                   }}
                 >
-                  Explore Experiences
+                  {t("cta.secondary")}
                 </Link>
               </div>
             </div>
@@ -710,7 +708,9 @@ export function GalleryPageContent({
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 md:p-8"
             role="dialog"
             aria-modal="true"
-            aria-label={`${galleryItemTitle(selectedLightboxItem)} image preview`}
+            aria-label={t("a11y.lightboxLabel", {
+              title: galleryItemTitle(selectedLightboxItem),
+            })}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -725,8 +725,8 @@ export function GalleryPageContent({
               onClick={closeLightbox}
               ref={lightboxCloseButtonRef}
               className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] md:right-7 md:top-7"
-              aria-label="Close image preview"
-              data-i18n-key={GALLERY_I18N_KEYS.close}
+              aria-label={t("a11y.close")}
+              data-i18n-key="a11y.close"
               style={{
                 background: "rgba(5,7,12,0.86)",
                 border: "1px solid rgba(200,155,82,0.3)",
@@ -739,8 +739,8 @@ export function GalleryPageContent({
               type="button"
               onClick={() => navigateLightbox(-1)}
               className="absolute left-3 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] sm:flex"
-              aria-label="Previous image"
-              data-i18n-key={GALLERY_I18N_KEYS.previous}
+              aria-label={t("a11y.previous")}
+              data-i18n-key="a11y.previous"
               style={{
                 background: "rgba(5,7,12,0.86)",
                 border: "1px solid rgba(200,155,82,0.3)",
@@ -769,7 +769,7 @@ export function GalleryPageContent({
                     className="mb-1 block text-[10px] font-medium tracking-[0.18em] uppercase"
                     style={{ color: "var(--zones-gold)" }}
                   >
-                    {CATEGORY_LABEL[selectedLightboxItem.category]}
+                    {categoryLabel(selectedLightboxItem.category)}
                     {" · "}
                     {selectedLightboxItem.sourceName}
                   </span>
@@ -795,7 +795,7 @@ export function GalleryPageContent({
                     type="button"
                     onClick={() => navigateLightbox(-1)}
                     className="flex h-10 w-10 items-center justify-center rounded-full"
-                    aria-label="Previous image"
+                    aria-label={t("a11y.previous")}
                     style={{
                       border: "1px solid rgba(200,155,82,0.3)",
                       color: "var(--zones-text-light)",
@@ -807,7 +807,7 @@ export function GalleryPageContent({
                     type="button"
                     onClick={() => navigateLightbox(1)}
                     className="flex h-10 w-10 items-center justify-center rounded-full"
-                    aria-label="Next image"
+                    aria-label={t("a11y.next")}
                     style={{
                       border: "1px solid rgba(200,155,82,0.3)",
                       color: "var(--zones-text-light)",
@@ -822,8 +822,8 @@ export function GalleryPageContent({
               type="button"
               onClick={() => navigateLightbox(1)}
               className="absolute right-3 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] sm:flex"
-              aria-label="Next image"
-              data-i18n-key={GALLERY_I18N_KEYS.next}
+              aria-label={t("a11y.next")}
+              data-i18n-key="a11y.next"
               style={{
                 background: "rgba(5,7,12,0.86)",
                 border: "1px solid rgba(200,155,82,0.3)",

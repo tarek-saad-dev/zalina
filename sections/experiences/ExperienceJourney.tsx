@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { useExpMotion } from "./useExpMotion";
 
-const STEPS = [
-  { number: 1, title: "Choose", description: "Browse & select" },
-  { number: 2, title: "Customize", description: "Personalize details" },
-  { number: 3, title: "Add-ons", description: "Enhance experience" },
-  { number: 4, title: "Confirm", description: "Secure booking" },
-  { number: 5, title: "Enjoy", description: "Live the moment" },
+const STEP_KEYS = [
+  "choose",
+  "customize",
+  "addons",
+  "confirm",
+  "enjoy",
 ] as const;
 
 function clampStep(step: number): number {
@@ -18,6 +19,7 @@ function clampStep(step: number): number {
 }
 
 export function ExperienceJourney() {
+  const t = useTranslations("experiences");
   const [activeStep, setActiveStep] = useState(1);
   const [isDesktop, setIsDesktop] = useState(false);
   const { prefersReducedMotion, fadeUp, transition } = useExpMotion();
@@ -36,6 +38,13 @@ export function ExperienceJourney() {
     setActiveStep(clampStep(step));
   };
 
+  const steps = STEP_KEYS.map((key, index) => ({
+    number: index + 1,
+    key,
+    title: t(`journey.steps.${key}.title`),
+    description: t(`journey.steps.${key}.description`),
+  }));
+
   return (
     <section
       className="exp-section overflow-hidden"
@@ -50,9 +59,9 @@ export function ExperienceJourney() {
           viewport={{ once: true }}
           transition={transition(0)}
         >
-          <p className="exp-eyebrow mb-3">How It Works</p>
+          <p className="exp-eyebrow mb-3">{t("journey.eyebrow")}</p>
           <h2 id="journey-heading" className="exp-section-heading">
-            Experience Journey
+            {t("journey.title")}
           </h2>
         </motion.div>
 
@@ -81,15 +90,18 @@ export function ExperienceJourney() {
             />
 
             <ol className="relative grid grid-cols-5 gap-4">
-              {STEPS.map((step) => {
+              {steps.map((step) => {
                 const isActive = safeActive === step.number;
                 return (
-                  <li key={step.number}>
+                  <li key={step.key}>
                     <button
                       type="button"
                       onClick={() => handleStep(step.number)}
                       aria-current={isActive ? "step" : undefined}
-                      aria-label={`Step ${step.number}: ${step.title}`}
+                      aria-label={t("journey.stepAria", {
+                        number: step.number,
+                        title: step.title,
+                      })}
                       className="group flex w-full flex-col items-center text-center transition-transform duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--exp-gold)]"
                       style={{
                         transform: isActive ? "scale(1.04)" : "scale(1)",
@@ -151,15 +163,18 @@ export function ExperienceJourney() {
               aria-hidden="true"
             />
 
-            {STEPS.map((step) => {
+            {steps.map((step) => {
               const isActive = safeActive === step.number;
               return (
-                <li key={step.number}>
+                <li key={step.key}>
                   <button
                     type="button"
                     onClick={() => handleStep(step.number)}
                     aria-current={isActive ? "step" : undefined}
-                    aria-label={`Step ${step.number}: ${step.title}`}
+                    aria-label={t("journey.stepAria", {
+                      number: step.number,
+                      title: step.title,
+                    })}
                     className="relative flex w-full items-start gap-5 py-4 text-left transition-transform duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--exp-gold)]"
                     style={{
                       transform: isActive ? "translateX(4px)" : "none",

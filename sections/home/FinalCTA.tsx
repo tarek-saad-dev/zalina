@@ -1,10 +1,13 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 
 export function FinalCTA() {
+  const t = useTranslations("home.finalCta");
+
   return (
     <section
       className="lux-section relative overflow-hidden"
@@ -68,7 +71,7 @@ export function FinalCTA() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lux-eyebrow mb-8"
           >
-            Begin Your Journey
+            {t("eyebrow")}
           </motion.p>
 
           {/* Main Heading */}
@@ -79,9 +82,9 @@ export function FinalCTA() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="lux-display mb-8"
           >
-            Your Luxor
+            {t("headline")}
             <br />
-            <span className="lux-shimmer">Experience Awaits</span>
+            <span className="lux-shimmer">{t("headlineAccent")}</span>
           </motion.h2>
 
           {/* Divider */}
@@ -102,7 +105,7 @@ export function FinalCTA() {
             className="lux-heading-md mb-12"
             style={{ color: "var(--lux-muted)" }}
           >
-            Dine. Explore. Celebrate.
+            {t("tagline")}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -114,10 +117,10 @@ export function FinalCTA() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link href="/book-now" className="lux-btn-primary">
-              Reserve Your Experience
+              {t("ctaPrimary")}
             </Link>
             <Link href="/experiences" className="lux-btn-secondary">
-              Explore Experiences
+              {t("ctaSecondary")}
             </Link>
           </motion.div>
 

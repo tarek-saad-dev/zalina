@@ -2,23 +2,21 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { Star, Sparkles, Heart, Crown } from "lucide-react";
 import type { Zone } from "./zones.data";
+import { FEATURED_FEATURE_KEYS } from "./zones.data";
 
-const features = [
-  { icon: Star, text: "Signature village atmosphere" },
-  { icon: Sparkles, text: "Premium hospitality services" },
-  { icon: Heart, text: "Dedicated guest coordination" },
-  { icon: Crown, text: "Cinematic day-to-night setting" },
-];
+const featureIcons = [Star, Sparkles, Heart, Crown] as const;
 
 interface FeaturedZoneProps {
   zone?: Zone | null;
 }
 
 export function FeaturedZone({ zone }: FeaturedZoneProps) {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
 
   if (!zone) return null;
@@ -50,14 +48,14 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
             className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
           >
-            PREMIUM VENUE
+            {t("featured.eyebrow")}
           </span>
           <h2
             id="featured-zone-title"
             className="zones-section-title"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
-            Featured Zone Spotlight
+            {t("featured.title")}
           </h2>
         </motion.div>
 
@@ -104,10 +102,10 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
               </p>
 
               <div className="space-y-3 mb-8">
-                {features.map((feature, index) => {
-                  const Icon = feature.icon;
+                {FEATURED_FEATURE_KEYS.map((key, index) => {
+                  const Icon = featureIcons[index];
                   return (
-                    <div key={index} className="flex items-center gap-3">
+                    <div key={key} className="flex items-center gap-3">
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{
@@ -121,7 +119,9 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
                           strokeWidth={1.5}
                         />
                       </div>
-                      <span className="zones-body text-sm">{feature.text}</span>
+                      <span className="zones-body text-sm">
+                        {t(`featured.features.${key}`)}
+                      </span>
                     </div>
                   );
                 })}
@@ -132,7 +132,9 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
                 className="zones-btn-gold zones-radius-pill inline-flex items-center justify-center text-sm font-medium w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{ height: "42px", paddingInline: "26px" }}
               >
-                {zone.isBookableOnline ? "Book This Zone" : "Inquire About This Zone"}
+                {zone.isBookableOnline
+                  ? t("featured.bookThisZone")
+                  : t("featured.inquireAboutThisZone")}
               </Link>
             </div>
           </div>
@@ -140,7 +142,7 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
           <div className="relative w-full lg:w-[55%] h-[300px] sm:h-[360px] lg:h-auto lg:min-h-[520px] overflow-hidden group">
             <Image
               src={zone.image}
-              alt={`${zone.title} at Zalina Arabian Village`}
+              alt={t("featured.imageAlt", { title: zone.title })}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 55vw"

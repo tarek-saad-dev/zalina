@@ -2,18 +2,15 @@
 
 import React from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
-
-const chips = [
-  "Lantern-lit pathways",
-  "Private celebration spaces",
-  "Heritage architecture",
-  "Night hospitality",
-];
+import { OVERVIEW_CHIP_KEYS } from "./zones.data";
 
 export function DestinationOverview() {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
+  const chips = OVERVIEW_CHIP_KEYS.map((key) => t(`overview.chips.${key}`));
 
   return (
     <section
@@ -21,14 +18,12 @@ export function DestinationOverview() {
       style={{ background: "transparent" }}
       aria-labelledby="destination-overview-title"
     >
-      {/* Ornamental pattern background */}
       <div
         className="absolute inset-0 pointer-events-none exp-pattern opacity-20"
         aria-hidden="true"
       />
 
       <div className="zones-container relative z-10">
-        {/* Section Header */}
         <motion.div
           className="text-center mb-10"
           initial={!prefersReduced ? { opacity: 0, y: 30 } : undefined}
@@ -40,26 +35,23 @@ export function DestinationOverview() {
             className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
           >
-            THE DESTINATION
+            {t("overview.eyebrow")}
           </span>
           <h2
             id="destination-overview-title"
             className="zones-section-title mb-5"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
-            Destination Overview
+            {t("overview.title")}
           </h2>
           <p
             className="zones-body mx-auto"
             style={{ maxWidth: "620px", fontSize: "15px", lineHeight: "1.8" }}
           >
-            Zalina is designed as a collection of atmospheric spaces in Luxor —
-            each zone shaped for a different kind of gathering, from daytime
-            exploration to cultural evenings and celebrations.
+            {t("overview.body")}
           </p>
         </motion.div>
 
-        {/* Large cinematic image + floating chips */}
         <motion.div
           className="relative max-w-[960px] mx-auto"
           initial={!prefersReduced ? { opacity: 0, y: 40 } : undefined}
@@ -67,7 +59,6 @@ export function DestinationOverview() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          {/* Soft amber backlight */}
           <div
             className="absolute -inset-6 rounded-[28px] pointer-events-none"
             aria-hidden="true"
@@ -77,7 +68,6 @@ export function DestinationOverview() {
             }}
           />
 
-          {/* Image container with gold frame */}
           <div
             className="relative aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden"
             style={{
@@ -88,12 +78,11 @@ export function DestinationOverview() {
           >
             <Image
               src={NEUTRAL_MEDIA_FALLBACK}
-              alt="Panoramic view of Zalina Arabian Village in Luxor with heritage architecture and gardens"
+              alt={t("overview.imageAlt")}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 960px"
             />
-            {/* Cinematic overlay */}
             <div
               className="absolute inset-0 pointer-events-none"
               aria-hidden="true"
@@ -104,7 +93,6 @@ export function DestinationOverview() {
             />
           </div>
 
-          {/* Floating detail chips - desktop */}
           <div className="hidden md:block" aria-hidden="true">
             {chips.map((chip, i) => {
               const positions: React.CSSProperties[] = [
@@ -137,7 +125,6 @@ export function DestinationOverview() {
             })}
           </div>
 
-          {/* Mobile chips - displayed inline below image */}
           <div className="flex md:hidden flex-wrap justify-center gap-2 mt-5">
             {chips.map((chip) => (
               <span

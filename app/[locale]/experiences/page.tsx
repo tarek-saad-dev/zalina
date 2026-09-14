@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { LuxuryFooter } from "@/sections/home";
 import {
   Hero,
@@ -13,38 +13,33 @@ import {
 } from "@/sections/experiences";
 import { getExperiences, mapExperienceToCatalogItem } from "@/lib/api";
 import { HeroRevealGate } from "@/components/media/HeroRevealGate";
+import {
+  buildPageMetadata,
+  localeFromParams,
+} from "@/lib/i18n/metadata";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Experiences | Zalina Arabian Village Luxor",
-  description:
-    "Discover Luxor cultural experiences at Zalina Arabian Village — Egyptian dining, live cooking, entertainment and village exploration.",
-  keywords: [
-    "Zalina Luxor experiences",
-    "Luxor dinner experience",
-    "Luxor cultural experience",
-    "Egyptian hospitality Luxor",
-    "things to do in Luxor",
-  ],
-  openGraph: {
-    title: "Experiences | Zalina Arabian Village Luxor",
-    description:
-      "Egyptian cuisine, cultural evenings and village hospitality in the heart of Luxor.",
-    type: "website",
-    images: [{ url: "/assets/zalina-hero-bg.png", width: 1200, height: 630 }],
-  },
+type Props = {
+  params: { locale: string };
+  searchParams?: { category?: string };
 };
 
+export async function generateMetadata({ params }: Props) {
+  return buildPageMetadata(params.locale, "experiences", "/experiences");
+}
+
 export default async function ExperiencesPage({
+  params,
   searchParams,
-}: {
-  searchParams?: { category?: string };
-}) {
-  const apiExperiences = await getExperiences();
+}: Props) {
+  setRequestLocale(params.locale);
+  const locale = localeFromParams(params.locale);
+
+  const apiExperiences = await getExperiences(locale);
   const experiences = apiExperiences
     .filter((e) => e.is_active)
-    .map((e) => mapExperienceToCatalogItem(e));
+    .map((e) => mapExperienceToCatalogItem(e, locale));
 
   return (
     <HeroRevealGate>

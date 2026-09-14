@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { FEATURE_FLAGS } from "@/lib/featureFlags";
 import { getWeddings } from "@/lib/api";
 import { LuxuryFooter } from "@/sections/home";
@@ -6,33 +6,26 @@ import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
 import { WeddingsPageClient } from "@/sections/weddings/WeddingsPageClient";
 import { isWeddingPrimaryImageryReady } from "@/sections/weddings/content/weddingMedia";
 import { HeroRevealGate } from "@/components/media/HeroRevealGate";
+import { buildPageMetadata, localeFromParams } from "@/lib/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "Weddings | Zalina Arabian Village Luxor",
-  description:
-    "Celebrate a destination wedding at Zalina Arabian Village in Luxor — gardens, village atmosphere, Egyptian hospitality, dining and entertainment in one unforgettable night.",
-  keywords: [
-    "Zalina weddings",
-    "destination wedding Luxor",
-    "Luxor wedding venue",
-    "Egyptian wedding celebration",
-  ],
-  openGraph: {
-    title: "Weddings | Zalina Arabian Village Luxor",
-    description:
-      "Your wedding. One village in Luxor. One unforgettable night at Zalina.",
-    type: "website",
-  },
-};
+type Props = { params: { locale: string } };
 
-export default async function WeddingsPage() {
-  // Keep kill switch OFF until final QA + production imagery are ready.
+export async function generateMetadata({ params }: Props) {
+  return buildPageMetadata(params.locale, "weddings", "/weddings");
+}
+
+export default async function WeddingsPage({ params }: Props) {
+  const { locale: localeParam } = params;
+  setRequestLocale(localeParam);
+  const locale = localeFromParams(localeParam);
+  const t = await getTranslations({ locale: localeParam, namespace: "seo" });
+
   if (!FEATURE_FLAGS.WEDDINGS_ACTIVE) {
     return (
       <main className="zones-page min-h-screen overflow-x-hidden">
         <ComingSoonOverlay
-          title="Weddings at Zalina"
-          subtitle="A destination celebration experience in Luxor is on its way."
+          title={t("weddings.comingSoonTitle")}
+          subtitle={t("weddings.comingSoonSubtitle")}
           variant="full"
         />
         <LuxuryFooter />
@@ -44,8 +37,8 @@ export default async function WeddingsPage() {
     return (
       <main className="zones-page min-h-screen overflow-x-hidden">
         <ComingSoonOverlay
-          title="Weddings at Zalina"
-          subtitle="Final photography is being prepared for the Luxor wedding experience."
+          title={t("weddings.comingSoonTitle")}
+          subtitle={t("weddings.imageryPendingSubtitle")}
           variant="full"
         />
         <LuxuryFooter />
@@ -55,7 +48,7 @@ export default async function WeddingsPage() {
 
   let packages: Awaited<ReturnType<typeof getWeddings>> = [];
   try {
-    packages = await getWeddings();
+    packages = await getWeddings(locale);
   } catch {
     packages = [];
   }

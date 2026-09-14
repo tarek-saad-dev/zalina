@@ -1,29 +1,20 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Landmark, Heart, Sparkles, Star } from "lucide-react";
 
-const pillars = [
-  {
-    icon: Landmark,
-    title: "Authentic Egyptian Heritage",
-  },
-  {
-    icon: Heart,
-    title: "Refined Hospitality",
-  },
-  {
-    icon: Sparkles,
-    title: "Immersive Experiences",
-  },
-  {
-    icon: Star,
-    title: "Unforgettable Memories",
-  },
+const pillarKeys = [
+  { icon: Landmark, key: "heritage" as const },
+  { icon: Heart, key: "hospitality" as const },
+  { icon: Sparkles, key: "experiences" as const },
+  { icon: Star, key: "memories" as const },
 ];
 
 export function ZalinaPromise() {
+  const t = useTranslations("home.promise");
+
   return (
     <section
       className="relative overflow-hidden py-10"
@@ -40,12 +31,13 @@ export function ZalinaPromise() {
       <div className="lux-container relative z-10">
         {/* Slim Pillars Row */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-0">
-          {pillars.map((pillar, index) => {
+          {pillarKeys.map((pillar, index) => {
             const Icon = pillar.icon;
-            const isLast = index === pillars.length - 1;
+            const isLast = index === pillarKeys.length - 1;
+            const title = t(pillar.key);
 
             return (
-              <React.Fragment key={pillar.title}>
+              <React.Fragment key={pillar.key}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -76,7 +68,7 @@ export function ZalinaPromise() {
                       color: "var(--lux-text)",
                     }}
                   >
-                    {pillar.title}
+                    {title}
                   </span>
                 </motion.div>
 

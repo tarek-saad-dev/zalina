@@ -1,11 +1,13 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { BookingState } from "./types";
 import type { CheckoutState } from "./checkoutTypes";
 import { nightsBetween } from "./bookingValidation";
 import { formatMoneyAmount, parseMoney } from "./bookingMedia";
 import { useHoldCountdown } from "./useHoldCountdown";
+import { useBookingLocale } from "./useBookingLocale";
 
 interface MobileBookingBarProps {
   state: BookingState;
@@ -26,8 +28,11 @@ export function MobileBookingBar({
   checkout,
   onContinue,
   canProceed,
-  ctaLabel = "Continue",
+  ctaLabel,
 }: MobileBookingBarProps) {
+  const t = useTranslations("bookNow");
+  const locale = useBookingLocale();
+  const resolvedCta = ctaLabel ?? t("cta.continue");
   const nights =
     state.bubbleStay.checkIn && state.bubbleStay.checkOut
       ? nightsBetween(state.bubbleStay.checkIn, state.bubbleStay.checkOut)
@@ -41,21 +46,31 @@ export function MobileBookingBar({
 
   const title =
     state.productType === "day_use"
-      ? "Day Use"
+      ? t("summary.dayUse")
       : state.productType === "bubble_stay"
-        ? "Bubble Stay"
-        : "Choose an experience";
+        ? t("summary.bubbleStay")
+        : t("mobile.chooseExperience");
 
-  let subtitle = "Day Use or Bubble Stay";
+  let subtitle = t("mobile.dayUseOrBubbleStay");
   if (state.productType === "day_use") {
     subtitle = state.dayUse.visitDate
-      ? `${state.dayUse.visitDate} · ${state.dayUse.guests} guests`
-      : "Select visit date";
+      ? t("mobile.visitSummary", {
+          date: state.dayUse.visitDate,
+          count: state.dayUse.guests,
+        })
+      : t("mobile.selectVisitDate");
   } else if (state.productType === "bubble_stay") {
     if (state.bubbleStay.checkIn && state.bubbleStay.checkOut) {
-      subtitle = `${nights} night${nights === 1 ? "" : "s"} · ${allocatedGuests}/${state.bubbleStay.totalGuests} guests · ${state.bubbleStay.selections.length} bubble${state.bubbleStay.selections.length === 1 ? "" : "s"}`;
+      const summaryKey =
+        nights === 1 ? "mobile.staySummaryOneNight" : "mobile.staySummary";
+      subtitle = t(summaryKey, {
+        nights,
+        allocated: allocatedGuests,
+        total: state.bubbleStay.totalGuests,
+        bubbles: state.bubbleStay.selections.length,
+      });
     } else {
-      subtitle = "Select stay dates";
+      subtitle = t("mobile.selectStayDates");
     }
   }
 
@@ -65,16 +80,21 @@ export function MobileBookingBar({
     const formatted =
       amount == null
         ? booking.total
-        : formatMoneyAmount(amount, booking.currency ?? dayUseCurrency);
-    totalText = ` · Total due ${formatted}`;
+        : formatMoneyAmount(
+            amount,
+            booking.currency ?? dayUseCurrency,
+            locale
+          );
+    totalText = t("mobile.totalDue", { amount: formatted });
     if (countdown.label && !countdown.isExpired) {
       totalText += ` · ${countdown.label}`;
     }
   } else if (estimatedTotal != null) {
-    totalText =
+    const formatted =
       state.productType === "day_use" && dayUseCurrency
-        ? ` · Est. ${formatMoneyAmount(estimatedTotal, dayUseCurrency)}`
-        : ` · Est. ${Math.round(estimatedTotal).toLocaleString("en-US")}`;
+        ? formatMoneyAmount(estimatedTotal, dayUseCurrency, locale)
+        : formatMoneyAmount(estimatedTotal, null, locale);
+    totalText = t("mobile.est", { amount: formatted });
   }
 
   return (
@@ -135,7 +155,7 @@ export function MobileBookingBar({
             flexShrink: 0,
           }}
         >
-          {ctaLabel}
+          {resolvedCta}
           {canProceed && <ArrowRight size={15} />}
         </button>
       </div>

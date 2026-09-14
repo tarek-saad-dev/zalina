@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useBookingLocale } from "./useBookingLocale";
 
 interface BookingCalendarProps {
   mode: "single" | "range";
@@ -22,11 +24,6 @@ const TEXT_PRIMARY = "#F8F2E7";
 const TEXT_MUTED = "rgba(248,242,231,0.45)";
 const TEXT_DIM = "rgba(248,242,231,0.22)";
 
-const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
-];
 const EMPTY_UNAVAILABLE: ReadonlySet<string> = new Set();
 
 function toLocalISO(d: Date): string {
@@ -61,6 +58,10 @@ export function BookingCalendar({
   minDate,
   unavailableDates,
 }: BookingCalendarProps) {
+  const t = useTranslations("bookNow");
+  const locale = useBookingLocale();
+  const intlLocale = locale === "ar" ? "ar-EG" : "en-US";
+
   const today = toLocalISO(new Date());
   const effectiveMin = minDate ?? today;
   const initialView = parseIsoDateParts(effectiveMin);
@@ -72,6 +73,21 @@ export function BookingCalendar({
   const [rangePick, setRangePick] = useState<"in" | "out">(
     checkIn && !checkOut ? "out" : "in"
   );
+
+  const weekdays = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(intlLocale, { weekday: "short" });
+    // 2024-01-07 is a Sunday — walk through one week for stable short labels.
+    return Array.from({ length: 7 }, (_, i) =>
+      formatter.format(new Date(2024, 0, 7 + i))
+    );
+  }, [intlLocale]);
+
+  const monthLabel = useMemo(() => {
+    return new Intl.DateTimeFormat(intlLocale, {
+      month: "long",
+      year: "numeric",
+    }).format(new Date(viewYear, viewMonth, 1));
+  }, [intlLocale, viewYear, viewMonth]);
 
   function prevMonth() {
     if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
@@ -187,7 +203,7 @@ export function BookingCalendar({
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={prevMonth}
-          aria-label="Previous month"
+          aria-label={t("calendar.previousMonth")}
           style={{
             width: "32px", height: "32px",
             borderRadius: "8px",
@@ -210,12 +226,12 @@ export function BookingCalendar({
             letterSpacing: "0.02em",
           }}
         >
-          {MONTHS[viewMonth]} {viewYear}
+          {monthLabel}
         </span>
 
         <button
           onClick={nextMonth}
-          aria-label="Next month"
+          aria-label={t("calendar.nextMonth")}
           style={{
             width: "32px", height: "32px",
             borderRadius: "8px",
@@ -232,7 +248,7 @@ export function BookingCalendar({
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-2">
-        {WEEKDAYS.map((w) => (
+        {weekdays.map((w) => (
           <div
             key={w}
             style={{
@@ -330,9 +346,9 @@ export function BookingCalendar({
           }}
         >
           {!checkIn
-            ? "Select check-in date"
+            ? t("calendar.selectCheckIn")
             : !checkOut
-            ? "Now select check-out date"
+            ? t("calendar.selectCheckOut")
             : `${checkIn} → ${checkOut}`}
         </p>
       )}

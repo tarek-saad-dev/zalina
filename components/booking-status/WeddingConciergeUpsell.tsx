@@ -5,6 +5,7 @@ import {
   getWeddingConciergeHref,
   isWeddingConciergeConfigured,
 } from "@/lib/contact/weddingConcierge";
+import { t } from "./bookingStatusCopy";
 
 const GOLD = "rgba(212,175,55,0.92)";
 const TEXT = "#F8F2E7";
@@ -18,18 +19,9 @@ export function WeddingConciergeUpsell({ locale }: WeddingConciergeUpsellProps) 
   const href = getWeddingConciergeHref();
   const configured = isWeddingConciergeConfigured();
 
-  const title =
-    locale === "ar"
-      ? "تم تأمين تاريخكم. الآن اجعلوه خاصاً بكم."
-      : "Your Date Is Secured. Now Make It Yours.";
-  const body =
-    locale === "ar"
-      ? "يمكن لمنسق حفلات الزفاف في زالينا تخصيص احتفالكم بالزهور الاستثنائية، والتصوير، والفيديو، والترفيه، وتأثيرات الاحتفال، وترقيات الضيافة الفاخرة."
-      : "Our Wedding Concierge can now help personalize your celebration with bespoke florals, photography, film, entertainment, celebration effects and premium hospitality upgrades.";
-  const cta =
-    locale === "ar"
-      ? "تحدث إلى منسق حفلات الزفاف"
-      : "Speak to Our Wedding Concierge";
+  const title = t(locale, "weddingConciergeTitle");
+  const body = t(locale, "weddingConciergeBody");
+  const cta = t(locale, "weddingConciergeCta");
 
   return (
     <aside
@@ -52,7 +44,7 @@ export function WeddingConciergeUpsell({ locale }: WeddingConciergeUpsellProps) 
           marginBottom: "8px",
         }}
       >
-        {locale === "ar" ? "الخطوة التالية" : "Next step"}
+        {t(locale, "weddingNextStep")}
       </p>
       <h3
         style={{

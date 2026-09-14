@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { BookingProductType } from "@/lib/api";
 import type { BookingState } from "./types";
 import { PRODUCT_OPTIONS } from "./bookingSteps";
@@ -15,6 +16,7 @@ interface StepProductProps {
 }
 
 export function StepProduct({ state, onSetProductType }: StepProductProps) {
+  const t = useTranslations("bookNow");
   const reduceMotion = useReducedMotion();
   // null (hydration) or true → no fade-from-zero; otherwise cards stay opacity:0 forever
   const enterFrom =
@@ -33,7 +35,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
           marginBottom: "10px",
         }}
       >
-        Experience
+        {t("products.eyebrow")}
       </p>
       <h2
         style={{
@@ -45,7 +47,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
           marginBottom: "12px",
         }}
       >
-        How would you like to arrive?
+        {t("products.title")}
       </h2>
       <p
         style={{
@@ -57,14 +59,16 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
           marginBottom: "36px",
         }}
       >
-        Choose an overnight Bubble Stay, or a Day Use visit to experience
-        Zalina’s cultural village in Luxor.
+        {t("products.subtitle")}
       </p>
 
       <div className="grid gap-4 md:grid-cols-2">
         {PRODUCT_OPTIONS.map((option, index) => {
           const selected = state.productType === option.id;
           const comingSoon = Boolean(option.comingSoon);
+          const title = t(`products.${option.messageKey}.title`);
+          const description = t(`products.${option.messageKey}.description`);
+          const tag = t(`products.${option.messageKey}.tag`);
 
           if (comingSoon) {
             return (
@@ -106,7 +110,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                     fontWeight: 600,
                   }}
                 >
-                  Coming Soon
+                  {t("products.comingSoon")}
                 </span>
                 <span
                   style={{
@@ -117,7 +121,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                     color: GOLD,
                   }}
                 >
-                  {option.tag}
+                  {tag}
                 </span>
                 <h3
                   style={{
@@ -128,7 +132,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                     marginBottom: "10px",
                   }}
                 >
-                  {option.title}
+                  {title}
                 </h3>
                 <p
                   style={{
@@ -138,7 +142,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                     lineHeight: 1.65,
                   }}
                 >
-                  {option.description}
+                  {description}
                 </p>
               </motion.div>
             );
@@ -179,7 +183,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                   color: GOLD,
                 }}
               >
-                {option.tag}
+                {tag}
               </span>
               <h3
                 style={{
@@ -190,7 +194,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                   marginBottom: "10px",
                 }}
               >
-                {option.title}
+                {title}
               </h3>
               <p
                 style={{
@@ -200,7 +204,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                   lineHeight: 1.65,
                 }}
               >
-                {option.description}
+                {description}
               </p>
             </motion.button>
           );

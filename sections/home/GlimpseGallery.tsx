@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { CmsImage } from "@/components/media/CmsImage";
 import {
@@ -186,6 +187,7 @@ function GallerySet({
 }
 
 export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
+  const t = useTranslations("home.gallery");
   const prefersReduced = useReducedMotion();
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -223,12 +225,12 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
         : [
             {
               id: "neutral",
-              title: "Zalina Arabian Village",
+              title: t("fallbackTitle"),
               image: NEUTRAL_MEDIA_FALLBACK,
-              alt: "Zalina Arabian Village",
+              alt: t("fallbackAlt"),
             },
           ],
-    [items]
+    [items, t]
   );
 
   const applyTransform = useCallback(() => {
@@ -434,7 +436,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             className="lux-eyebrow mb-3"
             style={{ color: "var(--lux-gold)" }}
           >
-            VISUAL JOURNEY
+            {t("eyebrow")}
           </motion.p>
           <motion.h2
             id="glimpse-gallery-title"
@@ -445,7 +447,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             className="lux-heading-lg mb-4"
             style={{ fontSize: "clamp(28px, 3.5vw, 44px)" }}
           >
-            A Glimpse Into Zalina
+            {t("title")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -455,8 +457,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             className="lux-body max-w-2xl mx-auto"
             style={{ fontSize: "0.95rem", opacity: 0.8 }}
           >
-            Discover the atmosphere, architecture and unforgettable moments of
-            Zalina Arabian Village in Luxor.
+            {t("body")}
           </motion.p>
         </div>
       </div>
@@ -494,7 +495,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
           onDragStart={(event) => event.preventDefault()}
           role="region"
           aria-roledescription="gallery"
-          aria-label="A glimpse into Zalina"
+          aria-label={t("regionAria")}
         >
           {prefersReduced ? (
             <div

@@ -1,28 +1,62 @@
-import type {
-  BookingProductType,
-} from "@/lib/api";
+import type { BookingProductType } from "@/lib/api";
 import type { BookingStepDefinition, BookingStepId } from "./types";
 
-export const PRODUCT_STEP: BookingStepDefinition = {
-  id: "product",
-  label: "Experience",
-  shortLabel: "Experience",
+/** Message path under `bookNow.steps.*` for each wizard step id. */
+export const STEP_MESSAGE_KEYS: Record<
+  BookingStepId,
+  { label: string; shortLabel: string }
+> = {
+  product: {
+    label: "steps.product.label",
+    shortLabel: "steps.product.shortLabel",
+  },
+  day_use_product: {
+    label: "steps.dayUseProduct.label",
+    shortLabel: "steps.dayUseProduct.shortLabel",
+  },
+  date_guests: {
+    label: "steps.dayUseDateGuests.label",
+    shortLabel: "steps.dayUseDateGuests.shortLabel",
+  },
+  dates_guests: {
+    label: "steps.bubbleDatesGuests.label",
+    shortLabel: "steps.bubbleDatesGuests.shortLabel",
+  },
+  bubbles: {
+    label: "steps.bubbles.label",
+    shortLabel: "steps.bubbles.shortLabel",
+  },
+  guest_details: {
+    label: "steps.guestDetails.label",
+    shortLabel: "steps.guestDetails.shortLabel",
+  },
+  review: {
+    label: "steps.review.label",
+    shortLabel: "steps.review.shortLabel",
+  },
 };
+
+function stepDef(id: BookingStepId): BookingStepDefinition {
+  const keys = STEP_MESSAGE_KEYS[id];
+  return { id, label: keys.label, shortLabel: keys.shortLabel };
+}
+
+export const PRODUCT_STEP: BookingStepDefinition = stepDef("product");
 
 export const DAY_USE_STEPS: BookingStepDefinition[] = [
   PRODUCT_STEP,
-  { id: "day_use_product", label: "Day Use", shortLabel: "Product" },
-  { id: "date_guests", label: "Date & Guests", shortLabel: "Date" },
-  { id: "guest_details", label: "Your Details", shortLabel: "Details" },
-  { id: "review", label: "Review", shortLabel: "Review" },
+  stepDef("day_use_product"),
+  stepDef("date_guests"),
+  stepDef("guest_details"),
+  stepDef("review"),
 ];
 
 export const BUBBLE_STAY_STEPS: BookingStepDefinition[] = [
   PRODUCT_STEP,
-  { id: "dates_guests", label: "Stay Details", shortLabel: "Stay" },
-  { id: "bubbles", label: "Your Bubbles", shortLabel: "Bubbles" },
-  { id: "guest_details", label: "Your Details", shortLabel: "Details" },
-  { id: "review", label: "Review", shortLabel: "Review" },
+  stepDef("dates_guests"),
+  stepDef("bubbles"),
+  stepDef("guest_details"),
+  stepDef("review"),
 ];
 
 /** Before a product is chosen, only the product step is navigable. */
@@ -49,26 +83,20 @@ export function getStepIndexById(
   return getActiveSteps(productType).findIndex((s) => s.id === stepId);
 }
 
+/** Structural product cards — copy comes from `bookNow.products.*`. */
 export const PRODUCT_OPTIONS: Array<{
   id: BookingProductType;
-  title: string;
-  description: string;
-  tag: string;
+  /** Key under `bookNow.products` (`dayUse` | `bubbleStay`). */
+  messageKey: "dayUse" | "bubbleStay";
   comingSoon?: boolean;
 }> = [
   {
     id: "bubble_stay",
-    title: "Bubble Stay",
-    description:
-      "An overnight stay in Zalina’s private bubbles — choose your bubbles, allocate guests, and settle into a quiet Luxor night.",
-    tag: "OVERNIGHT",
+    messageKey: "bubbleStay",
     comingSoon: true,
   },
   {
     id: "day_use",
-    title: "Day Use",
-    description:
-      "A daytime visit to Zalina’s cultural village in Luxor — dining, exploration and hospitality without an overnight stay.",
-    tag: "DAY VISIT",
+    messageKey: "dayUse",
   },
 ];

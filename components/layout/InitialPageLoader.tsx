@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const MIN_VISIBLE_MS = 550;
 const MAX_VISIBLE_MS = 2200;
 
 export function InitialPageLoader() {
+  const t = useTranslations("home.loader");
   const [visible, setVisible] = useState(true);
   const [leaving, setLeaving] = useState(false);
 
@@ -49,14 +51,14 @@ export function InitialPageLoader() {
     >
       <div className="flex flex-col items-center px-6 text-center">
         <div className="text-[11px] uppercase tracking-[0.5em] text-[#D4AF37]/70">
-          Luxor · Egypt
+          {t("location")}
         </div>
 
         <div
           className="mt-4 text-[clamp(42px,8vw,76px)] font-light tracking-[0.12em] text-[#F8F5ED]"
           style={{ fontFamily: "var(--font-display, 'Cormorant Garamond', serif)" }}
         >
-          ZALINA
+          {t("brand")}
         </div>
 
         <div className="mt-7 h-px w-36 overflow-hidden bg-white/10">
@@ -64,7 +66,7 @@ export function InitialPageLoader() {
         </div>
 
         <div className="mt-4 text-[9px] uppercase tracking-[0.34em] text-white/40">
-          Arabian Village
+          {t("subtitle")}
         </div>
       </div>
 

@@ -2,11 +2,13 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function FinalCTA() {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
 
   return (
@@ -30,7 +32,6 @@ export function FinalCTA() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8 }}
         >
-          {/* Background image layer */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <Image
               src={NEUTRAL_MEDIA_FALLBACK}
@@ -48,7 +49,6 @@ export function FinalCTA() {
             />
           </div>
 
-          {/* Warm amber glow behind panel */}
           <div
             className="absolute inset-0 pointer-events-none"
             aria-hidden="true"
@@ -58,19 +58,17 @@ export function FinalCTA() {
             }}
           />
 
-          {/* Ornamental pattern */}
           <div
             className="absolute inset-0 pointer-events-none exp-pattern opacity-20"
             aria-hidden="true"
           />
 
-          {/* Content */}
           <div className="relative z-10 max-w-[620px]">
             <span
               className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-5"
               style={{ color: "var(--zones-gold)" }}
             >
-              BEGIN YOUR JOURNEY
+              {t("finalCta.eyebrow")}
             </span>
 
             <h2
@@ -84,7 +82,7 @@ export function FinalCTA() {
                 lineHeight: "1.2",
               }}
             >
-              Find the Space That Matches Your Moment
+              {t("finalCta.title")}
             </h2>
 
             <p
@@ -95,18 +93,16 @@ export function FinalCTA() {
                 color: "var(--zones-text-secondary)",
               }}
             >
-              From intimate private gatherings to grand celebrations, Zalina offers
-              a setting designed around your occasion.
+              {t("finalCta.body")}
             </p>
 
-            {/* Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/book-now"
                 className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
                 style={{ height: "44px", paddingInline: "28px" }}
               >
-                Book a Consultation
+                {t("finalCta.primary")}
               </Link>
               <Link
                 href="#main-zones"
@@ -120,7 +116,7 @@ export function FinalCTA() {
                   border: "1px solid var(--zones-border)",
                 }}
               >
-                View All Zones
+                {t("finalCta.secondary")}
               </Link>
             </div>
           </div>

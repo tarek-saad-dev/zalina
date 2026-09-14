@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CmsImage } from "@/components/media/CmsImage";
@@ -16,6 +17,7 @@ interface SignatureMomentsProps {
 }
 
 export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
+  const t = useTranslations("home.signatureMoments");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -26,10 +28,10 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
       : [
           {
             id: "neutral",
-            title: "Zalina Arabian Village",
-            subtitle: "Curated experiences from the CMS catalog",
+            title: t("fallbackTitle"),
+            subtitle: t("fallbackSubtitle"),
             image: NEUTRAL_MEDIA_FALLBACK,
-            alt: "Zalina Arabian Village",
+            alt: t("fallbackAlt"),
           },
         ];
 
@@ -91,7 +93,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             transition={{ duration: 0.5 }}
             className="lux-eyebrow mb-3"
           >
-            Curated Experiences
+            {t("eyebrow")}
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -101,7 +103,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             className="lux-heading-lg"
             style={{ fontSize: "clamp(32px, 4vw, 52px)" }}
           >
-            Signature Moments
+            {t("title")}
           </motion.h2>
 
           <div className="hidden md:flex gap-2 absolute right-0 bottom-0">

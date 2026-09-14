@@ -1,6 +1,7 @@
 "use client";
 
 import type { ApiLocale } from "@/lib/api";
+import { Link } from "@/i18n/navigation";
 import { t } from "./bookingStatusCopy";
 
 const MUTED = "rgba(248,242,231,0.55)";
@@ -30,9 +31,7 @@ export function BookingStatusLoading({ locale }: { locale: ApiLocale }) {
       />
       <p style={{ color: TEXT, fontSize: "16px" }}>{t(locale, "confirming")}</p>
       <p style={{ color: MUTED, fontSize: "13px", marginTop: "8px" }}>
-        {locale === "ar"
-          ? "قد يستغرق تأكيد الدفع لحظات."
-          : "Payment confirmation can take a moment."}
+        {t(locale, "paymentConfirmMoment")}
       </p>
     </div>
   );
@@ -102,7 +101,7 @@ export function BookingStatusError({
             {t(locale, "tryAgain")}
           </button>
         ) : null}
-        <a
+        <Link
           href={secondaryHref}
           style={{
             fontSize: "12px",
@@ -115,9 +114,8 @@ export function BookingStatusError({
             textDecoration: "none",
           }}
         >
-          {secondaryLabel ??
-            (locale === "ar" ? "العودة للحجز" : "Back to Book Now")}
-        </a>
+          {secondaryLabel ?? t(locale, "backToBookNow")}
+        </Link>
       </div>
     </div>
   );

@@ -1,34 +1,20 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Users, Clock, Sparkles, Plus } from "lucide-react";
 import { useExpMotion } from "./useExpMotion";
 
-const INFO_CARDS = [
-  {
-    icon: Users,
-    title: "Ideal For",
-    description: "Couples, small groups, celebrations",
-  },
-  {
-    icon: Clock,
-    title: "Duration",
-    description: "2–5 hours",
-  },
-  {
-    icon: Sparkles,
-    title: "Atmosphere",
-    description: "Elegant, intimate, memorable",
-  },
-  {
-    icon: Plus,
-    title: "Add-ons",
-    description: "Private transfers, photography, flowers",
-  },
+const INFO_KEYS = [
+  { key: "idealFor", icon: Users },
+  { key: "duration", icon: Clock },
+  { key: "atmosphere", icon: Sparkles },
+  { key: "addons", icon: Plus },
 ] as const;
 
 export function MicroInfoPreview() {
+  const t = useTranslations("experiences");
   const { fadeUp, transition, stagger } = useExpMotion();
 
   return (
@@ -45,18 +31,18 @@ export function MicroInfoPreview() {
           viewport={{ once: true }}
           transition={transition(0)}
         >
-          <p className="exp-eyebrow mb-3">Details</p>
+          <p className="exp-eyebrow mb-3">{t("info.eyebrow")}</p>
           <h2 id="info-heading" className="exp-section-heading">
-            Experience Information
+            {t("info.title")}
           </h2>
         </motion.div>
 
         <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-          {INFO_CARDS.map((card, index) => {
+          {INFO_KEYS.map((card, index) => {
             const Icon = card.icon;
             return (
               <motion.article
-                key={card.title}
+                key={card.key}
                 className="exp-glass flex gap-4 rounded-sm p-6 sm:gap-5 sm:p-7"
                 style={{ boxShadow: "0 14px 36px rgba(0,0,0,0.28)" }}
                 initial={fadeUp.initial}
@@ -86,9 +72,11 @@ export function MicroInfoPreview() {
                       color: "var(--exp-text-primary)",
                     }}
                   >
-                    {card.title}
+                    {t(`info.cards.${card.key}.title`)}
                   </h3>
-                  <p className="exp-body text-sm">{card.description}</p>
+                  <p className="exp-body text-sm">
+                    {t(`info.cards.${card.key}.description`)}
+                  </p>
                 </div>
               </motion.article>
             );

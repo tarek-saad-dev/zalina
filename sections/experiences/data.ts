@@ -4,12 +4,16 @@ import { parseExperienceCategory } from "./types";
 export const BOOK_NOW_HREF = "/book-now";
 export const CONTACT_HREF = "/experiences";
 
-export const FEATURED_DINNER_HIGHLIGHTS = [
-  "Egyptian & regional dinner buffet",
-  "Live charcoal BBQ and brick-oven cooking",
-  "Cultural performance and live music",
-  "Illuminated courtyards and village atmosphere",
+/** Message keys under `experiences.highlights.*` — resolve with useTranslations. */
+export const FEATURED_DINNER_HIGHLIGHT_KEYS = [
+  "buffet",
+  "cooking",
+  "performance",
+  "atmosphere",
 ] as const;
+
+export type FeaturedDinnerHighlightKey =
+  (typeof FEATURED_DINNER_HIGHLIGHT_KEYS)[number];
 
 /** @deprecated Prefer API-mapped experiences passed as props. */
 export const EXPERIENCES: ExperienceItem[] = [];

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CmsImage } from "@/components/media/CmsImage";
@@ -20,8 +21,10 @@ const AUTO_MS = 4500;
 
 export function MarketShowcase({
   stalls = [],
-  zoneName = "Al-Souk Village",
+  zoneName,
 }: MarketShowcaseProps) {
+  const t = useTranslations("home.market");
+  const resolvedZoneName = zoneName || t("defaultZoneName");
   const prefersReduced = useReducedMotion();
   const slides: MarketCard[] =
     stalls.length > 0
@@ -29,10 +32,10 @@ export function MarketShowcase({
       : [
           {
             id: "neutral",
-            title: zoneName,
-            subtitle: "Market photography from the CMS",
+            title: resolvedZoneName,
+            subtitle: t("fallbackSubtitle"),
             image: NEUTRAL_MEDIA_FALLBACK,
-            alt: zoneName,
+            alt: resolvedZoneName,
             size: "hero",
           },
         ];
@@ -83,7 +86,7 @@ export function MarketShowcase({
             className="lux-eyebrow mb-3"
             style={{ color: "var(--lux-gold)" }}
           >
-            THE MARKET
+            {t("eyebrow")}
           </motion.p>
 
           <motion.h2
@@ -95,7 +98,7 @@ export function MarketShowcase({
             className="lux-heading-lg mb-4"
             style={{ fontSize: "clamp(28px, 3.5vw, 44px)" }}
           >
-            {zoneName}
+            {resolvedZoneName}
           </motion.h2>
 
           <motion.p
@@ -106,9 +109,7 @@ export function MarketShowcase({
             className="lux-body mx-auto"
             style={{ fontSize: "0.98rem", opacity: 0.82, maxWidth: "36rem" }}
           >
-            A country market at the heart of the village — Egyptian crafts,
-            local flavours and lanes made for wandering, shopping and
-            photography in Luxor.
+            {t("description")}
           </motion.p>
         </div>
 
@@ -149,7 +150,7 @@ export function MarketShowcase({
               >
                 <CmsImage
                   src={active.image}
-                  alt={active.alt || active.title || zoneName}
+                  alt={active.alt || active.title || resolvedZoneName}
                   fill
                   sizes="(max-width: 1024px) 100vw, 1024px"
                   className="object-cover"
@@ -173,7 +174,7 @@ export function MarketShowcase({
               <>
                 <button
                   type="button"
-                  aria-label="Previous market photo"
+                  aria-label={t("prevAria")}
                   onClick={() => go(index - 1)}
                   className="absolute left-3 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-100 md:left-4"
                   style={{
@@ -187,7 +188,7 @@ export function MarketShowcase({
                 </button>
                 <button
                   type="button"
-                  aria-label="Next market photo"
+                  aria-label={t("nextAria")}
                   onClick={() => go(index + 1)}
                   className="absolute right-3 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-100 md:right-4"
                   style={{
@@ -208,7 +209,7 @@ export function MarketShowcase({
                   className="text-[10px] tracking-[0.28em] uppercase mb-1"
                   style={{ color: "var(--lux-gold)", opacity: 0.85 }}
                 >
-                  Stall presence · {zoneName}
+                  {t("stallPresence", { zoneName: resolvedZoneName })}
                 </p>
                 {(active.title || active.subtitle) && (
                   <p
@@ -230,7 +231,7 @@ export function MarketShowcase({
                 <div
                   className="flex shrink-0 items-center gap-1.5"
                   role="tablist"
-                  aria-label="Market slides"
+                  aria-label={t("slidesAria")}
                 >
                   {slides.map((slide, i) => (
                     <button
@@ -238,7 +239,10 @@ export function MarketShowcase({
                       type="button"
                       role="tab"
                       aria-selected={i === index}
-                      aria-label={`Show photo ${i + 1} of ${count}`}
+                      aria-label={t("showPhotoAria", {
+                        current: i + 1,
+                        total: count,
+                      })}
                       onClick={() => setIndex(i)}
                       className="h-1.5 rounded-sm transition-all"
                       style={{
@@ -256,7 +260,7 @@ export function MarketShowcase({
           </div>
 
           <p className="sr-only" aria-live="polite">
-            Photo {index + 1} of {count}
+            {t("livePhoto", { current: index + 1, total: count })}
           </p>
         </motion.div>
 
@@ -271,14 +275,13 @@ export function MarketShowcase({
             className="lux-body text-sm max-w-md"
             style={{ opacity: 0.72 }}
           >
-            Explore crafts, flavours and village lanes — a country market
-            experience at the heart of Zalina in Luxor.
+            {t("footerNote")}
           </p>
           <Link
             href="/zones"
             className="lux-btn-secondary inline-flex items-center gap-2 text-sm tracking-wide"
           >
-            Discover the Market Zone
+            {t("cta")}
           </Link>
         </motion.div>
       </div>

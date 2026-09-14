@@ -2,13 +2,15 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { BOOK_NOW_HREF } from "./data";
 import { useExpMotion } from "./useExpMotion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function ExclusiveOffer() {
+  const t = useTranslations("experiences");
   const { fadeUp, transition } = useExpMotion();
 
   return (
@@ -33,7 +35,7 @@ export function ExclusiveOffer() {
             <div className="relative min-h-[240px] sm:min-h-[300px] md:min-h-[400px]">
               <Image
                 src={NEUTRAL_MEDIA_FALLBACK}
-                alt="Guests enjoying the Sunset and Dine package at golden hour"
+                alt={t("offer.imageAlt")}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
@@ -73,7 +75,7 @@ export function ExclusiveOffer() {
                   className="mb-3 text-[11px] font-semibold uppercase tracking-[0.26em]"
                   style={{ color: "rgba(26,18,8,0.68)" }}
                 >
-                  Exclusive Offer
+                  {t("offer.eyebrow")}
                 </p>
 
                 <h2
@@ -85,15 +87,14 @@ export function ExclusiveOffer() {
                     fontWeight: 500,
                   }}
                 >
-                  Sunset Dining in Luxor
+                  {t("offer.title")}
                 </h2>
 
                 <p
                   className="mb-7 max-w-md text-sm leading-relaxed sm:mb-8 sm:text-[0.9375rem]"
                   style={{ color: "rgba(26,18,8,0.78)" }}
                 >
-                  Golden Luxor light, Egyptian hospitality and an evening of
-                  dining in the heart of the village.
+                  {t("offer.body")}
                 </p>
 
                 <Link
@@ -105,7 +106,7 @@ export function ExclusiveOffer() {
                     borderRadius: "2px",
                   }}
                 >
-                  Learn More
+                  {t("offer.cta")}
                 </Link>
               </div>
             </div>

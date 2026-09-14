@@ -1,6 +1,7 @@
 "use client";
 
 import { Minus, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface GuestSelectorProps {
   value: number;
@@ -19,10 +20,12 @@ export function GuestSelector({
   value,
   min = 1,
   max,
-  label = "Guests",
+  label,
   sublabel,
   onChange,
 }: GuestSelectorProps) {
+  const t = useTranslations("bookNow");
+  const resolvedLabel = label ?? t("summary.guests");
   const atMin = value <= min;
   const atMax = max != null ? value >= max : false;
 
@@ -50,7 +53,7 @@ export function GuestSelector({
             marginBottom: sublabel ? "3px" : "0",
           }}
         >
-          {label}
+          {resolvedLabel}
         </p>
         {sublabel && (
           <p
@@ -71,7 +74,7 @@ export function GuestSelector({
         <button
           onClick={() => onChange(value - 1)}
           disabled={atMin}
-          aria-label={`Decrease ${label}`}
+          aria-label={t("guestSelector.decrease", { label: resolvedLabel })}
           style={{
             width: "36px",
             height: "36px",
@@ -108,7 +111,7 @@ export function GuestSelector({
         <button
           onClick={() => onChange(value + 1)}
           disabled={atMax}
-          aria-label={`Increase ${label}`}
+          aria-label={t("guestSelector.increase", { label: resolvedLabel })}
           style={{
             width: "36px",
             height: "36px",

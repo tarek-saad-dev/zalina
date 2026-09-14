@@ -75,16 +75,19 @@ export interface BuildGalleryCatalogInput {
   extraMediaByOwner?: Record<string, CmsMedia[]>;
 }
 
-/** Translation-ready filter labels (EN defaults; AR phase wires these keys). */
+/**
+ * Relative keys under `useTranslations('gallery')`.
+ * Prefer `gallery.filters.*` / `gallery.a11y.*` / `gallery.empty.*` in UI.
+ */
 export const GALLERY_I18N_KEYS = {
-  all: "gallery.all",
-  experiences: "gallery.experiences",
-  zones: "gallery.zones",
-  bubbleStays: "gallery.bubbleStays",
-  empty: "gallery.empty",
-  previous: "gallery.previous",
-  next: "gallery.next",
-  close: "gallery.close",
+  all: "filters.all",
+  experiences: "filters.experiences",
+  zones: "filters.zones",
+  bubbleStays: "filters.bubbles",
+  empty: "empty.title",
+  previous: "a11y.previous",
+  next: "a11y.next",
+  close: "a11y.close",
 } as const;
 
 export const GALLERY_FILTER_LABELS_EN: Record<GalleryFilterId, string> = {

@@ -56,9 +56,11 @@ export function localizedDescription(
 
 export function formatMoneyAmount(
   amount: number,
-  currency?: string | null
+  currency?: string | null,
+  locale: "en" | "ar" = "en"
 ): string {
-  const formatted = Math.round(amount).toLocaleString("en-US");
+  const numberLocale = locale === "ar" ? "ar-EG" : "en-US";
+  const formatted = Math.round(amount).toLocaleString(numberLocale);
   const safeCurrency = currency?.trim();
   return safeCurrency ? `${safeCurrency} ${formatted}` : formatted;
 }

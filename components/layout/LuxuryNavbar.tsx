@@ -1,42 +1,47 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { FEATURE_FLAGS } from "@/lib/featureFlags";
 import { motionConfig } from "@/lib/motion/motionConfig";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
 
 interface NavItem {
-  label: string;
-  href: string;
+  key: "home" | "about" | "experiences" | "zones" | "weddings" | "gallery";
+  href: "/" | "/about" | "/experiences" | "/zones" | "/weddings" | "/gallery";
   comingSoon?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Experiences", href: "/experiences" },
-  { label: "Zones", href: "/zones" },
+  { key: "home", href: "/" },
+  { key: "about", href: "/about" },
+  { key: "experiences", href: "/experiences" },
+  { key: "zones", href: "/zones" },
   {
-    label: "Weddings",
+    key: "weddings",
     href: "/weddings",
     comingSoon: !FEATURE_FLAGS.WEDDINGS_ACTIVE,
   },
-  { label: "Gallery", href: "/gallery" },
+  { key: "gallery", href: "/gallery" },
 ];
 
 /** Desktop height; mobile uses --zalina-nav-height (72px) via CSS. */
 const NAV_HEIGHT = "var(--zalina-nav-height, 80px)";
 
 export function LuxuryNavbar() {
+  const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
+  const locale = useLocale() as AppLocale;
   const pathname = usePathname();
+  const router = useRouter();
+  const [, startTransition] = useTransition();
   const reduceMotion = useReducedMotion();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<"EN" | "AR">("EN");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,6 +70,13 @@ export function LuxuryNavbar() {
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
+  };
+
+  const switchLocale = (next: AppLocale) => {
+    if (next === locale) return;
+    startTransition(() => {
+      router.replace(pathname, { locale: next });
+    });
   };
 
   const duration = reduceMotion ? 0 : motionConfig.duration.fast;
@@ -96,11 +108,11 @@ export function LuxuryNavbar() {
           <Link
             href="/"
             className="relative flex-shrink-0 flex items-center"
-            aria-label="Zalina Arabian Village home"
+            aria-label={t("homeAria")}
           >
             <Image
               src="/assets/zalina-logo-full.png"
-              alt="Zalina Arabian Village"
+              alt={t("logoAlt")}
               width={180}
               height={56}
               priority
@@ -112,13 +124,14 @@ export function LuxuryNavbar() {
           <nav
             className="hidden lg:flex items-center"
             style={{ gap: "1.75rem" }}
-            aria-label="Primary"
+            aria-label={t("primaryAria")}
           >
             {navItems.map((item) => {
               const active = isActive(item.href);
+              const label = t(`items.${item.key}`);
               return (
                 <Link
-                  key={item.label}
+                  key={item.key}
                   href={item.href}
                   className="zalina-nav-link relative py-1 transition-colors duration-300"
                   style={{
@@ -131,9 +144,9 @@ export function LuxuryNavbar() {
                     fontFamily: "var(--font-body)",
                   }}
                 >
-                  {item.label}
+                  {label}
                   {item.comingSoon && (
-                    <span className="zalina-nav-soon">Soon</span>
+                    <span className="zalina-nav-soon">{tCommon("comingSoon")}</span>
                   )}
                   {active && (
                     <span
@@ -154,8 +167,45 @@ export function LuxuryNavbar() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
+            <div className="flex items-center gap-2" role="group" aria-label="Language">
+              <button
+                type="button"
+                onClick={() => switchLocale("en")}
+                className="transition-colors duration-300"
+                style={{
+                  fontSize: "0.8rem",
+                  fontWeight: 500,
+                  color:
+                    locale === "en"
+                      ? "var(--zalina-text)"
+                      : "rgba(246, 240, 232, 0.45)",
+                  fontFamily: "var(--font-body)",
+                }}
+                aria-pressed={locale === "en"}
+              >
+                {tCommon("langEn")}
+              </button>
+              <span style={{ color: "rgba(246, 240, 232, 0.25)" }}>/</span>
+              <button
+                type="button"
+                onClick={() => switchLocale("ar")}
+                className="transition-colors duration-300"
+                style={{
+                  fontSize: "0.8rem",
+                  fontWeight: 500,
+                  color:
+                    locale === "ar"
+                      ? "var(--zalina-text)"
+                      : "rgba(246, 240, 232, 0.45)",
+                  fontFamily: "var(--font-body)",
+                }}
+                aria-pressed={locale === "ar"}
+              >
+                {tCommon("langAr")}
+              </button>
+            </div>
             <Link href="/book-now" className="zalina-nav-cta">
-              Book Now
+              {t("cta")}
             </Link>
           </div>
 
@@ -169,7 +219,7 @@ export function LuxuryNavbar() {
               color: "var(--zalina-text)",
               marginInlineEnd: -6,
             }}
-            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMobileMenuOpen ? t("closeMenu") : t("openMenu")}
             aria-expanded={isMobileMenuOpen}
             aria-controls="zalina-mobile-menu"
           >
@@ -194,7 +244,7 @@ export function LuxuryNavbar() {
             transition={{ duration }}
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation menu"
+            aria-label={t("menuAria")}
           >
             <motion.div
               className="zalina-container flex flex-1 flex-col justify-center py-10"
@@ -206,12 +256,13 @@ export function LuxuryNavbar() {
                 ease: [0.22, 1, 0.36, 1],
               }}
             >
-              <nav className="flex flex-col gap-6" aria-label="Mobile">
+              <nav className="flex flex-col gap-6" aria-label={t("mobileAria")}>
                 {navItems.map((item, index) => {
                   const active = isActive(item.href);
+                  const label = t(`items.${item.key}`);
                   return (
                     <motion.div
-                      key={item.label}
+                      key={item.key}
                       initial={reduceMotion ? false : { opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{
@@ -234,13 +285,15 @@ export function LuxuryNavbar() {
                           letterSpacing: "0.02em",
                         }}
                       >
-                        {item.label}
+                        {label}
                         {item.comingSoon && (
-                          <span className="zalina-nav-soon">Soon</span>
+                          <span className="zalina-nav-soon">
+                            {tCommon("comingSoon")}
+                          </span>
                         )}
                         {active && (
                           <span
-                            className="absolute -bottom-1 left-0"
+                            className="absolute -bottom-1 left-0 rtl:left-auto rtl:right-0"
                             style={{
                               width: 36,
                               height: 1,
@@ -258,38 +311,38 @@ export function LuxuryNavbar() {
               <div className="mt-12 flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setLanguage("EN")}
+                  onClick={() => switchLocale("en")}
                   className="transition-colors duration-300"
                   style={{
                     fontSize: "0.95rem",
                     fontWeight: 500,
                     color:
-                      language === "EN"
+                      locale === "en"
                         ? "var(--zalina-text)"
                         : "rgba(246, 240, 232, 0.45)",
                     fontFamily: "var(--font-body)",
                   }}
-                  aria-pressed={language === "EN"}
+                  aria-pressed={locale === "en"}
                 >
-                  EN
+                  {tCommon("langEn")}
                 </button>
                 <span style={{ color: "rgba(246, 240, 232, 0.25)" }}>/</span>
                 <button
                   type="button"
-                  onClick={() => setLanguage("AR")}
+                  onClick={() => switchLocale("ar")}
                   className="transition-colors duration-300"
                   style={{
                     fontSize: "0.95rem",
                     fontWeight: 500,
                     color:
-                      language === "AR"
+                      locale === "ar"
                         ? "var(--zalina-text)"
                         : "rgba(246, 240, 232, 0.45)",
                     fontFamily: "var(--font-body)",
                   }}
-                  aria-pressed={language === "AR"}
+                  aria-pressed={locale === "ar"}
                 >
-                  AR
+                  {tCommon("langAr")}
                 </button>
               </div>
 
@@ -299,7 +352,7 @@ export function LuxuryNavbar() {
                 className="zalina-btn zalina-btn-primary mt-10 w-full sm:w-auto sm:self-start"
                 style={{ minHeight: 52 }}
               >
-                Book Now
+                {t("cta")}
               </Link>
             </motion.div>
           </motion.div>

@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { ArrowRight } from "lucide-react";
 import type { ExperienceItem } from "./types";
 
@@ -12,10 +13,16 @@ interface ExperienceCardProps {
 }
 
 export function ExperienceCard({ experience, index: _index }: ExperienceCardProps) {
+  const t = useTranslations("experiences");
+  const label =
+    experience.label === "Day"
+      ? t("categories.day")
+      : experience.label === "Night"
+        ? t("categories.night")
+        : experience.label;
+
   return (
-    <article
-      className="group relative flex h-full flex-col overflow-hidden rounded-sm exp-card"
-    >
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-sm exp-card">
       <div
         className="pointer-events-none absolute -inset-px -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
@@ -46,7 +53,7 @@ export function ExperienceCard({ experience, index: _index }: ExperienceCardProp
           className="absolute left-4 top-4 text-[10px] font-medium uppercase tracking-[0.18em]"
           style={{ color: "var(--exp-gold-soft)" }}
         >
-          {experience.label}
+          {label}
         </span>
       </div>
 
@@ -86,9 +93,9 @@ export function ExperienceCard({ experience, index: _index }: ExperienceCardProp
           href={experience.href}
           className="mt-auto inline-flex items-center gap-2 self-start text-xs font-medium uppercase tracking-[0.12em] transition-colors hover:text-[var(--exp-gold-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--exp-gold)]"
           style={{ color: "var(--exp-gold)" }}
-          aria-label={`View details for ${experience.title}`}
+          aria-label={t("catalog.viewDetailsAria", { title: experience.title })}
         >
-          View Details
+          {t("catalog.viewDetails")}
           <ArrowRight
             size={14}
             strokeWidth={1.5}

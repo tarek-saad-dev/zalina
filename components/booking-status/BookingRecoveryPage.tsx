@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { resolveBookingReference } from "./bookingRecovery";
 import { BookingStatusError } from "./BookingStatusStates";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";

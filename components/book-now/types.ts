@@ -110,6 +110,7 @@ export type BookingValidationCode =
   | "missing_day_use_product"
   | "invalid_visit_date"
   | "invalid_guest_count"
+  | "invalid_total_guests"
   | "invalid_check_in"
   | "invalid_check_out"
   | "check_out_not_after_check_in"
@@ -129,7 +130,12 @@ export type BookingValidationCode =
 
 export interface BookingValidationIssue {
   code: BookingValidationCode;
+  /**
+   * English fallback (and historical field). Prefer translating `code` with
+   * `values` via `useTranslations('validation')`.
+   */
   message: string;
+  values?: Record<string, string | number>;
   selectionKey?: string;
   field?: string;
 }

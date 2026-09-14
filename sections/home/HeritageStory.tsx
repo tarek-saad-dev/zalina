@@ -1,9 +1,17 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 
 export function HeritageStory() {
+  const t = useTranslations("home.heritage");
+  const accent = t("headlineAccent");
+  const headline = t("headline");
+  const beforeAccent = headline.endsWith(accent)
+    ? headline.slice(0, -accent.length)
+    : headline;
+
   return (
     <section
       className="relative overflow-hidden"
@@ -65,7 +73,8 @@ export function HeritageStory() {
             className="lux-heading-xl mb-4"
             style={{ fontSize: "clamp(28px, 4vw, 48px)", lineHeight: 1.2 }}
           >
-            A Heritage. A Feeling. <span style={{ color: "var(--lux-gold)" }}>A Story.</span>
+            {beforeAccent}
+            <span style={{ color: "var(--lux-gold)" }}>{accent}</span>
           </motion.h2>
 
           {/* Luxury Divider */}
@@ -86,10 +95,7 @@ export function HeritageStory() {
             className="lux-body"
             style={{ maxWidth: "650px", margin: "0 auto", fontSize: "0.95rem" }}
           >
-            In the heart of Luxor, Zalina Arabian Village brings Egyptian hospitality,
-            heritage craft and contemporary comfort together in a living cultural
-            village — gardens, courtyards and evening light shaped for gathering,
-            dining and celebration.
+            {t("body")}
           </motion.p>
 
           {/* Decorative Bottom Ornament */}

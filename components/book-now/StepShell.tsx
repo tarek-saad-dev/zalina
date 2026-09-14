@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { BookingProductType, DayUseProduct, DayUseSettings } from "@/lib/api";
 import type {
   AccommodationTypeMeta,
@@ -89,6 +90,7 @@ export function StepShell(props: StepShellProps) {
     onBack,
     canProceed,
   } = props;
+  const t = useTranslations("bookNow");
   const reduceMotion = useReducedMotion();
   const enterFrom =
     reduceMotion === false ? { opacity: 0, y: 10 } : false;
@@ -199,7 +201,7 @@ export function StepShell(props: StepShellProps) {
               }}
             >
               <ArrowLeft size={14} />
-              Back
+              {t("cta.back")}
             </button>
           ) : (
             <div />
@@ -227,7 +229,7 @@ export function StepShell(props: StepShellProps) {
               opacity: canProceed ? 1 : 0.55,
             }}
           >
-            {isLastStep ? "Review" : "Continue"}
+            {isLastStep ? t("cta.review") : t("cta.continue")}
             <ArrowRight size={14} />
           </button>
         </div>

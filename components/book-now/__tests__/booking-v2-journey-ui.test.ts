@@ -57,18 +57,18 @@ describe("Phase 3 journey UI helpers", () => {
 
   it("progress labels match product-specific journeys", () => {
     expect(DAY_USE_STEPS.map((s) => s.label)).toEqual([
-      "Experience",
-      "Day Use",
-      "Date & Guests",
-      "Your Details",
-      "Review",
+      "steps.product.label",
+      "steps.dayUseProduct.label",
+      "steps.dayUseDateGuests.label",
+      "steps.guestDetails.label",
+      "steps.review.label",
     ]);
     expect(BUBBLE_STAY_STEPS.map((s) => s.label)).toEqual([
-      "Experience",
-      "Stay Details",
-      "Your Bubbles",
-      "Your Details",
-      "Review",
+      "steps.product.label",
+      "steps.bubbleDatesGuests.label",
+      "steps.bubbles.label",
+      "steps.guestDetails.label",
+      "steps.review.label",
     ]);
   });
 

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { BOOK_NOW_HREF } from "./data";
@@ -23,6 +24,7 @@ const PARTICLE_POSITIONS = [
 ];
 
 export function Hero() {
+  const t = useTranslations("experiences");
   const prefersReducedMotion = useReducedMotion();
   const reduce = Boolean(prefersReducedMotion);
   const [isMobile, setIsMobile] = useState(false);
@@ -44,12 +46,12 @@ export function Hero() {
   return (
     <section
       className="relative w-full min-h-[100svh] overflow-hidden"
-      aria-label="Experiences hero"
+      aria-label={t("hero.ariaLabel")}
     >
       <motion.div className="absolute inset-0 will-change-transform" style={{ y, scale }}>
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Courtyards and evening light at Zalina Arabian Village in Luxor"
+          alt={t("hero.imageAlt")}
           fill
           priority
           fetchPriority="high"
@@ -123,7 +125,7 @@ export function Hero() {
         <div className="exp-container flex max-w-3xl flex-col items-center">
           <div className="exp-enter exp-enter-delay-1 mb-6 flex items-center gap-3 sm:mb-8 sm:gap-4">
             <span className="exp-editorial-line" aria-hidden="true" />
-            <p className="exp-eyebrow">Experiences in Luxor</p>
+            <p className="exp-eyebrow">{t("hero.eyebrow")}</p>
             <span className="exp-editorial-line" aria-hidden="true" />
           </div>
 
@@ -131,24 +133,22 @@ export function Hero() {
             className="exp-enter exp-enter-delay-2 exp-heading mb-5 max-w-[16ch] sm:mb-6 sm:max-w-3xl"
             style={{ textShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
           >
-            Dining, Culture &amp; Evenings to Remember
+            {t("hero.title")}
           </h1>
 
           <p
             className="exp-enter exp-enter-delay-3 exp-body mb-8 max-w-md sm:mb-10 sm:max-w-lg"
             style={{ textShadow: "0 2px 16px rgba(0,0,0,0.45)" }}
           >
-            Egyptian cuisine, live cooking, village exploration and cultural
-            performance — experiences shaped for guests, hotels and travellers
-            discovering Luxor.
+            {t("hero.subtitle")}
           </p>
 
           <div className="exp-enter exp-enter-delay-4 flex w-full max-w-xs flex-col items-stretch justify-center gap-2.5 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-3.5">
             <Link href="#experiences" className="exp-btn-primary">
-              Explore Experiences
+              {t("hero.ctaPrimary")}
             </Link>
             <Link href={BOOK_NOW_HREF} className="exp-btn-secondary">
-              Plan Your Visit
+              {t("hero.ctaSecondary")}
             </Link>
           </div>
         </div>
@@ -156,9 +156,11 @@ export function Hero() {
         <a
           href="#experiences"
           className="exp-scroll-indicator absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5 text-[var(--exp-text-muted)] transition-colors hover:text-[var(--exp-gold)] sm:bottom-8"
-          aria-label="Scroll to experiences"
+          aria-label={t("hero.scrollAriaLabel")}
         >
-          <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
+          <span className="text-[10px] uppercase tracking-[0.25em]">
+            {t("hero.scroll")}
+          </span>
           <ChevronDown size={16} strokeWidth={1.5} aria-hidden="true" />
         </a>
       </div>

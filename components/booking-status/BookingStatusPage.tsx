@@ -1,8 +1,8 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
+import { Link } from "@/i18n/navigation";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import { BookingDetails } from "./BookingDetails";
 import { BookingStatusHero } from "./BookingStatusHero";

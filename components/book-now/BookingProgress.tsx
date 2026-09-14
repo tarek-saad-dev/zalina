@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { BookingStepDefinition } from "./types";
 
 interface BookingProgressProps {
@@ -15,9 +16,11 @@ export function BookingProgress({
   currentStepIndex,
   onStepClick,
 }: BookingProgressProps) {
+  const t = useTranslations("bookNow");
   const displaySteps = steps.map((step, index) => ({
     ...step,
     number: index + 1,
+    translatedLabel: t(step.label as Parameters<typeof t>[0]),
   }));
 
   return (
@@ -53,7 +56,10 @@ export function BookingProgress({
                     cursor: isCompleted ? "pointer" : "default",
                     opacity: isUpcoming ? 0.38 : 1,
                   }}
-                  aria-label={`Step ${step.number}: ${step.label}`}
+                  aria-label={t("steps.aria", {
+                    number: step.number,
+                    label: step.translatedLabel,
+                  })}
                   aria-current={isActive ? "step" : undefined}
                 >
                   <div
@@ -107,7 +113,7 @@ export function BookingProgress({
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {step.label}
+                    {step.translatedLabel}
                   </span>
                 </button>
 
@@ -152,7 +158,10 @@ export function BookingProgress({
               fontWeight: 500,
             }}
           >
-            Step {currentStepIndex + 1} of {displaySteps.length}
+            {t("steps.of", {
+              current: currentStepIndex + 1,
+              total: displaySteps.length,
+            })}
           </span>
           <span
             style={{
@@ -162,7 +171,7 @@ export function BookingProgress({
               fontWeight: 500,
             }}
           >
-            {displaySteps[currentStepIndex]?.label}
+            {displaySteps[currentStepIndex]?.translatedLabel}
           </span>
         </div>
 

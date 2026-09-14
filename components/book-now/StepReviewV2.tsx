@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ApiBooking, DayUseSettings } from "@/lib/api";
 import type { AccommodationTypeMeta, BookingState } from "./types";
 import type { CheckoutState } from "./checkoutTypes";
@@ -43,18 +44,22 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatServerTotal(booking: ApiBooking): string {
+function formatServerTotal(booking: ApiBooking, locale: "en" | "ar"): string {
   const amount = parseMoney(booking.total);
   if (amount == null) return booking.total;
-  return formatMoneyAmount(amount, booking.currency);
+  return formatMoneyAmount(amount, booking.currency, locale);
 }
 
-function ctaLabel(checkout: CheckoutState): string {
-  if (checkout.phase === "creating") return "Securing your reservation…";
-  if (checkout.phase === "initiating_payment") return "Preparing secure payment…";
-  if (checkout.phase === "redirecting") return "Redirecting…";
-  if (checkout.booking) return "Proceed to Secure Payment";
-  return "Reserve & Continue to Payment";
+function reviewCtaLabel(
+  checkout: CheckoutState,
+  t: ReturnType<typeof useTranslations<"bookNow">>
+): string {
+  if (checkout.phase === "creating") return t("review.ctaSecuring");
+  if (checkout.phase === "initiating_payment")
+    return t("review.ctaPreparingPayment");
+  if (checkout.phase === "redirecting") return t("review.ctaRedirecting");
+  if (checkout.booking) return t("review.ctaProceedPayment");
+  return t("review.ctaReserveContinue");
 }
 
 export function StepReviewV2({
@@ -69,7 +74,9 @@ export function StepReviewV2({
   onStartNewReservation,
   onReturnToBubbles,
 }: StepReviewV2Props) {
-  const byId = new Map(accommodationTypes.map((t) => [t.id, t]));
+  const t = useTranslations("bookNow");
+  const emDash = t("summary.emDash");
+  const byId = new Map(accommodationTypes.map((meta) => [meta.id, meta]));
   const nights =
     state.bubbleStay.checkIn && state.bubbleStay.checkOut
       ? nightsBetween(state.bubbleStay.checkIn, state.bubbleStay.checkOut)
@@ -114,7 +121,7 @@ export function StepReviewV2({
           marginBottom: "10px",
         }}
       >
-        Review
+        {t("review.eyebrow")}
       </p>
       <h2
         style={{
@@ -125,7 +132,7 @@ export function StepReviewV2({
           marginBottom: "12px",
         }}
       >
-        {hasHold ? "Complete your payment" : "Confirm your details"}
+        {hasHold ? t("review.titlePay") : t("review.titleConfirm")}
       </h2>
       <p
         style={{
@@ -137,9 +144,7 @@ export function StepReviewV2({
           maxWidth: "42rem",
         }}
       >
-        {hasHold
-          ? "Your booking is temporarily reserved while you complete payment."
-          : "Review your experience details before securing your reservation."}
+        {hasHold ? t("review.subtitlePay") : t("review.subtitleConfirm")}
       </p>
 
       <div
@@ -153,40 +158,55 @@ export function StepReviewV2({
       >
         {state.productType === "day_use" && (
           <>
-            <Row label="Experience" value="Day Use" />
-            <Row label="Visit date" value={state.dayUse.visitDate ?? "—"} />
-            <Row label="Guests" value={String(state.dayUse.guests)} />
+            <Row label={t("review.experience")} value={t("summary.dayUse")} />
+            <Row
+              label={t("review.visitDate")}
+              value={state.dayUse.visitDate ?? emDash}
+            />
+            <Row
+              label={t("review.guests")}
+              value={String(state.dayUse.guests)}
+            />
           </>
         )}
 
         {state.productType === "bubble_stay" && (
           <>
-            <Row label="Experience" value="Bubble Stay" />
             <Row
-              label="Stay"
+              label={t("review.experience")}
+              value={t("summary.bubbleStay")}
+            />
+            <Row
+              label={t("review.stay")}
               value={
                 state.bubbleStay.checkIn && state.bubbleStay.checkOut
                   ? `${state.bubbleStay.checkIn} → ${state.bubbleStay.checkOut}`
-                  : "—"
+                  : emDash
               }
             />
             <Row
-              label="Nights"
-              value={nights > 0 ? String(nights) : "—"}
+              label={t("review.nights")}
+              value={nights > 0 ? String(nights) : emDash}
             />
-            <Row label="Guests" value={String(state.bubbleStay.totalGuests)} />
+            <Row
+              label={t("review.guests")}
+              value={String(state.bubbleStay.totalGuests)}
+            />
 
             {booking && booking.bubbles.length > 0
               ? booking.bubbles.map((bubble, index) => (
                   <div key={bubble.id} style={{ marginTop: "10px" }}>
                     <Row
-                      label={`Bubble ${index + 1}`}
+                      label={t("review.bubbleN", { number: index + 1 })}
                       value={localizedName(bubble, locale)}
                     />
-                    <Row label="Guests" value={String(bubble.guests)} />
+                    <Row
+                      label={t("review.guests")}
+                      value={String(bubble.guests)}
+                    />
                     {bubble.accommodation_type && (
                       <Row
-                        label="Type"
+                        label={t("review.type")}
                         value={localizedName(bubble.accommodation_type, locale)}
                       />
                     )}
@@ -199,26 +219,44 @@ export function StepReviewV2({
                     : selection.accommodationSlug;
                   const assignment =
                     selection.assignmentMode === "random"
-                      ? "Zalina will assign"
+                      ? t("review.zalinaWillAssign")
                       : selection.bubbleId != null
-                        ? "Selected bubble"
-                        : "Pending bubble";
+                        ? t("review.selectedBubble")
+                        : t("review.pendingBubble");
                   const nightly = type
                     ? parseMoney(type.price_per_night)
                     : null;
                   const lineEstimate =
                     nightly != null && nights > 0 ? nightly * nights : null;
+                  const amountLabel =
+                    lineEstimate != null
+                      ? formatMoneyAmount(lineEstimate, null, locale)
+                      : null;
                   return (
                     <div key={selection.key} style={{ marginTop: "10px" }}>
-                      <Row label={`Bubble ${index + 1}`} value={typeName} />
-                      <Row label="Assignment" value={assignment} />
-                      <Row label="Guests" value={String(selection.guests)} />
                       <Row
-                        label="Line estimate"
+                        label={t("review.bubbleN", { number: index + 1 })}
+                        value={typeName}
+                      />
+                      <Row label={t("review.assignment")} value={assignment} />
+                      <Row
+                        label={t("review.guests")}
+                        value={String(selection.guests)}
+                      />
+                      <Row
+                        label={t("review.lineEstimate")}
                         value={
-                          lineEstimate != null
-                            ? `${Math.round(lineEstimate).toLocaleString("en-US")} (${nights} night${nights === 1 ? "" : "s"})`
-                            : "—"
+                          amountLabel != null
+                            ? nights === 1
+                              ? t("review.lineEstimateValue", {
+                                  amount: amountLabel,
+                                  nights,
+                                })
+                              : t("review.lineEstimateValuePlural", {
+                                  amount: amountLabel,
+                                  nights,
+                                })
+                            : emDash
                         }
                       />
                     </div>
@@ -227,51 +265,70 @@ export function StepReviewV2({
           </>
         )}
 
-        <Row label="Guest name" value={state.guest.name || "—"} />
-        <Row label="Email" value={state.guest.email || "—"} />
-        <Row label="Phone" value={state.guest.phone || "—"} />
+        <Row
+          label={t("review.guestName")}
+          value={state.guest.name || emDash}
+        />
+        <Row label={t("review.email")} value={state.guest.email || emDash} />
+        <Row label={t("review.phone")} value={state.guest.phone || emDash} />
 
         {booking ? (
           <>
-            <Row label="Booking reference" value={booking.booking_reference} />
-            <Row label="Booking code" value={booking.booking_code} />
-            <Row label="Status" value={booking.status} />
-            <Row label="Total due" value={formatServerTotal(booking)} />
+            <Row
+              label={t("review.bookingReference")}
+              value={booking.booking_reference}
+            />
+            <Row
+              label={t("review.bookingCode")}
+              value={booking.booking_code}
+            />
+            <Row label={t("review.status")} value={booking.status} />
+            <Row
+              label={t("review.totalDue")}
+              value={formatServerTotal(booking, locale)}
+            />
             {estimateDiffers && checkout.estimateAtCreate != null && (
               <Row
-                label="Previous estimate"
+                label={t("review.previousEstimate")}
                 value={
                   dayUseSettings
                     ? formatMoneyAmount(
                         checkout.estimateAtCreate,
-                        booking.currency ?? dayUseSettings.currency
+                        booking.currency ?? dayUseSettings.currency,
+                        locale
                       )
-                    : Math.round(checkout.estimateAtCreate).toLocaleString(
-                        "en-US"
+                    : formatMoneyAmount(
+                        checkout.estimateAtCreate,
+                        null,
+                        locale
                       )
                 }
               />
             )}
             {countdown.label != null && (
               <Row
-                label="Payment window"
+                label={t("review.paymentWindow")}
                 value={
                   countdown.isExpired
-                    ? "Expired"
-                    : `${countdown.label} remaining`
+                    ? t("review.expired")
+                    : t("review.remaining", { time: countdown.label })
                 }
               />
             )}
           </>
         ) : (
           <Row
-            label="Estimated total"
+            label={t("review.estimatedTotal")}
             value={
               estimatedTotal == null
-                ? "—"
+                ? emDash
                 : state.productType === "day_use" && dayUseSettings
-                  ? formatMoneyAmount(estimatedTotal, dayUseSettings.currency)
-                  : Math.round(estimatedTotal).toLocaleString("en-US")
+                  ? formatMoneyAmount(
+                      estimatedTotal,
+                      dayUseSettings.currency,
+                      locale
+                    )
+                  : formatMoneyAmount(estimatedTotal, null, locale)
             }
           />
         )}
@@ -335,7 +392,7 @@ export function StepReviewV2({
                 padding: 0,
               }}
             >
-              Choose available bubbles
+              {t("review.chooseAvailableBubbles")}
             </button>
           )}
         </div>
@@ -351,8 +408,7 @@ export function StepReviewV2({
           }}
           role="alert"
         >
-          Your hold has expired. Availability must be checked again before a new
-          reservation.
+          {t("review.holdExpired")}
         </p>
       )}
 
@@ -379,7 +435,7 @@ export function StepReviewV2({
             opacity: payDisabled ? 0.75 : 1,
           }}
         >
-          {ctaLabel(checkout)}
+          {reviewCtaLabel(checkout, t)}
         </button>
 
         {(hasHold || expired || alreadyPaid) && (
@@ -400,7 +456,7 @@ export function StepReviewV2({
               cursor: busy ? "not-allowed" : "pointer",
             }}
           >
-            Start a new reservation
+            {t("review.startNewReservation")}
           </button>
         )}
       </div>
@@ -413,8 +469,7 @@ export function StepReviewV2({
             color: TEXT_MUTED,
           }}
         >
-          You will be redirected to a secure payment page after your reservation
-          is held.
+          {t("review.redirectNote")}
         </p>
       )}
     </div>

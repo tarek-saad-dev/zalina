@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
@@ -13,6 +14,7 @@ import {
 } from "@/components/media/heroImage";
 
 export function Hero() {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
   const markHeroReady = useMarkHeroReady();
@@ -27,9 +29,8 @@ export function Hero() {
   return (
     <section
       className="relative w-full min-h-screen overflow-hidden flex items-center justify-center"
-      aria-label="Zones hero"
+      aria-label={t("hero.ariaLabel")}
     >
-      {/* Background Image with slow scale-in */}
       <motion.div
         className="absolute inset-0"
         initial={!prefersReduced ? { scale: 1.08 } : undefined}
@@ -38,7 +39,7 @@ export function Hero() {
       >
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Zalina Arabian Village in Luxor — heritage architecture, lanterns and palms"
+          alt={t("hero.imageAlt")}
           fill
           className="object-cover"
           priority
@@ -51,7 +52,6 @@ export function Hero() {
         />
       </motion.div>
 
-      {/* Dark vignette overlay — lighter than Home hero so bg image stays visible */}
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
@@ -63,7 +63,6 @@ export function Hero() {
         }}
       />
 
-      {/* Amber radial glow behind headline */}
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
@@ -73,19 +72,16 @@ export function Hero() {
         }}
       />
 
-      {/* Stars layer */}
       <div
         className="exp-hero-stars absolute inset-0 pointer-events-none"
         aria-hidden="true"
       />
 
-      {/* Mist drift */}
       <div
         className="exp-hero-mist absolute inset-0 pointer-events-none"
         aria-hidden="true"
       />
 
-      {/* Gold particles (reduced count) */}
       {!isMobile && !prefersReduced && (
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           {[
@@ -102,9 +98,7 @@ export function Hero() {
         </div>
       )}
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-5 sm:px-8 pt-28 md:pt-0 max-w-[700px] mx-auto">
-        {/* Eyebrow */}
         <motion.span
           className="block text-xs md:text-[11px] font-medium tracking-[0.28em] uppercase mb-5"
           style={{ color: "var(--zones-gold)" }}
@@ -112,20 +106,23 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
         >
-          DISCOVER THE ZONES
+          {t("hero.eyebrow")}
         </motion.span>
 
-        {/* Gold divider */}
         <motion.div
           className="mb-5"
           aria-hidden="true"
-          style={{ width: "48px", height: "1px", background: "linear-gradient(90deg, transparent, var(--zones-gold), transparent)" }}
+          style={{
+            width: "48px",
+            height: "1px",
+            background:
+              "linear-gradient(90deg, transparent, var(--zones-gold), transparent)",
+          }}
           initial={!prefersReduced ? { opacity: 0, scaleX: 0 } : undefined}
           animate={{ opacity: 1, scaleX: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         />
 
-        {/* Headline with blur-to-clear */}
         <motion.h1
           className="zones-hero-title mb-4"
           style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)" }}
@@ -135,10 +132,9 @@ export function Hero() {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.9, delay: 0.5 }}
         >
-          Explore the Spaces of Zalina
+          {t("hero.title")}
         </motion.h1>
 
-        {/* Subtitle */}
         <motion.p
           className="zones-body mb-7 max-w-[500px]"
           style={{ fontSize: "clamp(0.9375rem, 1.2vw, 1rem)" }}
@@ -146,11 +142,9 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.8 }}
         >
-          Distinct spaces in Luxor — arrival, market and dining — each crafted
-          for hospitality, exploration and celebration.
+          {t("hero.subtitle")}
         </motion.p>
 
-        {/* Buttons */}
         <motion.div
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
           initial={!prefersReduced ? { opacity: 0, y: 14 } : undefined}
@@ -162,7 +156,7 @@ export function Hero() {
             className="zones-btn-gold zones-radius-pill flex items-center justify-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--zones-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--zones-bg)]"
             style={{ height: "44px", paddingInline: "28px" }}
           >
-            Explore Zones
+            {t("hero.ctaPrimary")}
           </Link>
           <Link
             href="/book-now"
@@ -177,12 +171,11 @@ export function Hero() {
               backdropFilter: "blur(8px)",
             }}
           >
-            Book a Tour
+            {t("hero.ctaSecondary")}
           </Link>
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         aria-hidden="true"
@@ -194,7 +187,7 @@ export function Hero() {
           className="text-[10px] tracking-[0.2em] uppercase"
           style={{ color: "var(--zones-text-muted)" }}
         >
-          Scroll
+          {t("hero.scroll")}
         </span>
         <ChevronDown
           size={18}

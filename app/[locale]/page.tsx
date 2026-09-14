@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   LuxuryHero,
   HeritageStory,
@@ -20,14 +22,32 @@ import {
   marketZoneCoverCard,
 } from "@/lib/media";
 import { HeroRevealGate } from "@/components/media/HeroRevealGate";
+import {
+  buildPageMetadata,
+  localeFromParams,
+} from "@/lib/i18n/metadata";
 
 export const revalidate = 60;
 
-export default async function Home() {
+type Props = {
+  params: { locale: string };
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return buildPageMetadata(params.locale, "home", "/");
+}
+
+export default async function Home({ params }: Props) {
+  const { locale } = params;
+  setRequestLocale(locale);
+
+  const apiLocale = localeFromParams(locale);
+  const t = await getTranslations({ locale, namespace: "home" });
+
   const [zones, experiences, galleryCatalog] = await Promise.all([
-    getZones(),
-    getExperiences(),
-    loadGalleryCatalog("en"),
+    getZones(apiLocale),
+    getExperiences(apiLocale),
+    loadGalleryCatalog(apiLocale),
   ]);
 
   const moments = experiencesToMomentCards(experiences);
@@ -35,7 +55,9 @@ export default async function Home() {
   // Same Al-Souk cover as /zones Main Zones card (mapZoneToUi / resolveCoverImage)
   const marketZone = findMarketZone(zones) ?? null;
   const marketZoneName =
-    marketZone?.name_en?.trim() || "Al-Souk Village";
+    (locale === "ar"
+      ? marketZone?.name_ar?.trim()
+      : marketZone?.name_en?.trim()) || t("market.defaultZoneName");
   const stalls = [marketZoneCoverCard(marketZone)];
 
   // Same CMS source as /gallery → "Scenes Made to Be Remembered" → Bubble Stays

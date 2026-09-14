@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { DayUseSettings } from "@/lib/api";
 import type { AccommodationTypeMeta, BookingState } from "./types";
 import type { CheckoutState } from "./checkoutTypes";
@@ -63,7 +64,9 @@ export function BookingSummary({
   canProceed,
   ctaLabel,
 }: BookingSummaryProps) {
+  const t = useTranslations("bookNow");
   const ctaEnabled = canProceed !== false;
+  const emDash = t("summary.emDash");
   const nights =
     state.bubbleStay.checkIn && state.bubbleStay.checkOut
       ? nightsBetween(state.bubbleStay.checkIn, state.bubbleStay.checkOut)
@@ -71,10 +74,10 @@ export function BookingSummary({
 
   const productLabel =
     state.productType === "day_use"
-      ? "Day Use"
+      ? t("summary.dayUse")
       : state.productType === "bubble_stay"
-        ? "Bubble Stay"
-        : "Not selected";
+        ? t("summary.bubbleStay")
+        : t("summary.notSelected");
 
   const booking = checkout.booking;
   const countdown = useHoldCountdown({
@@ -84,16 +87,16 @@ export function BookingSummary({
 
   const estimateLabel =
     estimatedTotal == null
-      ? "—"
+      ? emDash
       : state.productType === "day_use" && dayUseSettings
-        ? formatMoneyAmount(estimatedTotal, dayUseSettings.currency)
-        : Math.round(estimatedTotal).toLocaleString("en-US");
+        ? formatMoneyAmount(estimatedTotal, dayUseSettings.currency, locale)
+        : formatMoneyAmount(estimatedTotal, null, locale);
 
   const serverTotalLabel = booking
     ? (() => {
         const amount = parseMoney(booking.total);
         if (amount == null) return booking.total;
-        return formatMoneyAmount(amount, booking.currency);
+        return formatMoneyAmount(amount, booking.currency, locale);
       })()
     : null;
 
@@ -116,39 +119,48 @@ export function BookingSummary({
           marginBottom: "14px",
         }}
       >
-        Booking summary
+        {t("summary.title")}
       </p>
 
-      <SummaryRow label="Experience" value={productLabel} />
+      <SummaryRow label={t("summary.experience")} value={productLabel} />
 
       {state.productType === "day_use" && (
         <>
-          <SummaryRow label="Visit" value={state.dayUse.visitDate ?? "—"} />
-          <SummaryRow label="Guests" value={String(state.dayUse.guests)} />
+          <SummaryRow
+            label={t("summary.visit")}
+            value={state.dayUse.visitDate ?? emDash}
+          />
+          <SummaryRow
+            label={t("summary.guests")}
+            value={String(state.dayUse.guests)}
+          />
         </>
       )}
 
       {state.productType === "bubble_stay" && (
         <>
           <SummaryRow
-            label="Stay"
+            label={t("summary.stay")}
             value={
               state.bubbleStay.checkIn && state.bubbleStay.checkOut
                 ? `${state.bubbleStay.checkIn} → ${state.bubbleStay.checkOut}`
-                : "—"
+                : emDash
             }
           />
           <SummaryRow
-            label="Nights"
-            value={nights > 0 ? String(nights) : "—"}
+            label={t("summary.nights")}
+            value={nights > 0 ? String(nights) : emDash}
           />
           <SummaryRow
-            label="Guests"
+            label={t("summary.guests")}
             value={`${allocatedGuests}/${state.bubbleStay.totalGuests}`}
           />
-          <SummaryRow label="Remaining" value={String(remainingGuests)} />
           <SummaryRow
-            label="Bubbles"
+            label={t("summary.remaining")}
+            value={String(remainingGuests)}
+          />
+          <SummaryRow
+            label={t("summary.bubbles")}
             value={
               booking && booking.bubbles.length > 0
                 ? booking.bubbles
@@ -158,20 +170,23 @@ export function BookingSummary({
                   ? state.bubbleStay.selections
                       .map((s) => {
                         const type = accommodationTypes.find(
-                          (t) => t.id === s.accommodationTypeId
+                          (meta) => meta.id === s.accommodationTypeId
                         );
                         return type
                           ? localizedName(type, locale)
                           : s.accommodationSlug;
                       })
                       .join(", ")
-                  : "—"
+                  : emDash
             }
           />
         </>
       )}
 
-      <SummaryRow label="Guest" value={state.guest.name || "—"} />
+      <SummaryRow
+        label={t("summary.guest")}
+        value={state.guest.name || emDash}
+      />
 
       <div
         style={{
@@ -182,26 +197,32 @@ export function BookingSummary({
       >
         {booking ? (
           <>
-            <SummaryRow label="Total due" value={serverTotalLabel ?? "—"} />
+            <SummaryRow
+              label={t("summary.totalDue")}
+              value={serverTotalLabel ?? emDash}
+            />
             {countdown.label != null && (
               <SummaryRow
-                label="Hold"
+                label={t("summary.hold")}
                 value={
                   countdown.isExpired
-                    ? "Expired"
-                    : `${countdown.label} left`
+                    ? t("summary.expired")
+                    : t("summary.holdLeft", { time: countdown.label })
                 }
               />
             )}
             <p style={{ fontSize: "11px", color: TEXT_MUTED, marginTop: "6px" }}>
-              Server total is final for this reservation.
+              {t("summary.serverTotalNote")}
             </p>
           </>
         ) : (
           <>
-            <SummaryRow label="Estimated total" value={estimateLabel} />
+            <SummaryRow
+              label={t("summary.estimatedTotal")}
+              value={estimateLabel}
+            />
             <p style={{ fontSize: "11px", color: TEXT_MUTED, marginTop: "6px" }}>
-              Estimate only — server total after create is final.
+              {t("summary.estimateNote")}
             </p>
           </>
         )}
@@ -228,7 +249,10 @@ export function BookingSummary({
           cursor: ctaEnabled ? "pointer" : "not-allowed",
         }}
       >
-        {ctaLabel ?? (isLastStep ? "Reserve & Continue to Payment" : "Continue")}
+        {ctaLabel ??
+          (isLastStep
+            ? t("cta.reserveContinueToPayment")
+            : t("cta.continue"))}
         {ctaEnabled && <ArrowRight size={14} />}
       </button>
     </aside>

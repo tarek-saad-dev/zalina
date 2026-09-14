@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { FilterTabs } from "./FilterTabs";
 import { ExperienceCard } from "./ExperienceCard";
 import { filterExperiences, getDefaultCategory } from "./data";
 import {
-  getCategoryHeading,
+  getCategoryMessageKey,
   parseExperienceCategory,
   type ExperienceCategory,
   type ExperienceItem,
@@ -35,6 +36,7 @@ export function ExperiencesCatalog({
   experiences,
   initialCategory,
 }: ExperiencesCatalogProps) {
+  const t = useTranslations("experiences");
   const router = useRouter();
   const pathname = usePathname();
   const [activeCategory, setActiveCategory] = useState<ExperienceCategory>(
@@ -58,7 +60,9 @@ export function ExperiencesCatalog({
   };
 
   const filtered = filterExperiences(experiences, activeCategory);
-  const heading = getCategoryHeading(activeCategory);
+  const heading = t(
+    `categoryHeadings.${getCategoryMessageKey(activeCategory)}`
+  );
 
   return (
     <section
@@ -80,7 +84,7 @@ export function ExperiencesCatalog({
           viewport={{ once: true }}
           transition={transition(0)}
         >
-          <p className="exp-eyebrow mb-3">Explore</p>
+          <p className="exp-eyebrow mb-3">{t("catalog.eyebrow")}</p>
           <h2 id="experiences-heading" className="exp-section-heading">
             {heading}
           </h2>
@@ -98,10 +102,8 @@ export function ExperiencesCatalog({
         >
           {filtered.length === 0 ? (
             <div className="exp-empty-state">
-              <p className="exp-eyebrow mb-4">Coming Soon</p>
-              <p className="exp-body">
-                No experiences available in this category yet.
-              </p>
+              <p className="exp-eyebrow mb-4">{t("catalog.emptyEyebrow")}</p>
+              <p className="exp-body">{t("catalog.emptyBody")}</p>
             </div>
           ) : (
             <div

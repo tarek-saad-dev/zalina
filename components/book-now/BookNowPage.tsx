@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { dayUseProductToSettings } from "@/lib/api";
 import { useBookingState, type BookingCatalog } from "./useBookingState";
 import { BookingHero } from "./BookingHero";
@@ -20,6 +21,7 @@ interface BookNowPageProps {
 }
 
 export function BookNowPage({ catalog }: BookNowPageProps) {
+  const t = useTranslations("bookNow");
   const locale = useBookingLocale();
   const dayUseQuery = useDayUseSettings({
     enabled: true,
@@ -183,16 +185,16 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
 
   const summaryCTALabel = isBusy
     ? checkout.phase === "creating"
-      ? "Securing…"
+      ? t("cta.securing")
       : checkout.phase === "initiating_payment" ||
           checkout.phase === "redirecting"
-        ? "Preparing payment…"
-        : "Processing…"
+        ? t("cta.preparingPayment")
+        : t("cta.processing")
     : checkout.booking
-      ? "Proceed to Secure Payment"
+      ? t("cta.proceedToPayment")
       : isLastStep
-        ? "Reserve & Continue to Payment"
-        : "Continue";
+        ? t("cta.reserveContinueToPayment")
+        : t("cta.continue");
 
   const lastStepCanProceed =
     isLastStep &&
@@ -247,8 +249,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                     }}
                     role="status"
                   >
-                    A reservation hold is active. Use &quot;Start a new
-                    reservation&quot; on Review before changing details.
+                    {t("holdBanner")}
                   </p>
                 )}
                 <StepShell
@@ -340,9 +341,9 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         ctaLabel={
           isLastStep
             ? checkout.booking
-              ? "Pay now"
-              : "Reserve"
-            : "Continue"
+              ? t("cta.payNow")
+              : t("cta.reserve")
+            : t("cta.continue")
         }
       />
     </main>

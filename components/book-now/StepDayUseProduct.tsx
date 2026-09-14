@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { DayUseProduct } from "@/lib/api";
 import type { BookingState } from "./types";
 import {
@@ -34,6 +35,7 @@ export function StepDayUseProduct({
   onReload,
   onSelectProduct,
 }: StepDayUseProductProps) {
+  const t = useTranslations("bookNow");
   const reduceMotion = useReducedMotion();
   // null (hydration) or true → no fade-from-zero; otherwise cards stay opacity:0 forever
   const enterFrom =
@@ -42,8 +44,8 @@ export function StepDayUseProduct({
   if (status === "loading" || status === "idle") {
     return (
       <div aria-busy="true" aria-live="polite">
-        <StepHeading />
-        <div style={panelStyle}>Loading Day Use experiences…</div>
+        <StepHeading t={t} />
+        <div style={panelStyle}>{t("dayUseProduct.loading")}</div>
       </div>
     );
   }
@@ -51,7 +53,7 @@ export function StepDayUseProduct({
   if (status === "error") {
     return (
       <div>
-        <StepHeading />
+        <StepHeading t={t} />
         <div
           role="alert"
           style={{
@@ -62,10 +64,10 @@ export function StepDayUseProduct({
           }}
         >
           <p style={{ color: TEXT_PRIMARY, marginBottom: "10px" }}>
-            {error ?? "Day Use experiences could not be loaded."}
+            {error ?? t("dayUseProduct.errorFallback")}
           </p>
           <button type="button" onClick={onReload} style={ghostButtonStyle}>
-            Try again
+            {t("dayUseProduct.tryAgain")}
           </button>
         </div>
       </div>
@@ -75,10 +77,9 @@ export function StepDayUseProduct({
   if (products.length === 0) {
     return (
       <div>
-        <StepHeading />
+        <StepHeading t={t} />
         <div role="status" style={panelStyle}>
-          No Day Use experiences are available right now. Please check back
-          soon.
+          {t("dayUseProduct.empty")}
         </div>
       </div>
     );
@@ -86,7 +87,7 @@ export function StepDayUseProduct({
 
   return (
     <div>
-      <StepHeading />
+      <StepHeading t={t} />
       <p
         style={{
           fontFamily: "var(--font-body)",
@@ -97,7 +98,7 @@ export function StepDayUseProduct({
           lineHeight: 1.7,
         }}
       >
-        Select the Day Use experience you want to book. Pricing is per guest.
+        {t("dayUseProduct.subtitle")}
       </p>
 
       <div className="grid gap-4">
@@ -107,7 +108,7 @@ export function StepDayUseProduct({
           const priceLabel =
             amount == null
               ? product.price_per_guest
-              : formatMoneyAmount(amount, product.currency);
+              : formatMoneyAmount(amount, product.currency, locale);
 
           return (
             <motion.button
@@ -169,7 +170,7 @@ export function StepDayUseProduct({
                     letterSpacing: "0.06em",
                   }}
                 >
-                  {locale === "ar" ? "لكل ضيف" : "per guest"}
+                  {t("dayUseProduct.perGuest")}
                 </p>
               </div>
               <span
@@ -200,7 +201,11 @@ export function StepDayUseProduct({
   );
 }
 
-function StepHeading() {
+function StepHeading({
+  t,
+}: {
+  t: ReturnType<typeof useTranslations<"bookNow">>;
+}) {
   return (
     <>
       <p
@@ -214,7 +219,7 @@ function StepHeading() {
           marginBottom: "10px",
         }}
       >
-        Day Use
+        {t("dayUseProduct.eyebrow")}
       </p>
       <h2
         style={{
@@ -225,7 +230,7 @@ function StepHeading() {
           marginBottom: "12px",
         }}
       >
-        Book Day Use
+        {t("dayUseProduct.title")}
       </h2>
     </>
   );

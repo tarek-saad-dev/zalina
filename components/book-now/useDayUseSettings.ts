@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   getDayUseProducts,
   type DayUseProduct,
@@ -18,8 +19,12 @@ export type DayUseSettingsStatus = DayUseProductsStatus;
 export function useDayUseSettings(options: {
   enabled: boolean;
   locale?: string;
+  /** Optional override for non-ApiError fallback (defaults to translated checkout.productsLoadFailed). */
+  errorFallback?: string;
 }) {
-  const { enabled, locale } = options;
+  const { enabled, locale, errorFallback } = options;
+  const t = useTranslations("bookNow");
+  const fallback = errorFallback ?? t("checkout.productsLoadFailed");
   const [status, setStatus] = useState<DayUseProductsStatus>("idle");
   const [products, setProducts] = useState<DayUseProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -34,14 +39,12 @@ export function useDayUseSettings(options: {
       setStatus("ready");
     } catch (err) {
       const message =
-        err instanceof ApiError
-          ? err.message
-          : "Could not load Day Use products.";
+        err instanceof ApiError ? err.message : fallback;
       setProducts([]);
       setError(message);
       setStatus("error");
     }
-  }, [enabled, locale]);
+  }, [enabled, locale, fallback]);
 
   useEffect(() => {
     if (!enabled) {

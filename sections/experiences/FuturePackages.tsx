@@ -1,29 +1,19 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { useExpMotion } from "./useExpMotion";
 
-const PACKAGES = [
-  {
-    title: "Weekend Retreats",
-    description: "Multi-day immersive experiences",
-  },
-  {
-    title: "Celebration Packages",
-    description: "Birthdays, anniversaries & more",
-  },
-  {
-    title: "Seasonal Experiences",
-    description: "Limited-time special events",
-  },
-  {
-    title: "Custom Packages",
-    description: "Tailored to your preferences",
-  },
+const PACKAGE_KEYS = [
+  "weekend",
+  "celebration",
+  "seasonal",
+  "custom",
 ] as const;
 
 export function FuturePackages() {
+  const t = useTranslations("experiences");
   const { prefersReducedMotion, fadeUp, transition, stagger } = useExpMotion();
 
   return (
@@ -40,16 +30,16 @@ export function FuturePackages() {
           viewport={{ once: true }}
           transition={transition(0)}
         >
-          <p className="exp-eyebrow mb-3">Coming Soon</p>
+          <p className="exp-eyebrow mb-3">{t("future.eyebrow")}</p>
           <h2 id="future-packages-heading" className="exp-section-heading">
-            Future Packages
+            {t("future.title")}
           </h2>
         </motion.div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
-          {PACKAGES.map((pkg, index) => (
+          {PACKAGE_KEYS.map((key, index) => (
             <motion.article
-              key={pkg.title}
+              key={key}
               className="group relative overflow-hidden rounded-sm p-6 sm:p-7"
               style={{
                 background:
@@ -77,7 +67,7 @@ export function FuturePackages() {
                   border: "1px solid rgba(212,175,55,0.2)",
                 }}
               >
-                Coming Soon
+                {t("future.badge")}
               </span>
 
               <div
@@ -96,9 +86,11 @@ export function FuturePackages() {
                   color: "var(--exp-text-primary)",
                 }}
               >
-                {pkg.title}
+                {t(`future.packages.${key}.title`)}
               </h3>
-              <p className="relative exp-body text-sm">{pkg.description}</p>
+              <p className="relative exp-body text-sm">
+                {t(`future.packages.${key}.description`)}
+              </p>
             </motion.article>
           ))}
         </div>

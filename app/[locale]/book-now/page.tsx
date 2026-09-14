@@ -1,18 +1,26 @@
-import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { BookNowPage } from "@/components/book-now/BookNowPage";
 import { listAccommodationTypes } from "@/lib/api";
 import type { AccommodationTypeMeta } from "@/components/book-now/types";
+import {
+  buildPageMetadata,
+  localeFromParams,
+} from "@/lib/i18n/metadata";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Book Now | Zalina Arabian Village",
-  description:
-    "Book Day Use or Bubble Stay at Zalina Arabian Village.",
+type Props = {
+  params: { locale: string };
 };
 
-export default async function BookNow() {
-  const accommodations = await listAccommodationTypes();
+export async function generateMetadata({ params }: Props) {
+  return buildPageMetadata(params.locale, "bookNow", "/book-now");
+}
+
+export default async function BookNow({ params }: Props) {
+  setRequestLocale(params.locale);
+  const locale = localeFromParams(params.locale);
+  const accommodations = await listAccommodationTypes({ locale });
 
   const catalog = {
     accommodationTypes: accommodations

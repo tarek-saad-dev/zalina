@@ -3,15 +3,8 @@ import { DEFAULT_API_LOCALE, type ApiLocale } from "@/lib/api/locale";
 export const BOOKING_LOCALE_EVENT = "zalina:booking-locale";
 
 /**
- * Resolve booking/wedding page locale from the URL query only.
- *
- * Priority:
- * 1. valid explicit ?lang=ar | ?lang=en
- * 2. site default = en
- *
- * Never inherit a previously mutated document.documentElement.lang.
- * The optional `documentLang` argument exists only so regression tests can
- * prove stale DOM lang is ignored.
+ * @deprecated Prefer next-intl path locale (`useLocale` / `getLocale`).
+ * Kept for tests and any remaining query-param redirects.
  */
 export function resolveBookingPageLocale(
   queryLang?: string | null,
@@ -24,7 +17,7 @@ export function resolveBookingPageLocale(
   return DEFAULT_API_LOCALE;
 }
 
-/** Always sync <html lang/dir>, including restoring English/LTR. */
+/** Sync <html lang/dir> — prefer server-rendered attrs from [locale] layout. */
 export function applyDocumentLocale(locale: ApiLocale): void {
   if (typeof document === "undefined") return;
   document.documentElement.lang = locale;

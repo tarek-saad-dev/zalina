@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { BookingState } from "./types";
 import { BookingCalendar } from "./BookingCalendar";
 import { GuestSelector } from "./GuestSelector";
@@ -23,9 +24,11 @@ export function StepBubbleStayDatesGuests({
   onSetBubbleStayDates,
   onSetBubbleStayGuests,
 }: StepBubbleStayDatesGuestsProps) {
+  const t = useTranslations("bookNow");
   const { checkIn, checkOut, totalGuests } = state.bubbleStay;
   const nights =
     checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 0;
+  const emDash = t("summary.emDash");
 
   return (
     <div>
@@ -40,7 +43,7 @@ export function StepBubbleStayDatesGuests({
           marginBottom: "10px",
         }}
       >
-        Stay Details
+        {t("bubbleStayDates.eyebrow")}
       </p>
       <h2
         style={{
@@ -51,7 +54,7 @@ export function StepBubbleStayDatesGuests({
           marginBottom: "12px",
         }}
       >
-        Plan your overnight
+        {t("bubbleStayDates.title")}
       </h2>
       <p
         style={{
@@ -63,8 +66,7 @@ export function StepBubbleStayDatesGuests({
           lineHeight: 1.7,
         }}
       >
-        Select check-in, check-out, and your total party size. Changing dates
-        clears previously chosen physical bubbles so availability can refresh.
+        {t("bubbleStayDates.subtitle")}
       </p>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -81,7 +83,7 @@ export function StepBubbleStayDatesGuests({
         </div>
         <div className="grid gap-4 content-start">
           <GuestSelector
-            label="Total guests"
+            label={t("bubbleStayDates.totalGuests")}
             value={totalGuests}
             onChange={onSetBubbleStayGuests}
             min={1}
@@ -94,13 +96,13 @@ export function StepBubbleStayDatesGuests({
               padding: "18px 20px",
             }}
           >
-            <MetaRow label="Check-in" value={checkIn ?? "—"} />
-            <MetaRow label="Check-out" value={checkOut ?? "—"} />
+            <MetaRow label={t("bubbleStayDates.checkIn")} value={checkIn ?? emDash} />
+            <MetaRow label={t("bubbleStayDates.checkOut")} value={checkOut ?? emDash} />
             <MetaRow
-              label="Nights"
-              value={nights > 0 ? String(nights) : "—"}
+              label={t("bubbleStayDates.nights")}
+              value={nights > 0 ? String(nights) : emDash}
             />
-            <MetaRow label="Guests" value={String(totalGuests)} />
+            <MetaRow label={t("bubbleStayDates.guests")} value={String(totalGuests)} />
           </div>
         </div>
       </div>

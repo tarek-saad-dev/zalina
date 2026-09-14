@@ -2,18 +2,28 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 import { FEATURE_FLAGS } from "@/lib/featureFlags";
 import { ComingSoonOverlay } from "@/components/ui/ComingSoonOverlay";
 
+const WEDDING_FEATURES = [
+  { key: "luxorSetting" as const, icon: "🌅" },
+  { key: "villageAtmosphere" as const, icon: "🏛️" },
+  { key: "bespokePlanning" as const, icon: "✨" },
+  { key: "egyptianHospitality" as const, icon: "🥂" },
+];
+
 export function WeddingShowcase() {
+  const t = useTranslations("home.weddings");
+
   if (!FEATURE_FLAGS.WEDDINGS_ACTIVE) {
     return (
       <ComingSoonOverlay
-        title="Weddings at Zalina"
-        subtitle="A destination celebration experience in Luxor is on its way."
+        title={t("comingSoonTitle")}
+        subtitle={t("comingSoonSubtitle")}
         variant="section"
       />
     );
@@ -24,7 +34,7 @@ export function WeddingShowcase() {
       <div className="absolute inset-0">
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Destination wedding celebration at Zalina Arabian Village in Luxor"
+          alt={t("imageAlt")}
           fill
           className="object-cover"
           quality={85}
@@ -111,7 +121,7 @@ export function WeddingShowcase() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lux-eyebrow mb-6"
           >
-            Weddings at Zalina
+            {t("eyebrow")}
           </motion.p>
 
           {/* Main Heading - Emotional & Timeless */}
@@ -123,9 +133,9 @@ export function WeddingShowcase() {
             className="lux-heading-xl mb-6"
             style={{ fontSize: "clamp(36px, 5vw, 64px)" }}
           >
-            Your Forever
+            {t("headline")}
             <br />
-            <span style={{ color: "var(--lux-gold)" }}>Starts Here</span>
+            <span style={{ color: "var(--lux-gold)" }}>{t("headlineAccent")}</span>
           </motion.h2>
 
           {/* Divider */}
@@ -147,9 +157,7 @@ export function WeddingShowcase() {
             className="lux-body-lg mb-10 max-w-lg"
             style={{ color: "rgba(255,255,255,0.85)", lineHeight: 1.7 }}
           >
-            Celebrate in Luxor with gardens, village atmosphere, Egyptian
-            hospitality, exceptional dining and live entertainment — a complete
-            destination wedding experience at Zalina.
+            {t("body")}
           </motion.p>
 
           {/* Premium Wedding Features */}
@@ -160,16 +168,11 @@ export function WeddingShowcase() {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="flex flex-wrap gap-5 mb-12"
           >
-            {[
-              { label: "Luxor Setting", icon: "🌅" },
-              { label: "Village Atmosphere", icon: "🏛️" },
-              { label: "Bespoke Planning", icon: "✨" },
-              { label: "Egyptian Hospitality", icon: "🥂" },
-            ].map((feature) => (
+            {WEDDING_FEATURES.map((feature) => (
               <span
-                key={feature.label}
+                key={feature.key}
                 className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full"
-                style={{ 
+                style={{
                   color: "rgba(255,255,255,0.9)",
                   background: "rgba(212, 175, 55, 0.1)",
                   border: "1px solid rgba(212, 175, 55, 0.2)",
@@ -177,7 +180,7 @@ export function WeddingShowcase() {
               >
                 <span>{feature.icon}</span>
                 <span style={{ fontFamily: "var(--font-display, serif)" }}>
-                  {feature.label}
+                  {t(`features.${feature.key}`)}
                 </span>
               </span>
             ))}
@@ -191,22 +194,22 @@ export function WeddingShowcase() {
             transition={{ duration: 0.6, delay: 0.8 }}
             className="flex flex-wrap gap-4"
           >
-            <Link 
-              href="/weddings" 
+            <Link
+              href="/weddings"
               className="lux-btn-primary"
-              style={{ 
+              style={{
                 background: "linear-gradient(135deg, rgba(212,175,55,0.9), rgba(180,140,40,0.9))",
                 border: "none",
               }}
             >
-              Explore Weddings
+              {t("ctaPrimary")}
             </Link>
-            <Link 
-              href="/weddings#plan" 
+            <Link
+              href="/weddings#plan"
               className="lux-btn-secondary"
               style={{ borderColor: "rgba(212,175,55,0.5)" }}
             >
-              Check Your Date
+              {t("ctaSecondary")}
             </Link>
           </motion.div>
         </div>

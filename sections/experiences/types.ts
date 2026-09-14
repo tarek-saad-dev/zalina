@@ -44,15 +44,18 @@ export function parseExperienceCategory(
   return "All Experiences";
 }
 
-const CATEGORY_HEADINGS: Record<ExperienceCategory, string> = {
-  "All Experiences": "Our Experiences",
-  Day: "Day Experiences",
-  Night: "Night Experiences",
+/** Message keys under `experiences.categories.*` / `experiences.categoryHeadings.*`. */
+export const EXPERIENCE_CATEGORY_MESSAGE_KEYS: Record<
+  ExperienceCategory,
+  "all" | "day" | "night"
+> = {
+  "All Experiences": "all",
+  Day: "day",
+  Night: "night",
 };
 
-export function getCategoryHeading(
+export function getCategoryMessageKey(
   category: string | null | undefined
-): string {
-  const safe = parseExperienceCategory(category);
-  return CATEGORY_HEADINGS[safe];
+): "all" | "day" | "night" {
+  return EXPERIENCE_CATEGORY_MESSAGE_KEYS[parseExperienceCategory(category)];
 }

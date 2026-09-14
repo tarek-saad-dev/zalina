@@ -1,34 +1,20 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Award, Users, Landmark, Gem } from "lucide-react";
 import { useExpMotion } from "./useExpMotion";
 
-const FEATURES = [
-  {
-    icon: Award,
-    title: "Curated Excellence",
-    description: "Every experience is thoughtfully designed.",
-  },
-  {
-    icon: Users,
-    title: "Personalized Service",
-    description: "Attentive care tailored to you.",
-  },
-  {
-    icon: Landmark,
-    title: "Authentic Atmosphere",
-    description: "Immersive Luxor atmosphere.",
-  },
-  {
-    icon: Gem,
-    title: "Unforgettable Moments",
-    description: "Creating memories that last forever.",
-  },
+const FEATURE_KEYS = [
+  { key: "excellence", icon: Award },
+  { key: "service", icon: Users },
+  { key: "atmosphere", icon: Landmark },
+  { key: "moments", icon: Gem },
 ] as const;
 
 export function WhyChooseZalina() {
+  const t = useTranslations("experiences");
   const { prefersReducedMotion, fadeUp, transition, stagger } = useExpMotion();
 
   return (
@@ -55,17 +41,17 @@ export function WhyChooseZalina() {
           transition={transition(0)}
         >
           <h2 id="why-choose-heading" className="exp-section-heading">
-            Why Choose Zalina Experiences
+            {t("why.title")}
           </h2>
           <div className="mx-auto mt-4 exp-editorial-line-long" aria-hidden="true" />
         </motion.div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-5">
-          {FEATURES.map((feature, index) => {
+          {FEATURE_KEYS.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <motion.article
-                key={feature.title}
+                key={feature.key}
                 className="group relative overflow-hidden rounded-sm p-6 text-center sm:p-7"
                 style={{
                   background: "var(--exp-bg-card)",
@@ -116,9 +102,11 @@ export function WhyChooseZalina() {
                     color: "var(--exp-text-primary)",
                   }}
                 >
-                  {feature.title}
+                  {t(`why.items.${feature.key}.title`)}
                 </h3>
-                <p className="relative exp-body text-sm">{feature.description}</p>
+                <p className="relative exp-body text-sm">
+                  {t(`why.items.${feature.key}.description`)}
+                </p>
               </motion.article>
             );
           })}

@@ -1,10 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
-const HERO_TAGS = ["Day Use", "Bubble Stay"] as const;
+const HERO_TAG_KEYS = ["dayUse", "bubbleStay"] as const;
 
 export function BookingHero() {
+  const t = useTranslations("bookNow");
+
   return (
     <section
       className="relative overflow-hidden flex flex-col justify-end"
@@ -71,7 +74,7 @@ export function BookingHero() {
             fontWeight: 500,
           }}
         >
-          Zalina Arabian Village
+          {t("hero.eyebrow")}
         </motion.p>
 
         {/* Main title */}
@@ -89,7 +92,7 @@ export function BookingHero() {
             marginBottom: "14px",
           }}
         >
-          Book Your Zalina Experience
+          {t("hero.title")}
         </motion.h1>
 
         {/* Subtitle */}
@@ -106,8 +109,7 @@ export function BookingHero() {
             marginBottom: "22px",
           }}
         >
-          Choose Day Use or Bubble Stay for your visit to Zalina Arabian Village
-          in Luxor, then complete your booking details.
+          {t("hero.subtitle")}
         </motion.p>
 
         {/* Luxury tags */}
@@ -117,9 +119,9 @@ export function BookingHero() {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.32 }}
           className="flex flex-wrap gap-2"
         >
-          {HERO_TAGS.map((tag) => (
+          {HERO_TAG_KEYS.map((key) => (
             <span
-              key={tag}
+              key={key}
               style={{
                 fontFamily: "var(--font-body)",
                 fontSize: "11px",
@@ -133,7 +135,7 @@ export function BookingHero() {
                 background: "rgba(212,175,55,0.05)",
               }}
             >
-              {tag}
+              {t(`hero.tags.${key}`)}
             </span>
           ))}
         </motion.div>

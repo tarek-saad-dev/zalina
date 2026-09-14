@@ -2,7 +2,8 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
@@ -26,21 +27,15 @@ const STARS = [
   { top: "30%", left: "58%", size: 1,   delay: "0.9s", dur: "3.3s" },
 ];
 
-const SIGNATURE_MOMENTS = [
-  { num: "01", label: "Egyptian Dining" },
-  { num: "02", label: "Village Gatherings" },
-  { num: "03", label: "Cultural Evenings" },
-  { num: "04", label: "Wedding Nights" },
-];
-
-const RAIL_ITEMS = [
-  { num: "01", label: "Egyptian Dining",    sub: "Lunch, dinner & live cooking", href: "#experiences" },
-  { num: "02", label: "Village Gatherings", sub: "Courtyards & celebration",     href: "#experiences" },
-  { num: "03", label: "Cultural Evenings",  sub: "Music, performance & light",   href: "#experiences" },
-  { num: "04", label: "Wedding Nights",     sub: "Destination celebrations",     href: "#weddings" },
-];
+const RAIL_KEYS = [
+  { num: "01", key: "dining", href: "#experiences" },
+  { num: "02", key: "gatherings", href: "#experiences" },
+  { num: "03", key: "evenings", href: "#experiences" },
+  { num: "04", key: "weddings", href: "#weddings" },
+] as const;
 
 export function LuxuryHero() {
+  const t = useTranslations("home.hero");
   const containerRef = useRef<HTMLDivElement>(null);
   const markHeroReady = useMarkHeroReady();
 
@@ -63,7 +58,7 @@ export function LuxuryHero() {
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
           src={NEUTRAL_MEDIA_FALLBACK}
-          alt="Zalina Arabian Village illuminated evening in Luxor"
+          alt={t("imageAlt")}
           fill
           className="object-cover object-center"
           priority
@@ -163,7 +158,7 @@ export function LuxuryHero() {
                 className="text-[10px] tracking-[0.24em] uppercase"
                 style={{ color: "#D4AF37", fontFamily: "var(--font-body, sans-serif)" }}
               >
-                Luxor, Egypt
+                {t("badge")}
               </span>
             </motion.div>
 
@@ -181,14 +176,14 @@ export function LuxuryHero() {
                 letterSpacing: "-0.01em",
               }}
             >
-              In the Heart
+              {t("headlineLine1")}
               <br />
               <span className="lux-shimmer" style={{ fontSize: "clamp(42px, 5.8vw, 86px)" }}>
-                of Luxor.
+                {t("headlineLine2")}
               </span>
               <br />
               <span style={{ color: "#D4AF37", fontStyle: "italic" }}>
-                Along the Nile.
+                {t("headlineLine3")}
               </span>
             </motion.h1>
 
@@ -214,8 +209,7 @@ export function LuxuryHero() {
                 maxWidth: "34rem",
               }}
             >
-              An immersive Egyptian cultural village of hospitality, dining,
-              live cooking and performance.
+              {t("supporting")}
             </motion.p>
 
             {/* CTAs — primary Book Now; secondary desktop-only (distinct from booking) */}
@@ -246,7 +240,7 @@ export function LuxuryHero() {
                   (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(212,175,55,0.28)";
                 }}
               >
-                Book Now
+                {t("ctaPrimary")}
               </Link>
 
               {/* Secondary — hidden on mobile (avoids duplicate CTAs on small screens) */}
@@ -272,87 +266,17 @@ export function LuxuryHero() {
                   (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
                 }}
               >
-                View Experiences
+                {t("ctaSecondary")}
               </Link>
             </motion.div>
           </div>
-
-          {/* ── Right: Signature Moments Card ────────── */}
-          {/* <motion.div
-            initial={{ opacity: 0, x: 36, y: 16 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 1.1, delay: 1.45, ease: "easeOut" }}
-            className="hero-card-float hidden lg:block flex-shrink-0"
-            style={{ width: "252px" }}
-          >
-            <div
-              style={{
-                background: "rgba(8,8,8,0.7)",
-                border: "1px solid rgba(212,175,55,0.22)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                boxShadow: "0 28px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(212,175,55,0.08)",
-              }}
-            >
-              <div style={{ height: "1px", background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)" }} />
-
-              <div className="px-6 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(212,175,55,0.1)" }}>
-                <p
-                  className="text-[9px] tracking-[0.3em] uppercase mb-1"
-                  style={{ color: "rgba(212,175,55,0.55)", fontFamily: "var(--font-body)" }}
-                >
-                  Zalina Arabian Village
-                </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-display, serif)",
-                    fontSize: "15px",
-                    fontWeight: 400,
-                    color: "#F8F5ED",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  Signature Moments
-                </p>
-              </div>
-
-              <div className="px-6 py-2">
-                {SIGNATURE_MOMENTS.map((m, i) => (
-                  <div
-                    key={m.num}
-                    className="flex items-center gap-4 py-3"
-                    style={{
-                      borderBottom: i < SIGNATURE_MOMENTS.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                    }}
-                  >
-                    <span
-                      className="text-[9px] tabular-nums"
-                      style={{ color: "rgba(212,175,55,0.42)", fontFamily: "var(--font-body)" }}
-                    >
-                      {m.num}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-body, sans-serif)",
-                        fontSize: "12px",
-                        color: "rgba(248,245,237,0.72)",
-                        letterSpacing: "0.04em",
-                      }}
-                    >
-                      {m.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div> */}
         </div>
       </motion.div>
 
       {/* ── Bottom Rail ───────────────────────────────── */}
       <div className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 lg:px-20 pb-8">
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
-          {RAIL_ITEMS.map((item) => (
+          {RAIL_KEYS.map((item) => (
             <Link
               key={item.num}
               href={item.href}
@@ -362,10 +286,10 @@ export function LuxuryHero() {
                 <span className="text-[10px] text-[#D4AF37]/60 mt-0.5">{item.num}</span>
                 <div>
                   <p className="text-xs text-white/80 group-hover:text-[#D4AF37] transition-colors">
-                    {item.label}
+                    {t(`rail.${item.key}.label`)}
                   </p>
                   <p className="text-[10px] text-white/45 mt-1 hidden sm:block">
-                    {item.sub}
+                    {t(`rail.${item.key}.sub`)}
                   </p>
                 </div>
               </div>

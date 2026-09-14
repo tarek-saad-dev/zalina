@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Gem, Shield, Palette, Clock } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { PROMISE_CARDS } from "./zones.data";
@@ -9,6 +10,7 @@ import type { LucideIcon } from "lucide-react";
 const icons: LucideIcon[] = [Gem, Shield, Palette, Clock];
 
 export function WhyZonesMatter() {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
 
   return (
@@ -18,7 +20,6 @@ export function WhyZonesMatter() {
       aria-labelledby="why-zones-title"
     >
       <div className="zones-container relative z-10">
-        {/* Section Header */}
         <motion.div
           className="text-center mb-10"
           initial={!prefersReduced ? { opacity: 0, y: 30 } : undefined}
@@ -30,24 +31,23 @@ export function WhyZonesMatter() {
             className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
           >
-            OUR PROMISE
+            {t("promise.eyebrow")}
           </span>
           <h2
             id="why-zones-title"
             className="zones-section-title"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
-            Why Each Zone Matters
+            {t("promise.title")}
           </h2>
         </motion.div>
 
-        {/* 4 Premium Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {PROMISE_CARDS.map((card, index) => {
             const Icon = icons[index];
             return (
               <motion.div
-                key={card.title}
+                key={card.messageKey}
                 className="group relative flex flex-col items-center text-center p-7 rounded-xl transition-all duration-500"
                 style={{
                   background: "rgba(9,12,20,0.6)",
@@ -69,7 +69,6 @@ export function WhyZonesMatter() {
                     : undefined
                 }
               >
-                {/* Low backlight */}
                 <div
                   className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   aria-hidden="true"
@@ -79,7 +78,6 @@ export function WhyZonesMatter() {
                   }}
                 />
 
-                {/* Icon */}
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center mb-5 relative z-10"
                   style={{
@@ -94,7 +92,6 @@ export function WhyZonesMatter() {
                   />
                 </div>
 
-                {/* Title */}
                 <h3
                   className="mb-2 relative z-10"
                   style={{
@@ -104,15 +101,14 @@ export function WhyZonesMatter() {
                     color: "var(--zones-text-light)",
                   }}
                 >
-                  {card.title}
+                  {t(`promise.items.${card.messageKey}.title`)}
                 </h3>
 
-                {/* Description */}
                 <p
                   className="text-[13px] leading-relaxed relative z-10"
                   style={{ color: "var(--zones-text-secondary)" }}
                 >
-                  {card.description}
+                  {t(`promise.items.${card.messageKey}.description`)}
                 </p>
               </motion.div>
             );

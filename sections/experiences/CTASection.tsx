@@ -2,13 +2,15 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { BOOK_NOW_HREF, CONTACT_HREF } from "./data";
 import { useExpMotion } from "./useExpMotion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function CTASection() {
+  const t = useTranslations("experiences");
   const { fadeUp, transition } = useExpMotion();
 
   return (
@@ -67,21 +69,21 @@ export function CTASection() {
           />
 
           <div className="relative z-10">
-            <p className="exp-eyebrow mb-4 sm:mb-5">Begin Your Journey</p>
+            <p className="exp-eyebrow mb-4 sm:mb-5">{t("cta.eyebrow")}</p>
 
             <h2
               id="final-cta-heading"
               className="exp-section-heading-lg mb-8 sm:mb-10"
             >
-              Choose Your Next Luxor Experience
+              {t("cta.title")}
             </h2>
 
             <div className="flex w-full max-w-xs flex-col items-stretch justify-center gap-2.5 mx-auto sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-3.5">
               <Link href={BOOK_NOW_HREF} className="exp-btn-primary">
-                Book Now
+                {t("cta.primary")}
               </Link>
               <Link href={CONTACT_HREF} className="exp-btn-secondary">
-                View Experiences
+                {t("cta.secondary")}
               </Link>
             </div>
           </div>

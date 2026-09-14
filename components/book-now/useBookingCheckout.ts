@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { ApiBooking } from "@/lib/api";
 import type { AccommodationTypeMeta, BookingState } from "./types";
 import {
@@ -8,11 +9,15 @@ import {
   isBusyCheckoutPhase,
   type CheckoutState,
 } from "./checkoutTypes";
-import { BookingCheckoutRunner } from "./bookingCheckoutRunner";
+import {
+  BookingCheckoutRunner,
+  type CheckoutCopy,
+} from "./bookingCheckoutRunner";
 import { prepareBookingPayload } from "./prepareBookingPayload";
 import { clearPendingPaymentBooking } from "./paymentHandoffStorage";
 import { navigateAfterPaymentInitiation } from "./paymentUrl";
 import { pickExpiryTimestamp } from "./useHoldCountdown";
+import { translateValidationIssue } from "./bookingValidation";
 
 export interface UseBookingCheckoutOptions {
   state: BookingState;
@@ -35,6 +40,46 @@ export function useBookingCheckout({
   onBubbleConflict,
   onExpired,
 }: UseBookingCheckoutOptions) {
+  const tCheckout = useTranslations("bookNow.checkout");
+  const tValidation = useTranslations("validation");
+
+  const checkoutCopy = useMemo<CheckoutCopy>(
+    () => ({
+      conflict: tCheckout("conflict"),
+      validation: tCheckout("validation"),
+      rateLimit: tCheckout("rateLimit"),
+      createFailed: tCheckout("createFailed"),
+      createNetwork: tCheckout("createNetwork"),
+      createRetry: tCheckout("createRetry"),
+      incomplete: tCheckout("incomplete"),
+      securing: tCheckout("securing"),
+      reserved: tCheckout("reserved"),
+      holdExpired: tCheckout("holdExpired"),
+      preparingPayment: tCheckout("preparingPayment"),
+      redirecting: tCheckout("redirecting"),
+      invalidPaymentLink: tCheckout("invalidPaymentLink"),
+      bookingNotFound: tCheckout("bookingNotFound"),
+      alreadyPaid: tCheckout("alreadyPaid"),
+      paymentExpired: tCheckout("paymentExpired"),
+      paymentRateLimit: tCheckout("paymentRateLimit"),
+      paymentFailed: tCheckout("paymentFailed"),
+      paymentRetrySupport: tCheckout("paymentRetrySupport"),
+      paymentRetry: tCheckout("paymentRetry"),
+      paymentNetwork: tCheckout("paymentNetwork"),
+      paymentRetryNoNew: tCheckout("paymentRetryNoNew"),
+      productsLoadFailed: tCheckout("productsLoadFailed"),
+    }),
+    [tCheckout]
+  );
+
+  const translateValidation = useCallback(
+    (issue: Parameters<typeof translateValidationIssue>[0]) =>
+      translateValidationIssue(issue, (key, values) =>
+        tValidation(key as Parameters<typeof tValidation>[0], values)
+      ),
+    [tValidation]
+  );
+
   const [checkout, setCheckout] = useState<CheckoutState>(
     createInitialCheckoutState
   );
@@ -43,6 +88,8 @@ export function useBookingCheckout({
   onConflictRef.current = onBubbleConflict;
   const onExpiredRef = useRef(onExpired);
   onExpiredRef.current = onExpired;
+  const copyRef = useRef(checkoutCopy);
+  copyRef.current = checkoutCopy;
 
   const runnerRef = useRef<BookingCheckoutRunner | null>(null);
   if (!runnerRef.current) {
@@ -62,6 +109,11 @@ export function useBookingCheckout({
     });
   }
 
+  useEffect(() => {
+    runnerRef.current?.setCopy(checkoutCopy);
+    runnerRef.current?.setTranslateValidation(translateValidation);
+  }, [checkoutCopy, translateValidation]);
+
   const syncFromRunner = useCallback(() => {
     const runner = runnerRef.current;
     if (!runner) return;
@@ -78,16 +130,15 @@ export function useBookingCheckout({
       if (expiry == null) return false;
       if (Date.now() >= expiry) {
         const runner = runnerRef.current;
+        const holdExpired = copyRef.current.holdExpired;
         if (runner) {
           runner.state = {
             ...runner.state,
             phase: "expired",
             booking,
-            statusMessage:
-              "Your reservation hold has expired. Please check availability again.",
+            statusMessage: holdExpired,
             error: {
-              message:
-                "Your reservation hold has expired. Please check availability again.",
+              message: holdExpired,
               status: null,
               kind: "payment",
             },
@@ -126,6 +177,8 @@ export function useBookingCheckout({
   const reserveAndPay = useCallback(async () => {
     const runner = runnerRef.current;
     if (!runner) return;
+    runner.setCopy(copyRef.current);
+    runner.setTranslateValidation(translateValidation);
     if (isBusyCheckoutPhase(runner.state.phase)) return;
     if (runner.state.booking && markExpiredIfNeeded(runner.state.booking)) {
       return;
@@ -144,15 +197,18 @@ export function useBookingCheckout({
     markExpiredIfNeeded,
     state,
     syncFromRunner,
+    translateValidation,
   ]);
 
   const retryPayment = useCallback(async () => {
     const runner = runnerRef.current;
     if (!runner?.state.booking) return;
+    runner.setCopy(copyRef.current);
+    runner.setTranslateValidation(translateValidation);
     if (markExpiredIfNeeded(runner.state.booking)) return;
     await runner.retryPayment(locale);
     syncFromRunner();
-  }, [locale, markExpiredIfNeeded, syncFromRunner]);
+  }, [locale, markExpiredIfNeeded, syncFromRunner, translateValidation]);
 
   const canSubmit =
     prepareBookingPayload(state, accommodationTypes) != null &&

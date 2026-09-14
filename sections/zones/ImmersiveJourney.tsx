@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { JOURNEY_STEPS, type Zone } from "./zones.data";
 
@@ -11,14 +12,21 @@ interface ImmersiveJourneyProps {
 }
 
 export function ImmersiveJourney({ zones = [] }: ImmersiveJourneyProps) {
+  const t = useTranslations("zones");
   const prefersReduced = useReducedMotion();
 
   const steps = JOURNEY_STEPS.map((step, index) => {
     const zone = zones.length > 0 ? zones[index % zones.length] : undefined;
+    const title = t(`journey.steps.${step.messageKey}.title`);
+    const description = t(`journey.steps.${step.messageKey}.description`);
     return {
       ...step,
+      title,
+      description,
       image: zone?.image || step.image,
-      imageAlt: zone?.imageAlt || `Step ${step.number}: ${step.title}`,
+      imageAlt:
+        zone?.imageAlt ||
+        t("journey.imageAlt", { number: step.number, title }),
     };
   });
 
@@ -49,14 +57,14 @@ export function ImmersiveJourney({ zones = [] }: ImmersiveJourneyProps) {
             className="block text-[11px] font-medium tracking-[0.28em] uppercase mb-4"
             style={{ color: "var(--zones-gold)" }}
           >
-            YOUR JOURNEY
+            {t("journey.eyebrow")}
           </span>
           <h2
             id="immersive-journey-title"
             className="zones-section-title"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
-            Immersive Experience Journey
+            {t("journey.title")}
           </h2>
         </motion.div>
 
@@ -74,7 +82,7 @@ export function ImmersiveJourney({ zones = [] }: ImmersiveJourneyProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
             {steps.map((step, index) => (
               <motion.div
-                key={step.title}
+                key={step.messageKey}
                 className="group relative rounded-xl overflow-hidden cursor-default"
                 style={{
                   height: "clamp(320px, 45vw, 420px)",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import {
   Hero,
   DestinationOverview,
@@ -13,31 +13,27 @@ import {
 import { LuxuryFooter } from "@/sections/home";
 import { getZones, mapZoneToUi } from "@/lib/api";
 import { HeroRevealGate } from "@/components/media/HeroRevealGate";
+import {
+  buildPageMetadata,
+  localeFromParams,
+} from "@/lib/i18n/metadata";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Zones & Venues | Zalina Arabian Village Luxor",
-  description:
-    "Explore the spaces of Zalina Arabian Village in Luxor — Arrival Plaza, Al-Souk Village market, and Food & Entertainment.",
-  keywords: [
-    "Zalina zones",
-    "Luxor village spaces",
-    "Al-Souk Village",
-    "event spaces Luxor",
-    "Zalina Arabian Village",
-  ],
-  openGraph: {
-    title: "Zones & Venues | Zalina Arabian Village Luxor",
-    description:
-      "Discover the village spaces of Zalina in Luxor — market, dining and gathering areas shaped for hospitality.",
-    type: "website",
-  },
+type Props = {
+  params: { locale: string };
 };
 
-export default async function ZonesPage() {
-  const apiZones = await getZones();
-  const zones = apiZones.map((z) => mapZoneToUi(z));
+export async function generateMetadata({ params }: Props) {
+  return buildPageMetadata(params.locale, "zones", "/zones");
+}
+
+export default async function ZonesPage({ params }: Props) {
+  setRequestLocale(params.locale);
+  const locale = localeFromParams(params.locale);
+
+  const apiZones = await getZones(locale);
+  const zones = apiZones.map((z) => mapZoneToUi(z, locale));
   const featured =
     zones.find((z) => z.isBookableOnline) ?? zones[0] ?? null;
 

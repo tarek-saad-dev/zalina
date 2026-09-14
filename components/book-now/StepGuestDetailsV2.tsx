@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import type { BookingState, GuestDetailsState } from "./types";
 
 const GOLD = "rgba(212,175,55,0.9)";
@@ -61,11 +62,12 @@ export function StepGuestDetailsV2({
   state,
   onSetGuestDetails,
 }: StepGuestDetailsV2Props) {
+  const t = useTranslations("bookNow");
   const g = state.guest;
   const emailError =
     g.email.trim().length > 0 &&
     (!g.email.includes("@") || !g.email.includes("."))
-      ? "Enter a valid email address."
+      ? t("guest.emailError")
       : undefined;
 
   return (
@@ -81,7 +83,7 @@ export function StepGuestDetailsV2({
           marginBottom: "10px",
         }}
       >
-        Your Details
+        {t("guest.eyebrow")}
       </p>
       <h2
         style={{
@@ -92,7 +94,7 @@ export function StepGuestDetailsV2({
           marginBottom: "12px",
         }}
       >
-        Who should we expect?
+        {t("guest.title")}
       </h2>
       <p
         style={{
@@ -103,11 +105,11 @@ export function StepGuestDetailsV2({
           lineHeight: 1.7,
         }}
       >
-        We only need name, email, and phone for your booking.
+        {t("guest.subtitle")}
       </p>
 
       <div className="grid gap-4">
-        <Field id="guest-name" label="Full name">
+        <Field id="guest-name" label={t("guest.fullName")}>
           <input
             id="guest-name"
             value={g.name}
@@ -117,7 +119,7 @@ export function StepGuestDetailsV2({
             required
           />
         </Field>
-        <Field id="guest-email" label="Email" error={emailError}>
+        <Field id="guest-email" label={t("guest.email")} error={emailError}>
           <input
             id="guest-email"
             type="email"
@@ -131,7 +133,7 @@ export function StepGuestDetailsV2({
             required
           />
         </Field>
-        <Field id="guest-phone" label="Phone">
+        <Field id="guest-phone" label={t("guest.phone")}>
           <input
             id="guest-phone"
             type="tel"

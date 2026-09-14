@@ -2,14 +2,16 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Check } from "lucide-react";
-import { BOOK_NOW_HREF, FEATURED_DINNER_HIGHLIGHTS } from "./data";
+import { BOOK_NOW_HREF, FEATURED_DINNER_HIGHLIGHT_KEYS } from "./data";
 import { useExpMotion } from "./useExpMotion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
 
 export function EditorialSpotlight() {
+  const t = useTranslations("experiences");
   const { prefersReducedMotion, isMobile, fadeUp, transition } = useExpMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -40,9 +42,9 @@ export function EditorialSpotlight() {
           viewport={{ once: true }}
           transition={transition(0)}
         >
-          <p className="exp-eyebrow mb-3">Featured</p>
+          <p className="exp-eyebrow mb-3">{t("featured.eyebrow")}</p>
           <h2 id="featured-heading" className="exp-section-heading-lg">
-            Zalina Arabian Village Night Experience
+            {t("featured.title")}
           </h2>
         </motion.div>
 
@@ -76,7 +78,7 @@ export function EditorialSpotlight() {
               >
                 <Image
                   src={NEUTRAL_MEDIA_FALLBACK}
-                  alt="Egyptian dinner evening at Zalina Arabian Village in Luxor"
+                  alt={t("featured.imageAlt")}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover scale-[1.08]"
@@ -118,7 +120,7 @@ export function EditorialSpotlight() {
                     color: "var(--exp-gold-soft)",
                   }}
                 >
-                  A cultural evening in Luxor
+                  {t("featured.floatingCaption")}
                 </p>
               </motion.div>
             </div>
@@ -154,18 +156,14 @@ export function EditorialSpotlight() {
                   fontWeight: 400,
                 }}
               >
-                A Cultural Evening in Luxor
+                {t("featured.heading")}
               </h3>
 
-              <p className="exp-body mb-7 sm:mb-8">
-                Egyptian dinner, live cooking, Nubian rhythms, Sufi and Tanoura,
-                and illuminated village courtyards — hospitality shaped for a
-                memorable night in Luxor.
-              </p>
+              <p className="exp-body mb-7 sm:mb-8">{t("featured.body")}</p>
 
               <ul className="mb-8 space-y-3.5 sm:mb-9 sm:space-y-4">
-                {FEATURED_DINNER_HIGHLIGHTS.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
+                {FEATURED_DINNER_HIGHLIGHT_KEYS.map((key) => (
+                  <li key={key} className="flex items-start gap-3">
                     <span
                       className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
                       style={{
@@ -184,14 +182,14 @@ export function EditorialSpotlight() {
                       className="text-sm leading-relaxed"
                       style={{ color: "var(--exp-text-muted)" }}
                     >
-                      {feature}
+                      {t(`highlights.${key}`)}
                     </span>
                   </li>
                 ))}
               </ul>
 
               <Link href={BOOK_NOW_HREF} className="exp-btn-primary">
-                Reserve Now
+                {t("featured.cta")}
               </Link>
             </div>
           </motion.div>

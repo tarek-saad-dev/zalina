@@ -77,6 +77,26 @@ export function isGuestAllocationComplete(
   );
 }
 
+type ValidationTranslator = (
+  key: string,
+  values?: Record<string, string | number>
+) => string;
+
+/** Resolve a validation issue with next-intl `validation.*` (or English fallback). */
+export function translateValidationIssue(
+  issue: BookingValidationIssue,
+  t?: ValidationTranslator
+): string {
+  if (t) {
+    try {
+      return t(issue.code, issue.values);
+    } catch {
+      // fall through
+    }
+  }
+  return issue.message;
+}
+
 export function validateDayUseProduct(
   dayUse: DayUseState
 ): BookingValidationIssue[] {
@@ -97,10 +117,12 @@ export function validateDayUseDates(
   now = new Date()
 ): BookingValidationIssue[] {
   const issues: BookingValidationIssue[] = [];
+  const minDate = getBookingMinDate(now);
   if (!isIsoDateString(dayUse.visitDate) || !isDateOnOrAfterToday(dayUse.visitDate, now)) {
     issues.push({
       code: "invalid_visit_date",
-      message: `Choose a visit date on or after ${getBookingMinDate(now)}.`,
+      message: `Choose a visit date on or after ${minDate}.`,
+      values: { minDate },
       field: "visitDate",
     });
   }
@@ -120,11 +142,13 @@ export function validateBubbleStayDates(
 ): BookingValidationIssue[] {
   const issues: BookingValidationIssue[] = [];
   const { checkIn, checkOut, totalGuests } = bubbleStay;
+  const minDate = getBookingMinDate(now);
 
   if (!isIsoDateString(checkIn) || !isDateOnOrAfterToday(checkIn, now)) {
     issues.push({
       code: "invalid_check_in",
-      message: `Check-in must be on or after ${getBookingMinDate(now)}.`,
+      message: `Check-in must be on or after ${minDate}.`,
+      values: { minDate },
       field: "checkIn",
     });
   }
@@ -143,7 +167,7 @@ export function validateBubbleStayDates(
   }
   if (!Number.isInteger(totalGuests) || totalGuests < 1) {
     issues.push({
-      code: "invalid_guest_count",
+      code: "invalid_total_guests",
       message: "Total guests must be at least 1.",
       field: "totalGuests",
     });
@@ -172,11 +196,13 @@ export function validateBubbleSelections(
     issues.push({
       code: "guest_over_allocated",
       message: `Allocated guests (${allocated}) exceed total guests (${totalGuests}).`,
+      values: { allocated, total: totalGuests },
     });
   } else if (allocated < totalGuests) {
     issues.push({
       code: "guest_under_allocated",
       message: `Allocate all guests (${allocated} of ${totalGuests}).`,
+      values: { allocated, total: totalGuests },
     });
   }
 
@@ -213,6 +239,7 @@ export function validateBubbleSelections(
       issues.push({
         code: "selection_guests_over_capacity",
         message: `Guests exceed max capacity (${type.max_guests}) for this type.`,
+        values: { max: type.max_guests },
         selectionKey: selection.key,
       });
     }

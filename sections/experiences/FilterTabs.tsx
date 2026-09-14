@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useId } from "react";
+import { useTranslations } from "next-intl";
 import {
   EXPERIENCE_CATEGORIES,
+  EXPERIENCE_CATEGORY_MESSAGE_KEYS,
   type ExperienceCategory,
   parseExperienceCategory,
 } from "./types";
@@ -16,6 +18,7 @@ export function FilterTabs({
   activeCategory,
   onCategoryChange,
 }: FilterTabsProps) {
+  const t = useTranslations("experiences");
   const tablistId = useId();
   const safeActive = parseExperienceCategory(activeCategory);
 
@@ -53,11 +56,12 @@ export function FilterTabs({
       <div className="exp-container py-2.5 md:py-3">
         <div
           role="tablist"
-          aria-label="Experience categories"
+          aria-label={t("categories.ariaLabel")}
           className="hide-scrollbar flex items-center gap-1.5 overflow-x-auto overscroll-x-contain scroll-smooth px-0.5 sm:gap-2 md:justify-center md:gap-1.5 lg:gap-2"
         >
           {EXPERIENCE_CATEGORIES.map((category, index) => {
             const isActive = safeActive === category;
+            const messageKey = EXPERIENCE_CATEGORY_MESSAGE_KEYS[category];
             return (
               <button
                 key={category}
@@ -76,7 +80,7 @@ export function FilterTabs({
                     : "rgba(248, 243, 232, 0.55)",
                 }}
               >
-                {category}
+                {t(`categories.${messageKey}`)}
                 <span
                   className="absolute bottom-0 left-2.5 right-2.5 h-px transition-opacity duration-300"
                   style={{

@@ -27,30 +27,34 @@ export interface Zone {
   slug?: string;
 }
 
-export interface OccasionCard {
+export interface OccasionDef {
   id: OccasionId;
-  title: string;
-  description: string;
+  /** Message key under `zones.occasions.items.*` */
+  messageKey:
+    | "dayEvents"
+    | "eveningAffairs"
+    | "weddings"
+    | "corporate"
+    | "private";
   symbol: string;
   recommendedZones: ZoneId[];
 }
 
-export interface JourneyStep {
+export interface JourneyStepDef {
   number: number;
-  title: string;
-  description: string;
+  /** Message key under `zones.journey.steps.*` */
+  messageKey: "arrival" | "explore" | "live" | "depart";
   image: string;
 }
 
-export interface PromiseCard {
-  title: string;
-  description: string;
+export interface PromiseCardDef {
+  /** Message key under `zones.promise.items.*` */
+  messageKey: "quality" | "privacy" | "atmosphere" | "timing";
 }
 
-export interface BookingCard {
-  title: string;
-  description: string;
-  cta: string;
+export interface BookingCardDef {
+  /** Message key under `zones.booking.cards.*` */
+  messageKey: "weddings" | "corporate" | "private";
   href: string;
   image: string;
 }
@@ -58,139 +62,100 @@ export interface BookingCard {
 /** @deprecated Prefer API-mapped zones passed as props. Kept as empty fallback. */
 export const ZONES: Zone[] = [];
 
-// ============================================
-// OCCASION CARDS DATA (structural marketing UI)
-// ============================================
-
-export const OCCASIONS: OccasionCard[] = [
+export const OCCASIONS: OccasionDef[] = [
   {
     id: "day-events",
-    title: "Day Events",
-    description: "Perfect for brunches, pool parties, and daytime celebrations",
+    messageKey: "dayEvents",
     symbol: "☀",
     recommendedZones: [],
   },
   {
     id: "evening-affairs",
-    title: "Evening Affairs",
-    description: "Ideal for dinners, galas, and nighttime gatherings",
+    messageKey: "eveningAffairs",
     symbol: "🌙",
     recommendedZones: [],
   },
   {
     id: "weddings",
-    title: "Weddings",
-    description: "Dedicated spaces for ceremonies and receptions",
+    messageKey: "weddings",
     symbol: "💍",
     recommendedZones: [],
   },
   {
     id: "corporate",
-    title: "Corporate",
-    description: "Professional settings for business events and conferences",
+    messageKey: "corporate",
     symbol: "◆",
     recommendedZones: [],
   },
   {
     id: "private",
-    title: "Private",
-    description: "Intimate spaces for exclusive celebrations",
+    messageKey: "private",
     symbol: "✦",
     recommendedZones: [],
   },
 ];
 
-// ============================================
-// JOURNEY STEPS DATA
-// Editorial storytelling — images use neutral fallback until page CMS exists.
-// When zones are passed at runtime, ImmersiveJourney prefers zone covers.
-// ============================================
-
-export const JOURNEY_STEPS: JourneyStep[] = [
+export const JOURNEY_STEPS: JourneyStepDef[] = [
   {
     number: 1,
-    title: "Arrival & Welcome",
-    description: "Step through the gates into a world of Egyptian hospitality",
+    messageKey: "arrival",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     number: 2,
-    title: "Explore the Zones",
-    description: "Discover each unique space designed for different moments",
+    messageKey: "explore",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     number: 3,
-    title: "Live the Experience",
-    description: "Immerse yourself in celebrations, dining, and cultural stories",
+    messageKey: "live",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
     number: 4,
-    title: "Depart with Memories",
-    description: "Leave with stories that last a lifetime",
+    messageKey: "depart",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
-// ============================================
-// PROMISE CARDS DATA
-// ============================================
-
-export const PROMISE_CARDS: PromiseCard[] = [
-  {
-    title: "Premium Quality",
-    description: "Every detail crafted to perfection",
-  },
-  {
-    title: "Exclusive Privacy",
-    description: "Private spaces for intimate moments",
-  },
-  {
-    title: "Unique Atmosphere",
-    description: "Each zone has its own character",
-  },
-  {
-    title: "Flexible Timing",
-    description: "Day and evening availability",
-  },
+export const PROMISE_CARDS: PromiseCardDef[] = [
+  { messageKey: "quality" },
+  { messageKey: "privacy" },
+  { messageKey: "atmosphere" },
+  { messageKey: "timing" },
 ];
 
-// ============================================
-// BOOKING CONNECTION DATA
-// Editorial CTAs — neutral fallback (no Weddings/Corporate page media contract).
-// ============================================
-
-export const BOOKING_CARDS: BookingCard[] = [
+export const BOOKING_CARDS: BookingCardDef[] = [
   {
-    title: "Wedding Packages",
-    description:
-      "Full wedding planning — ceremonies, receptions, and coordination in our most prestigious venues.",
-    cta: "Plan Your Wedding",
+    messageKey: "weddings",
     href: "/weddings",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
-    title: "Corporate Events",
-    description:
-      "Executive-level gatherings, conferences, and branded evenings in refined private spaces.",
-    cta: "Request a Quote",
+    messageKey: "corporate",
     href: "/book-now",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
   {
-    title: "Private Celebrations",
-    description:
-      "Birthdays, anniversaries, and milestone occasions set in intimate, beautifully curated zones.",
-    cta: "Start Planning",
+    messageKey: "private",
     href: "/book-now",
     image: NEUTRAL_MEDIA_FALLBACK,
   },
 ];
 
-// ============================================
-// VALIDATION HELPERS
-// ============================================
+export const OVERVIEW_CHIP_KEYS = [
+  "pathways",
+  "celebration",
+  "architecture",
+  "hospitality",
+] as const;
+
+export const FEATURED_FEATURE_KEYS = [
+  "atmosphere",
+  "hospitality",
+  "coordination",
+  "setting",
+] as const;
 
 export function isValidZoneId(id: string, zones: Zone[] = ZONES): id is ZoneId {
   return zones.some((z) => z.id === id);

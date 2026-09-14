@@ -1,40 +1,43 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Instagram, Facebook, Twitter, Linkedin, Youtube } from "lucide-react";
 
-const footerLinks = {
+const footerLinkGroups = {
   explore: [
-    { label: "About", href: "/about" },
-    { label: "Experiences", href: "/experiences" },
-    { label: "Zones", href: "/zones" },
-    { label: "Gallery", href: "/gallery" },
+    { key: "about" as const, href: "/about" },
+    { key: "experiences" as const, href: "/experiences" },
+    { key: "zones" as const, href: "/zones" },
+    { key: "gallery" as const, href: "/gallery" },
   ],
   occasions: [
-    { label: "Weddings", href: "/weddings" },
+    { key: "weddings" as const, href: "/weddings" },
   ],
   discover: [
-    { label: "Day Experience", href: "/experiences?category=Day" },
-    { label: "Night Experience", href: "/experiences?category=Night" },
-    { label: "Book Now", href: "/book-now" },
+    { key: "dayExperience" as const, href: "/experiences?category=Day" },
+    { key: "nightExperience" as const, href: "/experiences?category=Night" },
+    { key: "bookNow" as const, href: "/book-now" },
   ],
   information: [
-    { label: "Reservations", href: "/book-now" },
-    { label: "Gallery", href: "/gallery" },
+    { key: "reservations" as const, href: "/book-now" },
+    { key: "gallery" as const, href: "/gallery" },
   ],
 };
 
 const socialLinks = [
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { icon: Instagram, href: "#", key: "instagram" as const },
+  { icon: Facebook, href: "#", key: "facebook" as const },
+  { icon: Twitter, href: "#", key: "twitter" as const },
+  { icon: Linkedin, href: "#", key: "linkedin" as const },
+  { icon: Youtube, href: "#", key: "youtube" as const },
 ];
 
 export function LuxuryFooter() {
+  const t = useTranslations("footer");
+
   return (
     <footer
       className="relative overflow-hidden"
@@ -76,7 +79,7 @@ export function LuxuryFooter() {
                     backgroundClip: "text",
                   }}
                 >
-                  Zalina Arabian Village
+                  {t("brand")}
                 </span>
               </Link>
 
@@ -85,26 +88,26 @@ export function LuxuryFooter() {
                 className="text-sm mb-4 tracking-wide"
                 style={{ color: "var(--lux-gold)", fontFamily: "var(--font-display, serif)" }}
               >
-                An immersive cultural village in Luxor
+                {t("tagline")}
               </p>
 
               <p className="lux-body mb-6 max-w-sm text-sm" style={{ lineHeight: 1.6 }}>
-                Egyptian hospitality, cuisine, craft and evening entertainment in the heart of Luxor — inspired by heritage, shaped for today.
+                {t("description")}
               </p>
 
               {/* Contact Info */}
               <div className="space-y-2">
                 <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
-                  <span style={{ color: "var(--lux-gold)" }}>Location:</span>{" "}
-                  Luxor, Egypt
+                  <span style={{ color: "var(--lux-gold)" }}>{t("locationLabel")}</span>{" "}
+                  {t("locationValue")}
                 </p>
                 <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
-                  <span style={{ color: "var(--lux-gold)" }}>Email:</span>{" "}
-                  hanan.freestyledevelopmentllc@gmail.com
+                  <span style={{ color: "var(--lux-gold)" }}>{t("emailLabel")}</span>{" "}
+                  {t("emailValue")}
                 </p>
                 <p className="text-sm" style={{ color: "rgba(246, 240, 232, 0.86)" }}>
-                  <span style={{ color: "var(--lux-gold)" }}>Phone:</span>{" "}
-                  +1 623 204 1074
+                  <span style={{ color: "var(--lux-gold)" }}>{t("phoneLabel")}</span>{" "}
+                  {t("phoneValue")}
                 </p>
               </div>
             </motion.div>
@@ -121,17 +124,17 @@ export function LuxuryFooter() {
               className="text-sm font-medium mb-6 tracking-wider"
               style={{ color: "var(--lux-gold)" }}
             >
-              EXPLORE
+              {t("sections.explore")}
             </h4>
             <ul className="space-y-3">
-              {footerLinks.explore.map((link) => (
-                <li key={link.label}>
+              {footerLinkGroups.explore.map((link) => (
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
                     style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
-                    {link.label}
+                    {t(`links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -149,17 +152,17 @@ export function LuxuryFooter() {
               className="text-sm font-medium mb-6 tracking-wider"
               style={{ color: "var(--lux-gold)" }}
             >
-              OCCASIONS
+              {t("sections.occasions")}
             </h4>
             <ul className="space-y-3">
-              {footerLinks.occasions.map((link) => (
-                <li key={link.label}>
+              {footerLinkGroups.occasions.map((link) => (
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
                     style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
-                    {link.label}
+                    {t(`links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -177,17 +180,17 @@ export function LuxuryFooter() {
               className="text-sm font-medium mb-6 tracking-wider"
               style={{ color: "var(--lux-gold)" }}
             >
-              DISCOVER
+              {t("sections.discover")}
             </h4>
             <ul className="space-y-3">
-              {footerLinks.discover.map((link) => (
-                <li key={link.label}>
+              {footerLinkGroups.discover.map((link) => (
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
                     style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
-                    {link.label}
+                    {t(`links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -205,17 +208,17 @@ export function LuxuryFooter() {
               className="text-sm font-medium mb-6 tracking-wider"
               style={{ color: "var(--lux-gold)" }}
             >
-              INFORMATION
+              {t("sections.information")}
             </h4>
             <ul className="space-y-3">
-              {footerLinks.information.map((link) => (
-                <li key={link.label}>
+              {footerLinkGroups.information.map((link) => (
+                <li key={`${link.key}-${link.href}`}>
                   <Link
                     href={link.href}
                     className="text-sm transition-colors duration-300 hover:text-[var(--lux-gold)]"
                     style={{ color: "rgba(246, 240, 232, 0.8)" }}
                   >
-                    {link.label}
+                    {t(`links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -236,18 +239,19 @@ export function LuxuryFooter() {
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Copyright */}
           <p className="text-xs" style={{ color: "rgba(246, 240, 232, 0.58)" }}>
-            © 2026 Zalina Arabian Village. All rights reserved.
+            {t("copyright")}
           </p>
 
           {/* Social Links */}
           <div className="flex items-center gap-4">
             {socialLinks.map((social) => {
               const Icon = social.icon;
+              const label = t(`social.${social.key}`);
               return (
                 <Link
-                  key={social.label}
+                  key={social.key}
                   href={social.href}
-                  aria-label={social.label}
+                  aria-label={label}
                   className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-[rgba(201,163,92,0.15)] hover:border-[var(--lux-gold)]"
                   style={{
                     border: "1px solid var(--lux-border)",
@@ -270,14 +274,14 @@ export function LuxuryFooter() {
               className="text-xs transition-colors duration-300 hover:text-[var(--lux-gold)]"
               style={{ color: "rgba(246, 240, 232, 0.58)" }}
             >
-              Privacy Policy
+              {t("links.privacy")}
             </Link>
             <Link
               href="/terms"
               className="text-xs transition-colors duration-300 hover:text-[var(--lux-gold)]"
               style={{ color: "rgba(246, 240, 232, 0.58)" }}
             >
-              Terms of Service
+              {t("links.terms")}
             </Link>
           </div>
         </div>

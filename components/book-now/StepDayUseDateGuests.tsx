@@ -1,12 +1,14 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { useTranslations } from "next-intl";
 import type { DayUseSettings } from "@/lib/api";
 import type { BookingState } from "./types";
 import { BookingCalendar } from "./BookingCalendar";
 import { GuestSelector } from "./GuestSelector";
 import { getBookingMinDate } from "./bookingValidation";
 import { formatMoneyAmount, parseMoney } from "./bookingMedia";
+import { useBookingLocale } from "./useBookingLocale";
 
 const GOLD = "rgba(212,175,55,0.9)";
 const TEXT_PRIMARY = "#F8F2E7";
@@ -31,10 +33,14 @@ export function StepDayUseDateGuests({
   onSetVisitDate,
   onSetDayUseGuests,
 }: StepDayUseDateGuestsProps) {
+  const t = useTranslations("bookNow");
+  const locale = useBookingLocale();
+  const emDash = t("summary.emDash");
+
   if (settingsStatus === "loading" || settingsStatus === "idle") {
     return (
       <div aria-busy="true" aria-live="polite">
-        <StepHeading />
+        <StepHeading t={t} />
         <div
           style={{
             borderRadius: "14px",
@@ -45,7 +51,7 @@ export function StepDayUseDateGuests({
             fontSize: "14px",
           }}
         >
-          Loading Day Use settings…
+          {t("dayUseDateGuests.loading")}
         </div>
       </div>
     );
@@ -54,7 +60,7 @@ export function StepDayUseDateGuests({
   if (settingsStatus === "error") {
     return (
       <div>
-        <StepHeading />
+        <StepHeading t={t} />
         <div
           role="alert"
           style={{
@@ -65,14 +71,14 @@ export function StepDayUseDateGuests({
           }}
         >
           <p style={{ color: TEXT_PRIMARY, marginBottom: "10px" }}>
-            {settingsError ?? "Day Use settings could not be loaded."}
+            {settingsError ?? t("dayUseDateGuests.errorFallback")}
           </p>
           <button
             type="button"
             onClick={onReloadSettings}
             style={ghostButtonStyle}
           >
-            Try again
+            {t("dayUseDateGuests.tryAgain")}
           </button>
         </div>
       </div>
@@ -82,7 +88,7 @@ export function StepDayUseDateGuests({
   if (!settings || !settings.is_active) {
     return (
       <div>
-        <StepHeading />
+        <StepHeading t={t} />
         <div
           role="status"
           style={{
@@ -100,7 +106,7 @@ export function StepDayUseDateGuests({
               marginBottom: "10px",
             }}
           >
-            Day Use is currently unavailable
+            {t("dayUseDateGuests.unavailableTitle")}
           </p>
           <p
             style={{
@@ -111,7 +117,7 @@ export function StepDayUseDateGuests({
             }}
           >
             {settings?.booking_notice?.trim() ||
-              "Please select a Day Use experience, or return when Day Use opens again."}
+              t("dayUseDateGuests.unavailableFallback")}
           </p>
         </div>
       </div>
@@ -125,7 +131,7 @@ export function StepDayUseDateGuests({
 
   return (
     <div>
-      <StepHeading />
+      <StepHeading t={t} />
       <p
         style={{
           fontFamily: "var(--font-body)",
@@ -136,7 +142,7 @@ export function StepDayUseDateGuests({
           lineHeight: 1.7,
         }}
       >
-        Choose a visit date and guests. Pricing follows live Day Use settings.
+        {t("dayUseDateGuests.subtitle")}
       </p>
 
       {settings?.booking_notice?.trim() && (
@@ -166,7 +172,7 @@ export function StepDayUseDateGuests({
         />
         <div className="grid gap-4 content-start">
           <GuestSelector
-            label="Guests"
+            label={t("dayUseDateGuests.guests")}
             value={state.dayUse.guests}
             onChange={onSetDayUseGuests}
             min={1}
@@ -181,18 +187,23 @@ export function StepDayUseDateGuests({
             }}
           >
             <PriceRow
-              label="Price per guest"
+              label={t("dayUseDateGuests.pricePerGuest")}
               value={
                 pricePerGuest != null
-                  ? formatMoneyAmount(pricePerGuest, currency)
-                  : "—"
+                  ? formatMoneyAmount(pricePerGuest, currency, locale)
+                  : emDash
               }
             />
-            <PriceRow label="Guests" value={String(state.dayUse.guests)} />
             <PriceRow
-              label="Estimated total"
+              label={t("dayUseDateGuests.guests")}
+              value={String(state.dayUse.guests)}
+            />
+            <PriceRow
+              label={t("dayUseDateGuests.estimatedTotal")}
               value={
-                estimate != null ? formatMoneyAmount(estimate, currency) : "—"
+                estimate != null
+                  ? formatMoneyAmount(estimate, currency, locale)
+                  : emDash
               }
               emphasize
             />
@@ -204,7 +215,7 @@ export function StepDayUseDateGuests({
                 letterSpacing: "0.04em",
               }}
             >
-              Estimate only — final total is confirmed when the booking is created.
+              {t("dayUseDateGuests.estimateNote")}
             </p>
           </div>
         </div>
@@ -213,7 +224,11 @@ export function StepDayUseDateGuests({
   );
 }
 
-function StepHeading() {
+function StepHeading({
+  t,
+}: {
+  t: ReturnType<typeof useTranslations<"bookNow">>;
+}) {
   return (
     <>
       <p
@@ -227,7 +242,7 @@ function StepHeading() {
           marginBottom: "10px",
         }}
       >
-        Day Use — Date & Guests
+        {t("dayUseDateGuests.eyebrow")}
       </p>
       <h2
         style={{
@@ -238,7 +253,7 @@ function StepHeading() {
           marginBottom: "12px",
         }}
       >
-        When will you visit?
+        {t("dayUseDateGuests.title")}
       </h2>
     </>
   );

@@ -1,0 +1,1016 @@
+{
+  "common": {
+    "brand": "Zalina Arabian Village",
+    "brandShort": "ZALINA",
+    "location": "Luxor, Egypt",
+    "locationDot": "Luxor · Egypt",
+    "bookNow": "Book Now",
+    "comingSoon": "Soon",
+    "langEn": "EN",
+    "langAr": "AR",
+    "continue": "Continue",
+    "review": "Review",
+    "close": "Close",
+    "loading": "Loading…",
+    "tryAgain": "Try again",
+    "perPerson": "per person",
+    "perGuest": "per guest",
+    "luxor": "Luxor",
+    "night": "night",
+    "nights": "nights"
+  },
+
+  "nav": {
+    "homeAria": "Zalina Arabian Village home",
+    "logoAlt": "Zalina Arabian Village",
+    "primaryAria": "Primary",
+    "mobileAria": "Mobile",
+    "menuAria": "Navigation menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "items": {
+      "home": "Home",
+      "about": "About",
+      "experiences": "Experiences",
+      "zones": "Zones",
+      "weddings": "Weddings",
+      "gallery": "Gallery"
+    },
+    "cta": "Book Now"
+  },
+
+  "footer": {
+    "brand": "Zalina Arabian Village",
+    "tagline": "An immersive cultural village in Luxor",
+    "description": "Egyptian hospitality, cuisine, craft and evening entertainment in the heart of Luxor — inspired by heritage, shaped for today.",
+    "locationLabel": "Location:",
+    "locationValue": "Luxor, Egypt",
+    "emailLabel": "Email:",
+    "emailValue": "hanan.freestyledevelopmentllc@gmail.com",
+    "phoneLabel": "Phone:",
+    "phoneValue": "+1 623 204 1074",
+    "sections": {
+      "explore": "EXPLORE",
+      "occasions": "OCCASIONS",
+      "discover": "DISCOVER",
+      "information": "INFORMATION"
+    },
+    "links": {
+      "about": "About",
+      "experiences": "Experiences",
+      "zones": "Zones",
+      "gallery": "Gallery",
+      "weddings": "Weddings",
+      "dayExperience": "Day Experience",
+      "nightExperience": "Night Experience",
+      "bookNow": "Book Now",
+      "reservations": "Reservations",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "social": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "youtube": "YouTube"
+    },
+    "copyright": "© 2026 Zalina Arabian Village. All rights reserved."
+  },
+
+  "home": {
+    "loader": {
+      "location": "Luxor · Egypt",
+      "brand": "ZALINA",
+      "subtitle": "Arabian Village"
+    },
+    "hero": {
+      "imageAlt": "Zalina Arabian Village illuminated evening in Luxor",
+      "badge": "Luxor, Egypt",
+      "headlineLine1": "In the Heart",
+      "headlineLine2": "of Luxor.",
+      "headlineLine3": "Along the Nile.",
+      "supporting": "An immersive Egyptian cultural village of hospitality, dining, live cooking and performance.",
+      "ctaPrimary": "Book Now",
+      "ctaSecondary": "View Experiences",
+      "rail": {
+        "dining": {
+          "label": "Egyptian Dining",
+          "sub": "Lunch, dinner & live cooking"
+        },
+        "gatherings": {
+          "label": "Village Gatherings",
+          "sub": "Courtyards & celebration"
+        },
+        "evenings": {
+          "label": "Cultural Evenings",
+          "sub": "Music, performance & light"
+        },
+        "weddings": {
+          "label": "Wedding Nights",
+          "sub": "Destination celebrations"
+        }
+      }
+    },
+    "heritage": {
+      "headline": "A Heritage. A Feeling. A Story.",
+      "headlineAccent": "A Story.",
+      "body": "In the heart of Luxor, Zalina Arabian Village brings Egyptian hospitality, heritage craft and contemporary comfort together in a living cultural village — gardens, courtyards and evening light shaped for gathering, dining and celebration."
+    },
+    "signatureMoments": {
+      "eyebrow": "Curated Experiences",
+      "title": "Signature Moments",
+      "fallbackTitle": "Zalina Arabian Village",
+      "fallbackSubtitle": "Curated experiences from the CMS catalog",
+      "fallbackAlt": "Zalina Arabian Village"
+    },
+    "dayNight": {
+      "day": {
+        "imageAlt": "Day Experience at Zalina",
+        "title": "Zalina Luxor Day Experience",
+        "body": "A Luxor day centered on Egyptian lunch, live charcoal cooking, village exploration and the easy rhythm of the afternoon — roughly three to four hours of hospitality and atmosphere.",
+        "cta": "Explore Day"
+      },
+      "night": {
+        "imageAlt": "Night Experience at Zalina",
+        "title": "Zalina Arabian Village Night Experience",
+        "body": "As evening settles over Luxor, the village comes alive — Egyptian dinner, live cooking, Nubian rhythms, Sufi and Tanoura, music and illuminated courtyards in one cultural night.",
+        "cta": "Explore Night"
+      }
+    },
+    "market": {
+      "eyebrow": "THE MARKET",
+      "defaultZoneName": "Al-Souk Village",
+      "description": "A country market at the heart of the village — Egyptian crafts, local flavours and lanes made for wandering, shopping and photography in Luxor.",
+      "stallPresence": "Stall presence · {zoneName}",
+      "fallbackSubtitle": "Market photography from the CMS",
+      "prevAria": "Previous market photo",
+      "nextAria": "Next market photo",
+      "slidesAria": "Market slides",
+      "showPhotoAria": "Show photo {current} of {total}",
+      "livePhoto": "Photo {current} of {total}",
+      "footerNote": "Explore crafts, flavours and village lanes — a country market experience at the heart of Zalina in Luxor.",
+      "cta": "Discover the Market Zone"
+    },
+    "gallery": {
+      "eyebrow": "VISUAL JOURNEY",
+      "title": "A Glimpse Into Zalina",
+      "body": "Discover the atmosphere, architecture and unforgettable moments of Zalina Arabian Village in Luxor.",
+      "regionAria": "A glimpse into Zalina",
+      "fallbackTitle": "Zalina Arabian Village",
+      "fallbackAlt": "Zalina Arabian Village"
+    },
+    "promise": {
+      "heritage": "Authentic Egyptian Heritage",
+      "hospitality": "Refined Hospitality",
+      "experiences": "Immersive Experiences",
+      "memories": "Unforgettable Memories"
+    },
+    "weddings": {
+      "comingSoonTitle": "Weddings at Zalina",
+      "comingSoonSubtitle": "A destination celebration experience in Luxor is on its way.",
+      "imageAlt": "Destination wedding celebration at Zalina Arabian Village in Luxor",
+      "eyebrow": "Weddings at Zalina",
+      "headline": "Your Forever",
+      "headlineAccent": "Starts Here",
+      "body": "Celebrate in Luxor with gardens, village atmosphere, Egyptian hospitality, exceptional dining and live entertainment — a complete destination wedding experience at Zalina.",
+      "features": {
+        "luxorSetting": "Luxor Setting",
+        "villageAtmosphere": "Village Atmosphere",
+        "bespokePlanning": "Bespoke Planning",
+        "egyptianHospitality": "Egyptian Hospitality"
+      },
+      "ctaPrimary": "Explore Weddings",
+      "ctaSecondary": "Check Your Date"
+    },
+    "finalCta": {
+      "eyebrow": "Begin Your Journey",
+      "headline": "Your Luxor",
+      "headlineAccent": "Experience Awaits",
+      "tagline": "Dine. Explore. Celebrate.",
+      "ctaPrimary": "Reserve Your Experience",
+      "ctaSecondary": "Explore Experiences"
+    }
+  },
+
+  "about": {
+    "hero": {
+      "imageAlt": "Zalina Arabian Village",
+      "eyebrow": "About Zalina",
+      "titleLine1": "More Than",
+      "titleAccent": "a Destination.",
+      "subtitle": "Zalina is an immersive cultural village in Luxor — where Egyptian hospitality, dining, music and celebration come together.",
+      "scroll": "Discover"
+    },
+    "story": {
+      "eyebrow": "A Village with a Soul",
+      "title": "The Essence of Zalina:",
+      "titleAccent": "A Village for the Soul",
+      "body": "Zalina Arabian Village was created as a place to experience Luxor through hospitality — Egyptian flavours, live cooking, craft and performance, set within a village of courtyards and evening light. Inspired by heritage. Designed for today.",
+      "quote": "Every detail is designed to make a Luxor evening feel unforgettable.",
+      "imageAltPrimary": "Evening gatherings at Zalina Arabian Village in Luxor",
+      "imageAltSecondary": "Egyptian flavours and hospitality at Zalina"
+    },
+    "manifesto": {
+      "eyebrow": "Our Belief",
+      "title": "A Village Built for",
+      "titleAccent": "Wonder",
+      "items": {
+        "heritage": {
+          "num": "01",
+          "title": "Heritage Inspired",
+          "body": "Egyptian character interpreted through contemporary hospitality — craft, cuisine and atmosphere rooted in Luxor’s cultural world."
+        },
+        "presence": {
+          "num": "02",
+          "title": "Hospitality with Presence",
+          "body": "A warm, attentive experience designed around comfort, detail, and memory — where every guest feels genuinely welcomed."
+        },
+        "evenings": {
+          "num": "03",
+          "title": "Evenings Made to Last",
+          "body": "Dining, performance, markets and gatherings shaped into unforgettable Luxor moments that outlast the evening itself."
+        }
+      }
+    },
+    "pillars": {
+      "eyebrow": "What Defines Us",
+      "title": "Three",
+      "titleAccent": "Signature Pillars",
+      "items": {
+        "heritage": {
+          "title": "Heritage",
+          "desc": "Inspired by Egyptian culture and the spirit of Luxor."
+        },
+        "atmosphere": {
+          "title": "Atmosphere",
+          "desc": "Gardens, courtyards and evening light shaped for gathering."
+        },
+        "celebration": {
+          "title": "Celebration",
+          "desc": "From cultural dinners to destination wedding nights."
+        }
+      }
+    },
+    "stories": {
+      "eyebrow": "Stories We Tell",
+      "title": "A World of",
+      "titleAccent": "Immersive Stories",
+      "body": "From the first welcome drink to the final notes of the evening, Zalina turns every visit into a layered Luxor story — felt through food, music, craft and hospitality.",
+      "imageAlt": "Immersive cultural stories at Zalina Arabian Village in Luxor",
+      "items": {
+        "dining": "Egyptian Dining",
+        "gatherings": "Village Gatherings",
+        "evenings": "Cultural Evenings",
+        "weddings": "Wedding Nights",
+        "private": "Private Celebrations"
+      }
+    },
+    "difference": {
+      "eyebrow": "What Sets Us Apart",
+      "title": "The Zalina",
+      "titleAccent": "Difference",
+      "imageAltNight": "Zalina at Night",
+      "imageAltDay": "Zalina by Day",
+      "items": {
+        "atmosphere": "Immersive Luxor atmosphere crafted with intention",
+        "experiences": "Curated cultural experiences rooted in Egyptian hospitality",
+        "service": "Premium service with personal attention to every detail",
+        "evening": "Evening setting designed for dining, music and memory-making",
+        "events": "Purpose-built for experiences, weddings and private events"
+      }
+    },
+    "cta": {
+      "eyebrow": "Begin Your Journey",
+      "title": "Begin Your",
+      "titleAccent": "Zalina Journey",
+      "body": "Explore the experiences, stories, and celebrations waiting inside the village.",
+      "imageAlt": "Evening illumination at Zalina Arabian Village in Luxor",
+      "primary": "Explore Experiences",
+      "secondary": "Book a Visit"
+    }
+  },
+
+  "experiences": {
+    "hero": {
+      "ariaLabel": "Experiences hero",
+      "imageAlt": "Courtyards and evening light at Zalina Arabian Village in Luxor",
+      "eyebrow": "Experiences in Luxor",
+      "title": "Dining, Culture & Evenings to Remember",
+      "subtitle": "Egyptian cuisine, live cooking, village exploration and cultural performance — experiences shaped for guests, hotels and travellers discovering Luxor.",
+      "ctaPrimary": "Explore Experiences",
+      "ctaSecondary": "Plan Your Visit",
+      "scroll": "Scroll",
+      "scrollAriaLabel": "Scroll to experiences"
+    },
+    "catalog": {
+      "eyebrow": "Explore",
+      "emptyEyebrow": "Coming Soon",
+      "emptyBody": "No experiences available in this category yet.",
+      "viewDetails": "View Details",
+      "viewDetailsAria": "View details for {title}"
+    },
+    "categories": {
+      "all": "All Experiences",
+      "day": "Day",
+      "night": "Night",
+      "ariaLabel": "Experience categories"
+    },
+    "categoryHeadings": {
+      "all": "Our Experiences",
+      "day": "Day Experiences",
+      "night": "Night Experiences"
+    },
+    "featured": {
+      "eyebrow": "Featured",
+      "title": "Zalina Arabian Village Night Experience",
+      "imageAlt": "Egyptian dinner evening at Zalina Arabian Village in Luxor",
+      "floatingCaption": "A cultural evening in Luxor",
+      "heading": "A Cultural Evening in Luxor",
+      "body": "Egyptian dinner, live cooking, Nubian rhythms, Sufi and Tanoura, and illuminated village courtyards — hospitality shaped for a memorable night in Luxor.",
+      "cta": "Reserve Now"
+    },
+    "highlights": {
+      "buffet": "Egyptian & regional dinner buffet",
+      "cooking": "Live charcoal BBQ and brick-oven cooking",
+      "performance": "Cultural performance and live music",
+      "atmosphere": "Illuminated courtyards and village atmosphere"
+    },
+    "offer": {
+      "eyebrow": "Exclusive Offer",
+      "title": "Sunset Dining in Luxor",
+      "body": "Golden Luxor light, Egyptian hospitality and an evening of dining in the heart of the village.",
+      "cta": "Learn More",
+      "imageAlt": "Guests enjoying the Sunset and Dine package at golden hour"
+    },
+    "why": {
+      "title": "Why Choose Zalina Experiences",
+      "items": {
+        "excellence": {
+          "title": "Curated Excellence",
+          "description": "Every experience is thoughtfully designed."
+        },
+        "service": {
+          "title": "Personalized Service",
+          "description": "Attentive care tailored to you."
+        },
+        "atmosphere": {
+          "title": "Authentic Atmosphere",
+          "description": "Immersive Luxor atmosphere."
+        },
+        "moments": {
+          "title": "Unforgettable Moments",
+          "description": "Creating memories that last forever."
+        }
+      }
+    },
+    "journey": {
+      "eyebrow": "How It Works",
+      "title": "Experience Journey",
+      "stepAria": "Step {number}: {title}",
+      "steps": {
+        "choose": {
+          "title": "Choose",
+          "description": "Browse & select"
+        },
+        "customize": {
+          "title": "Customize",
+          "description": "Personalize details"
+        },
+        "addons": {
+          "title": "Add-ons",
+          "description": "Enhance experience"
+        },
+        "confirm": {
+          "title": "Confirm",
+          "description": "Secure booking"
+        },
+        "enjoy": {
+          "title": "Enjoy",
+          "description": "Live the moment"
+        }
+      }
+    },
+    "info": {
+      "eyebrow": "Details",
+      "title": "Experience Information",
+      "cards": {
+        "idealFor": {
+          "title": "Ideal For",
+          "description": "Couples, small groups, celebrations"
+        },
+        "duration": {
+          "title": "Duration",
+          "description": "2–5 hours"
+        },
+        "atmosphere": {
+          "title": "Atmosphere",
+          "description": "Elegant, intimate, memorable"
+        },
+        "addons": {
+          "title": "Add-ons",
+          "description": "Private transfers, photography, flowers"
+        }
+      }
+    },
+    "future": {
+      "eyebrow": "Coming Soon",
+      "title": "Future Packages",
+      "badge": "Coming Soon",
+      "packages": {
+        "weekend": {
+          "title": "Weekend Retreats",
+          "description": "Multi-day immersive experiences"
+        },
+        "celebration": {
+          "title": "Celebration Packages",
+          "description": "Birthdays, anniversaries & more"
+        },
+        "seasonal": {
+          "title": "Seasonal Experiences",
+          "description": "Limited-time special events"
+        },
+        "custom": {
+          "title": "Custom Packages",
+          "description": "Tailored to your preferences"
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "Begin Your Journey",
+      "title": "Choose Your Next Luxor Experience",
+      "primary": "Book Now",
+      "secondary": "View Experiences"
+    }
+  },
+
+  "zones": {
+    "hero": {
+      "ariaLabel": "Zones hero",
+      "imageAlt": "Zalina Arabian Village in Luxor — heritage architecture, lanterns and palms",
+      "eyebrow": "DISCOVER THE ZONES",
+      "title": "Explore the Spaces of Zalina",
+      "subtitle": "Distinct spaces in Luxor — arrival, market and dining — each crafted for hospitality, exploration and celebration.",
+      "ctaPrimary": "Explore Zones",
+      "ctaSecondary": "Book a Tour",
+      "scroll": "Scroll"
+    },
+    "overview": {
+      "eyebrow": "THE DESTINATION",
+      "title": "Destination Overview",
+      "body": "Zalina is designed as a collection of atmospheric spaces in Luxor — each zone shaped for a different kind of gathering, from daytime exploration to cultural evenings and celebrations.",
+      "imageAlt": "Panoramic view of Zalina Arabian Village in Luxor with heritage architecture and gardens",
+      "chips": {
+        "pathways": "Lantern-lit pathways",
+        "celebration": "Private celebration spaces",
+        "architecture": "Heritage architecture",
+        "hospitality": "Night hospitality"
+      }
+    },
+    "main": {
+      "eyebrow": "SIGNATURE SPACES",
+      "title": "Main Zones",
+      "empty": "Zones are temporarily unavailable. Please try again shortly.",
+      "bestFor": "Best for:",
+      "mood": "Mood:",
+      "bookNow": "Book Now",
+      "inquireNow": "Inquire Now"
+    },
+    "featured": {
+      "eyebrow": "PREMIUM VENUE",
+      "title": "Featured Zone Spotlight",
+      "bookThisZone": "Book This Zone",
+      "inquireAboutThisZone": "Inquire About This Zone",
+      "imageAlt": "{title} at Zalina Arabian Village",
+      "features": {
+        "atmosphere": "Signature village atmosphere",
+        "hospitality": "Premium hospitality services",
+        "coordination": "Dedicated guest coordination",
+        "setting": "Cinematic day-to-night setting"
+      }
+    },
+    "occasions": {
+      "eyebrow": "BY OCCASION",
+      "title": "Zone Differentiation",
+      "items": {
+        "dayEvents": {
+          "title": "Day Events",
+          "description": "Perfect for brunches, pool parties, and daytime celebrations"
+        },
+        "eveningAffairs": {
+          "title": "Evening Affairs",
+          "description": "Ideal for dinners, galas, and nighttime gatherings"
+        },
+        "weddings": {
+          "title": "Weddings",
+          "description": "Dedicated spaces for ceremonies and receptions"
+        },
+        "corporate": {
+          "title": "Corporate",
+          "description": "Professional settings for business events and conferences"
+        },
+        "private": {
+          "title": "Private",
+          "description": "Intimate spaces for exclusive celebrations"
+        }
+      }
+    },
+    "journey": {
+      "eyebrow": "YOUR JOURNEY",
+      "title": "Immersive Experience Journey",
+      "imageAlt": "Step {number}: {title}",
+      "steps": {
+        "arrival": {
+          "title": "Arrival & Welcome",
+          "description": "Step through the gates into a world of Egyptian hospitality"
+        },
+        "explore": {
+          "title": "Explore the Zones",
+          "description": "Discover each unique space designed for different moments"
+        },
+        "live": {
+          "title": "Live the Experience",
+          "description": "Immerse yourself in celebrations, dining, and cultural stories"
+        },
+        "depart": {
+          "title": "Depart with Memories",
+          "description": "Leave with stories that last a lifetime"
+        }
+      }
+    },
+    "promise": {
+      "eyebrow": "OUR PROMISE",
+      "title": "Why Each Zone Matters",
+      "items": {
+        "quality": {
+          "title": "Premium Quality",
+          "description": "Every detail crafted to perfection"
+        },
+        "privacy": {
+          "title": "Exclusive Privacy",
+          "description": "Private spaces for intimate moments"
+        },
+        "atmosphere": {
+          "title": "Unique Atmosphere",
+          "description": "Each zone has its own character"
+        },
+        "timing": {
+          "title": "Flexible Timing",
+          "description": "Day and evening availability"
+        }
+      }
+    },
+    "booking": {
+      "eyebrow": "GET STARTED",
+      "title": "Booking Connection",
+      "imageAlt": "{title} at Zalina Arabian Village",
+      "cards": {
+        "weddings": {
+          "title": "Wedding Packages",
+          "description": "Full wedding planning — ceremonies, receptions, and coordination in our most prestigious venues.",
+          "cta": "Plan Your Wedding"
+        },
+        "corporate": {
+          "title": "Corporate Events",
+          "description": "Executive-level gatherings, conferences, and branded evenings in refined private spaces.",
+          "cta": "Request a Quote"
+        },
+        "private": {
+          "title": "Private Celebrations",
+          "description": "Birthdays, anniversaries, and milestone occasions set in intimate, beautifully curated zones.",
+          "cta": "Start Planning"
+        }
+      }
+    },
+    "finalCta": {
+      "eyebrow": "BEGIN YOUR JOURNEY",
+      "title": "Find the Space That Matches Your Moment",
+      "body": "From intimate private gatherings to grand celebrations, Zalina offers a setting designed around your occasion.",
+      "primary": "Book a Consultation",
+      "secondary": "View All Zones"
+    }
+  },
+
+  "gallery": {
+    "hero": {
+      "ariaLabel": "Gallery hero",
+      "imageAlt": "Zalina Arabian Village in Luxor",
+      "eyebrow": "THE VISUAL STORY",
+      "title": "Moments That Define Zalina",
+      "subtitle": "A living gallery of experiences, village spaces and bubble stays in Luxor — curated from Zalina and refreshed as new moments are added.",
+      "ctaPrimary": "Explore the Gallery",
+      "ctaSecondary": "Book Now",
+      "scroll": "Scroll"
+    },
+    "wall": {
+      "eyebrow": "THE MEMORY WALL",
+      "title": "Scenes Made to Be Remembered",
+      "subtitle": "Browse real moments from experiences, zones, and bubble stays — updated whenever the CMS gallery changes.",
+      "countOne": "{count} moment",
+      "countMany": "{count} moments"
+    },
+    "filters": {
+      "ariaLabel": "Gallery filters",
+      "all": "All",
+      "experiences": "Experiences",
+      "zones": "Zones",
+      "bubbles": "Bubble Stays"
+    },
+    "empty": {
+      "title": "No moments in the gallery yet",
+      "body": "When media is added in the CMS, it will appear here automatically.",
+      "cta": "View All Moments"
+    },
+    "reasons": {
+      "eyebrow": "WHY IT MATTERS",
+      "title": "Gallery Experience",
+      "items": {
+        "storytelling": {
+          "title": "Luxor Storytelling",
+          "description": "Each frame reflects the atmosphere, detail and emotion of Zalina in Luxor."
+        },
+        "atmosphere": {
+          "title": "Village Atmosphere",
+          "description": "A visual journey through dining, celebration, craft and evening light."
+        },
+        "hospitality": {
+          "title": "Egyptian Hospitality",
+          "description": "Moments shaped by service, culture and refined guest experience."
+        }
+      }
+    },
+    "cta": {
+      "title": "See the Story. Live the Experience.",
+      "body": "Explore the moments, then step into the world behind them.",
+      "primary": "Book Now",
+      "secondary": "Explore Experiences"
+    },
+    "a11y": {
+      "lightboxLabel": "{title} image preview",
+      "close": "Close image preview",
+      "previous": "Previous image",
+      "next": "Next image"
+    }
+  },
+
+  "seo": {
+    "home": {
+      "title": "Zalina Arabian Village | Cultural Experiences in Luxor, Egypt",
+      "description": "An immersive cultural village in Luxor, Egypt — Egyptian cuisine, live cooking, entertainment and hospitality beside the Nile.",
+      "ogDescription": "Egyptian hospitality, dining and cultural evenings in the heart of Luxor — a living village experience beside the Nile."
+    },
+    "about": {
+      "title": "About Zalina | A Cultural Village in Luxor, Egypt",
+      "description": "Discover Zalina Arabian Village in Luxor — an immersive cultural destination shaped by Egyptian hospitality, cuisine, craft and evening entertainment beside the Nile.",
+      "ogDescription": "Egyptian hospitality, dining, music and celebration in the heart of Luxor — inspired by heritage, designed for today."
+    },
+    "experiences": {
+      "title": "Experiences | Zalina Arabian Village Luxor",
+      "description": "Discover Luxor cultural experiences at Zalina Arabian Village — Egyptian dining, live cooking, entertainment and village exploration.",
+      "ogDescription": "Egyptian cuisine, cultural evenings and village hospitality in the heart of Luxor."
+    },
+    "zones": {
+      "title": "Zones & Venues | Zalina Arabian Village Luxor",
+      "description": "Explore the spaces of Zalina Arabian Village in Luxor — Arrival Plaza, Al-Souk Village market, and Food & Entertainment.",
+      "ogDescription": "Discover the village spaces of Zalina in Luxor — market, dining and gathering areas shaped for hospitality."
+    },
+    "gallery": {
+      "title": "Gallery | Zalina Arabian Village Luxor",
+      "description": "Explore Zalina Arabian Village in Luxor through experiences, village zones, dining atmosphere and bubble stays.",
+      "ogDescription": "A visual journey through Egyptian hospitality, village atmosphere and evenings in Luxor."
+    },
+    "weddings": {
+      "title": "Weddings | Zalina Arabian Village Luxor",
+      "description": "Celebrate a destination wedding at Zalina Arabian Village in Luxor — gardens, village atmosphere, Egyptian hospitality, dining and entertainment in one unforgettable night.",
+      "ogDescription": "Your wedding. One village in Luxor. One unforgettable night at Zalina.",
+      "comingSoonTitle": "Weddings at Zalina",
+      "comingSoonSubtitle": "A destination celebration experience in Luxor is on its way.",
+      "imageryPendingSubtitle": "Final photography is being prepared for the Luxor wedding experience."
+    },
+    "bookNow": {
+      "title": "Book Now | Zalina Arabian Village",
+      "description": "Book Day Use or Bubble Stay at Zalina Arabian Village."
+    },
+    "booking": {
+      "title": "Booking Recovery | Zalina Arabian Village",
+      "description": "Recover your Zalina booking after payment."
+    },
+    "bookingStatus": {
+      "title": "Booking Status | Zalina Arabian Village",
+      "description": "View your Zalina reservation status and digital ticket."
+    }
+  },
+
+  "bookNow": {
+    "hero": {
+      "eyebrow": "Zalina Arabian Village",
+      "title": "Book Your Zalina Experience",
+      "subtitle": "Choose Day Use or Bubble Stay for your visit to Zalina Arabian Village in Luxor, then complete your booking details.",
+      "tags": {
+        "dayUse": "Day Use",
+        "bubbleStay": "Bubble Stay"
+      }
+    },
+    "steps": {
+      "of": "Step {current} of {total}",
+      "aria": "Step {number}: {label}",
+      "product": {
+        "label": "Experience",
+        "shortLabel": "Experience"
+      },
+      "dayUseProduct": {
+        "label": "Day Use",
+        "shortLabel": "Product"
+      },
+      "dayUseDateGuests": {
+        "label": "Date & Guests",
+        "shortLabel": "Date"
+      },
+      "bubbleDatesGuests": {
+        "label": "Stay Details",
+        "shortLabel": "Stay"
+      },
+      "bubbles": {
+        "label": "Your Bubbles",
+        "shortLabel": "Bubbles"
+      },
+      "guestDetails": {
+        "label": "Your Details",
+        "shortLabel": "Details"
+      },
+      "review": {
+        "label": "Review",
+        "shortLabel": "Review"
+      }
+    },
+    "products": {
+      "eyebrow": "Experience",
+      "title": "How would you like to arrive?",
+      "subtitle": "Choose an overnight Bubble Stay, or a Day Use visit to experience Zalina’s cultural village in Luxor.",
+      "comingSoon": "Coming Soon",
+      "dayUse": {
+        "title": "Day Use",
+        "description": "A daytime visit to Zalina’s cultural village in Luxor — dining, exploration and hospitality without an overnight stay.",
+        "tag": "DAY VISIT"
+      },
+      "bubbleStay": {
+        "title": "Bubble Stay",
+        "description": "An overnight stay in Zalina’s private bubbles — choose your bubbles, allocate guests, and settle into a quiet Luxor night.",
+        "tag": "OVERNIGHT"
+      }
+    },
+    "dayUseProduct": {
+      "eyebrow": "Day Use",
+      "title": "Book Day Use",
+      "subtitle": "Select the Day Use experience you want to book. Pricing is per guest.",
+      "perGuest": "per guest",
+      "loading": "Loading Day Use experiences…",
+      "errorFallback": "Day Use experiences could not be loaded.",
+      "tryAgain": "Try again",
+      "empty": "No Day Use experiences are available right now. Please check back soon."
+    },
+    "dayUseDateGuests": {
+      "eyebrow": "Day Use — Date & Guests",
+      "title": "When will you visit?",
+      "subtitle": "Choose a visit date and guests. Pricing follows live Day Use settings.",
+      "loading": "Loading Day Use settings…",
+      "errorFallback": "Day Use settings could not be loaded.",
+      "tryAgain": "Try again",
+      "unavailableTitle": "Day Use is currently unavailable",
+      "unavailableFallback": "Please select a Day Use experience, or return when Day Use opens again.",
+      "pricePerGuest": "Price per guest",
+      "guests": "Guests",
+      "estimatedTotal": "Estimated total",
+      "estimateNote": "Estimate only — final total is confirmed when the booking is created."
+    },
+    "bubbleStayDates": {
+      "eyebrow": "Stay Details",
+      "title": "Plan your overnight",
+      "subtitle": "Select check-in, check-out, and your total party size. Changing dates clears previously chosen physical bubbles so availability can refresh.",
+      "totalGuests": "Total guests",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "Nights",
+      "guests": "Guests"
+    },
+    "bubbles": {
+      "eyebrow": "Your Bubbles",
+      "title": "Compose your stay",
+      "subtitle": "Add one or more bubbles, allocate every guest, and choose a specific bubble — or let Zalina select the best available one.",
+      "needDates": "Return to Stay Details and choose valid dates before selecting bubbles.",
+      "noTypes": "No accommodation types are available right now.",
+      "addAnother": "+ Add another bubble",
+      "upToGuests": "Up to {count} guests",
+      "fromPerNight": "From {price} / night",
+      "bubblesCount": "{count} bubbles",
+      "tooMany": "Too many guests allocated. Reduce guests in one or more bubbles.",
+      "remainingOne": "{count} guest still need accommodation.",
+      "remainingMany": "{count} guests still need accommodation.",
+      "totalGuestsLabel": "Total guests:",
+      "allocatedLabel": "Allocated:",
+      "remainingLabel": "Remaining:",
+      "bubbleNumber": "Bubble #{number}",
+      "zalinaWillAssign": "Zalina will assign",
+      "chooseABubble": "Choose a bubble",
+      "removeAria": "Remove bubble {number}",
+      "guestsInBubble": "Guests in this bubble",
+      "assignment": "Assignment",
+      "chooseYourBubble": "Choose your bubble",
+      "letZalinaSelect": "Let Zalina select",
+      "checkingAvailability": "Checking availability…",
+      "availabilityError": "Availability could not be verified.",
+      "retry": "Retry",
+      "noBubblesAvailable": "No bubbles available for these dates. Choose another type or change dates.",
+      "noBubblesShort": "No bubbles available for these dates.",
+      "availableBubblesAria": "Available bubbles",
+      "adding": "Adding",
+      "close": "Close",
+      "addBubble": "Add bubble"
+    },
+    "guest": {
+      "eyebrow": "Your Details",
+      "title": "Who should we expect?",
+      "subtitle": "We only need name, email, and phone for your booking.",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "emailError": "Enter a valid email address."
+    },
+    "review": {
+      "eyebrow": "Review",
+      "titleConfirm": "Confirm your details",
+      "titlePay": "Complete your payment",
+      "subtitleConfirm": "Review your experience details before securing your reservation.",
+      "subtitlePay": "Your booking is temporarily reserved while you complete payment.",
+      "experience": "Experience",
+      "visitDate": "Visit date",
+      "guests": "Guests",
+      "stay": "Stay",
+      "nights": "Nights",
+      "bubbleN": "Bubble {number}",
+      "type": "Type",
+      "assignment": "Assignment",
+      "selectedBubble": "Selected bubble",
+      "pendingBubble": "Pending bubble",
+      "zalinaWillAssign": "Zalina will assign",
+      "lineEstimate": "Line estimate",
+      "lineEstimateValue": "{amount} ({nights} night)",
+      "lineEstimateValuePlural": "{amount} ({nights} nights)",
+      "guestName": "Guest name",
+      "email": "Email",
+      "phone": "Phone",
+      "bookingReference": "Booking reference",
+      "bookingCode": "Booking code",
+      "status": "Status",
+      "totalDue": "Total due",
+      "previousEstimate": "Previous estimate",
+      "paymentWindow": "Payment window",
+      "expired": "Expired",
+      "remaining": "{time} remaining",
+      "estimatedTotal": "Estimated total",
+      "holdExpired": "Your hold has expired. Availability must be checked again before a new reservation.",
+      "chooseAvailableBubbles": "Choose available bubbles",
+      "startNewReservation": "Start a new reservation",
+      "redirectNote": "You will be redirected to a secure payment page after your reservation is held.",
+      "ctaSecuring": "Securing your reservation…",
+      "ctaPreparingPayment": "Preparing secure payment…",
+      "ctaRedirecting": "Redirecting…",
+      "ctaProceedPayment": "Proceed to Secure Payment",
+      "ctaReserveContinue": "Reserve & Continue to Payment"
+    },
+    "summary": {
+      "title": "Booking summary",
+      "experience": "Experience",
+      "dayUse": "Day Use",
+      "bubbleStay": "Bubble Stay",
+      "notSelected": "Not selected",
+      "visit": "Visit",
+      "guests": "Guests",
+      "stay": "Stay",
+      "nights": "Nights",
+      "remaining": "Remaining",
+      "bubbles": "Bubbles",
+      "guest": "Guest",
+      "totalDue": "Total due",
+      "hold": "Hold",
+      "expired": "Expired",
+      "holdLeft": "{time} left",
+      "serverTotalNote": "Server total is final for this reservation.",
+      "estimatedTotal": "Estimated total",
+      "estimateNote": "Estimate only — server total after create is final.",
+      "emDash": "—"
+    },
+    "cta": {
+      "continue": "Continue",
+      "back": "Back",
+      "review": "Review",
+      "securing": "Securing…",
+      "proceedToPayment": "Proceed to Secure Payment",
+      "reserve": "Reserve",
+      "payNow": "Pay now",
+      "preparingPayment": "Preparing payment…",
+      "processing": "Processing…",
+      "reserveContinueToPayment": "Reserve & Continue to Payment"
+    },
+    "holdBanner": "A reservation hold is active. Use \"Start a new reservation\" on Review before changing details.",
+    "calendar": {
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "selectDate": "Select a date",
+      "selectCheckIn": "Select check-in date",
+      "selectCheckOut": "Now select check-out date",
+      "selectVisitDate": "Select visit date",
+      "selectStayDates": "Select stay dates"
+    },
+    "mobile": {
+      "selectVisitDate": "Select visit date",
+      "selectStayDates": "Select stay dates",
+      "chooseExperience": "Choose an experience",
+      "dayUseOrBubbleStay": "Day Use or Bubble Stay",
+      "visitSummary": "{date} · {count} guests",
+      "staySummary": "{nights} nights · {allocated}/{total} guests · {bubbles} bubbles",
+      "staySummaryOneNight": "{nights} night · {allocated}/{total} guests · {bubbles} bubbles",
+      "totalDue": " · Total due {amount}",
+      "est": " · Est. {amount}"
+    },
+    "guestSelector": {
+      "decrease": "Decrease {label}",
+      "increase": "Increase {label}"
+    },
+    "checkout": {
+      "conflict": "This bubble was just booked by another guest. We've refreshed the available bubbles.",
+      "validation": "Please check your booking details.",
+      "rateLimit": "Too many requests. Please wait a moment before trying again.",
+      "createFailed": "Unable to create your reservation.",
+      "createNetwork": "We could not confirm whether your reservation was created. Please wait a moment, then check carefully before trying again — do not submit repeatedly.",
+      "createRetry": "Unable to create your reservation. Please try again.",
+      "incomplete": "Please complete all booking details before continuing.",
+      "securing": "Securing your reservation…",
+      "reserved": "Your booking is temporarily reserved while you complete payment.",
+      "holdExpired": "Your reservation hold has expired. Please check availability again.",
+      "preparingPayment": "Preparing secure payment…",
+      "redirecting": "Redirecting to secure payment…",
+      "invalidPaymentLink": "Payment could not be started — invalid payment link from server.",
+      "bookingNotFound": "Booking not found.",
+      "alreadyPaid": "This booking appears to be already paid. Your reference has been saved for lookup.",
+      "paymentExpired": "This reservation hold has expired. Please check availability again.",
+      "paymentRateLimit": "Too many payment attempts. Please wait a moment before retrying.",
+      "paymentFailed": "Unable to start payment.",
+      "paymentRetrySupport": "{message} You can retry payment without creating a new booking. Support ref: {requestId}",
+      "paymentRetry": "{message} You can retry payment without creating a new booking.",
+      "paymentNetwork": "Payment could not be started due to a network issue. Your reservation hold is unchanged — you can retry payment.",
+      "paymentRetryNoNew": "Unable to start payment. You can retry without creating a new booking.",
+      "productsLoadFailed": "Could not load Day Use products."
+    }
+  },
+
+  "validation": {
+    "missing_product": "Choose Day Use or Bubble Stay.",
+    "missing_day_use_product": "Choose a Day Use experience.",
+    "invalid_visit_date": "Choose a visit date on or after {minDate}.",
+    "invalid_check_in": "Check-in must be on or after {minDate}.",
+    "invalid_check_out": "Choose a check-out date.",
+    "check_out_not_after_check_in": "Check-out must be after check-in.",
+    "invalid_guest_count": "Guests must be at least 1.",
+    "invalid_total_guests": "Total guests must be at least 1.",
+    "no_bubble_selections": "Add at least one bubble selection.",
+    "guest_over_allocated": "Allocated guests ({allocated}) exceed total guests ({total}).",
+    "guest_under_allocated": "Allocate all guests ({allocated} of {total}).",
+    "mixed_assignment_modes": "Use Choose your bubble or Let Zalina select for every bubble — not both in one booking.",
+    "missing_accommodation_type": "Unknown accommodation type selection.",
+    "selection_guests_min": "Each bubble must have at least 1 guest.",
+    "selection_guests_over_capacity": "Guests exceed max capacity ({max}) for this type.",
+    "missing_manual_bubble_id": "Manual assignment requires a physical bubble.",
+    "duplicate_manual_bubble": "The same physical bubble cannot be selected twice.",
+    "random_has_bubble_id": "Random assignment must not include a bubble id.",
+    "invalid_guest_name": "Name is required.",
+    "invalid_guest_email": "Enter a valid email address.",
+    "invalid_guest_phone": "Phone is required."
+  },
+
+  "bookingStatus": {
+    "confirming": "Confirming your reservation…",
+    "preparingTicket": "Your reservation is confirmed. Preparing your digital ticket…",
+    "networkTrouble": "We’re having trouble refreshing your reservation status.",
+    "rateLimited": "Please wait a moment before refreshing again.",
+    "notFound": "We couldn’t find a booking with this reference.",
+    "referenceRequired": "Booking reference required",
+    "referenceRequiredBody": "Open the link from your payment return, or start a new reservation from Book Now.",
+    "tryAgain": "Try again",
+    "refresh": "Refresh status",
+    "retryPayment": "Retry Payment",
+    "startNew": "Start a new reservation",
+    "viewTicket": "View Ticket",
+    "backHome": "Back to Home",
+    "bookAnother": "Book Another Experience",
+    "bookingCode": "Booking Code",
+    "bookingReference": "Booking reference",
+    "total": "Total",
+    "guests": "Guests",
+    "valid": "Valid",
+    "payment": "Payment",
+    "emailNotice": "A confirmation with your ticket details will also be sent by email when available.",
+    "qrLabel": "Smart Entry QR for this booking",
+    "preparingPayment": "Preparing secure payment…"
+  }
+}

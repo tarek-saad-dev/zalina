@@ -6,7 +6,11 @@ import {
   type ApiBooking,
   type PaymentGateway,
 } from "@/lib/api";
-import type { AccommodationTypeMeta, BookingState } from "./types";
+import type {
+  AccommodationTypeMeta,
+  BookingState,
+  BookingValidationIssue,
+} from "./types";
 import {
   createInitialCheckoutState,
   isBusyCheckoutPhase,
@@ -23,15 +27,92 @@ import {
 import { savePendingPaymentBooking } from "./paymentHandoffStorage";
 import { pickExpiryTimestamp } from "./useHoldCountdown";
 import { selectEstimatedTotal } from "./bookingSelectors";
-import { validateFullBookingReadiness } from "./bookingValidation";
+import {
+  translateValidationIssue,
+  validateFullBookingReadiness,
+} from "./bookingValidation";
 
-export function mapCreateError(err: unknown): CheckoutError {
+/** Localized checkout strings — keys mirror `bookNow.checkout.*`. */
+export type CheckoutCopy = {
+  conflict: string;
+  validation: string;
+  rateLimit: string;
+  createFailed: string;
+  createNetwork: string;
+  createRetry: string;
+  incomplete: string;
+  securing: string;
+  reserved: string;
+  holdExpired: string;
+  preparingPayment: string;
+  redirecting: string;
+  invalidPaymentLink: string;
+  bookingNotFound: string;
+  alreadyPaid: string;
+  paymentExpired: string;
+  paymentRateLimit: string;
+  paymentFailed: string;
+  /** Template: `{message}` `{requestId}` */
+  paymentRetrySupport: string;
+  /** Template: `{message}` */
+  paymentRetry: string;
+  paymentNetwork: string;
+  paymentRetryNoNew: string;
+  productsLoadFailed: string;
+};
+
+export const DEFAULT_CHECKOUT_COPY: CheckoutCopy = {
+  conflict:
+    "This bubble was just booked by another guest. We've refreshed the available bubbles.",
+  validation: "Please check your booking details.",
+  rateLimit: "Too many requests. Please wait a moment before trying again.",
+  createFailed: "Unable to create your reservation.",
+  createNetwork:
+    "We could not confirm whether your reservation was created. Please wait a moment, then check carefully before trying again — do not submit repeatedly.",
+  createRetry: "Unable to create your reservation. Please try again.",
+  incomplete: "Please complete all booking details before continuing.",
+  securing: "Securing your reservation…",
+  reserved: "Your booking is temporarily reserved while you complete payment.",
+  holdExpired:
+    "Your reservation hold has expired. Please check availability again.",
+  preparingPayment: "Preparing secure payment…",
+  redirecting: "Redirecting to secure payment…",
+  invalidPaymentLink:
+    "Payment could not be started — invalid payment link from server.",
+  bookingNotFound: "Booking not found.",
+  alreadyPaid:
+    "This booking appears to be already paid. Your reference has been saved for lookup.",
+  paymentExpired:
+    "This reservation hold has expired. Please check availability again.",
+  paymentRateLimit:
+    "Too many payment attempts. Please wait a moment before retrying.",
+  paymentFailed: "Unable to start payment.",
+  paymentRetrySupport:
+    "{message} You can retry payment without creating a new booking. Support ref: {requestId}",
+  paymentRetry:
+    "{message} You can retry payment without creating a new booking.",
+  paymentNetwork:
+    "Payment could not be started due to a network issue. Your reservation hold is unchanged — you can retry payment.",
+  paymentRetryNoNew:
+    "Unable to start payment. You can retry without creating a new booking.",
+  productsLoadFailed: "Could not load Day Use products.",
+};
+
+function fillTemplate(
+  template: string,
+  values: Record<string, string>
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => values[key] ?? "");
+}
+
+export function mapCreateError(
+  err: unknown,
+  copy: CheckoutCopy = DEFAULT_CHECKOUT_COPY
+): CheckoutError {
   if (err instanceof ApiError) {
     if (err.status === 409) {
       return {
-        message:
-          err.message ||
-          "This bubble was just booked by another guest. We've refreshed the available bubbles.",
+        message: err.message || copy.conflict,
         status: 409,
         fieldErrors: err.errors,
         kind: "conflict",
@@ -39,7 +120,7 @@ export function mapCreateError(err: unknown): CheckoutError {
     }
     if (err.status === 422) {
       return {
-        message: err.message || "Please check your booking details.",
+        message: err.message || copy.validation,
         status: 422,
         fieldErrors: err.errors,
         kind: "validation",
@@ -47,16 +128,14 @@ export function mapCreateError(err: unknown): CheckoutError {
     }
     if (err.status === 429) {
       return {
-        message:
-          err.message ||
-          "Too many requests. Please wait a moment before trying again.",
+        message: err.message || copy.rateLimit,
         status: 429,
         fieldErrors: err.errors,
         kind: "rate_limit",
       };
     }
     return {
-      message: err.message || "Unable to create your reservation.",
+      message: err.message || copy.createFailed,
       status: err.status,
       fieldErrors: err.errors,
       kind: "generic",
@@ -65,25 +144,27 @@ export function mapCreateError(err: unknown): CheckoutError {
 
   if (err instanceof TypeError) {
     return {
-      message:
-        "We could not confirm whether your reservation was created. Please wait a moment, then check carefully before trying again — do not submit repeatedly.",
+      message: copy.createNetwork,
       status: null,
       kind: "network",
     };
   }
 
   return {
-    message: "Unable to create your reservation. Please try again.",
+    message: copy.createRetry,
     status: null,
     kind: "generic",
   };
 }
 
-export function mapPaymentError(err: unknown): CheckoutError {
+export function mapPaymentError(
+  err: unknown,
+  copy: CheckoutCopy = DEFAULT_CHECKOUT_COPY
+): CheckoutError {
   if (err instanceof ApiError) {
     if (err.status === 404) {
       return {
-        message: err.message || "Booking not found.",
+        message: err.message || copy.bookingNotFound,
         status: 404,
         kind: "payment",
         requestId: err.requestId,
@@ -91,9 +172,7 @@ export function mapPaymentError(err: unknown): CheckoutError {
     }
     if (err.status === 409) {
       return {
-        message:
-          err.message ||
-          "This booking appears to be already paid. Your reference has been saved for lookup.",
+        message: err.message || copy.alreadyPaid,
         status: 409,
         kind: "payment",
         requestId: err.requestId,
@@ -101,9 +180,7 @@ export function mapPaymentError(err: unknown): CheckoutError {
     }
     if (err.status === 422) {
       return {
-        message:
-          err.message ||
-          "This reservation hold has expired. Please check availability again.",
+        message: err.message || copy.paymentExpired,
         status: 422,
         kind: "payment",
         requestId: err.requestId,
@@ -111,20 +188,21 @@ export function mapPaymentError(err: unknown): CheckoutError {
     }
     if (err.status === 429) {
       return {
-        message:
-          err.message ||
-          "Too many payment attempts. Please wait a moment before retrying.",
+        message: err.message || copy.paymentRateLimit,
         status: 429,
         kind: "rate_limit",
         requestId: err.requestId,
       };
     }
-    const base = err.message?.trim() || "Unable to start payment.";
+    const base = err.message?.trim() || copy.paymentFailed;
     const withRef =
       err.status != null && err.status >= 500 && err.requestId
-        ? `${base} You can retry payment without creating a new booking. Support ref: ${err.requestId}`
+        ? fillTemplate(copy.paymentRetrySupport, {
+            message: base,
+            requestId: err.requestId,
+          })
         : err.status != null && err.status >= 500
-          ? `${base} You can retry payment without creating a new booking.`
+          ? fillTemplate(copy.paymentRetry, { message: base })
           : base;
     return {
       message: withRef,
@@ -136,16 +214,14 @@ export function mapPaymentError(err: unknown): CheckoutError {
 
   if (err instanceof TypeError) {
     return {
-      message:
-        "Payment could not be started due to a network issue. Your reservation hold is unchanged — you can retry payment.",
+      message: copy.paymentNetwork,
       status: null,
       kind: "network",
     };
   }
 
   return {
-    message:
-      "Unable to start payment. You can retry without creating a new booking.",
+    message: copy.paymentRetryNoNew,
     status: null,
     kind: "payment",
   };
@@ -167,6 +243,10 @@ export function isHoldExpired(booking: ApiBooking, nowMs = Date.now()): boolean 
   return nowMs >= expiry;
 }
 
+export type ValidationIssueTranslator = (
+  issue: BookingValidationIssue
+) => string;
+
 export interface CheckoutRunnerDeps {
   createDayUse?: typeof createDayUseBooking;
   createBubbleStay?: typeof createBubbleStayBooking;
@@ -175,6 +255,8 @@ export interface CheckoutRunnerDeps {
   persist?: (booking: ApiBooking) => void;
   navigate?: (url: string, bookingReference?: string) => void;
   onBubbleConflict?: (message: string) => void;
+  copy?: CheckoutCopy;
+  translateValidation?: ValidationIssueTranslator;
 }
 
 /**
@@ -188,8 +270,13 @@ export class BookingCheckoutRunner {
   private payCount = 0;
   private lastPayReference: string | null = null;
   private lastPayBody: { gateway: PaymentGateway } | null = null;
+  private copy: CheckoutCopy;
+  private translateValidation?: ValidationIssueTranslator;
 
-  constructor(private deps: CheckoutRunnerDeps = {}) {}
+  constructor(private deps: CheckoutRunnerDeps = {}) {
+    this.copy = deps.copy ?? DEFAULT_CHECKOUT_COPY;
+    this.translateValidation = deps.translateValidation;
+  }
 
   get createCallCount() {
     return this.createCount;
@@ -205,6 +292,14 @@ export class BookingCheckoutRunner {
 
   get lastPaymentBody() {
     return this.lastPayBody;
+  }
+
+  setCopy(copy: CheckoutCopy) {
+    this.copy = copy;
+  }
+
+  setTranslateValidation(fn: ValidationIssueTranslator | undefined) {
+    this.translateValidation = fn;
   }
 
   reset() {
@@ -226,8 +321,7 @@ export class BookingCheckoutRunner {
       booking,
       error: null,
       estimateAtCreate: estimate,
-      statusMessage:
-        "Your booking is temporarily reserved while you complete payment.",
+      statusMessage: this.copy.reserved,
     };
   }
 
@@ -246,13 +340,17 @@ export class BookingCheckoutRunner {
         wizard,
         accommodationTypes
       );
+      const first = readiness[0];
+      const message = first
+        ? this.translateValidation
+          ? this.translateValidation(first)
+          : translateValidationIssue(first)
+        : this.copy.incomplete;
       this.state = {
         ...this.state,
         phase: "error",
         error: {
-          message:
-            readiness[0]?.message ??
-            "Please complete all booking details before continuing.",
+          message,
           status: null,
           kind: "validation",
         },
@@ -272,7 +370,7 @@ export class BookingCheckoutRunner {
       phase: "creating",
       error: null,
       estimateAtCreate: estimate,
-      statusMessage: "Securing your reservation…",
+      statusMessage: this.copy.securing,
     };
 
     const createDayUse = this.deps.createDayUse ?? createDayUseBooking;
@@ -292,15 +390,14 @@ export class BookingCheckoutRunner {
         booking,
         error: null,
         estimateAtCreate: estimate,
-        statusMessage:
-          "Your booking is temporarily reserved while you complete payment.",
+        statusMessage: this.copy.reserved,
       };
       // Keep inFlight locked across create → pay so a second click cannot
       // start a duplicate /pay before pay() sets its own lock.
       return booking;
     } catch (err) {
       this.inFlight = false;
-      const mapped = mapCreateError(err);
+      const mapped = mapCreateError(err, this.copy);
       this.state = {
         ...this.state,
         phase: "error",
@@ -324,11 +421,9 @@ export class BookingCheckoutRunner {
         ...this.state,
         phase: "expired",
         booking,
-        statusMessage:
-          "Your reservation hold has expired. Please check availability again.",
+        statusMessage: this.copy.holdExpired,
         error: {
-          message:
-            "Your reservation hold has expired. Please check availability again.",
+          message: this.copy.holdExpired,
           status: null,
           kind: "payment",
         },
@@ -342,7 +437,7 @@ export class BookingCheckoutRunner {
       phase: "initiating_payment",
       error: null,
       booking,
-      statusMessage: "Preparing secure payment…",
+      statusMessage: this.copy.preparingPayment,
     };
 
     const pay = this.deps.pay ?? initiatePayment;
@@ -376,8 +471,7 @@ export class BookingCheckoutRunner {
           ...this.state,
           phase: "error",
           error: {
-            message:
-              "Payment could not be started — invalid payment link from server.",
+            message: this.copy.invalidPaymentLink,
             status: null,
             kind: "payment",
           },
@@ -390,7 +484,7 @@ export class BookingCheckoutRunner {
       this.state = {
         ...this.state,
         phase: "redirecting",
-        statusMessage: "Redirecting to secure payment…",
+        statusMessage: this.copy.redirecting,
       };
       navigate(session.payment_url, booking.booking_reference);
       // Page unload expected; clear lock so retry paths remain usable if navigation is blocked.
@@ -398,7 +492,7 @@ export class BookingCheckoutRunner {
       return true;
     } catch (err) {
       this.inFlight = false;
-      const mapped = mapPaymentError(err);
+      const mapped = mapPaymentError(err, this.copy);
       if (mapped.status === 409) {
         persist(booking);
         this.state = {
