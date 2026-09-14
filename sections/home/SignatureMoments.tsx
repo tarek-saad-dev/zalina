@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CmsImage } from "@/components/media/CmsImage";
@@ -18,6 +18,13 @@ interface SignatureMomentsProps {
 
 export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const t = useTranslations("home.signatureMoments");
+  const isArabic = useLocale() === "ar";
+  const titleFont = isArabic
+    ? "var(--font-heading-ar), 'Alexandria', sans-serif"
+    : "var(--font-display), 'Cormorant Garamond', serif";
+  const bodyFont = isArabic
+    ? "var(--font-heading-ar), 'Alexandria', sans-serif"
+    : "var(--font-body), 'Inter', sans-serif";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -195,10 +202,11 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 <h3
                   className="text-white leading-tight mb-2 line-clamp-1"
                   style={{
-                    fontFamily: "var(--font-display, 'Playfair Display', Georgia, serif)",
-                    fontSize: "1.35rem",
-                    fontWeight: 400,
-                    letterSpacing: "0.02em",
+                    fontFamily: titleFont,
+                    fontSize: isArabic ? "1.2rem" : "1.35rem",
+                    fontWeight: isArabic ? 500 : 400,
+                    letterSpacing: isArabic ? "0" : "0.02em",
+                    lineHeight: isArabic ? 1.45 : 1.25,
                     minHeight: "1.6rem",
                     textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7)",
                   }}
@@ -208,8 +216,11 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 <p
                   className="text-white/90 leading-snug line-clamp-2"
                   style={{
-                    fontSize: "0.9rem",
-                    fontFamily: "var(--font-body, sans-serif)",
+                    fontSize: isArabic ? "0.875rem" : "0.9rem",
+                    fontFamily: bodyFont,
+                    fontWeight: isArabic ? 400 : 400,
+                    letterSpacing: isArabic ? "0" : undefined,
+                    lineHeight: isArabic ? 1.55 : 1.4,
                     minHeight: "2.7rem",
                     textShadow: "0 1px 8px rgba(0,0,0,0.85)",
                   }}
