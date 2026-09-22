@@ -29,8 +29,9 @@ const navItems: NavItem[] = [
   { key: "gallery", href: "/gallery" },
 ];
 
-/** Desktop height; mobile uses --zalina-nav-height via CSS. */
-const NAV_HEIGHT = "var(--zalina-nav-height, 80px)";
+/** Full header offset including iOS safe area. */
+const NAV_OFFSET =
+  "calc(var(--zalina-nav-height, 80px) + env(safe-area-inset-top, 0px))";
 
 export function LuxuryNavbar() {
   const t = useTranslations("nav");
@@ -90,7 +91,8 @@ export function LuxuryNavbar() {
       <header
         className="zalina-navbar fixed top-0 left-0 right-0 z-[9999]"
         style={{
-          height: NAV_HEIGHT,
+          height: NAV_OFFSET,
+          paddingTop: "env(safe-area-inset-top, 0px)",
           background: isScrolled
             ? "rgba(10, 9, 8, 0.58)"
             : "rgba(5, 5, 5, 0.06)",
@@ -111,7 +113,7 @@ export function LuxuryNavbar() {
         <div className="zalina-container h-full flex items-center justify-between gap-6">
           <Link
             href="/"
-            className="relative flex-shrink-0 flex items-center"
+            className="relative flex-shrink-0 flex items-center zalina-nav-logo-link"
             aria-label={t("homeAria")}
           >
             <Image
@@ -120,8 +122,7 @@ export function LuxuryNavbar() {
               width={180}
               height={56}
               priority
-              className="h-14 w-auto object-contain"
-              style={{ height: 56, width: "auto" }}
+              className="zalina-nav-logo object-contain"
             />
           </Link>
 
@@ -241,7 +242,7 @@ export function LuxuryNavbar() {
             key="mobile-menu"
             className="lg:hidden fixed inset-0 z-[9998] flex flex-col"
             style={{
-              top: NAV_HEIGHT,
+              top: NAV_OFFSET,
               background: "var(--zalina-surface)",
             }}
             initial={{ opacity: 0 }}

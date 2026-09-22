@@ -161,16 +161,16 @@ export function LuxuryHero() {
       ))}
 
       <motion.div
-        className="relative z-10 flex flex-col justify-center min-h-screen px-5 sm:px-8 md:px-12 lg:px-20 pt-[calc(var(--zalina-nav-height)+3rem)] pb-[13.5rem] sm:pb-[12.5rem]"
+        className="relative z-10 flex flex-col min-h-[100svh] px-5 sm:px-8 md:px-12 lg:px-20 pt-[calc(var(--zalina-nav-height)+env(safe-area-inset-top,0px)+1.5rem)] pb-[calc(11.25rem+env(safe-area-inset-bottom,0px))] sm:min-h-screen sm:justify-center sm:pb-[12.5rem] max-sm:justify-start"
         style={{ opacity: fadeOut }}
       >
-        <div className="w-full max-w-7xl mx-auto">
-          <div className="lux-hero-copy mt-6 md:mt-10">
+        <div className="w-full max-w-7xl mx-auto flex flex-col flex-1 sm:flex-none min-h-0">
+          <div className="lux-hero-copy flex flex-col flex-1 sm:flex-none mt-2 sm:mt-6 md:mt-10 min-h-0">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: 0.08 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full self-start"
               style={{
                 marginBottom: "var(--space-4)",
                 background: "rgba(212,175,55,0.06)",
@@ -270,14 +270,14 @@ export function LuxuryHero() {
               {t("supporting")}
             </motion.p>
 
+            {/* Mobile: pinned near bottom of hero (above rail). Desktop: under copy. */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 1.1 }}
-              className="relative z-30 flex flex-col sm:flex-row sm:items-center"
+              className="lux-hero-cta relative z-30 flex flex-col sm:flex-row sm:items-center max-sm:mt-auto max-sm:pt-8 sm:mt-[var(--space-6)]"
               style={{
                 gap: "var(--space-4)",
-                marginTop: "var(--space-6)",
               }}
             >
               <Link
@@ -317,7 +317,7 @@ export function LuxuryHero() {
         </div>
       </motion.div>
 
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 md:px-12 lg:px-20 pb-6 sm:pb-8">
+      <div className="lux-hero-rail absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 md:px-12 lg:px-20 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:pb-8">
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.07] border border-white/[0.08]">
           {RAIL_KEYS.map((item) => (
             <Link

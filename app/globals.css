@@ -2162,6 +2162,67 @@ a:hover {
   color: var(--zalina-text) !important;
 }
 
+/* Navbar logo — square asset has vertical padding; mobile crops it for presence */
+.zalina-nav-logo-link {
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.zalina-nav-logo {
+  height: 56px;
+  width: 56px;
+  max-width: none;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --zalina-nav-height: 88px;
+  }
+
+  /* Crop top/bottom padding so brand reads ~1.8× larger than raw box size */
+  .zalina-nav-logo-link {
+    height: 60px;
+    width: 148px;
+  }
+
+  .zalina-nav-logo {
+    height: 148px;
+    width: 148px;
+    max-height: none;
+    margin-inline-start: -4px;
+  }
+}
+
+@media (max-width: 389px) {
+  :root {
+    --zalina-nav-height: 84px;
+  }
+
+  .zalina-nav-logo-link {
+    height: 56px;
+    width: 132px;
+  }
+
+  .zalina-nav-logo {
+    height: 132px;
+    width: 132px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 430px) {
+  .zalina-nav-logo-link {
+    height: 58px;
+    width: 142px;
+  }
+
+  .zalina-nav-logo {
+    height: 142px;
+    width: 142px;
+  }
+}
+
 .zalina-nav-soon {
   margin-left: 0.4rem;
   font-size: 0.5625rem;
@@ -2910,7 +2971,7 @@ a:hover {
 
 @media (max-width: 767px) {
   :root {
-    --zalina-nav-height: 72px;
+    --zalina-nav-height: 88px;
     --zalina-text-hero: clamp(2.375rem, 8.2vw + 0.4rem, 2.875rem); /* ~38–46 */
   }
 
