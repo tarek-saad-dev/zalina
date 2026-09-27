@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { CmsImage } from "@/components/media/CmsImage";
 import {
@@ -37,10 +37,12 @@ interface GlimpseGalleryProps {
   items?: CatalogMediaCard[];
 }
 
+/** Keep offset in (-loopWidth, 0] for seamless looping in either direction. */
 function wrapOffset(offset: number, loopWidth: number) {
   if (loopWidth <= 0) return 0;
   let next = offset % loopWidth;
   if (next > 0) next -= loopWidth;
+  if (next <= -loopWidth) next += loopWidth;
   return next;
 }
 
@@ -188,6 +190,9 @@ function GallerySet({
 
 export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
   const t = useTranslations("home.gallery");
+  const isArabic = useLocale() === "ar";
+  /** LTR drifts left (−); RTL drifts right (+) so motion follows reading direction. */
+  const flowSign = isArabic ? 1 : -1;
   const prefersReduced = useReducedMotion();
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -320,7 +325,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             velocityRef.current = 0;
           }
         } else {
-          offsetRef.current -= speed * (dt / 1000);
+          offsetRef.current += flowSign * speed * (dt / 1000);
         }
 
         offsetRef.current = wrapOffset(
@@ -335,7 +340,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [applyTransform, prefersReduced, isMobile]);
+  }, [applyTransform, prefersReduced, isMobile, flowSign]);
 
   const endPointer = useCallback(
     (pointerId?: number) => {
@@ -501,6 +506,7 @@ export function GlimpseGallery({ items = [] }: GlimpseGalleryProps) {
             <div
               className="flex items-center overflow-x-auto scrollbar-hide"
               style={{ gap: GAP_PX }}
+              dir={isArabic ? "rtl" : "ltr"}
             >
               <GallerySet items={galleryItems} isMobile={isMobile} />
             </div>

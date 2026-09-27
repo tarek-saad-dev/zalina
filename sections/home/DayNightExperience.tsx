@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
@@ -58,6 +58,7 @@ function ExperienceBackground({
 
 export function DayNightExperience() {
   const t = useTranslations("home.dayNight");
+  const isArabic = useLocale() === "ar";
 
   return (
     <section
@@ -67,7 +68,7 @@ export function DayNightExperience() {
       <div className="flex flex-col lg:flex-row" style={{ height: "auto" }}>
         {/* Day Experience - Left */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
+          initial={{ opacity: 0, x: isArabic ? 50 : -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
@@ -165,7 +166,7 @@ export function DayNightExperience() {
 
         {/* Night Experience - Right */}
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
+          initial={{ opacity: 0, x: isArabic ? -50 : 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.2 }}

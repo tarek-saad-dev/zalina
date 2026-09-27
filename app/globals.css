@@ -2162,18 +2162,34 @@ a:hover {
   color: var(--zalina-text) !important;
 }
 
-/* Navbar logo — square asset has vertical padding; mobile crops it for presence */
+/* Navbar logo — square asset has vertical padding; crop so brand reads clearly */
 .zalina-nav-logo-link {
   line-height: 0;
   display: flex;
   align-items: center;
   overflow: hidden;
+  /* Desktop: crop padding, show full lockup at proper scale */
+  height: 46px;
+  width: 132px;
 }
 
 .zalina-nav-logo {
-  height: 56px;
-  width: 56px;
+  height: 132px;
+  width: 132px;
   max-width: none;
+  margin-inline-start: -4px;
+}
+
+@media (min-width: 1440px) {
+  .zalina-nav-logo-link {
+    height: 50px;
+    width: 142px;
+  }
+
+  .zalina-nav-logo {
+    height: 142px;
+    width: 142px;
+  }
 }
 
 @media (max-width: 1023px) {
@@ -2181,7 +2197,6 @@ a:hover {
     --zalina-nav-height: 88px;
   }
 
-  /* Crop top/bottom padding so brand reads ~1.8× larger than raw box size */
   .zalina-nav-logo-link {
     height: 60px;
     width: 148px;
@@ -2190,7 +2205,6 @@ a:hover {
   .zalina-nav-logo {
     height: 148px;
     width: 148px;
-    max-height: none;
     margin-inline-start: -4px;
   }
 }

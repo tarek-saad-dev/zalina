@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -24,8 +24,11 @@ export function MarketShowcase({
   zoneName,
 }: MarketShowcaseProps) {
   const t = useTranslations("home.market");
+  const isArabic = useLocale() === "ar";
   const resolvedZoneName = zoneName || t("defaultZoneName");
   const prefersReduced = useReducedMotion();
+  const PrevIcon = isArabic ? ChevronRight : ChevronLeft;
+  const NextIcon = isArabic ? ChevronLeft : ChevronRight;
   const slides: MarketCard[] =
     stalls.length > 0
       ? stalls
@@ -176,7 +179,7 @@ export function MarketShowcase({
                   type="button"
                   aria-label={t("prevAria")}
                   onClick={() => go(index - 1)}
-                  className="absolute left-3 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-100 md:left-4"
+                  className="absolute start-3 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-100 md:start-4"
                   style={{
                     background: "rgba(5,5,5,0.45)",
                     border: "1px solid rgba(212,175,55,0.4)",
@@ -184,13 +187,13 @@ export function MarketShowcase({
                     opacity: 0.85,
                   }}
                 >
-                  <ChevronLeft className="h-5 w-5" aria-hidden />
+                  <PrevIcon className="h-5 w-5" aria-hidden />
                 </button>
                 <button
                   type="button"
                   aria-label={t("nextAria")}
                   onClick={() => go(index + 1)}
-                  className="absolute right-3 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-100 md:right-4"
+                  className="absolute end-3 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-100 md:end-4"
                   style={{
                     background: "rgba(5,5,5,0.45)",
                     border: "1px solid rgba(212,175,55,0.4)",
@@ -198,7 +201,7 @@ export function MarketShowcase({
                     opacity: 0.85,
                   }}
                 >
-                  <ChevronRight className="h-5 w-5" aria-hidden />
+                  <NextIcon className="h-5 w-5" aria-hidden />
                 </button>
               </>
             )}

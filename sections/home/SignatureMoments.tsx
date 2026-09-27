@@ -9,8 +9,18 @@ import {
   NEUTRAL_MEDIA_FALLBACK,
   type CatalogMediaCard,
 } from "@/lib/media";
+import {
+  detectRtlScrollMode,
+  isNearEnd,
+  isNearStart,
+  scrollForward,
+  scrollToStart,
+  type RtlScrollMode,
+} from "@/lib/rtl/scroll";
 
 const cardWidths = ["340px", "380px", "320px", "360px", "300px"];
+const AUTO_SCROLL_PX = 380;
+const MANUAL_SCROLL_PX = 400;
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -26,8 +36,9 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollModeRef = useRef<RtlScrollMode>("ltr");
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
 
   const items =
     moments.length > 0
@@ -43,48 +54,48 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
         ];
 
   const checkScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    const mode = scrollModeRef.current;
+    setCanScrollPrev(!isNearStart(el, 10, mode));
+    setCanScrollNext(!isNearEnd(el, 10, mode));
   };
 
   useEffect(() => {
-    checkScroll();
     const el = scrollRef.current;
-    if (el) {
-      el.addEventListener("scroll", checkScroll);
-      return () => el.removeEventListener("scroll", checkScroll);
-    }
-  }, [items.length]);
+    if (!el) return;
+    scrollModeRef.current = detectRtlScrollMode(el);
+    checkScroll();
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    return () => el.removeEventListener("scroll", checkScroll);
+  }, [items.length, isArabic]);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 400;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
+  const scrollByDir = (dir: "prev" | "next") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const mode = scrollModeRef.current;
+    if (dir === "next") {
+      scrollForward(el, MANUAL_SCROLL_PX, "smooth", mode);
+    } else {
+      scrollForward(el, -MANUAL_SCROLL_PX, "smooth", mode);
     }
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 50;
+      const el = scrollRef.current;
+      if (!el) return;
+      const mode = scrollModeRef.current;
 
-        if (isAtEnd) {
-          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          scrollRef.current.scrollBy({ left: 380, behavior: "smooth" });
-        }
+      if (isNearEnd(el, 50, mode)) {
+        scrollToStart(el, "smooth", mode);
+      } else {
+        scrollForward(el, AUTO_SCROLL_PX, "smooth", mode);
       }
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isArabic]);
 
   return (
     <section
@@ -113,28 +124,40 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             {t("title")}
           </motion.h2>
 
-          <div className="hidden md:flex gap-2 absolute right-0 bottom-0">
+          <div className="hidden md:flex gap-2 absolute bottom-0 inset-inline-end-0">
             <button
-              onClick={() => scroll("left")}
-              disabled={!canScrollLeft}
+              type="button"
+              onClick={() => scrollByDir("prev")}
+              disabled={!canScrollPrev}
+              aria-label="Previous"
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                canScrollLeft
+                canScrollPrev
                   ? "bg-white/10 hover:bg-white/20 border border-white/20"
                   : "bg-white/5 border border-white/10 opacity-50 cursor-not-allowed"
               }`}
             >
-              <ChevronLeft size={24} className="text-white" />
+              {isArabic ? (
+                <ChevronRight size={24} className="text-white" />
+              ) : (
+                <ChevronLeft size={24} className="text-white" />
+              )}
             </button>
             <button
-              onClick={() => scroll("right")}
-              disabled={!canScrollRight}
+              type="button"
+              onClick={() => scrollByDir("next")}
+              disabled={!canScrollNext}
+              aria-label="Next"
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                canScrollRight
+                canScrollNext
                   ? "bg-white/10 hover:bg-white/20 border border-white/20"
                   : "bg-white/5 border border-white/10 opacity-50 cursor-not-allowed"
               }`}
             >
-              <ChevronRight size={24} className="text-white" />
+              {isArabic ? (
+                <ChevronLeft size={24} className="text-white" />
+              ) : (
+                <ChevronRight size={24} className="text-white" />
+              )}
             </button>
           </div>
         </div>
@@ -142,11 +165,13 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
 
       <div
         ref={scrollRef}
+        dir={isArabic ? "rtl" : "ltr"}
         className="flex overflow-x-auto scrollbar-hide"
         style={{
           gap: "16px",
-          paddingLeft: "max(24px, calc((100vw - 1440px) / 2 + 80px))",
-          paddingRight: "24px",
+          paddingInlineStart:
+            "max(24px, calc((100vw - 1440px) / 2 + 80px))",
+          paddingInlineEnd: "24px",
           scrollSnapType: "x mandatory",
           WebkitOverflowScrolling: "touch",
           msOverflowStyle: "none",
@@ -156,7 +181,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
         {items.map((moment, index) => (
           <motion.div
             key={moment.id}
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: isArabic ? -30 : 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -167,7 +192,10 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
               scrollSnapAlign: "start",
             }}
           >
-            <div className="absolute inset-0" style={{ width: "100%", height: "100%" }}>
+            <div
+              className="absolute inset-0"
+              style={{ width: "100%", height: "100%" }}
+            >
               <CmsImage
                 src={moment.image}
                 alt={moment.alt || moment.title}
@@ -210,7 +238,8 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                     letterSpacing: isArabic ? "0" : "0.02em",
                     lineHeight: isArabic ? 1.45 : 1.25,
                     marginBottom: "var(--space-2)",
-                    textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7)",
+                    textShadow:
+                      "0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7)",
                   }}
                 >
                   {moment.title}
@@ -234,14 +263,16 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
               <div
                 className="mt-4 h-[2px] w-12"
                 style={{
-                  background: "linear-gradient(90deg, #D4AF37, transparent)",
+                  background: isArabic
+                    ? "linear-gradient(270deg, #D4AF37, transparent)"
+                    : "linear-gradient(90deg, #D4AF37, transparent)",
                 }}
               />
             </div>
           </motion.div>
         ))}
 
-        <div style={{ width: "24px", flexShrink: 0 }} />
+        <div style={{ width: "24px", flexShrink: 0 }} aria-hidden />
       </div>
 
       <style jsx>{`
