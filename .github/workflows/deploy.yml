@@ -5,14 +5,21 @@ on:
     branches:
       - main
   workflow_dispatch:
+  issue_comment:
+    types: [created]
 
-concurrency:
-  group: zalina-production
-  cancel-in-progress: false
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
 
 jobs:
   deploy:
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: zalina-production
+      cancel-in-progress: false
 
     steps:
       - name: Configure SSH
@@ -50,3 +57,474 @@ jobs:
             > /dev/null
 
           echo "Production verification passed."
+
+  authorize:
+    if: ${{ github.event_name == 'issue_comment' }}
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.route.outputs.allowed }}
+      action: ${{ steps.route.outputs.action }}
+      target_sha: ${{ steps.route.outputs.target_sha }}
+      target_ref: ${{ steps.route.outputs.target_ref }}
+      issue_title: ${{ steps.route.outputs.issue_title }}
+    steps:
+      - name: Route and authorize
+        id: route
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          BODY: ${{ github.event.comment.body }}
+          NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ github.event.issue.pull_request.url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          allowed=false
+          action=""
+          target_sha=""
+          target_ref=""
+          issue_title=""
+
+          case "$BODY" in
+            "DEV_ACTION: EXECUTE") action="EXECUTE" ;;
+            "DEV_ACTION: REVIEW") action="REVIEW" ;;
+            "DEV_ACTION: FIX_FINDINGS") action="FIX_FINDINGS" ;;
+            *) action="" ;;
+          esac
+
+          mkdir -p control-context
+
+          if [[ "$ACTOR" == "tarek-saad-dev" && -n "$action" ]]; then
+            if [[ "$action" == "EXECUTE" && -z "$PR_URL" ]]; then
+              gh api "repos/$REPO/issues/$NUMBER" > control-context/issue.json
+
+              issue_author="$(python3 - <<'PY'
+import json
+with open("control-context/issue.json", "r", encoding="utf-8") as f:
+    print(json.load(f)["user"]["login"])
+PY
+)"
+              issue_title="$(python3 - <<'PY'
+import json
+with open("control-context/issue.json", "r", encoding="utf-8") as f:
+    print(json.load(f)["title"])
+PY
+)"
+
+              if [[ "$issue_author" == "tarek-saad-dev" ]]; then
+                allowed=true
+                target_ref="codex/issue-$NUMBER"
+
+                if gh api "repos/$REPO/git/ref/heads/$target_ref" > control-context/existing-ref.json 2>/dev/null; then
+                  target_sha="$(python3 - <<'PY'
+import json
+with open("control-context/existing-ref.json", "r", encoding="utf-8") as f:
+    print(json.load(f)["object"]["sha"])
+PY
+)"
+                else
+                  target_sha="$(gh api "repos/$REPO/commits/main" --jq .sha)"
+                fi
+
+                python3 - <<'PY'
+import json
+with open("control-context/issue.json", "r", encoding="utf-8") as f:
+    issue = json.load(f)
+with open("control-context/context.txt", "w", encoding="utf-8") as out:
+    out.write("ACTION: EXECUTE\n")
+    out.write(f"ISSUE: #{issue['number']}\n")
+    out.write(f"TITLE: {issue['title']}\n\n")
+    out.write(issue.get("body") or "")
+PY
+              fi
+
+            elif [[ ("$action" == "REVIEW" || "$action" == "FIX_FINDINGS") && -n "$PR_URL" ]]; then
+              gh api "repos/$REPO/pulls/$NUMBER" > control-context/pr.json
+
+              readarray -t pr_meta < <(python3 - <<'PY'
+import json
+with open("control-context/pr.json", "r", encoding="utf-8") as f:
+    pr = json.load(f)
+print(pr["head"]["repo"]["full_name"])
+print(pr["head"]["ref"])
+print(pr["head"]["sha"])
+print(pr["base"]["ref"])
+print(pr["title"])
+PY
+)
+              head_repo="${pr_meta[0]}"
+              head_ref="${pr_meta[1]}"
+              head_sha="${pr_meta[2]}"
+              base_ref="${pr_meta[3]}"
+              issue_title="${pr_meta[4]}"
+
+              if [[ "$head_repo" == "$REPO" && "$head_ref" == codex/issue-* && "$base_ref" == "main" ]]; then
+                allowed=true
+                target_ref="$head_ref"
+                target_sha="$head_sha"
+
+                gh api "repos/$REPO/issues/$NUMBER/comments?per_page=100" > control-context/comments.json
+
+                ACTION="$action" python3 - <<'PY'
+import json, os
+with open("control-context/pr.json", "r", encoding="utf-8") as f:
+    pr = json.load(f)
+with open("control-context/comments.json", "r", encoding="utf-8") as f:
+    comments = json.load(f)
+
+action = os.environ["ACTION"]
+latest_review = ""
+for comment in reversed(comments):
+    body = comment.get("body") or ""
+    if "CODEX_REVIEW" in body:
+        latest_review = body
+        break
+
+with open("control-context/context.txt", "w", encoding="utf-8") as out:
+    out.write(f"ACTION: {action}\n")
+    out.write(f"PR: #{pr['number']}\n")
+    out.write(f"TITLE: {pr['title']}\n")
+    out.write(f"HEAD: {pr['head']['sha']}\n")
+    out.write(f"BRANCH: {pr['head']['ref']}\n\n")
+    out.write("PR BODY:\n")
+    out.write(pr.get("body") or "")
+    if action == "FIX_FINDINGS":
+        out.write("\n\nLATEST CODEX REVIEW:\n")
+        out.write(latest_review or "No prior CODEX_REVIEW comment was found.")
+PY
+              fi
+            fi
+          fi
+
+          {
+            echo "allowed=$allowed"
+            echo "action=$action"
+            echo "target_sha=$target_sha"
+            echo "target_ref=$target_ref"
+            echo "issue_title<<EOF"
+            echo "$issue_title"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload authorized context
+        if: steps.route.outputs.allowed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: control-context
+          path: control-context/
+          if-no-files-found: error
+          retention-days: 1
+
+  codex:
+    needs: authorize
+    if: ${{ needs.authorize.outputs.allowed == 'true' }}
+    runs-on: [self-hosted, codex, zalina]
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout exact authorized head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.target_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          clean: true
+
+      - name: Download authorized context
+        uses: actions/download-artifact@v4
+        with:
+          name: control-context
+          path: ${{ runner.temp }}/control-context
+
+      - name: Run Codex and verification
+        env:
+          CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          OUT="$RUNNER_TEMP/codex-output"
+          CTX="$RUNNER_TEMP/control-context"
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
+
+          cp -n .env.example .env.local 2>/dev/null || true
+          git fetch origin main --no-tags >/dev/null 2>&1 || true
+
+          codex login status > "$OUT/login-status.txt" 2>&1
+          login_status=$?
+
+          run_verification() {
+            set +e
+            npm ci > "$OUT/npm-ci.log" 2>&1
+            npm_ci_status=$?
+
+            if [[ $npm_ci_status -eq 0 ]]; then
+              npm test > "$OUT/npm-test.log" 2>&1
+              test_status=$?
+              npm run typecheck > "$OUT/typecheck.log" 2>&1
+              typecheck_status=$?
+              npm run build > "$OUT/build.log" 2>&1
+              build_status=$?
+            else
+              test_status=99
+              typecheck_status=99
+              build_status=99
+            fi
+            set -e
+
+            {
+              echo "CODEX_LOGIN=$login_status"
+              echo "NPM_CI=$npm_ci_status"
+              echo "NPM_TEST=$test_status"
+              echo "TYPECHECK=$typecheck_status"
+              echo "BUILD=$build_status"
+            } > "$OUT/verification.txt"
+          }
+
+          context="$(cat "$CTX/context.txt")"
+
+          if [[ "$CONTROL_ACTION" == "REVIEW" ]]; then
+            run_verification
+            verification="$(cat "$OUT/verification.txt")"
+
+            prompt="$(cat <<EOF
+Read AGENTS.md and docs/agent-control-plane/CONTROL-PLANE.md first.
+
+Act as the independent reviewer for the exact checked-out PR head.
+
+$context
+
+WORKFLOW VERIFICATION:
+$verification
+
+Inspect the actual code and diff against main. Do not edit files. Do not push, merge, deploy, or access production data.
+
+If any workflow verification command failed, do not report READY_FOR_TAREK unless the failure is clearly demonstrated to be pre-existing and unrelated.
+
+Return exactly this structure:
+
+CODEX_REVIEW
+
+REVIEW_STATUS: PASS | CHANGES_REQUIRED
+
+MATERIAL_FINDINGS:
+- ...
+
+NON_BLOCKING_NOTES:
+- ...
+
+TEST_EVIDENCE:
+...
+
+STATE: REVIEW | READY_FOR_TAREK
+NEXT_ACTION: ...
+
+READY_FOR_TAREK is allowed only when there are no unresolved material findings and the exact current head is safe to merge and deploy.
+EOF
+)"
+            env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL               codex exec --sandbox read-only --ask-for-approval never -o "$OUT/codex-result.txt" "$prompt"
+            codex_status=$?
+            echo "CODEX_EXEC=$codex_status" >> "$OUT/verification.txt"
+
+          else
+            mode_text="Implement only the originating issue scope."
+            if [[ "$CONTROL_ACTION" == "FIX_FINDINGS" ]]; then
+              mode_text="Fix only the unresolved MATERIAL_FINDINGS from the latest Codex review. Do not broaden scope."
+            fi
+
+            prompt="$(cat <<EOF
+Read AGENTS.md and docs/agent-control-plane/CONTROL-PLANE.md first.
+
+$mode_text
+
+$context
+
+Work only in this repository workspace. Do not merge, deploy, or perform real production mutations. Do not use production secrets. Prefer local tests, mocks, and safe flows.
+
+Make the required code changes. Run targeted checks when useful. The workflow will run the full repository verification gate after you finish.
+
+Finish with a concise implementation summary and any important verification notes.
+EOF
+)"
+            env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL               codex exec --full-auto -o "$OUT/codex-result.txt" "$prompt"
+            codex_status=$?
+
+            run_verification
+            echo "CODEX_EXEC=$codex_status" >> "$OUT/verification.txt"
+
+            rm -f .env.local
+            git add -N . >/dev/null 2>&1 || true
+            git diff --binary HEAD > "$OUT/agent.patch"
+
+            if git diff --name-only HEAD | grep -E '(^|/)\.env($|\.)' | grep -v -E '(^|/)\.env\.example$' >/dev/null 2>&1; then
+              echo "SECURITY_BLOCKED=1" >> "$OUT/verification.txt"
+              : > "$OUT/agent.patch"
+              echo "1" > "$OUT/security-blocked.txt"
+            fi
+          fi
+
+          rm -f .env.local
+          exit 0
+
+      - name: Upload Codex result
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-output
+          path: ${{ runner.temp }}/codex-output/
+          if-no-files-found: error
+          retention-days: 1
+
+  finalize:
+    needs: [authorize, codex]
+    if: ${{ needs.authorize.outputs.allowed == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ACTION: ${{ needs.authorize.outputs.action }}
+      TARGET_SHA: ${{ needs.authorize.outputs.target_sha }}
+      TARGET_REF: ${{ needs.authorize.outputs.target_ref }}
+      NUMBER: ${{ github.event.issue.number }}
+      REPO: ${{ github.repository }}
+      ISSUE_TITLE: ${{ needs.authorize.outputs.issue_title }}
+    steps:
+      - name: Download Codex result
+        uses: actions/download-artifact@v4
+        with:
+          name: codex-output
+          path: codex-output
+
+      - name: Publish review
+        if: env.ACTION == 'REVIEW'
+        shell: bash
+        run: |
+          {
+            cat codex-output/codex-result.txt
+            echo
+            echo "---"
+            echo "WORKFLOW_VERIFICATION:"
+            cat codex-output/verification.txt
+            echo
+            echo "Reviewed head: `$TARGET_SHA`"
+          } > codex-output/comment.md
+
+          gh issue comment "$NUMBER" --repo "$REPO" --body-file codex-output/comment.md
+
+      - name: Checkout builder/fix target
+        if: env.ACTION != 'REVIEW'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.target_sha }}
+          fetch-depth: 0
+
+      - name: Push builder/fix result
+        if: env.ACTION != 'REVIEW'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -f codex-output/security-blocked.txt ]]; then
+            {
+              echo "CODEX_RESULT: BLOCKED"
+              echo
+              echo "The run attempted to change an environment-secret file, so no patch was published."
+              echo
+              cat codex-output/verification.txt
+            } > codex-output/comment.md
+            gh issue comment "$NUMBER" --repo "$REPO" --body-file codex-output/comment.md
+            exit 0
+          fi
+
+          if [[ ! -s codex-output/agent.patch ]]; then
+            {
+              echo "CODEX_RESULT: NO_CHANGES"
+              echo
+              cat codex-output/codex-result.txt
+              echo
+              echo "---"
+              cat codex-output/verification.txt
+            } > codex-output/comment.md
+            gh issue comment "$NUMBER" --repo "$REPO" --body-file codex-output/comment.md
+            exit 0
+          fi
+
+          git apply --index --binary codex-output/agent.patch
+
+          git config user.name "codex-agent"
+          git config user.email "codex-agent@users.noreply.github.com"
+
+          if [[ "$ACTION" == "EXECUTE" ]]; then
+            commit_message="feat: implement issue #$NUMBER"
+          else
+            commit_message="fix: address review findings for PR #$NUMBER"
+          fi
+
+          git commit -m "$commit_message"
+          git push origin "HEAD:refs/heads/$TARGET_REF"
+
+          if [[ "$ACTION" == "EXECUTE" ]]; then
+            pr_url="$(gh pr list --repo "$REPO" --state open --head "$TARGET_REF" --json url --jq '.[0].url // empty')"
+
+            if [[ -z "$pr_url" ]]; then
+              cat > codex-output/pr-body.md <<EOF
+Closes #$NUMBER
+
+Implemented by the Codex control plane.
+
+Verification from the execution run:
+
+```text
+$(cat codex-output/verification.txt)
+```
+
+Codex summary:
+
+$(cat codex-output/codex-result.txt)
+
+This PR must not be merged until independent review reaches READY_FOR_TAREK and Tarek explicitly approves production merge.
+EOF
+              pr_url="$(gh pr create                 --repo "$REPO"                 --draft                 --base main                 --head "$TARGET_REF"                 --title "$ISSUE_TITLE"                 --body-file codex-output/pr-body.md)"
+            fi
+
+            {
+              echo "CODEX_EXECUTION: COMPLETE"
+              echo
+              echo "PR: $pr_url"
+              echo
+              echo "HEAD_BRANCH: `$TARGET_REF`"
+              echo
+              echo "WORKFLOW_VERIFICATION:"
+              cat codex-output/verification.txt
+              echo
+              echo "CODEX_SUMMARY:"
+              cat codex-output/codex-result.txt
+              echo
+              echo "NEXT_ACTION: DEV_ACTION: REVIEW"
+            } > codex-output/comment.md
+
+            gh issue comment "$NUMBER" --repo "$REPO" --body-file codex-output/comment.md
+          else
+            {
+              echo "CODEX_FIX: COMPLETE"
+              echo
+              echo "UPDATED_BRANCH: `$TARGET_REF`"
+              echo
+              echo "WORKFLOW_VERIFICATION:"
+              cat codex-output/verification.txt
+              echo
+              echo "CODEX_SUMMARY:"
+              cat codex-output/codex-result.txt
+              echo
+              echo "NEXT_ACTION: DEV_ACTION: REVIEW"
+            } > codex-output/comment.md
+
+            gh issue comment "$NUMBER" --repo "$REPO" --body-file codex-output/comment.md
+          fi
