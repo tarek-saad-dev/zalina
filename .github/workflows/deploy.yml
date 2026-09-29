@@ -113,20 +113,19 @@ jobs:
           name: control-context
           path: ${{ runner.temp }}/control-context
 
-      - name: Load trusted control script
+      - name: Load candidate control script for smoke
         run: |
-          git fetch origin main --no-tags
-          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          git fetch origin fix/codex-cli-automation-flags --no-tags
+          git show FETCH_HEAD:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
           chmod 700 "$RUNNER_TEMP/codex-control.sh"
 
-      - name: Validate Codex noninteractive flags
+      - name: Run Codex safely
         env:
+          CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
+          CONTROL_CONTEXT_DIR: ${{ runner.temp }}/control-context
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: |
-          mkdir -p "$CODEX_OUTPUT_DIR"
-          codex exec             -s workspace-write             -c 'approval_policy="never"'             -o "$CODEX_OUTPUT_DIR/codex-result.txt"             "Reply exactly: CODEX_FLAG_OK"
-          printf 'CODEX_FLAG_SMOKE=0\n' > "$CODEX_OUTPUT_DIR/verification.txt"
-          : > "$CODEX_OUTPUT_DIR/agent.patch"
+          "$RUNNER_TEMP/codex-control.sh" run
 
       - name: Upload Codex result
         uses: actions/upload-artifact@v4
