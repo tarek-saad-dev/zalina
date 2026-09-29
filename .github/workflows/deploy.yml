@@ -75,7 +75,7 @@ jobs:
           CONTROL_SHA: ${{ github.sha }}
         run: |
           if [[ "$EVENT_NAME" == "issue_comment" ]]; then
-            ./.github/scripts/codex-control.sh authorize
+            bash ./.github/scripts/codex-control.sh authorize
           else
             gh api "repos/$REPO/contents/.github/codex-command.json?ref=$CONTROL_SHA"               --jq '.content' | tr -d '\n' | base64 -d > /tmp/codex-command.json
 
