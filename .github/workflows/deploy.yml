@@ -113,10 +113,10 @@ jobs:
           name: control-context
           path: ${{ runner.temp }}/control-context
 
-      - name: Load candidate control script for smoke
+      - name: Load trusted control script
         run: |
-          git fetch origin fix/codex-cli-automation-flags --no-tags
-          git show FETCH_HEAD:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          git fetch origin main --no-tags
+          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
           chmod 700 "$RUNNER_TEMP/codex-control.sh"
 
       - name: Run Codex safely
