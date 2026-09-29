@@ -31,7 +31,7 @@ jobs:
           ACTOR: ${{ github.actor }}
           BODY: ${{ github.event.comment.body }}
           NUMBER: ${{ github.event.issue.number }}
-          IS_PR: ${{ github.event.issue.pull_request && 'true' || 'false' }}
+          PR_URL: ${{ github.event.issue.pull_request.url }}
         shell: bash
         run: |
           set -euo pipefail
@@ -52,7 +52,7 @@ jobs:
           mkdir -p control-context
 
           if [[ "$ACTOR" == "tarek-saad-dev" && -n "$action" ]]; then
-            if [[ "$action" == "EXECUTE" && "$IS_PR" == "false" ]]; then
+            if [[ "$action" == "EXECUTE" && -z "$PR_URL" ]]; then
               gh api "repos/$REPO/issues/$NUMBER" > control-context/issue.json
 
               issue_author="$(python3 - <<'PY'
@@ -95,7 +95,7 @@ with open("control-context/context.txt", "w", encoding="utf-8") as out:
 PY
               fi
 
-            elif [[ ("$action" == "REVIEW" || "$action" == "FIX_FINDINGS") && "$IS_PR" == "true" ]]; then
+            elif [[ ("$action" == "REVIEW" || "$action" == "FIX_FINDINGS") && -n "$PR_URL" ]]; then
               gh api "repos/$REPO/pulls/$NUMBER" > control-context/pr.json
 
               readarray -t pr_meta < <(python3 - <<'PY'
@@ -174,7 +174,7 @@ PY
 
   codex:
     needs: authorize
-    if: needs.authorize.outputs.allowed == 'true'
+    if: ${{ needs.authorize.outputs.allowed == 'true' }}
     runs-on: [self-hosted, codex, zalina]
     permissions:
       contents: read
@@ -335,7 +335,7 @@ EOF
 
   finalize:
     needs: [authorize, codex]
-    if: needs.authorize.outputs.allowed == 'true'
+    if: ${{ needs.authorize.outputs.allowed == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
