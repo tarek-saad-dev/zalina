@@ -159,6 +159,7 @@ run_codex() {
   : "${CONTROL_CONTEXT_DIR:?}"
   : "${CODEX_OUTPUT_DIR:?}"
 
+  hydrate_outputs
   local out="$CODEX_OUTPUT_DIR"
   local ctx="$CONTROL_CONTEXT_DIR"
 
@@ -323,6 +324,67 @@ comment_blocked() {
   gh issue comment "$NUMBER" --repo "$REPO" --body-file "$out/comment.md"
 }
 
+pack_file() {
+  local path="$1"
+  if [[ -s "$path" ]]; then
+    gzip -c "$path" | base64 -w0
+  fi
+}
+
+emit_outputs() {
+  : "${CODEX_OUTPUT_DIR:?}"
+  local out="$CODEX_OUTPUT_DIR"
+
+  local blocked_reason=""
+  [[ -f "$out/blocked-reason.txt" ]] && blocked_reason="$(cat "$out/blocked-reason.txt")"
+
+  local patch_b64 result_b64 verification_b64
+  patch_b64="$(pack_file "$out/agent.patch")"
+  result_b64="$(pack_file "$out/codex-result.txt")"
+  verification_b64="$(pack_file "$out/verification.txt")"
+
+  local total_size=$(( ${#patch_b64} + ${#result_b64} + ${#verification_b64} ))
+
+  # GitHub job outputs are intentionally bounded. Large changes should be split
+  # into smaller issues instead of weakening the token boundary.
+  if (( total_size > 400000 )); then
+    blocked_reason="OUTPUT_TOO_LARGE"
+    patch_b64=""
+    result_b64="$(printf '%s' 'CODEX_BLOCKED: OUTPUT_TOO_LARGE' | gzip -c | base64 -w0)"
+    verification_b64="$(printf '%s' 'CODEX_BLOCKED=OUTPUT_TOO_LARGE' | gzip -c | base64 -w0)"
+  fi
+
+  write_output blocked_reason "$blocked_reason"
+  write_output patch_b64 "$patch_b64"
+  write_output result_b64 "$result_b64"
+  write_output verification_b64 "$verification_b64"
+}
+
+unpack_value() {
+  local value="$1"
+  local path="$2"
+  if [[ -n "$value" ]]; then
+    printf '%s' "$value" | base64 -d | gzip -d > "$path"
+  else
+    : > "$path"
+  fi
+}
+
+hydrate_outputs() {
+  : "${CODEX_OUTPUT_DIR:?}"
+  local out="$CODEX_OUTPUT_DIR"
+  rm -rf "$out"
+  mkdir -p "$out"
+
+  unpack_value "${PATCH_B64:-}" "$out/agent.patch"
+  unpack_value "${RESULT_B64:-}" "$out/codex-result.txt"
+  unpack_value "${VERIFICATION_B64:-}" "$out/verification.txt"
+
+  if [[ -n "${BLOCKED_REASON:-}" ]]; then
+    printf '%s\n' "$BLOCKED_REASON" > "$out/blocked-reason.txt"
+  fi
+}
+
 finalize() {
   : "${GH_TOKEN:?}"
   : "${REPO:?}"
@@ -426,9 +488,10 @@ finalize() {
 case "$MODE" in
   authorize) authorize ;;
   run) run_codex ;;
+  emit) emit_outputs ;;
   finalize) finalize ;;
   *)
-    echo "Usage: $0 {authorize|run|finalize}" >&2
+    echo "Usage: $0 {authorize|run|emit|finalize}" >&2
     exit 2
     ;;
 esac
