@@ -126,3 +126,13 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" emit
 
+
+
+  finalize:
+    needs:
+      - authorize
+      - codex
+    if: needs.authorize.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Finalize stage selected."
