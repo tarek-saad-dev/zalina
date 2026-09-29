@@ -159,7 +159,6 @@ run_codex() {
   : "${CONTROL_CONTEXT_DIR:?}"
   : "${CODEX_OUTPUT_DIR:?}"
 
-  hydrate_outputs
   local out="$CODEX_OUTPUT_DIR"
   local ctx="$CONTROL_CONTEXT_DIR"
 
@@ -394,6 +393,7 @@ finalize() {
   : "${TARGET_REF:?}"
   : "${CODEX_OUTPUT_DIR:?}"
 
+  hydrate_outputs
   local out="$CODEX_OUTPUT_DIR"
 
   if [[ -f "$out/blocked-reason.txt" ]]; then
