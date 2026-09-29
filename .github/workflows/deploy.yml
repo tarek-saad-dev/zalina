@@ -47,5 +47,39 @@ jobs:
   authorize:
     if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+    outputs:
+      allowed: ${{ steps.authorize.outputs.allowed }}
+      action: ${{ steps.authorize.outputs.action }}
+      target_sha: ${{ steps.authorize.outputs.target_sha }}
+      target_ref: ${{ steps.authorize.outputs.target_ref }}
+      issue_title: ${{ steps.authorize.outputs.issue_title }}
     steps:
-      - run: echo "Codex control-plane trigger accepted for validation."
+      - name: Checkout trusted control plane
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Authorize command
+        id: authorize
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          BODY: ${{ github.event.comment.body }}
+          NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ github.event.issue.pull_request.url }}
+        run: ./.github/scripts/codex-control.sh authorize
+
+      - name: Upload authorized context
+        if: steps.authorize.outputs.allowed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: control-context
+          path: control-context/
+          if-no-files-found: error
+          retention-days: 1
