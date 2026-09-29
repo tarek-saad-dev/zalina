@@ -199,6 +199,7 @@ authorize_control() {
   write_output target_sha "$target_sha"
   write_output target_ref "$target_ref"
   write_output issue_title "$issue_title"
+  write_output target_number "$number"
 }
 
 is_usage_blocked() {
