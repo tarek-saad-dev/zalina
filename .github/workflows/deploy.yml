@@ -54,6 +54,7 @@ jobs:
       target_sha: ${{ steps.authorize.outputs.target_sha }}
       target_ref: ${{ steps.authorize.outputs.target_ref }}
       issue_title: ${{ steps.authorize.outputs.issue_title }}
+      target_number: ${{ steps.authorize.outputs.target_number }}
     steps:
       - name: Checkout trusted control plane
         uses: actions/checkout@v4
@@ -168,16 +169,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.issue.number || 0 }}
+          NUMBER: ${{ needs.authorize.outputs.target_number }}
           CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
           TARGET_SHA: ${{ needs.authorize.outputs.target_sha }}
           TARGET_REF: ${{ needs.authorize.outputs.target_ref }}
           ISSUE_TITLE: ${{ needs.authorize.outputs.issue_title }}
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: |
-          if [[ "$NUMBER" == "0" ]]; then
-            if [[ "$CONTROL_ACTION" == "EXECUTE" ]]; then
-              NUMBER="$(jq -r '.number' /tmp/does-not-exist 2>/dev/null || true)"
-            fi
-          fi
           "$RUNNER_TEMP/codex-control.sh" finalize
