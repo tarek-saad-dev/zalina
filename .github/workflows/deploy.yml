@@ -47,10 +47,6 @@ jobs:
   authorize:
     if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: read
-      pull-requests: read
     outputs:
       allowed: ${{ steps.authorize.outputs.allowed }}
       action: ${{ steps.authorize.outputs.action }}
@@ -84,21 +80,18 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-
-
-
-
-
   codex:
     needs: authorize
     if: needs.authorize.outputs.allowed == 'true'
-    permissions:
-      contents: read
-      actions: write
     runs-on:
       - self-hosted
       - codex
       - zalina
+    outputs:
+      blocked_reason: ${{ steps.emit.outputs.blocked_reason }}
+      patch_b64: ${{ steps.emit.outputs.patch_b64 }}
+      result_b64: ${{ steps.emit.outputs.result_b64 }}
+      verification_b64: ${{ steps.emit.outputs.verification_b64 }}
     steps:
       - name: Checkout exact authorized target
         uses: actions/checkout@v4
@@ -127,12 +120,47 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" run
 
+      - name: Emit bounded result
+        id: emit
+        env:
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: "$RUNNER_TEMP/codex-control.sh" emit
 
-
-      - name: Upload Codex result
-        uses: actions/upload-artifact@v4
+  finalize:
+    needs:
+      - authorize
+      - codex
+    if: needs.authorize.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
         with:
-          name: codex-output
-          path: /tmp/codex-output/
-          if-no-files-found: error
-          retention-days: 1
+          ref: ${{ needs.authorize.outputs.target_sha }}
+          fetch-depth: 0
+
+      - name: Load trusted control script
+        run: |
+          git fetch origin main --no-tags
+          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          chmod 700 "$RUNNER_TEMP/codex-control.sh"
+
+      - name: Publish result
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
+          TARGET_SHA: ${{ needs.authorize.outputs.target_sha }}
+          TARGET_REF: ${{ needs.authorize.outputs.target_ref }}
+          ISSUE_TITLE: ${{ needs.authorize.outputs.issue_title }}
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+          BLOCKED_REASON: ${{ needs.codex.outputs.blocked_reason }}
+          PATCH_B64: ${{ needs.codex.outputs.patch_b64 }}
+          RESULT_B64: ${{ needs.codex.outputs.result_b64 }}
+          VERIFICATION_B64: ${{ needs.codex.outputs.verification_b64 }}
+        run: "$RUNNER_TEMP/codex-control.sh" finalize
