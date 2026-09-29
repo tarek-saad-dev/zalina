@@ -47,6 +47,10 @@ jobs:
   authorize:
     if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
     outputs:
       allowed: ${{ steps.authorize.outputs.allowed }}
       action: ${{ steps.authorize.outputs.action }}
@@ -80,18 +84,20 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+
+
+
+
+
   codex:
     needs: authorize
+    outputs:
+      smoke: ${{ steps.smoke.outputs.value }}
     if: needs.authorize.outputs.allowed == 'true'
     runs-on:
       - self-hosted
       - codex
       - zalina
-    outputs:
-      blocked_reason: ${{ steps.emit.outputs.blocked_reason }}
-      patch_b64: ${{ steps.emit.outputs.patch_b64 }}
-      result_b64: ${{ steps.emit.outputs.result_b64 }}
-      verification_b64: ${{ steps.emit.outputs.verification_b64 }}
     steps:
       - name: Checkout exact authorized target
         uses: actions/checkout@v4
@@ -120,19 +126,7 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" run
 
-      - name: Emit bounded result
-        id: emit
-        env:
-          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
-        run: "$RUNNER_TEMP/codex-control.sh" emit
+      - name: Emit smoke output
+        id: smoke
+        run: echo "value=ok" >> "$GITHUB_OUTPUT"
 
-
-
-  finalize:
-    needs:
-      - authorize
-      - codex
-    if: needs.authorize.outputs.allowed == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Finalize stage selected."
