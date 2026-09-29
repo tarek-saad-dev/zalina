@@ -153,7 +153,10 @@ jobs:
           git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
           chmod 700 "$RUNNER_TEMP/codex-control.sh"
 
-      - name: Validate token env
+      - name: Validate handoff env
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo "token-env-ok"
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: echo "handoff-env-ok"
