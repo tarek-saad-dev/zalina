@@ -87,6 +87,7 @@ jobs:
 
 
 
+
   codex:
     needs: authorize
     if: needs.authorize.outputs.allowed == 'true'
@@ -103,4 +104,16 @@ jobs:
           persist-credentials: false
           clean: true
 
-      - run: echo "Checkout stage validated."
+      - name: Download authorized context
+        uses: actions/download-artifact@v4
+        with:
+          name: control-context
+          path: ${{ runner.temp }}/control-context
+
+      - name: Load trusted control script
+        run: |
+          git fetch origin main --no-tags
+          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          chmod 700 "$RUNNER_TEMP/codex-control.sh"
+
+      - run: echo "Artifact and trusted-script stages validated."
