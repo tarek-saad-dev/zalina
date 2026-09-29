@@ -323,119 +323,6 @@ comment_blocked() {
   gh issue comment "$NUMBER" --repo "$REPO" --body-file "$out/comment.md"
 }
 
-pack_file() {
-  local path="$1"
-  if [[ -s "$path" ]]; then
-    gzip -c "$path" | base64 -w0
-  fi
-}
-
-emit_chunks() {
-  local kind="$1"
-  local value="$2"
-  if [[ -n "$value" ]]; then
-    while IFS= read -r chunk; do
-      printf 'CODEX_PAYLOAD|%s|%s\n' "$kind" "$chunk"
-    done < <(printf '%s' "$value" | fold -w 12000)
-  fi
-}
-
-emit_log() {
-  : "${CODEX_OUTPUT_DIR:?}"
-  local out="$CODEX_OUTPUT_DIR"
-
-  local blocked_reason="NONE"
-  [[ -f "$out/blocked-reason.txt" ]] && blocked_reason="$(cat "$out/blocked-reason.txt")"
-
-  local patch_b64 result_b64 verification_b64
-  patch_b64="$(pack_file "$out/agent.patch")"
-  result_b64="$(pack_file "$out/codex-result.txt")"
-  verification_b64="$(pack_file "$out/verification.txt")"
-
-  local total_size=$(( ${#patch_b64} + ${#result_b64} + ${#verification_b64} ))
-  if (( total_size > 2000000 )); then
-    blocked_reason="OUTPUT_TOO_LARGE"
-    patch_b64=""
-    result_b64="$(printf '%s' 'CODEX_BLOCKED: OUTPUT_TOO_LARGE' | gzip -c | base64 -w0)"
-    verification_b64="$(printf '%s' 'CODEX_BLOCKED=OUTPUT_TOO_LARGE' | gzip -c | base64 -w0)"
-  fi
-
-  printf 'CODEX_PAYLOAD|META|%s\n' "$blocked_reason"
-  emit_chunks PATCH "$patch_b64"
-  emit_chunks RESULT "$result_b64"
-  emit_chunks VERIFY "$verification_b64"
-  printf 'CODEX_PAYLOAD|END|ok\n'
-}
-
-extract_payload() {
-  local log_file="$1"
-  local kind="$2"
-  grep -F "CODEX_PAYLOAD|$kind|" "$log_file" 2>/dev/null     | sed "s/^.*CODEX_PAYLOAD|$kind|//"     | tr -d '\r\n' || true
-}
-
-unpack_payload() {
-  local value="$1"
-  local path="$2"
-  if [[ -n "$value" ]]; then
-    printf '%s' "$value" | base64 -d | gzip -d > "$path"
-  else
-    : > "$path"
-  fi
-}
-
-fetch_log_handoff() {
-  : "${GH_TOKEN:?}"
-  : "${REPO:?}"
-  : "${RUN_ID:?}"
-  : "${CODEX_OUTPUT_DIR:?}"
-
-  local out="$CODEX_OUTPUT_DIR"
-  rm -rf "$out"
-  mkdir -p "$out"
-
-  local jobs_file="$out/jobs.json"
-  gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" > "$jobs_file"
-
-  local job_id
-  job_id="$(jq -r '.jobs[] | select(.name == "codex") | .id' "$jobs_file" | head -n1)"
-  if [[ -z "$job_id" || "$job_id" == "null" ]]; then
-    echo "Unable to locate completed codex job for run $RUN_ID" >&2
-    return 1
-  fi
-
-  local log_file="$out/codex-job.log"
-  local ready="false"
-
-  for _ in 1 2 3 4 5 6 7 8 9 10; do
-    if curl -fsSL       -H "Authorization: Bearer $GH_TOKEN"       -H "Accept: application/vnd.github+json"       -H "X-GitHub-Api-Version: 2022-11-28"       "https://api.github.com/repos/$REPO/actions/jobs/$job_id/logs"       -o "$log_file"; then
-      if grep -Fq 'CODEX_PAYLOAD|END|ok' "$log_file"; then
-        ready="true"
-        break
-      fi
-    fi
-    sleep 2
-  done
-
-  if [[ "$ready" != "true" ]]; then
-    echo "Codex handoff payload was not available in job logs." >&2
-    return 1
-  fi
-
-  local blocked_reason patch_b64 result_b64 verification_b64
-  blocked_reason="$(grep -F 'CODEX_PAYLOAD|META|' "$log_file" | tail -n1 | sed 's/^.*CODEX_PAYLOAD|META|//')"
-  patch_b64="$(extract_payload "$log_file" PATCH)"
-  result_b64="$(extract_payload "$log_file" RESULT)"
-  verification_b64="$(extract_payload "$log_file" VERIFY)"
-
-  unpack_payload "$patch_b64" "$out/agent.patch"
-  unpack_payload "$result_b64" "$out/codex-result.txt"
-  unpack_payload "$verification_b64" "$out/verification.txt"
-
-  if [[ -n "$blocked_reason" && "$blocked_reason" != "NONE" ]]; then
-    printf '%s\n' "$blocked_reason" > "$out/blocked-reason.txt"
-  fi
-}
-
 finalize() {
   : "${GH_TOKEN:?}"
   : "${REPO:?}"
@@ -539,11 +426,9 @@ finalize() {
 case "$MODE" in
   authorize) authorize ;;
   run) run_codex ;;
-  emit-log) emit_log ;;
-  fetch-log) fetch_log_handoff ;;
   finalize) finalize ;;
   *)
-    echo "Usage: $0 {authorize|run|emit-log|fetch-log|finalize}" >&2
+    echo "Usage: $0 {authorize|run|finalize}" >&2
     exit 2
     ;;
 esac
