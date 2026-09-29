@@ -4,6 +4,7 @@ set -euo pipefail
 MODE="${1:-}"
 
 usage_pattern='usage limit|rate limit|limit reached|quota|weekly limit|5[- ]hour|credits?.*(remaining|exhausted|limit)|insufficient.*credits|too many requests'
+sandbox_pattern='bwrap:|Failed RTM_NEWADDR|runner sandbox|sandbox.*Operation not permitted|Operation not permitted.*sandbox'
 
 write_output() {
   local key="$1"
@@ -204,7 +205,12 @@ authorize_control() {
 
 is_usage_blocked() {
   local out="$1"
-  grep -Eiq "$usage_pattern"     "$out/codex-stdout.log"     "$out/codex-stderr.log"     "$out/codex-result.txt" 2>/dev/null
+  grep -Eiq "$usage_pattern" "$out/codex-stdout.log" "$out/codex-stderr.log" "$out/codex-result.txt" 2>/dev/null
+}
+
+is_sandbox_blocked() {
+  local out="$1"
+  grep -Eiq "$sandbox_pattern" "$out/codex-stdout.log" "$out/codex-stderr.log" "$out/codex-result.txt" 2>/dev/null
 }
 
 mark_blocked() {
@@ -227,14 +233,24 @@ run_verification() {
   local login_status="$2"
 
   set +e
-  npm ci > "$out/npm-ci.log" 2>&1
-  local npm_ci_status=$?
+  local install_mode=""
+  local install_status=99
+
+  if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
+    install_mode="npm ci"
+    npm ci > "$out/npm-install.log" 2>&1
+    install_status=$?
+  else
+    install_mode="npm install --package-lock=false"
+    npm install --package-lock=false --no-audit --no-fund > "$out/npm-install.log" 2>&1
+    install_status=$?
+  fi
 
   local test_status=99
   local typecheck_status=99
   local build_status=99
 
-  if [[ $npm_ci_status -eq 0 ]]; then
+  if [[ $install_status -eq 0 ]]; then
     npm test > "$out/npm-test.log" 2>&1
     test_status=$?
     npm run typecheck > "$out/typecheck.log" 2>&1
@@ -246,7 +262,8 @@ run_verification() {
 
   {
     printf 'CODEX_LOGIN=%s\n' "$login_status"
-    printf 'NPM_CI=%s\n' "$npm_ci_status"
+    printf 'NPM_INSTALL_MODE=%s\n' "$install_mode"
+    printf 'NPM_INSTALL=%s\n' "$install_status"
     printf 'NPM_TEST=%s\n' "$test_status"
     printf 'TYPECHECK=%s\n' "$typecheck_status"
     printf 'BUILD=%s\n' "$build_status"
@@ -322,7 +339,7 @@ NEXT_ACTION: ...
 EOF
 
     set +e
-    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec --sandbox read-only --ask-for-approval never       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
+    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec -s read-only -c 'approval_policy="never"'       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
     local codex_status=$?
     set -e
 
@@ -331,10 +348,14 @@ EOF
     if [[ $codex_status -ne 0 ]]; then
       if is_usage_blocked "$out"; then
         mark_blocked "$out" "USAGE_LIMIT"
+      elif is_sandbox_blocked "$out"; then
+        mark_blocked "$out" "SANDBOX"
       else
         printf 'CODEX_BLOCKED=EXEC_ERROR\n' >> "$out/verification.txt"
         printf 'EXEC_ERROR\n' > "$out/blocked-reason.txt"
       fi
+    elif is_sandbox_blocked "$out"; then
+      mark_blocked "$out" "SANDBOX"
     fi
 
   else
@@ -358,22 +379,30 @@ Finish with a concise implementation summary and important verification notes.
 EOF
 
     set +e
-    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec --full-auto       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
+    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec -s workspace-write -c 'approval_policy="never"'       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
     local codex_status=$?
     set -e
 
     if [[ $codex_status -ne 0 ]]; then
-      if is_usage_blocked "$out"; then
-        git reset --hard HEAD >/dev/null 2>&1 || true
-        git clean -fd >/dev/null 2>&1 || true
-        mark_blocked "$out" "USAGE_LIMIT"
-        rm -f .env.local
-        return 0
-      fi
-
       git reset --hard HEAD >/dev/null 2>&1 || true
       git clean -fd >/dev/null 2>&1 || true
-      mark_blocked "$out" "EXEC_ERROR"
+
+      if is_usage_blocked "$out"; then
+        mark_blocked "$out" "USAGE_LIMIT"
+      elif is_sandbox_blocked "$out"; then
+        mark_blocked "$out" "SANDBOX"
+      else
+        mark_blocked "$out" "EXEC_ERROR"
+      fi
+
+      rm -f .env.local
+      return 0
+    fi
+
+    if is_sandbox_blocked "$out"; then
+      git reset --hard HEAD >/dev/null 2>&1 || true
+      git clean -fd >/dev/null 2>&1 || true
+      mark_blocked "$out" "SANDBOX"
       rm -f .env.local
       return 0
     fi
@@ -411,6 +440,8 @@ comment_blocked() {
       printf 'Codex usage is exhausted or temporarily rate-limited. Retry the same DEV_ACTION after the usage window resets or credits become available.\n\n'
     elif [[ "$reason" == "AUTH" ]]; then
       printf 'Codex authentication is unavailable on the self-hosted runner. Re-authenticate the codex-agent user, then retry the same DEV_ACTION.\n\n'
+    elif [[ "$reason" == "SANDBOX" ]]; then
+      printf 'The Codex Linux sandbox is unavailable on the self-hosted runner. Install/configure bubblewrap for codex-agent, then retry the same DEV_ACTION.\n\n'
     else
       printf 'Codex could not complete this action. Inspect the workflow artifact/logs before retrying.\n\n'
     fi
@@ -478,6 +509,7 @@ finalize() {
 
   if [[ "$CONTROL_ACTION" == "EXECUTE" ]]; then
     local pr_url
+    local pr_create_status=0
     pr_url="$(gh pr list --repo "$REPO" --state open --head "$TARGET_REF" --json url --jq '.[0].url // empty')"
 
     if [[ -z "$pr_url" ]]; then
@@ -491,19 +523,35 @@ finalize() {
         printf '\n\nThis PR must not be merged until independent review reaches READY_FOR_TAREK and Tarek explicitly approves production merge.\n'
       } > "$out/pr-body.md"
 
-      pr_url="$(gh pr create         --repo "$REPO"         --draft         --base main         --head "$TARGET_REF"         --title "$ISSUE_TITLE"         --body-file "$out/pr-body.md")"
+      set +e
+      pr_url="$(gh pr create         --repo "$REPO"         --draft         --base main         --head "$TARGET_REF"         --title "$ISSUE_TITLE"         --body-file "$out/pr-body.md" 2>"$out/pr-create-error.log")"
+      pr_create_status=$?
+      set -e
     fi
 
-    {
-      printf 'CODEX_EXECUTION: COMPLETE\n\n'
-      printf 'PR: %s\n' "$pr_url"
-      printf 'HEAD_BRANCH: `%s`\n' "$TARGET_REF"
-      printf 'WORKFLOW_VERIFICATION:\n'
-      cat "$out/verification.txt"
-      printf '\nCODEX_SUMMARY:\n'
-      cat "$out/codex-result.txt"
-      printf '\nNEXT_ACTION: DEV_ACTION: REVIEW\n'
-    } > "$out/comment.md"
+    if [[ $pr_create_status -eq 0 && -n "$pr_url" ]]; then
+      {
+        printf 'CODEX_EXECUTION: COMPLETE\n\n'
+        printf 'PR: %s\n' "$pr_url"
+        printf 'HEAD_BRANCH: `%s`\n' "$TARGET_REF"
+        printf 'WORKFLOW_VERIFICATION:\n'
+        cat "$out/verification.txt"
+        printf '\nCODEX_SUMMARY:\n'
+        cat "$out/codex-result.txt"
+        printf '\nNEXT_ACTION: DEV_ACTION: REVIEW\n'
+      } > "$out/comment.md"
+    else
+      {
+        printf 'CODEX_EXECUTION: BRANCH_READY\n\n'
+        printf 'HEAD_BRANCH: `%s`\n' "$TARGET_REF"
+        printf 'The builder completed and pushed the branch, but this repository blocks GitHub Actions from creating pull requests. ChatGPT should create the draft PR as the control-console operator.\n'
+        printf 'WORKFLOW_VERIFICATION:\n'
+        cat "$out/verification.txt"
+        printf '\nCODEX_SUMMARY:\n'
+        cat "$out/codex-result.txt"
+        printf '\nNEXT_ACTION: CHATGPT_CREATE_DRAFT_PR\n'
+      } > "$out/comment.md"
+    fi
 
     gh issue comment "$NUMBER" --repo "$REPO" --body-file "$out/comment.md"
 
