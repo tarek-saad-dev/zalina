@@ -124,10 +124,3 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" run
 
-      - name: Upload Codex result
-        uses: actions/upload-artifact@v4
-        with:
-          name: codex-output
-          path: ${{ runner.temp }}/codex-output/
-          if-no-files-found: error
-          retention-days: 1
