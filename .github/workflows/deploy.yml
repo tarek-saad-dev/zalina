@@ -126,3 +126,13 @@ jobs:
           "$RUNNER_TEMP/codex-control.sh" run
           "$RUNNER_TEMP/codex-control.sh" emit-log
 
+
+
+  finalize:
+    needs:
+      - authorize
+      - codex
+    if: needs.authorize.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Finalize stage selected."
