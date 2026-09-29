@@ -119,16 +119,14 @@ jobs:
           git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
           chmod 700 "$RUNNER_TEMP/codex-control.sh"
 
-      - name: Diagnose Codex exec CLI
+      - name: Validate Codex noninteractive flags
         env:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: |
-          codex --version
-          codex exec --help
           mkdir -p "$CODEX_OUTPUT_DIR"
-          printf 'CODEX_BLOCKED=DIAGNOSTIC\n' > "$CODEX_OUTPUT_DIR/verification.txt"
-          printf 'DIAGNOSTIC\n' > "$CODEX_OUTPUT_DIR/blocked-reason.txt"
-          printf 'CLI diagnostic only; no task executed.\n' > "$CODEX_OUTPUT_DIR/codex-result.txt"
+          codex exec             -s workspace-write             -c 'approval_policy="never"'             -o "$CODEX_OUTPUT_DIR/codex-result.txt"             "Reply exactly: CODEX_FLAG_OK"
+          printf 'CODEX_FLAG_SMOKE=0\n' > "$CODEX_OUTPUT_DIR/verification.txt"
+          : > "$CODEX_OUTPUT_DIR/agent.patch"
 
       - name: Upload Codex result
         uses: actions/upload-artifact@v4
