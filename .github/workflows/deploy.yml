@@ -128,11 +128,29 @@ jobs:
 
 
 
+
   finalize:
     needs:
       - authorize
       - codex
     if: needs.authorize.outputs.allowed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
-      - run: echo "Finalize stage selected."
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.target_sha }}
+          fetch-depth: 0
+
+      - name: Load trusted control script
+        run: |
+          git fetch origin main --no-tags
+          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          chmod 700 "$RUNNER_TEMP/codex-control.sh"
+
+      - run: echo "Finalizer permissions and trusted-script stages validated."
