@@ -5,9 +5,9 @@ on:
     types: [created]
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
+  issues: read
+  pull-requests: read
 
 concurrency:
   group: zalina-codex-control-${{ github.event.issue.number }}
@@ -176,6 +176,9 @@ PY
     needs: authorize
     if: needs.authorize.outputs.allowed == 'true'
     runs-on: [self-hosted, codex, zalina]
+    permissions:
+      contents: read
+      actions: read
     steps:
       - name: Checkout exact authorized head
         uses: actions/checkout@v4
@@ -189,7 +192,7 @@ PY
         uses: actions/download-artifact@v4
         with:
           name: control-context
-          path: control-context
+          path: ${{ runner.temp }}/control-context
 
       - name: Run Codex and verification
         env:
@@ -198,15 +201,51 @@ PY
         run: |
           set -uo pipefail
 
-          mkdir -p codex-output
-          cp -n .env.example .env.local 2>/dev/null || true
+          OUT="$RUNNER_TEMP/codex-output"
+          CTX="$RUNNER_TEMP/control-context"
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
 
-          codex login status > codex-output/login-status.txt 2>&1
+          cp -n .env.example .env.local 2>/dev/null || true
+          git fetch origin main --no-tags >/dev/null 2>&1 || true
+
+          codex login status > "$OUT/login-status.txt" 2>&1
           login_status=$?
 
-          context="$(cat control-context/context.txt)"
+          run_verification() {
+            set +e
+            npm ci > "$OUT/npm-ci.log" 2>&1
+            npm_ci_status=$?
+
+            if [[ $npm_ci_status -eq 0 ]]; then
+              npm test > "$OUT/npm-test.log" 2>&1
+              test_status=$?
+              npm run typecheck > "$OUT/typecheck.log" 2>&1
+              typecheck_status=$?
+              npm run build > "$OUT/build.log" 2>&1
+              build_status=$?
+            else
+              test_status=99
+              typecheck_status=99
+              build_status=99
+            fi
+            set -e
+
+            {
+              echo "CODEX_LOGIN=$login_status"
+              echo "NPM_CI=$npm_ci_status"
+              echo "NPM_TEST=$test_status"
+              echo "TYPECHECK=$typecheck_status"
+              echo "BUILD=$build_status"
+            } > "$OUT/verification.txt"
+          }
+
+          context="$(cat "$CTX/context.txt")"
 
           if [[ "$CONTROL_ACTION" == "REVIEW" ]]; then
+            run_verification
+            verification="$(cat "$OUT/verification.txt")"
+
             prompt="$(cat <<EOF
 Read AGENTS.md and docs/agent-control-plane/CONTROL-PLANE.md first.
 
@@ -214,7 +253,12 @@ Act as the independent reviewer for the exact checked-out PR head.
 
 $context
 
+WORKFLOW VERIFICATION:
+$verification
+
 Inspect the actual code and diff against main. Do not edit files. Do not push, merge, deploy, or access production data.
+
+If any workflow verification command failed, do not report READY_FOR_TAREK unless the failure is clearly demonstrated to be pre-existing and unrelated.
 
 Return exactly this structure:
 
@@ -229,7 +273,7 @@ NON_BLOCKING_NOTES:
 - ...
 
 TEST_EVIDENCE:
-Use the verification evidence supplied by the workflow and distinguish failures from review findings.
+...
 
 STATE: REVIEW | READY_FOR_TAREK
 NEXT_ACTION: ...
@@ -237,8 +281,10 @@ NEXT_ACTION: ...
 READY_FOR_TAREK is allowed only when there are no unresolved material findings and the exact current head is safe to merge and deploy.
 EOF
 )"
-            env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL               codex exec --sandbox read-only --ask-for-approval never -o codex-output/codex-result.txt "$prompt"
+            env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL               codex exec --sandbox read-only --ask-for-approval never -o "$OUT/codex-result.txt" "$prompt"
             codex_status=$?
+            echo "CODEX_EXEC=$codex_status" >> "$OUT/verification.txt"
+
           else
             mode_text="Implement only the originating issue scope."
             if [[ "$CONTROL_ACTION" == "FIX_FINDINGS" ]]; then
@@ -259,55 +305,31 @@ Make the required code changes. Run targeted checks when useful. The workflow wi
 Finish with a concise implementation summary and any important verification notes.
 EOF
 )"
-            env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL               codex exec --full-auto -o codex-output/codex-result.txt "$prompt"
+            env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL               codex exec --full-auto -o "$OUT/codex-result.txt" "$prompt"
             codex_status=$?
-          fi
 
-          set +e
-          npm ci > codex-output/npm-ci.log 2>&1
-          npm_ci_status=$?
+            run_verification
+            echo "CODEX_EXEC=$codex_status" >> "$OUT/verification.txt"
 
-          if [[ $npm_ci_status -eq 0 ]]; then
-            npm test > codex-output/npm-test.log 2>&1
-            test_status=$?
-            npm run typecheck > codex-output/typecheck.log 2>&1
-            typecheck_status=$?
-            npm run build > codex-output/build.log 2>&1
-            build_status=$?
-          else
-            test_status=99
-            typecheck_status=99
-            build_status=99
-          fi
-          set -e
-
-          {
-            echo "CODEX_LOGIN=$login_status"
-            echo "CODEX_EXEC=$codex_status"
-            echo "NPM_CI=$npm_ci_status"
-            echo "NPM_TEST=$test_status"
-            echo "TYPECHECK=$typecheck_status"
-            echo "BUILD=$build_status"
-          } > codex-output/verification.txt
-
-          if [[ "$CONTROL_ACTION" != "REVIEW" ]]; then
+            rm -f .env.local
             git add -N . >/dev/null 2>&1 || true
-            git diff --binary HEAD > codex-output/agent.patch
+            git diff --binary HEAD > "$OUT/agent.patch"
 
-            if git status --porcelain | awk '{print $2}' | grep -E '(^|/)\.env($|\.)' | grep -v -E '(^|/)\.env\.example$' >/dev/null 2>&1; then
-              echo "Blocked: agent attempted to change an environment-secret file." >> codex-output/verification.txt
-              : > codex-output/agent.patch
-              echo "1" > codex-output/security-blocked.txt
+            if git diff --name-only HEAD | grep -E '(^|/)\.env($|\.)' | grep -v -E '(^|/)\.env\.example$' >/dev/null 2>&1; then
+              echo "SECURITY_BLOCKED=1" >> "$OUT/verification.txt"
+              : > "$OUT/agent.patch"
+              echo "1" > "$OUT/security-blocked.txt"
             fi
           fi
 
+          rm -f .env.local
           exit 0
 
       - name: Upload Codex result
         uses: actions/upload-artifact@v4
         with:
           name: codex-output
-          path: codex-output/
+          path: ${{ runner.temp }}/codex-output/
           if-no-files-found: error
           retention-days: 1
 
@@ -315,6 +337,11 @@ EOF
     needs: [authorize, codex]
     if: needs.authorize.outputs.allowed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: read
     env:
       GH_TOKEN: ${{ github.token }}
       ACTION: ${{ needs.authorize.outputs.action }}
@@ -346,7 +373,7 @@ EOF
 
           gh issue comment "$NUMBER" --repo "$REPO" --body-file codex-output/comment.md
 
-      - name: Apply builder/fix patch safely
+      - name: Checkout builder/fix target
         if: env.ACTION != 'REVIEW'
         uses: actions/checkout@v4
         with:
