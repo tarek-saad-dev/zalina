@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - codex-control
   workflow_dispatch:
   issue_comment:
     types:
@@ -16,7 +17,7 @@ permissions:
 
 jobs:
   deploy:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'push' && github.ref_name == 'main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     concurrency:
       group: zalina-production
@@ -45,7 +46,7 @@ jobs:
           echo "Production verification passed."
 
   authorize:
-    if: github.event_name == 'issue_comment'
+    if: github.event_name == 'issue_comment' || (github.event_name == 'push' && github.ref_name == 'codex-control')
     runs-on: ubuntu-latest
     outputs:
       allowed: ${{ steps.authorize.outputs.allowed }}
@@ -53,6 +54,7 @@ jobs:
       target_sha: ${{ steps.authorize.outputs.target_sha }}
       target_ref: ${{ steps.authorize.outputs.target_ref }}
       issue_title: ${{ steps.authorize.outputs.issue_title }}
+      target_number: ${{ steps.authorize.outputs.target_number }}
     steps:
       - name: Checkout trusted control plane
         uses: actions/checkout@v4
@@ -69,7 +71,16 @@ jobs:
           BODY: ${{ github.event.comment.body }}
           NUMBER: ${{ github.event.issue.number }}
           PR_URL: ${{ github.event.issue.pull_request.url }}
-        run: ./.github/scripts/codex-control.sh authorize
+          EVENT_NAME: ${{ github.event_name }}
+          CONTROL_SHA: ${{ github.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "issue_comment" ]]; then
+            ./.github/scripts/codex-control.sh authorize
+          else
+            gh api "repos/$REPO/contents/.github/codex-command.json?ref=$CONTROL_SHA"               --jq '.content' | tr -d '\n' | base64 -d > /tmp/codex-command.json
+
+            COMMAND_FILE=/tmp/codex-command.json               ./.github/scripts/codex-control.sh authorize-control
+          fi
 
       - name: Upload authorized context
         if: steps.authorize.outputs.allowed == 'true'
@@ -158,7 +169,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.issue.number }}
+          NUMBER: ${{ needs.authorize.outputs.target_number }}
           CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
           TARGET_SHA: ${{ needs.authorize.outputs.target_sha }}
           TARGET_REF: ${{ needs.authorize.outputs.target_ref }}

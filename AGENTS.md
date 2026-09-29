@@ -53,12 +53,16 @@ Agent verification must not create or mutate real production bookings, payment t
 
 ## Control commands
 
-The GitHub control workflow recognizes exact top-level comments from `tarek-saad-dev`:
+ChatGPT is the normal operator. It translates Tarek's natural-language request into a validated command envelope on the dedicated `codex-control` branch.
 
-- `DEV_ACTION: EXECUTE`
-- `DEV_ACTION: REVIEW`
-- `DEV_ACTION: FIX_FINDINGS`
+Supported actions are:
 
-Routine status checks are handled by ChatGPT from GitHub without spending a Codex run.
+- `EXECUTE`
+- `REVIEW`
+- `FIX_FINDINGS`
+
+Exact owner comments `DEV_ACTION: EXECUTE|REVIEW|FIX_FINDINGS` remain a manual fallback.
+
+A push to `codex-control` must never deploy production. Routine status checks are handled by ChatGPT from GitHub without spending a Codex run.
 
 Codex never merges. ChatGPT may merge only after Tarek explicitly approves in chat.

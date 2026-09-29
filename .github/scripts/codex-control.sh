@@ -103,6 +103,105 @@ authorize() {
   write_output issue_title "$issue_title"
 }
 
+
+authorize_control() {
+  : "${GH_TOKEN:?}"
+  : "${REPO:?}"
+  : "${ACTOR:?}"
+  : "${COMMAND_FILE:?}"
+
+  local action=""
+  local number=""
+  local requested_by=""
+  local request_id=""
+  local allowed="false"
+  local target_sha=""
+  local target_ref=""
+  local issue_title=""
+
+  rm -rf control-context
+  mkdir -p control-context
+
+  if [[ "$ACTOR" == "tarek-saad-dev" && -s "$COMMAND_FILE" ]]; then
+    action="$(jq -r '.action // ""' "$COMMAND_FILE")"
+    number="$(jq -r '.number // ""' "$COMMAND_FILE")"
+    requested_by="$(jq -r '.requested_by // ""' "$COMMAND_FILE")"
+    request_id="$(jq -r '.request_id // ""' "$COMMAND_FILE")"
+
+    if [[ "$requested_by" == "tarek-saad-dev"       && "$request_id" =~ ^[A-Za-z0-9._:-]{1,128}$       && "$number" =~ ^[1-9][0-9]*$       && ( "$action" == "EXECUTE" || "$action" == "REVIEW" || "$action" == "FIX_FINDINGS" ) ]]; then
+
+      if [[ "$action" == "EXECUTE" ]]; then
+        gh api "repos/$REPO/issues/$number" > control-context/issue.json
+
+        local issue_author is_pr
+        issue_author="$(jq -r '.user.login' control-context/issue.json)"
+        is_pr="$(jq -r 'has("pull_request")' control-context/issue.json)"
+        issue_title="$(jq -r '.title' control-context/issue.json)"
+
+        if [[ "$issue_author" == "tarek-saad-dev" && "$is_pr" == "false" ]]; then
+          allowed="true"
+          target_ref="codex/issue-$number"
+
+          if gh api "repos/$REPO/git/ref/heads/$target_ref" > control-context/ref.json 2>/dev/null; then
+            target_sha="$(jq -r '.object.sha' control-context/ref.json)"
+          else
+            target_sha="$(gh api "repos/$REPO/commits/main" --jq '.sha')"
+          fi
+
+          {
+            printf 'ACTION: EXECUTE\n'
+            printf 'REQUEST_ID: %s\n' "$request_id"
+            printf 'ISSUE: #%s\n' "$number"
+            printf 'TITLE: %s\n\n' "$issue_title"
+            jq -r '.body // ""' control-context/issue.json
+          } > control-context/context.txt
+        fi
+
+      else
+        gh api "repos/$REPO/pulls/$number" > control-context/pr.json
+
+        local head_repo head_ref head_sha base_ref
+        head_repo="$(jq -r '.head.repo.full_name' control-context/pr.json)"
+        head_ref="$(jq -r '.head.ref' control-context/pr.json)"
+        head_sha="$(jq -r '.head.sha' control-context/pr.json)"
+        base_ref="$(jq -r '.base.ref' control-context/pr.json)"
+        issue_title="$(jq -r '.title' control-context/pr.json)"
+
+        if [[ "$head_repo" == "$REPO" && "$head_ref" == codex/issue-* && "$base_ref" == "main" ]]; then
+          allowed="true"
+          target_ref="$head_ref"
+          target_sha="$head_sha"
+
+          gh api "repos/$REPO/issues/$number/comments?per_page=100" > control-context/comments.json
+
+          {
+            printf 'ACTION: %s\n' "$action"
+            printf 'REQUEST_ID: %s\n' "$request_id"
+            printf 'PR: #%s\n' "$number"
+            printf 'TITLE: %s\n' "$issue_title"
+            printf 'HEAD: %s\n' "$head_sha"
+            printf 'BRANCH: %s\n\n' "$head_ref"
+            printf 'PR BODY:\n'
+            jq -r '.body // ""' control-context/pr.json
+
+            if [[ "$action" == "FIX_FINDINGS" ]]; then
+              printf '\n\nLATEST CODEX REVIEW:\n'
+              jq -r '[.[] | select((.body // "") | contains("CODEX_REVIEW"))] | last | .body // "No prior CODEX_REVIEW comment was found."' control-context/comments.json
+            fi
+          } > control-context/context.txt
+        fi
+      fi
+    fi
+  fi
+
+  write_output allowed "$allowed"
+  write_output action "$action"
+  write_output target_sha "$target_sha"
+  write_output target_ref "$target_ref"
+  write_output issue_title "$issue_title"
+  write_output target_number "$number"
+}
+
 is_usage_blocked() {
   local out="$1"
   grep -Eiq "$usage_pattern"     "$out/codex-stdout.log"     "$out/codex-stderr.log"     "$out/codex-result.txt" 2>/dev/null
@@ -425,10 +524,11 @@ finalize() {
 
 case "$MODE" in
   authorize) authorize ;;
+  authorize-control) authorize_control ;;
   run) run_codex ;;
   finalize) finalize ;;
   *)
-    echo "Usage: $0 {authorize|run|finalize}" >&2
+    echo "Usage: $0 {authorize|authorize-control|run|finalize}" >&2
     exit 2
     ;;
 esac
