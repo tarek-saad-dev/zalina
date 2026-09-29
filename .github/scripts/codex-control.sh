@@ -322,7 +322,7 @@ NEXT_ACTION: ...
 EOF
 
     set +e
-    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec --sandbox read-only --ask-for-approval never       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
+    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec -s read-only -c 'approval_policy="never"'       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
     local codex_status=$?
     set -e
 
@@ -358,7 +358,7 @@ Finish with a concise implementation summary and important verification notes.
 EOF
 
     set +e
-    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec --full-auto       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
+    env -u GITHUB_TOKEN -u GH_TOKEN -u ACTIONS_RUNTIME_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_TOKEN -u ACTIONS_ID_TOKEN_REQUEST_URL       codex exec -s workspace-write -c 'approval_policy="never"'       -o "$out/codex-result.txt"       "$(cat "$out/prompt.txt")"       > "$out/codex-stdout.log" 2> "$out/codex-stderr.log"
     local codex_status=$?
     set -e
 
