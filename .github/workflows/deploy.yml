@@ -47,6 +47,10 @@ jobs:
   authorize:
     if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
     outputs:
       allowed: ${{ steps.authorize.outputs.allowed }}
       action: ${{ steps.authorize.outputs.action }}
@@ -79,6 +83,11 @@ jobs:
           path: control-context/
           if-no-files-found: error
           retention-days: 1
+
+
+
+
+
 
   codex:
     needs: authorize
@@ -115,18 +124,6 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" run
 
-      - name: Emit result handoff
-        env:
-          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
-        run: "$RUNNER_TEMP/codex-control.sh" emit-log
 
-
-
-  finalize:
-    needs:
-      - authorize
-      - codex
-    if: needs.authorize.outputs.allowed == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Finalize stage selected."
+      - name: Second trusted step
+        run: echo "second-step-ok"
