@@ -92,6 +92,9 @@ jobs:
   codex:
     needs: authorize
     if: needs.authorize.outputs.allowed == 'true'
+    permissions:
+      contents: read
+      actions: write
     runs-on:
       - self-hosted
       - codex
