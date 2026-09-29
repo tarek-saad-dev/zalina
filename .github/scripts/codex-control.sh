@@ -509,6 +509,7 @@ finalize() {
 
   if [[ "$CONTROL_ACTION" == "EXECUTE" ]]; then
     local pr_url
+    local pr_create_status=0
     pr_url="$(gh pr list --repo "$REPO" --state open --head "$TARGET_REF" --json url --jq '.[0].url // empty')"
 
     if [[ -z "$pr_url" ]]; then
@@ -522,19 +523,35 @@ finalize() {
         printf '\n\nThis PR must not be merged until independent review reaches READY_FOR_TAREK and Tarek explicitly approves production merge.\n'
       } > "$out/pr-body.md"
 
-      pr_url="$(gh pr create         --repo "$REPO"         --draft         --base main         --head "$TARGET_REF"         --title "$ISSUE_TITLE"         --body-file "$out/pr-body.md")"
+      set +e
+      pr_url="$(gh pr create         --repo "$REPO"         --draft         --base main         --head "$TARGET_REF"         --title "$ISSUE_TITLE"         --body-file "$out/pr-body.md" 2>"$out/pr-create-error.log")"
+      pr_create_status=$?
+      set -e
     fi
 
-    {
-      printf 'CODEX_EXECUTION: COMPLETE\n\n'
-      printf 'PR: %s\n' "$pr_url"
-      printf 'HEAD_BRANCH: `%s`\n' "$TARGET_REF"
-      printf 'WORKFLOW_VERIFICATION:\n'
-      cat "$out/verification.txt"
-      printf '\nCODEX_SUMMARY:\n'
-      cat "$out/codex-result.txt"
-      printf '\nNEXT_ACTION: DEV_ACTION: REVIEW\n'
-    } > "$out/comment.md"
+    if [[ $pr_create_status -eq 0 && -n "$pr_url" ]]; then
+      {
+        printf 'CODEX_EXECUTION: COMPLETE\n\n'
+        printf 'PR: %s\n' "$pr_url"
+        printf 'HEAD_BRANCH: `%s`\n' "$TARGET_REF"
+        printf 'WORKFLOW_VERIFICATION:\n'
+        cat "$out/verification.txt"
+        printf '\nCODEX_SUMMARY:\n'
+        cat "$out/codex-result.txt"
+        printf '\nNEXT_ACTION: DEV_ACTION: REVIEW\n'
+      } > "$out/comment.md"
+    else
+      {
+        printf 'CODEX_EXECUTION: BRANCH_READY\n\n'
+        printf 'HEAD_BRANCH: `%s`\n' "$TARGET_REF"
+        printf 'The builder completed and pushed the branch, but this repository blocks GitHub Actions from creating pull requests. ChatGPT should create the draft PR as the control-console operator.\n'
+        printf 'WORKFLOW_VERIFICATION:\n'
+        cat "$out/verification.txt"
+        printf '\nCODEX_SUMMARY:\n'
+        cat "$out/codex-result.txt"
+        printf '\nNEXT_ACTION: CHATGPT_CREATE_DRAFT_PR\n'
+      } > "$out/comment.md"
+    fi
 
     gh issue comment "$NUMBER" --repo "$REPO" --body-file "$out/comment.md"
 
