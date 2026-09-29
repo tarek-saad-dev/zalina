@@ -94,3 +94,25 @@ When the CLI reports a usage/quota/rate-limit condition:
 - the same `DEV_ACTION` can be retried after the usage window resets or credits become available
 
 Status inspection does not consume a Codex run; ChatGPT reads GitHub state directly.
+
+
+## ChatGPT command transport
+
+Routine GitHub comments created by the connected ChatGPT GitHub app are retained for audit, but in this repository they did not schedule an `issue_comment` Actions run.
+
+The primary machine trigger is therefore a dedicated branch named `codex-control`.
+
+ChatGPT writes a small command envelope to `.github/codex-command.json` on that branch:
+
+```json
+{
+  "action": "EXECUTE",
+  "number": 3,
+  "requested_by": "tarek-saad-dev",
+  "request_id": "issue-3-execute-1"
+}
+```
+
+A push to `codex-control` never deploys production. The workflow loads its executable control script from trusted `main`, validates the push actor and envelope, resolves the live issue/PR state, and then runs the same isolated Codex path.
+
+Manual owner comments using `DEV_ACTION: EXECUTE|REVIEW|FIX_FINDINGS` remain supported as a fallback.
