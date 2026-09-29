@@ -91,8 +91,6 @@ jobs:
 
   codex:
     needs: authorize
-    outputs:
-      smoke: ${{ steps.smoke.outputs.value }}
     if: needs.authorize.outputs.allowed == 'true'
     runs-on:
       - self-hosted
@@ -126,7 +124,10 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" run
 
-      - name: Emit smoke output
-        id: smoke
-        run: echo "value=ok" >> "$GITHUB_OUTPUT"
 
+
+      - name: Save Codex result cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/codex-output
+          key: codex-result-${{ github.run_id }}-${{ github.run_attempt }}
