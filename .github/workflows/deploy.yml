@@ -47,10 +47,6 @@ jobs:
   authorize:
     if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: read
-      pull-requests: read
     outputs:
       allowed: ${{ steps.authorize.outputs.allowed }}
       action: ${{ steps.authorize.outputs.action }}
@@ -83,11 +79,6 @@ jobs:
           path: control-context/
           if-no-files-found: error
           retention-days: 1
-
-
-
-
-
 
   codex:
     needs: authorize
@@ -124,10 +115,51 @@ jobs:
           CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
         run: "$RUNNER_TEMP/codex-control.sh" run
 
+      - name: Emit result handoff
+        env:
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: "$RUNNER_TEMP/codex-control.sh" emit-log
 
-
-      - name: Save Codex result cache
-        uses: actions/cache/save@v4
+  finalize:
+    needs:
+      - authorize
+      - codex
+    if: needs.authorize.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
         with:
-          path: ${{ runner.temp }}/codex-output
-          key: codex-result-${{ github.run_id }}-${{ github.run_attempt }}
+          ref: ${{ needs.authorize.outputs.target_sha }}
+          fetch-depth: 0
+
+      - name: Load trusted control script
+        run: |
+          git fetch origin main --no-tags
+          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          chmod 700 "$RUNNER_TEMP/codex-control.sh"
+
+      - name: Fetch Codex handoff from job logs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: "$RUNNER_TEMP/codex-control.sh" fetch-log
+
+      - name: Publish result
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
+          TARGET_SHA: ${{ needs.authorize.outputs.target_sha }}
+          TARGET_REF: ${{ needs.authorize.outputs.target_ref }}
+          ISSUE_TITLE: ${{ needs.authorize.outputs.issue_title }}
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: "$RUNNER_TEMP/codex-control.sh" finalize
