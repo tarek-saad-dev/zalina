@@ -83,3 +83,50 @@ jobs:
           path: control-context/
           if-no-files-found: error
           retention-days: 1
+
+
+  codex:
+    needs: authorize
+    if: needs.authorize.outputs.allowed == 'true'
+    runs-on:
+      - self-hosted
+      - codex
+      - zalina
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout exact authorized target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.target_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          clean: true
+
+      - name: Download authorized context
+        uses: actions/download-artifact@v4
+        with:
+          name: control-context
+          path: ${{ runner.temp }}/control-context
+
+      - name: Load trusted control script
+        run: |
+          git fetch origin main --no-tags
+          git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
+          chmod 700 "$RUNNER_TEMP/codex-control.sh"
+
+      - name: Run Codex safely
+        env:
+          CONTROL_ACTION: ${{ needs.authorize.outputs.action }}
+          CONTROL_CONTEXT_DIR: ${{ runner.temp }}/control-context
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: "$RUNNER_TEMP/codex-control.sh" run
+
+      - name: Upload Codex result
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-output
+          path: ${{ runner.temp }}/codex-output/
+          if-no-files-found: error
+          retention-days: 1
