@@ -153,4 +153,10 @@ jobs:
           git show origin/main:.github/scripts/codex-control.sh > "$RUNNER_TEMP/codex-control.sh"
           chmod 700 "$RUNNER_TEMP/codex-control.sh"
 
-      - run: echo "Finalizer permissions and trusted-script stages validated."
+      - name: Fetch Codex handoff from job logs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          CODEX_OUTPUT_DIR: ${{ runner.temp }}/codex-output
+        run: "$RUNNER_TEMP/codex-control.sh" fetch-log
