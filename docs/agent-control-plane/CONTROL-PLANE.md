@@ -77,3 +77,20 @@ NEXT_ACTION: ...
 ```
 
 `READY_FOR_TAREK` is valid only when the exact reviewed head is safe to merge and deploy immediately.
+
+
+## Codex usage-limit behavior
+
+The control plane fails closed when the authenticated Codex plan is exhausted or temporarily rate-limited.
+
+When the CLI reports a usage/quota/rate-limit condition:
+
+- the run publishes `CODEX_BLOCKED: USAGE_LIMIT`
+- no agent patch is published
+- no branch push is performed
+- no merge is performed
+- no production deployment is triggered
+- partially edited workspace files are discarded for builder/fix runs
+- the same `DEV_ACTION` can be retried after the usage window resets or credits become available
+
+Status inspection does not consume a Codex run; ChatGPT reads GitHub state directly.
