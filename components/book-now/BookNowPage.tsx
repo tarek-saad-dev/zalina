@@ -252,7 +252,14 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     checkout.phase !== "already_paid";
 
   return (
-    <main style={{ minHeight: "100vh" }} className="page-atmosphere">
+    <main
+      style={{
+        minHeight: "100vh",
+        // This page no longer has a tall hero, so reserve space for the fixed navbar.
+        paddingTop: "calc(var(--zalina-nav-height, 80px) + env(safe-area-inset-top, 0px))",
+      }}
+      className="page-atmosphere"
+    >
       {currentStep.id !== "product" && (
         <BookingProgress
           steps={activeSteps}

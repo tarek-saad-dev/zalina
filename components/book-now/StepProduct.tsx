@@ -54,7 +54,7 @@ export function lowestPublishedPrice(
   ticket: TicketChoice
 ): { amount: number; currency: string } | null {
   const eligible = productsForTicketChoice(products, ticket)
-    .filter((item) => Number.isFinite(Number(item.price_per_guest)) && Number(item.price_per_guest) >= 0 && item.currency.trim());
+    .filter((item) => String(item.price_per_guest).trim() !== "" && Number.isFinite(Number(item.price_per_guest)) && Number(item.price_per_guest) >= 0 && item.currency.trim());
   const currencies = new Set(eligible.map((item) => item.currency));
   if (!eligible.length || currencies.size !== 1) return null;
   return {
