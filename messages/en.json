@@ -610,7 +610,7 @@
       "all": "All",
       "experiences": "Experiences",
       "zones": "Zones",
-      "bubbles": "Bubble Stays"
+      "bubbles": "Cabin Stays"
     },
     "empty": {
       "title": "No moments in the gallery yet",
@@ -684,7 +684,7 @@
     },
     "bookNow": {
       "title": "Book Now | Zalina Arabian Village",
-      "description": "Book Day Use or Bubble Stay at Zalina Arabian Village."
+      "description": "Book Day Use or Cabin Stay at Zalina Arabian Village."
     },
     "booking": {
       "title": "Booking Recovery | Zalina Arabian Village",
@@ -980,7 +980,7 @@
     }
   },
   "validation": {
-    "missing_product": "Choose Day Use or Bubble Stay.",
+    "missing_product": "Choose Day Use or Cabin Stay.",
     "missing_day_use_product": "Choose a Day Use experience.",
     "invalid_visit_date": "Choose a visit date on or after {minDate}.",
     "invalid_check_in": "Check-in must be on or after {minDate}.",

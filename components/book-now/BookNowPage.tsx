@@ -41,7 +41,6 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     prevStep,
     goToStep,
     jumpToStepId,
-    setProductType,
     setTicketChoice,
     setLanternAddOnId,
     setVisitDate,
@@ -320,7 +319,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   onClearBubbleSelections={clearBubbleSelections}
                   onSetGuestDetails={setGuestDetails}
                   checkout={checkout}
-                  onReserveAndPay={() => void reserveAndPay()}
+                  onReserveAndPay={handleCheckoutCta}
                   onRetryPayment={() => void retryPayment()}
                   onStartNewReservation={startNewReservation}
                   onReturnToBubbles={handleReturnToBubbles}

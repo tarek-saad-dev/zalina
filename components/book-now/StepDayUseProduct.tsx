@@ -172,6 +172,13 @@ export function StepDayUseProduct({
                 >
                   {t("dayUseProduct.perGuest")}
                 </p>
+                {product.included_features && product.included_features.length > 0 && (
+                  <ul className="mt-3 space-y-1" style={{color:TEXT_MUTED,fontSize:"12px",lineHeight:1.55}}>
+                    {product.included_features.map((feature,index) => (
+                      <li key={index}>✓ {locale === "ar" ? feature.name_ar : feature.name_en}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <span
                 aria-hidden
