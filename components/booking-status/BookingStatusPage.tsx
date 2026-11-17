@@ -263,7 +263,9 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
                   href={
                     booking.product_type === "wedding"
                       ? "/weddings#plan"
-                      : "/book-now"
+                      : booking.product_type === "event"
+                        ? "/events"
+                        : "/book-now"
                   }
                   primary
                 >
@@ -278,7 +280,9 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
                     href={
                       booking.product_type === "wedding"
                         ? "/weddings#plan"
-                        : "/book-now"
+                        : booking.product_type === "event"
+                          ? "/events"
+                          : "/book-now"
                     }
                     primary
                   >
