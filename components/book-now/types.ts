@@ -12,6 +12,7 @@ export type BookingStepId =
   | "review";
 
 export type AssignmentMode = "manual" | "random";
+export type TicketChoice = "day_use" | "observatory_experience" | "cabin_stay";
 
 export type BookingUiStatus = "idle" | "submitting" | "submitted" | "failed";
 
@@ -56,6 +57,9 @@ export interface GuestDetailsState {
 export interface BookingState {
   schemaVersion: typeof BOOKING_STATE_SCHEMA_VERSION;
   productType: BookingProductType | null;
+  /** Optional for compatibility with existing V2 booking fixtures. */
+  ticketChoice?: TicketChoice | null;
+  lanternAddOnId?: number | null;
   /** 0-based index into the active product step list. */
   currentStepIndex: number;
   dayUse: DayUseState;

@@ -82,6 +82,8 @@ export interface RawDayUseProduct {
   price_per_guest: string | number;
   currency: string;
   is_active?: boolean;
+  ticket_category?: string | null;
+  included_features?: Array<{ name_en: string; name_ar: string }>;
 }
 
 /** @deprecated Legacy single-object day-use payload shape. */
@@ -335,6 +337,9 @@ export function normalizeDayUseProduct(raw: RawDayUseProduct): DayUseProduct {
     price_per_guest: moneyString(raw.price_per_guest),
     currency: raw.currency,
     is_active: raw.is_active !== false,
+    ticket_category: raw.ticket_category === "observatory_experience" ? "observatory_experience" : "day_use",
+    included_features: Array.isArray(raw.included_features)
+      ? raw.included_features.filter((f) => typeof f?.name_en === "string" && typeof f?.name_ar === "string") : [],
   };
 }
 
@@ -548,6 +553,7 @@ export function buildDayUseBookingPayload(input: {
   guest_name: string;
   guest_email: string;
   guest_phone: string;
+  ticket_add_ons?: Array<{ id: number; quantity: number }>;
 }): CreateDayUseBookingPayload {
   const payload: CreateDayUseBookingPayload = {
     product_type: "day_use",
@@ -557,6 +563,7 @@ export function buildDayUseBookingPayload(input: {
     guest_name: input.guest_name,
     guest_email: input.guest_email,
     guest_phone: input.guest_phone,
+    ...(input.ticket_add_ons?.length ? { ticket_add_ons: input.ticket_add_ons.map((item) => ({ id: item.id, quantity: item.quantity })) } : {}),
   };
   assertNoLegacyBookingFields(payload as unknown as Record<string, unknown>);
   return payload;

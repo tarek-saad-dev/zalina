@@ -37,6 +37,8 @@ export function createInitialBookingState(): BookingState {
   return {
     schemaVersion: BOOKING_STATE_SCHEMA_VERSION,
     productType: null,
+    ticketChoice: null,
+    lanternAddOnId: null,
     currentStepIndex: 0,
     dayUse: createEmptyDayUseState(),
     bubbleStay: createEmptyBubbleStayState(),
@@ -80,6 +82,10 @@ export function parsePersistedBookingState(raw: unknown): BookingState | null {
     ...createInitialBookingState(),
     ...candidate,
     schemaVersion: BOOKING_STATE_SCHEMA_VERSION,
+    ticketChoice: ["day_use","observatory_experience","cabin_stay"].includes(String(candidate.ticketChoice))
+      ? candidate.ticketChoice : candidate.productType === "bubble_stay" ? "cabin_stay" : candidate.productType === "day_use" ? "day_use" : null,
+    lanternAddOnId: Number.isSafeInteger(candidate.lanternAddOnId) && Number(candidate.lanternAddOnId) > 0
+      ? Number(candidate.lanternAddOnId) : null,
     dayUse: {
       ...createEmptyDayUseState(),
       ...(candidate.dayUse ?? {}),
