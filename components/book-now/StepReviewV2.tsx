@@ -158,7 +158,7 @@ export function StepReviewV2({
       >
         {state.productType === "day_use" && (
           <>
-            <Row label={t("review.experience")} value={t("summary.dayUse")} />
+            <Row label={t("review.experience")} value={t(state.ticketChoice === "observatory_experience" ? "summary.observatory" : "summary.dayUse")} />
             <Row
               label={t("review.visitDate")}
               value={state.dayUse.visitDate ?? emDash}
@@ -265,6 +265,9 @@ export function StepReviewV2({
           </>
         )}
 
+        {state.lanternAddOnId != null && (
+          <Row label={t("lantern.title")} value={t("lantern.includedForGuests", { count: state.dayUse.guests })} />
+        )}
         <Row
           label={t("review.guestName")}
           value={state.guest.name || emDash}

@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import type { BookingProductType } from "@/lib/api";
+import type { TicketChoice } from "./types";
 import type { BookingState } from "./types";
 import { PRODUCT_OPTIONS } from "./bookingSteps";
 
@@ -12,10 +12,11 @@ const TEXT_MUTED = "rgba(248,242,231,0.55)";
 
 interface StepProductProps {
   state: BookingState;
-  onSetProductType: (type: BookingProductType) => void;
+  onSetTicketChoice: (choice: TicketChoice) => void;
+  observatoryAvailable: boolean;
 }
 
-export function StepProduct({ state, onSetProductType }: StepProductProps) {
+export function StepProduct({ state, onSetTicketChoice, observatoryAvailable }: StepProductProps) {
   const t = useTranslations("bookNow");
   const reduceMotion = useReducedMotion();
   // null (hydration) or true → no fade-from-zero; otherwise cards stay opacity:0 forever
@@ -62,10 +63,10 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
         {t("products.subtitle")}
       </p>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         {PRODUCT_OPTIONS.map((option, index) => {
-          const selected = state.productType === option.id;
-          const comingSoon = Boolean(option.comingSoon);
+          const selected = (state.ticketChoice ?? (state.productType === "bubble_stay" ? "cabin_stay" : state.productType)) === option.id;
+          const comingSoon = Boolean(option.comingSoon || (option.id === "observatory_experience" && !observatoryAvailable));
           const title = t(`products.${option.messageKey}.title`);
           const description = t(`products.${option.messageKey}.description`);
           const tag = t(`products.${option.messageKey}.tag`);
@@ -158,7 +159,7 @@ export function StepProduct({ state, onSetProductType }: StepProductProps) {
                 duration: 0.35,
                 delay: reduceMotion === false ? index * 0.06 : 0,
               }}
-              onClick={() => onSetProductType(option.id)}
+              onClick={() => onSetTicketChoice(option.id)}
               aria-pressed={selected}
               className="text-left transition-all duration-300"
               style={{

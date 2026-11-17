@@ -74,7 +74,7 @@ export function BookingSummary({
 
   const productLabel =
     state.productType === "day_use"
-      ? t("summary.dayUse")
+      ? t(state.ticketChoice === "observatory_experience" ? "summary.observatory" : "summary.dayUse")
       : state.productType === "bubble_stay"
         ? t("summary.bubbleStay")
         : t("summary.notSelected");
@@ -183,6 +183,9 @@ export function BookingSummary({
         </>
       )}
 
+      {state.lanternAddOnId != null && (
+        <SummaryRow label={t("lantern.title")} value={t("lantern.includedForGuests", { count: state.dayUse.guests })} />
+      )}
       <SummaryRow
         label={t("summary.guest")}
         value={state.guest.name || emDash}

@@ -46,7 +46,7 @@ export function MobileBookingBar({
 
   const title =
     state.productType === "day_use"
-      ? t("summary.dayUse")
+      ? t(state.ticketChoice === "observatory_experience" ? "summary.observatory" : "summary.dayUse")
       : state.productType === "bubble_stay"
         ? t("summary.bubbleStay")
         : t("mobile.chooseExperience");

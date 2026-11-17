@@ -3,17 +3,20 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { BookingProductType, DayUseProduct, DayUseSettings } from "@/lib/api";
+import type { BookableTicketAddOn, DayUseProduct, DayUseSettings } from "@/lib/api";
 import type {
   AccommodationTypeMeta,
   AssignmentMode,
   BookingState,
   BookingStepDefinition,
   GuestDetailsState,
+  TicketChoice,
 } from "./types";
 import { StepProduct } from "./StepProduct";
 import { StepDayUseProduct } from "./StepDayUseProduct";
 import { StepDayUseDateGuests } from "./StepDayUseDateGuests";
+import { StepLanternAddOn } from "./StepLanternAddOn";
+import { observatoryIsBookable } from "./ticketProducts";
 import { StepBubbleStayDatesGuests } from "./StepBubbleStayDatesGuests";
 import { StepBubbles } from "./StepBubbles";
 import { StepGuestDetailsV2 } from "./StepGuestDetailsV2";
@@ -31,6 +34,10 @@ interface StepShellProps {
   remainingGuests: number;
   estimatedTotal: number | null;
   dayUseProducts: DayUseProduct[];
+  allDayUseProducts: DayUseProduct[];
+  lanternOption: BookableTicketAddOn | null;
+  lanternStatus: "loading" | "ready" | "error";
+  onToggleLantern: () => void;
   dayUseSettings: DayUseSettings | null;
   dayUseSettingsStatus: "idle" | "loading" | "ready" | "error";
   dayUseSettingsError: string | null;
@@ -46,7 +53,7 @@ interface StepShellProps {
   onNext: () => void;
   onBack: () => void;
   canProceed: boolean;
-  onSetProductType: (type: BookingProductType) => void;
+  onSetTicketChoice: (choice: TicketChoice) => void;
   onSetVisitDate: (date: string | null) => void;
   onSetDayUseGuests: (n: number) => void;
   onSetBubbleStayDates: (patch: {
@@ -109,7 +116,8 @@ export function StepShell(props: StepShellProps) {
         {currentStep.id === "product" && (
           <StepProduct
             state={state}
-            onSetProductType={props.onSetProductType}
+            onSetTicketChoice={props.onSetTicketChoice}
+            observatoryAvailable={observatoryIsBookable(props.allDayUseProducts)}
           />
         )}
         {currentStep.id === "day_use_product" && (
@@ -124,6 +132,7 @@ export function StepShell(props: StepShellProps) {
           />
         )}
         {currentStep.id === "date_guests" && (
+          <>
           <StepDayUseDateGuests
             state={state}
             settings={props.dayUseSettings}
@@ -132,7 +141,16 @@ export function StepShell(props: StepShellProps) {
             onReloadSettings={props.onReloadDayUseSettings}
             onSetVisitDate={props.onSetVisitDate}
             onSetDayUseGuests={props.onSetDayUseGuests}
+            estimatedTotal={props.estimatedTotal}
           />
+          <StepLanternAddOn
+            state={state}
+            option={props.lanternOption}
+            status={props.lanternStatus}
+            locale={props.locale}
+            onToggle={props.onToggleLantern}
+          />
+          </>
         )}
         {currentStep.id === "dates_guests" && (
           <StepBubbleStayDatesGuests
