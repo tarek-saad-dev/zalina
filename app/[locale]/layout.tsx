@@ -5,6 +5,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import localFont from "next/font/local";
 import { routing } from "@/i18n/routing";
 import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
+import { ZalinaPromotions } from "@/components/promotions/ZalinaPromotions";
 import { InitialPageLoader } from "@/components/layout/InitialPageLoader";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import "../globals.css";
@@ -104,6 +105,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <MotionProvider>
             <InitialPageLoader />
             <LuxuryNavbar />
+            <ZalinaPromotions />
             {children}
           </MotionProvider>
         </NextIntlClientProvider>
