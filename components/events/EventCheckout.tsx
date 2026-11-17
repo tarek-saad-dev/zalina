@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ApiError, createEventBooking, initiatePayment, type ApiBooking } from "@/lib/api";
 import { resolvePaymentGateway } from "@/components/book-now/paymentGateway";
@@ -27,8 +27,8 @@ import {
   type EventLocale,
 } from "@/lib/events/domain";
 import {
-  ArrowLeft, ArrowRight, CalendarDays, Check, Clock3, CreditCard,
-  LockKeyhole, Mail, MapPin, ShieldCheck, Ticket, UserRound, Users,
+  ArrowLeft, ArrowRight, CalendarDays, Clock3, CreditCard,
+  LockKeyhole, ShieldCheck, Ticket, Users,
 } from "lucide-react";
 
 type WizardStep = "guest" | "review" | "payment" | "demo";
@@ -241,7 +241,7 @@ export function EventCheckout({
     setGuest(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  const proceedReview = (eventForm: React.FormEvent<HTMLFormElement>) => {
+  const proceedReview = (eventForm: FormEvent<HTMLFormElement>) => {
     eventForm.preventDefault();
     setTouched(true);
     if (!guestValid || !selectionOK || !selected || !estimatedTotal) return;
@@ -280,7 +280,7 @@ export function EventCheckout({
       createAttemptedRef.current = true;
       const payload = buildEventBookingPayload(selected, guest);
       const next = await createEventBooking(payload, locale);
-      if (!next.booking_reference || next.product_type !== "event" || !next.total) {
+      if (!next.booking_reference || !next.booking_code || next.product_type !== "event" || !/^\\d+(?:\\.\\d{1,2})?$/.test(next.total)) {
         setMessage({ text: t.uncertain, kind: "uncertain" });
         return;
       }
@@ -392,7 +392,7 @@ export function EventCheckout({
                   </div>
                 ) : availability.kind === "loading" ? <p role="status" className="text-sm text-[#C4BEB6]">{t.check}</p> : null}
                 {availability.kind === "ready" && !selectionOK ? <p role="alert" className="text-sm text-[#E1BE82]">{t.sold}</p> : null}
-                <button type="submit" disabled={!selectionOK || !guestValid || !canEdit}
+                <button type="submit" disabled={!selectionOK || !canEdit}
                   className="flex min-h-[52px] w-full items-center justify-center rounded-sm bg-[#C9A35C] px-6 text-sm font-semibold text-[#050505] transition-colors hover:bg-[#E1BE82] disabled:cursor-not-allowed disabled:opacity-40">
                   {t.next}
                 </button>
