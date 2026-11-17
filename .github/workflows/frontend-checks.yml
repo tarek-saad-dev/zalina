@@ -6,9 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  typecheck-and-test:
+  typecheck-test-and-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 18
+    env:
+      NEXT_PUBLIC_API_BASE_URL: https://api.zalinaarabianvillage.com
+      NEXT_PUBLIC_PAYMENT_GATEWAY: paymob
+      ZALINA_EVENTS_DEMO: "false"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,3 +26,37 @@ jobs:
         run: npm run typecheck
       - name: Run unit tests
         run: npm test
+      - name: Production build (fixtures disabled)
+        run: npm run build
+
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium browser and system libraries
+        run: npx playwright install --with-deps chromium
+      - name: AR/EN desktop and mobile smoke tests (development fixtures, NO payments)
+        run: npm run test:e2e
+        env:
+          CI: "true"
+          NEXT_PUBLIC_API_BASE_URL: https://api.zalinaarabianvillage.com
+          NEXT_PUBLIC_PAYMENT_GATEWAY: mock
+          ZALINA_EVENTS_DEMO: "true"
+      - name: Upload screenshots and HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zalina-events-playwright
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
