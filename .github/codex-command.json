@@ -1,6 +1,6 @@
 {
-  "action": "IDLE",
-  "number": 0,
+  "action": "REVIEW",
+  "number": 16,
   "requested_by": "tarek-saad-dev",
-  "request_id": "control-idle-after-smoke"
+  "request_id": "pr-16-review-1"
 }
