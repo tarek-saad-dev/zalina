@@ -12,6 +12,9 @@ test("English catalogue, detail page and package checkout CTA render without hor
   await expect(page.getByText("DEVELOPMENT PREVIEW — FICTIONAL CONTENT")).toBeVisible();
   await page.locator('a[href*="/events/christmas-night-preview"]').first().click();
   await expect(page.getByRole("heading", { level: 1, name: "Christmas Night at Zalina" })).toBeVisible();
+  // Event detail has its own packages CTA; floating promotions must never obscure it.
+  await page.evaluate(() => window.scrollTo(0, 1100));
+  await expect(page.getByRole("complementary", { name: "Zalina featured event" })).toHaveCount(0);
   const checkout = page.getByRole("link", { name: "Proceed to booking" });
   await expect(checkout).toBeVisible();
   await expect(checkout).toHaveAttribute("href", /occurrence_id=9101.*package_id=9201.*quantity=1/);
@@ -87,6 +90,9 @@ test("Both promotion placements fit below the navbar, dismiss independently and 
   const top = page.getByRole("complementary", { name: "Zalina announcement" });
   const floating = page.getByRole("complementary", { name: "Zalina featured event" });
   await expect(top).toBeVisible();
+  // Floating CTA waits until browsing begins; it must not cover the first-screen hero.
+  await expect(floating).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, Math.max(900, window.innerHeight)));
   await expect(floating).toBeVisible();
   await expect(top.getByRole("link", { name: "Explore packages" })).toHaveAttribute("href", "/en/events/christmas-night-preview");
   const navBox = await page.locator(".zalina-navbar").boundingBox();
