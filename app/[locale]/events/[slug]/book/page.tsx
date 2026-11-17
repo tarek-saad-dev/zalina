@@ -19,9 +19,12 @@ type Props = {
 };
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const locale = localeFromParams(params.locale);
   return {
-    title: "Event Booking | Zalina Arabian Village",
+    title: locale === "ar"
+      ? "حجز مناسبة | قرية زالينا العربية"
+      : "Event Booking | Zalina Arabian Village",
     robots: { index: false, follow: false },
   };
 }
