@@ -2,7 +2,7 @@
 
 **Owner:** Next.js frontend team.
 **Target outcome:** Finish ALL guest-facing UX and frontend integration adapters without needing the Laravel backend or CMS to exist yet. Backend/CMS developers receive ready-to-implement, explicit contracts.
-**Status:** Phase 1 promotion bar/card, Phase 2 Event catalog and Phase 3 standalone Event Booking V2 frontend are implemented on the feature branch. **Build/CI and browser QA are not complete; the PR remains draft.** Phase 4 final verification/integration handoff is outstanding.
+**Status:** All four planned frontend workstreams have implementation files: promotion surfaces, event catalog/packages, Event Booking V2 guest/payment UI and the QA/documentation handoff. **Automated latest-head CI, final visual signoff and live Laravel staging integration remain release gates.** PR #14 remains draft; no merge or deployment.
 **Explicitly out of scope for this frontend delivery:** Laravel migrations, CRUD implementation, real admin CMS screens, gateway/server-side pricing, inventory locks, webhook processing, backend deployment.
 
 ## Four execution steps — no separate wireframe or design phase
@@ -10,8 +10,8 @@
 ### 1. Complete frontend promotions system
 - Global Top Bar below the actual fixed `LuxuryNavbar` and Bottom Floating Event Card in `app/[locale]/layout.tsx`.
 - CSS/layout/mobile/RTL behavior, dismissal, placement selection, priority, collision rules, reduced-motion, route targeting, scheduling, error/empty/loading states, announcement exclusion in active booking/payment flows.
-- Typed `PromotionCampaign` contract and API adapter, no hard-coded real campaign content.
-- Self-contained **preview/mock mode** for frontend dev/testing only, explicitly disabled in production until CMS API supplies real records.
+- Typed `PromotionCampaign` contract and API adapter, no hard-coded real campaign content. Floating popup appears only after initial scroll and is hidden on event detail and checkout routes so it does not block primary conversion controls.
+- Self-contained **preview/mock mode** for frontend dev/testing only (`NEXT_PUBLIC_ZALINA_PROMOTIONS_DEMO=true`), explicitly disabled in production until CMS API supplies real records.
 - Goal: both display modes work in AR/EN and browser tests.
 
 ### 2. Complete frontend event catalog, detail and package selection
@@ -52,14 +52,25 @@
 - **No real event checkout or payment is live until the backend implements and validates the proposed contract.**
 
 ### 4. Close frontend quality + handoff documentation
+- CI now runs TypeScript, all Vitest tests, production build and Playwright smoke in desktop/mobile Chromium with AR/EN coverage. Screenshot artifacts are generated for visual review. Automated tests are developer-fixture only, never real booking/payment.
 - Typecheck, unit/component/browser/mobile/RTL tests; accessibility/performance and checkout regression verification.
 - Complete `docs/features/events-promotions/` handoff pack:
   - `FRONTEND-INTEGRATION.md` (routes, files, environmental toggles, integration sequence, contract owners)
   - `BACKEND-API-CONTRACT.md` (endpoints, detailed request/response/error examples, booking and ticket lifecycle, auth, availability, caching, idempotency, concurrency)
   - `CMS-REQUIREMENTS.md` (fields, screens, on/off rules, schedules, preview, targeting, priority, validation, permissions and audit)
   - `ACCEPTANCE.md` (test cases, state matrix, handoff checklist)
+  - `SOURCE-ALIGNMENT.md` (ANV v1 PDFs versus the active Booking V2 Next.js API contract)
+  - `README.md` (developer handoff table of contents)
 - Ready-to-merge frontend PR **only after** frontend tests pass. CMS/Backend work can begin independently from docs.
 - Frontend is complete **without actual backend availability**; live events/bookings still require backend implementation and final integration testing.
+
+**Phase 4 implemented deliverables:**
+- `playwright.config.ts`, `tests/e2e/events.smoke.spec.ts`: bilingual desktop/mobile catalog → detail → checkout demo, invalid booking, sold-out, missing page, top bar/floating card layout/dismissal, scroll and checkout suppression.
+- `.github/workflows/frontend-checks.yml`: TypeScript, Vitest, Next.js production build, Playwright Chromium and stored screenshots/traces.
+- `lib/promotions/fixtures.ts`: non-production CMS visual preview mode; no fake production campaigns.
+- `docs/features/events-promotions/README.md`, `FRONTEND-INTEGRATION.md`, `BACKEND-API-CONTRACT.md`, `CMS-REQUIREMENTS.md`, `ACCEPTANCE.md` and `SOURCE-ALIGNMENT.md` plus the two event API handoff documents.
+- Direct review of browser screenshots flagged a mobile hero CTA overlap; the floating card is now scroll-gated and excluded from event-detail conversion pages.
+- **Still excluded:** production Laravel CMS, stock/booking/payment webhooks and live staging proof; those require the separate backend/CMS owners.
 
 ## Architecture and constraints
 
@@ -140,8 +151,8 @@ CMS must separate **event**, **event package**, **booking availability**, and **
 
 - [ ] Every customer-facing screen, state, navigation and UI control is implemented, in AR/EN and responsive.
 - [ ] Backend and CMS data enter only through typed API adapters.
-- [ ] A deterministic developer fixture/demo allows the entire frontend customer journey to be tested without Laravel.
-- [ ] No hard-coded real campaign, price, availability or payment outcome in production.
+- [x] A deterministic developer fixture/demo allows the entire frontend customer journey to be tested without Laravel.
+- [x] No hard-coded real campaign, price, availability or payment outcome in production.
 - [ ] Typecheck, unit and integration tests pass; booking regression tests pass.
-- [ ] Handoff documentation is sufficient for backend/CMS developers to implement without guessing frontend expectations.
+- [x] Detailed frontend, backend, CMS, validation and source-alignment documents committed (integration fields must still be confirmed by Laravel owner).
 - [ ] No backend/DB/CMS code changes, merges or deployments are falsely reported as part of this frontend work.
