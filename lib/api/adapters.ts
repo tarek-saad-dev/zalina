@@ -10,6 +10,7 @@ import type {
   CreateBubbleStayRandomPayload,
   CreateDayUseBookingPayload,
   CreateWeddingBookingPayload,
+  EventBookingLineSummary,
   DayUseProduct,
   DayUseSettings,
   PhysicalBubble,
@@ -139,7 +140,7 @@ export interface RawWeddingAvailability {
 export interface RawApiBooking {
   booking_reference: string;
   booking_code: string;
-  product_type: "day_use" | "bubble_stay" | "wedding";
+  product_type: "day_use" | "bubble_stay" | "wedding" | "event";
   status: string;
   operational_status?: string | null;
   total: string;
@@ -175,12 +176,17 @@ export interface RawApiBooking {
     price_per_guest?: string | number;
     currency?: string;
   } | null;
+  event_occurrence_id?: number | null;
+  event_slug?: string | null;
+  event_title_ar?: string | null;
+  event_title_en?: string | null;
+  event_items?: EventBookingLineSummary[];
 }
 
 export interface RawTicketLookup {
   booking_code: string;
   booking_reference: string;
-  product_type: "day_use" | "bubble_stay" | "wedding";
+  product_type: "day_use" | "bubble_stay" | "wedding" | "event";
   status: string;
   payment_status?: string;
   guests: number;
@@ -212,6 +218,11 @@ export interface RawTicketLookup {
   total?: string;
   currency?: string;
   payment?: { status: string };
+  event_occurrence_id?: number | null;
+  event_slug?: string | null;
+  event_title_ar?: string | null;
+  event_title_en?: string | null;
+  event_items?: EventBookingLineSummary[];
 }
 
 function isBubbleArray(
@@ -470,6 +481,11 @@ export function normalizeBooking(raw: RawApiBooking): ApiBooking {
     wedding_package: raw.wedding_package
       ? normalizeWeddingPackageSummary(raw.wedding_package)
       : null,
+    event_occurrence_id: raw.event_occurrence_id ?? null,
+    event_slug: raw.event_slug ?? null,
+    event_title_ar: raw.event_title_ar ?? null,
+    event_title_en: raw.event_title_en ?? null,
+    event_items: raw.event_items,
   };
 }
 
@@ -524,6 +540,11 @@ export function normalizeTicketLookup(raw: RawTicketLookup): BookingTicketLookup
     guest: normalizeTicketGuest(raw),
     total: raw.total,
     currency: raw.currency,
+    event_occurrence_id: raw.event_occurrence_id ?? null,
+    event_slug: raw.event_slug ?? null,
+    event_title_ar: raw.event_title_ar ?? null,
+    event_title_en: raw.event_title_en ?? null,
+    event_items: raw.event_items,
   };
 }
 
