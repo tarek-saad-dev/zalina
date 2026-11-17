@@ -15,6 +15,8 @@ import { useAvailabilityCache } from "./useAvailabilityCache";
 import { useBookingCheckout } from "./useBookingCheckout";
 import { parseMoney } from "./bookingMedia";
 import { isBusyCheckoutPhase } from "./checkoutTypes";
+import { useTicketAddOns } from "./useTicketAddOns";
+import { productsForTicketChoice } from "./ticketProducts";
 
 interface BookNowPageProps {
   catalog: BookingCatalog;
@@ -27,6 +29,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     enabled: true,
     locale,
   });
+  const ticketAddOnQuery = useTicketAddOns(locale);
 
   const {
     state,
@@ -39,6 +42,8 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     goToStep,
     jumpToStepId,
     setProductType,
+    setTicketChoice,
+    setLanternAddOnId,
     setVisitDate,
     setDayUseProductId,
     setDayUseGuests,
@@ -57,17 +62,42 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     dayUseProductsStatus: dayUseQuery.status,
   });
 
+  const eligibleDayUseProducts = useMemo(
+    () => productsForTicketChoice(dayUseQuery.products, state.ticketChoice),
+    [dayUseQuery.products, state.ticketChoice]
+  );
+
   const selectedDayUseProduct = useMemo(() => {
     if (state.dayUse.productId == null) return null;
     return (
-      dayUseQuery.products.find((p) => p.id === state.dayUse.productId) ?? null
+      eligibleDayUseProducts.find((p) => p.id === state.dayUse.productId) ?? null
     );
-  }, [dayUseQuery.products, state.dayUse.productId]);
+  }, [eligibleDayUseProducts, state.dayUse.productId]);
 
   const dayUseSettings = selectedDayUseProduct
     ? dayUseProductToSettings(selectedDayUseProduct)
     : null;
   const dayUsePrice = parseMoney(selectedDayUseProduct?.price_per_guest);
+  const currentTicket = state.ticketChoice === "observatory_experience" ? "observatory_experience" :
+    state.ticketChoice === "cabin_stay" ? "cabin_stay" : "day_use";
+  const lanternOption = ticketAddOnQuery.items.find((item) =>
+    item.supported_tickets.includes(currentTicket) &&
+    item.currency === selectedDayUseProduct?.currency
+  ) ?? null;
+  const lanternSelected = Boolean(lanternOption && state.lanternAddOnId === lanternOption.id);
+  const lanternPrice = lanternSelected ? parseMoney(lanternOption?.price_per_guest) ?? 0 : 0;
+  const productSelectionValid = state.productType !== "day_use" ||
+    state.dayUse.productId == null || selectedDayUseProduct != null;
+
+  // Never submit an add-on that has disappeared, changed currency, or is not checkout-ready.
+  useEffect(() => {
+    if (state.lanternAddOnId != null && ticketAddOnQuery.status !== "loading" && !lanternSelected) {
+      setLanternAddOnId(null);
+    }
+  }, [state.lanternAddOnId, ticketAddOnQuery.status, lanternSelected, setLanternAddOnId]);
+
+  const estimatedWithAddOn = derived.estimatedTotal == null ? null :
+    derived.estimatedTotal + (state.productType === "day_use" ? lanternPrice * state.dayUse.guests : 0);
 
   const {
     getEntry,
@@ -117,7 +147,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   } = useBookingCheckout({
     state,
     accommodationTypes,
-    dayUsePricePerGuest: dayUsePrice,
+    dayUsePricePerGuest: dayUsePrice == null ? null : dayUsePrice + lanternPrice,
     locale,
     onBubbleConflict: handleBubbleConflict,
   });
@@ -156,7 +186,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   );
 
   const handleNext = () => {
-    if (hasActiveHold) return;
+    if (hasActiveHold || !productSelectionValid) return;
     if (proceed) nextStep();
   };
 
@@ -176,6 +206,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   };
 
   const handleCheckoutCta = () => {
+    if (!productSelectionValid || (state.lanternAddOnId != null && !lanternSelected)) return;
     if (checkout.booking && checkout.phase === "error") {
       void retryPayment();
       return;
@@ -199,6 +230,8 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   const lastStepCanProceed =
     isLastStep &&
     canSubmit &&
+    productSelectionValid &&
+    (state.lanternAddOnId == null || lanternSelected) &&
     checkout.phase !== "expired" &&
     checkout.phase !== "already_paid";
 
@@ -260,8 +293,12 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   locale={locale}
                   allocatedGuests={derived.allocatedGuests}
                   remainingGuests={derived.remainingGuests}
-                  estimatedTotal={derived.estimatedTotal}
-                  dayUseProducts={dayUseQuery.products}
+                  estimatedTotal={estimatedWithAddOn}
+                  dayUseProducts={eligibleDayUseProducts}
+                  allDayUseProducts={dayUseQuery.products}
+                  lanternOption={lanternOption}
+                  lanternStatus={ticketAddOnQuery.status}
+                  onToggleLantern={() => setLanternAddOnId(lanternSelected ? null : lanternOption?.id ?? null)}
                   dayUseSettings={dayUseSettings}
                   dayUseSettingsStatus={dayUseQuery.status}
                   dayUseSettingsError={dayUseQuery.error}
@@ -271,8 +308,8 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   fetchAvailability={(input) => fetchAvailability(input)}
                   onNext={handleNext}
                   onBack={handleBack}
-                  canProceed={proceed && !isBusy && !hasActiveHold}
-                  onSetProductType={setProductType}
+                  canProceed={proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold}
+                  onSetTicketChoice={setTicketChoice}
                   onSetVisitDate={setVisitDate}
                   onSetDayUseGuests={setDayUseGuests}
                   onSetBubbleStayDates={setBubbleStayDates}
@@ -305,7 +342,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                 state={state}
                 accommodationTypes={accommodationTypes}
                 locale={locale}
-                estimatedTotal={derived.estimatedTotal}
+                estimatedTotal={estimatedWithAddOn}
                 allocatedGuests={derived.allocatedGuests}
                 remainingGuests={derived.remainingGuests}
                 dayUseSettings={dayUseSettings}
@@ -317,7 +354,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                 canProceed={
                   isLastStep
                     ? lastStepCanProceed
-                    : proceed && !isBusy && !hasActiveHold
+                    : proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold
                 }
                 ctaLabel={summaryCTALabel}
               />
@@ -328,7 +365,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
 
       <MobileBookingBar
         state={state}
-        estimatedTotal={derived.estimatedTotal}
+        estimatedTotal={estimatedWithAddOn}
         allocatedGuests={derived.allocatedGuests}
         dayUseCurrency={dayUseSettings?.currency}
         checkout={checkout}
@@ -336,7 +373,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         canProceed={
           isLastStep
             ? lastStepCanProceed
-            : proceed && !isBusy && !hasActiveHold
+            : proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold
         }
         ctaLabel={
           isLastStep

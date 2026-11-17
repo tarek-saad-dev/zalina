@@ -23,7 +23,7 @@ export function normalizeBookableTicketAddOns(raw: unknown): BookableTicketAddOn
     if (!value || typeof value !== "object") continue;
     const item = value as Record<string, unknown>;
     const price = typeof item.price_per_guest === "string" || typeof item.price_per_guest === "number" ? Number(item.price_per_guest) : NaN;
-    if (item.code !== "lantern" || !Number.isSafeInteger(item.id) || Number(item.id) <= 0 ||
+    if (item.code !== "lantern" || typeof item.id !== "number" || !Number.isSafeInteger(item.id) || item.id <= 0 ||
         item.is_active !== true || item.checkout_enabled !== true || !Number.isFinite(price) || price < 0 ||
         typeof item.currency !== "string" || !item.currency.trim() ||
         typeof item.name_en !== "string" || typeof item.name_ar !== "string" ||
