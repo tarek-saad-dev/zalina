@@ -280,7 +280,7 @@ export function EventCheckout({
       createAttemptedRef.current = true;
       const payload = buildEventBookingPayload(selected, guest);
       const next = await createEventBooking(payload, locale);
-      if (!next.booking_reference || !next.booking_code || next.product_type !== "event" || !/^\\d+(?:\\.\\d{1,2})?$/.test(next.total)) {
+      if (!next.booking_reference || !next.booking_code || next.product_type !== "event" || !/^\d+(?:\.\d{1,2})?$/.test(next.total)) {
         setMessage({ text: t.uncertain, kind: "uncertain" });
         return;
       }
