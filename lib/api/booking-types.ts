@@ -1,7 +1,7 @@
 import type { MediaAsset } from "@/lib/media";
 
 /** Booking Domain V2 product types (contract constants). */
-export type BookingProductType = "day_use" | "bubble_stay" | "wedding";
+export type BookingProductType = "day_use" | "bubble_stay" | "wedding" | "event";
 
 /** Guest-facing / admin booking lifecycle statuses from the V2 brief. */
 export type BookingStatus =
@@ -21,7 +21,7 @@ export type PaymentGateway = "paymob" | "mock";
 
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded" | (string & {});
 
-export type TicketType = "day_use" | "bubble" | "wedding" | (string & {});
+export type TicketType = "day_use" | "bubble" | "wedding" | "event" | (string & {});
 
 /* ─── Wedding catalog & availability ─────────────────────── */
 
@@ -200,10 +200,32 @@ export interface CreateWeddingBookingPayload {
   guest_phone: string;
 }
 
+/** Booking V2 event purchase — server calculates all totals and validates stock. */
+export interface CreateEventBookingPayload {
+  product_type: "event";
+  event_occurrence_id: number;
+  items: Array<{ event_package_id: number; quantity: number }>;
+  guests: number;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+}
+
+export interface EventBookingLineSummary {
+  event_package_id: number;
+  name_ar?: string;
+  name_en?: string;
+  quantity: number;
+  guests_per_unit?: number;
+  unit_price?: string;
+  line_total?: string;
+}
+
 export type CreateBookingV2Payload =
   | CreateDayUseBookingPayload
   | CreateBubbleStayBookingPayload
-  | CreateWeddingBookingPayload;
+  | CreateWeddingBookingPayload
+  | CreateEventBookingPayload;
 
 /** Keys removed in Booking Domain V2 — must never appear on create payloads. */
 export const LEGACY_BOOKING_PAYLOAD_KEYS = [
@@ -278,6 +300,12 @@ export interface ApiBooking {
   wedding_date?: string | null;
   wedding_package_id?: number | null;
   wedding_package?: WeddingPackageSummary | null;
+  /** Event snapshot fields may be omitted from public /bookings/{reference}. */
+  event_occurrence_id?: number | null;
+  event_slug?: string | null;
+  event_title_ar?: string | null;
+  event_title_en?: string | null;
+  event_items?: EventBookingLineSummary[];
 }
 
 export interface ApiPaymentSession {
@@ -322,4 +350,9 @@ export interface BookingTicketLookup {
   guest?: TicketGuest;
   total?: string;
   currency?: string;
+  event_occurrence_id?: number | null;
+  event_slug?: string | null;
+  event_title_ar?: string | null;
+  event_title_en?: string | null;
+  event_items?: EventBookingLineSummary[];
 }

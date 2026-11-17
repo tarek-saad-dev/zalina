@@ -32,6 +32,7 @@ export {
   createBubbleStayManualBooking,
   createBubbleStayRandomBooking,
   createWeddingBooking,
+  createEventBooking,
   getBooking,
 } from "./bookings";
 

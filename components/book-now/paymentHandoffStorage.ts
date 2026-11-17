@@ -31,7 +31,12 @@ export function savePendingPaymentBooking(
 
   const store = storage();
   if (store) {
-    store.setItem(PAYMENT_HANDOFF_STORAGE_KEY, JSON.stringify(handoff));
+    try {
+      store.setItem(PAYMENT_HANDOFF_STORAGE_KEY, JSON.stringify(handoff));
+    } catch {
+      // Browser may deny sessionStorage. Do not fail a successfully created hold.
+      // The active checkout still shows the reference and links to status recovery.
+    }
   }
   return handoff;
 }
@@ -72,7 +77,8 @@ export function parsePendingPaymentHandoff(
   if (
     c.product_type !== "day_use" &&
     c.product_type !== "bubble_stay" &&
-    c.product_type !== "wedding"
+    c.product_type !== "wedding" &&
+    c.product_type !== "event"
   ) {
     return null;
   }

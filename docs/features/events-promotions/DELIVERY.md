@@ -1,0 +1,158 @@
+# Zalina Events & Promotions — Frontend-Complete Delivery Plan
+
+**Owner:** Next.js frontend team.
+**Target outcome:** Finish ALL guest-facing UX and frontend integration adapters without needing the Laravel backend or CMS to exist yet. Backend/CMS developers receive ready-to-implement, explicit contracts.
+**Status:** All four planned frontend workstreams have implementation files: promotion surfaces, event catalog/packages, Event Booking V2 guest/payment UI and the QA/documentation handoff. **Automated latest-head CI, final visual signoff and live Laravel staging integration remain release gates.** PR #14 remains draft; no merge or deployment.
+**Explicitly out of scope for this frontend delivery:** Laravel migrations, CRUD implementation, real admin CMS screens, gateway/server-side pricing, inventory locks, webhook processing, backend deployment.
+
+## Four execution steps — no separate wireframe or design phase
+
+### 1. Complete frontend promotions system
+- Global Top Bar below the actual fixed `LuxuryNavbar` and Bottom Floating Event Card in `app/[locale]/layout.tsx`.
+- CSS/layout/mobile/RTL behavior, dismissal, placement selection, priority, collision rules, reduced-motion, route targeting, scheduling, error/empty/loading states, announcement exclusion in active booking/payment flows.
+- Typed `PromotionCampaign` contract and API adapter, no hard-coded real campaign content. Floating popup appears only after initial scroll and is hidden on event detail and checkout routes so it does not block primary conversion controls.
+- Self-contained **preview/mock mode** for frontend dev/testing only (`NEXT_PUBLIC_ZALINA_PROMOTIONS_DEMO=true`), explicitly disabled in production until CMS API supplies real records.
+- Goal: both display modes work in AR/EN and browser tests.
+
+### 2. Complete frontend event catalog, detail and package selection
+- `/[locale]/events` index and `/[locale]/events/[slug]` event landing page.
+- Hero/media, description, date/time/venue, schedule, available packages, inclusions, per-person/per-package pricing, dynamic quantity, availability, sold-out/closed/upcoming/cancelled states.
+- Bookable events are independent from accommodations and CMS marketing `experiences`.
+- Buttons route into the event checkout; changing language preserves event path and meaningful selection.
+- Real typed API adapters and local deterministic **fixture** responses for development/screens/tests. No fake booking success.
+
+**Phase 2 implemented files:**
+- `app/[locale]/events/page.tsx` and `app/[locale]/events/[slug]/page.tsx`, with route-local loading/not-found screens.
+- `components/events/EventsCatalog.tsx`, `EventDetailView.tsx` and `EventPackageSelector.tsx`.
+- `lib/events/domain.ts`, `lib/events/api.ts`, `lib/events/fixtures.ts` and `lib/events/domain.test.ts`.
+- `docs/features/events-promotions/EVENTS-API-HANDOFF.md`.
+- `sections/home/LuxuryFooter.tsx` + localized footer messages for discovery.
+- `ZALINA_EVENTS_DEMO=true` local server fixture switch, forcibly off in production.
+- Event Checkout CTA now routes to `/[locale]/events/[slug]/book` for live available selections and safe local preview. The button is disabled only when no valid available selection exists. Real booking/payment requires the missing Laravel event backend.
+
+### 3. Complete frontend Event Booking V2 and payment states
+- Event-only booking wizard integrated with existing common checkout patterns: choose occurrence and package(s), quantity, guests, details, review, server-priced estimate, create booking, hold countdown, initiate payment, redirect.
+- Integrate with existing `/api/v1/bookings`, `/bookings/{reference}/pay`, and public booking status / QR ticket recovery screens.
+- Extend client booking product type/normalizer/adapters/UI for `event` with backward compatibility for day_use, bubble_stay, wedding.
+- Explicitly implement idle/loading/validation/sold-out/409/rate-limit/network/expired/paid/failed/cancelled/unknown/error states. Never trust client price.
+- Payment success remains authoritative ONLY after backend confirmation. Fixtures simulate *responses* for preview/tests, not production payments.
+- CTA from campaign `/events/[slug]` to selectable package to checkout to confirmation is navigable end-to-end in frontend demo mode.
+
+**Phase 3 implemented files:**
+- `app/[locale]/events/[slug]/book/page.tsx` and its loading state.
+- `components/events/EventCheckout.tsx`: guest details → review → create event hold → pay / payment recovery.
+- `lib/events/checkout.ts`, `checkout.test.ts` and `integration.test.ts`.
+- `lib/api/booking-types.ts`, `lib/api/bookings.ts`, `lib/api/adapters.ts`, `lib/api/index.ts`: new `event` booking type and package snapshots.
+- Shared payment handoff and booking status screens accept/display event booking type and a confirmed event ticket.
+- `components/promotions/ZalinaPromotions.tsx`: no promotions while entering event checkout.
+- `components/layout/LuxuryNavbar.tsx`: language switch preserves selected occurrence/package query parameters.
+- `docs/features/events-promotions/EVENT-BOOKING-API-HANDOFF.md`: server DTO, errors, stock locks, webhook and tickets.
+- `.github/workflows/frontend-checks.yml`: PR-level TypeScript and unit tests.
+- Local demo checkout exercises the form/review and preview status states **without creating or paying for a booking**.
+- **No real event checkout or payment is live until the backend implements and validates the proposed contract.**
+
+### 4. Close frontend quality + handoff documentation
+- CI now runs TypeScript, all Vitest tests, production build and Playwright smoke in desktop/mobile Chromium with AR/EN coverage. Screenshot artifacts are generated for visual review. Automated tests are developer-fixture only, never real booking/payment.
+- Typecheck, unit/component/browser/mobile/RTL tests; accessibility/performance and checkout regression verification.
+- Complete `docs/features/events-promotions/` handoff pack:
+  - `FRONTEND-INTEGRATION.md` (routes, files, environmental toggles, integration sequence, contract owners)
+  - `BACKEND-API-CONTRACT.md` (endpoints, detailed request/response/error examples, booking and ticket lifecycle, auth, availability, caching, idempotency, concurrency)
+  - `CMS-REQUIREMENTS.md` (fields, screens, on/off rules, schedules, preview, targeting, priority, validation, permissions and audit)
+  - `ACCEPTANCE.md` (test cases, state matrix, handoff checklist)
+  - `SOURCE-ALIGNMENT.md` (ANV v1 PDFs versus the active Booking V2 Next.js API contract)
+  - `README.md` (developer handoff table of contents)
+- Ready-to-merge frontend PR **only after** frontend tests pass. CMS/Backend work can begin independently from docs.
+- Frontend is complete **without actual backend availability**; live events/bookings still require backend implementation and final integration testing.
+
+**Phase 4 implemented deliverables:**
+- `playwright.config.ts`, `tests/e2e/events.smoke.spec.ts`: bilingual desktop/mobile catalog → detail → checkout demo, invalid booking, sold-out, missing page, top bar/floating card layout/dismissal, scroll and checkout suppression.
+- `.github/workflows/frontend-checks.yml`: TypeScript, Vitest, Next.js production build, Playwright Chromium and stored screenshots/traces.
+- `lib/promotions/fixtures.ts`: non-production CMS visual preview mode; no fake production campaigns.
+- `docs/features/events-promotions/README.md`, `FRONTEND-INTEGRATION.md`, `BACKEND-API-CONTRACT.md`, `CMS-REQUIREMENTS.md`, `ACCEPTANCE.md` and `SOURCE-ALIGNMENT.md` plus the two event API handoff documents.
+- Direct review of browser screenshots flagged a mobile hero CTA overlap; the floating card is now scroll-gated and excluded from event-detail conversion pages.
+- **Still excluded:** production Laravel CMS, stock/booking/payment webhooks and live staging proof; those require the separate backend/CMS owners.
+
+## Architecture and constraints
+
+- Source of truth: Laravel CMS/booking API, NOT frontend fixtures.
+- `app/[locale]/layout.tsx` renders `LuxuryNavbar` and `ZalinaPromotions`.
+- Existing `lib/api/client.ts` handles `/api/v1/*`, locale, envelopes and errors.
+- Existing Booking V2 supports only `day_use`, `bubble_stay`, `wedding`; add `event` without breaking the three.
+- Existing `lib/api/catalog.ts` states CMS experiences are marketing content **not** booking inventory.
+- Existing status/recovery/payment screens should be reused/extended rather than duplicated.
+- The connected GitHub repository contains the Next.js application; the Laravel CMS repository has not been identified.
+- Never claim backend API or CMS is shipped as part of this PR.
+
+## Contract starter: active campaigns
+
+`GET /api/v1/promotions/active?path=/experiences` with `Accept-Language: en|ar`.
+
+Expected envelope: `{ "success": true, "data": [<Campaign>] }`. Return `[]` when none. Backend applies enabled/published/schedule/page/targeting constraints.
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 41,
+      "slug": "christmas-2026",
+      "enabled": true,
+      "placements": ["top_bar", "floating_card"],
+      "priority": 90,
+      "title_ar": "ليلة الكريسماس في زالينا",
+      "title_en": "Christmas Night at Zalina",
+      "description_ar": "تجربة استثنائية على النيل",
+      "description_en": "An evening beside the Nile",
+      "eyebrow_ar": "مناسبة خاصة",
+      "eyebrow_en": "A SPECIAL EVENING",
+      "cta_label_ar": "استكشف الباقات",
+      "cta_label_en": "Explore Packages",
+      "cta_href": "/events/christmas-2026",
+      "image_url": "https://api.zalinaarabianvillage.com/storage/events/christmas.webp",
+      "starts_at": "2026-12-01T10:00:00+02:00",
+      "ends_at": "2026-12-25T23:59:00+02:00",
+      "display_delay_seconds": 3,
+      "dismiss_for_hours": 24
+    }
+  ]
+}
+```
+
+- Placement enum: `top_bar`, `floating_card`; priority 0–10000; delay 0–30 seconds; dismissal 0–720 hours.
+- Dates ISO-8601 with offset; schedule `starts_at < ends_at`.
+- Public CTA links must be internal routes. Media URLs must be HTTPS or safe local paths.
+- Frontend can be viewed without backend: absent endpoint returns no active promotion, and must never fabricate publicly live campaigns.
+- Frontend must filter/validate untrusted results and suppress intrusive promotions in booking/payment screens.
+- Poll/refresh after published status changes so admin OFF takes effect on open pages.
+
+## CMS backend requirements summary
+
+Protected (Sanctum, scoped permissions):
+`GET /api/v1/admin/campaigns`,
+`POST /api/v1/admin/campaigns`,
+`GET /api/v1/admin/campaigns/{id}`,
+`PATCH /api/v1/admin/campaigns/{id}`,
+`POST /api/v1/admin/campaigns/{id}/publish`,
+`POST /api/v1/admin/campaigns/{id}/pause`,
+`POST /api/v1/admin/campaigns/{id}/duplicate`,
+`GET /api/v1/admin/campaigns/{id}/preview?locale=ar|en`.
+
+CMS must separate **event**, **event package**, **booking availability**, and **promotion campaign** states. Events remain bookable when a promotion is paused if the event's own booking window is open; stopping event sales does not silently modify paid reservations.
+
+## Booking backend requirements summary
+
+- `GET /api/v1/events`, `GET /api/v1/events/{slug}`, `GET /api/v1/events/{slug}/availability`.
+- `POST /api/v1/bookings` with `product_type: "event"`, occurrence id, package ids + quantities, guest contact; backend validates, prices and atomically reserves.
+- Reuse `POST /api/v1/bookings/{reference}/pay`, webhooks, tickets and confirmation flow.
+- Store immutable booking item snapshots and honor hold expiry; use DB transactions/locking; avoid duplicate payment processing.
+- Preserve existing booking APIs and types.
+
+## Definition of frontend done
+
+- [ ] Every customer-facing screen, state, navigation and UI control is implemented, in AR/EN and responsive.
+- [ ] Backend and CMS data enter only through typed API adapters.
+- [x] A deterministic developer fixture/demo allows the entire frontend customer journey to be tested without Laravel.
+- [x] No hard-coded real campaign, price, availability or payment outcome in production.
+- [ ] Typecheck, unit and integration tests pass; booking regression tests pass.
+- [x] Detailed frontend, backend, CMS, validation and source-alignment documents committed (integration fields must still be confirmed by Laravel owner).
+- [ ] No backend/DB/CMS code changes, merges or deployments are falsely reported as part of this frontend work.

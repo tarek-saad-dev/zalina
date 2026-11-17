@@ -15,6 +15,7 @@ const footerLinkGroups = {
   ],
   occasions: [
     { key: "weddings" as const, href: "/weddings" },
+    { key: "events" as const, href: "/events" },
   ],
   discover: [
     { key: "dayExperience" as const, href: "/experiences?category=Day" },

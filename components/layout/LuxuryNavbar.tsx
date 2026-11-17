@@ -76,7 +76,9 @@ export function LuxuryNavbar() {
   const switchLocale = (next: AppLocale) => {
     if (next === locale) return;
     startTransition(() => {
-      router.replace(pathname, { locale: next });
+      // Preserve event checkout occurrence/package selection when switching language.
+      const query = typeof window !== "undefined" ? window.location.search : "";
+      router.replace(`${pathname}${query}`, { locale: next });
     });
   };
 

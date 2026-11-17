@@ -93,6 +93,9 @@ export function productTypeLabel(
   if (product === "wedding") {
     return pick(locale, { en: "Wedding", ar: "حفل زفاف" });
   }
+  if (product === "event") {
+    return pick(locale, { en: "Special Event", ar: "مناسبة خاصة" });
+  }
   return pick(locale, { en: "Experience", ar: "تجربة" });
 }
 

@@ -15,14 +15,13 @@ import type {
   CreateBubbleStayRandomPayload,
   CreateDayUseBookingPayload,
   CreateWeddingBookingPayload,
+  CreateEventBookingPayload,
+  CreateBookingV2Payload,
 } from "./booking-types";
 import { resolveApiLocale } from "./locale";
 
 function postBooking(
-  payload:
-    | CreateDayUseBookingPayload
-    | CreateBubbleStayBookingPayload
-    | CreateWeddingBookingPayload,
+  payload: CreateBookingV2Payload,
   locale?: string
 ): Promise<ApiBooking> {
   assertNoLegacyBookingFields(payload as unknown as Record<string, unknown>);
@@ -131,4 +130,12 @@ export async function getBooking(
     cache: "no-store",
   });
   return normalizeBooking(raw);
+}
+
+/** POST /bookings — standalone Event occurrence + package quantities. */
+export async function createEventBooking(
+  payload: CreateEventBookingPayload,
+  locale?: string
+): Promise<ApiBooking> {
+  return postBooking(payload, locale);
 }
