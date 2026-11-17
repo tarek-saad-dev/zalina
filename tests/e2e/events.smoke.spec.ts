@@ -20,10 +20,17 @@ test("English catalogue, detail page and package checkout CTA render without hor
   await expect(checkout).toHaveAttribute("href", /occurrence_id=9101.*package_id=9201.*quantity=1/);
   const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
   expect(hasOverflow, "The event detail page must not overflow horizontally").toBe(false);
+  // Full-page screenshots with a fixed navbar must start at scroll position zero;
+  // otherwise stitched screenshots can misleadingly paint the nav mid-document.
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+  });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await testInfo.attach("event-detail", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
 });
 
-test("English standalone booking flows to explicitly non-paying preview and never hits POST /bookings", async ({ page }) => {
+test("English standalone booking flows to explicitly non-paying preview and never hits POST /bookings", async ({ page }, testInfo) => {
   const bookingMutations: string[] = [];
   page.on("request", (request) => {
     if (request.method() === "POST" && /\/api\/v1\/bookings(?:\/|\?|$)/.test(request.url())) {
@@ -40,6 +47,7 @@ test("English standalone booking flows to explicitly non-paying preview and neve
   await page.locator("#event-guest-phone").fill("+201001234567");
   await page.getByRole("button", { name: "Review reservation" }).click();
   await expect(page.getByRole("heading", { level: 2, name: "Review booking" })).toBeVisible();
+  await testInfo.attach("event-booking-review", { body: await page.screenshot(), contentType: "image/png" });
   await page.getByRole("button", { name: "Finish preview (no payment)" }).click();
   await expect(page.getByRole("heading", { level: 2, name: "Preview complete — no booking was made" })).toBeVisible();
   await page.getByRole("button", { name: "Confirmed (preview)" }).click();
@@ -85,7 +93,7 @@ test("Unknown event shows a usable not-found recovery link", async ({ page }) =>
 });
 
 
-test("Both promotion placements fit below the navbar, dismiss independently and persist dismissals", async ({ page }) => {
+test("Both promotion placements fit below the navbar, dismiss independently and persist dismissals", async ({ page }, testInfo) => {
   await page.goto("/en/events");
   const top = page.getByRole("complementary", { name: "Zalina announcement" });
   const floating = page.getByRole("complementary", { name: "Zalina featured event" });
@@ -100,6 +108,7 @@ test("Both promotion placements fit below the navbar, dismiss independently and 
   expect(navBox).not.toBeNull();
   expect(topBox).not.toBeNull();
   expect(topBox!.y).toBeGreaterThanOrEqual(navBox!.y + navBox!.height - 2);
+  await testInfo.attach("promotion-placements", { body: await page.screenshot(), contentType: "image/png" });
   await page.getByRole("button", { name: "Dismiss announcement" }).click();
   await expect(top).toHaveCount(0);
   await expect(floating).toBeVisible();
