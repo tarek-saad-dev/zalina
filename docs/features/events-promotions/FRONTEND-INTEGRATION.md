@@ -46,6 +46,8 @@ NEXT_PUBLIC_PAYMENT_GATEWAY=paymob
 
 # Development-only preview data. Explicitly forbidden in production.
 ZALINA_EVENTS_DEMO=false
+# Optional fake campaign layouts in development only.
+NEXT_PUBLIC_ZALINA_PROMOTIONS_DEMO=false
 ```
 
 The active `lib/api/client.ts` resolves `/api/v1/*`, locale, response envelope and errors. Browsers call the Next proxy; server components call the absolute host. Check the existing API proxy for forwarding allowed languages/headers and security controls before enabling an idempotency-key mechanism.
@@ -67,7 +69,7 @@ The active `lib/api/client.ts` resolves `/api/v1/*`, locale, response envelope a
 
 ## 5. Runtime behavior and graceful degradation
 
-- Active promotions: fetch per locale/path, recheck approximately every 30 seconds on already-open pages; defensive client schedule, priority and dismissal.
+- Active promotions: fetch per locale/path, recheck approximately every 30 seconds on already-open pages; defensive client schedule, priority and dismissal. Floating card is scroll-gated to avoid first-screen hero interruption and suppressed on event details and all checkout/payment routes; top bar may remain on event details.
 - Ignore unknown/invalid campaign payload fields; unsafe CTAs rejected. Promotion suppression in booking/payment routes.
 - Event index: if API returns `[]`, show empty published events. If API is down, show `temporarily unavailable` instead.
 - Event detail: invalid slug/404 is not-found; API outages render unavailable.
