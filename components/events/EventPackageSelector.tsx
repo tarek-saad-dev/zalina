@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { CalendarDays, Check, Minus, Plus, ShieldCheck, Ticket, RefreshCw } from "lucide-react";
 import { getEventAvailability } from "@/lib/events/api";
 import {
@@ -30,11 +31,11 @@ const words = {
     retry: "Check again", checking: "Checking available places...",
     quantity: "Number of packages", total: "Estimated total",
     people: "Guests", confirm: "Your selection", book: "Proceed to booking",
-    pending: "Online event checkout will be added in the next delivery step.",
+    pending: "Continue to booking. The final amount is confirmed by the booking server.",
     note: "Final availability and total are confirmed by the booking API before payment.",
     missing: "No packages have been published for this event.",
     choose: "Choose an available date and package to review your selection.",
-    preview: "Demo prices and availability — not bookable",
+    preview: "Development preview — no real reservation or payment",
   },
   ar: {
     packages: "اختار تجربتك",
@@ -47,11 +48,11 @@ const words = {
     retry: "إعادة المحاولة", checking: "جارٍ التحقق من الأماكن المتاحة...",
     quantity: "عدد الباقات", total: "الإجمالي التقديري",
     people: "عدد الضيوف", confirm: "اختيارك", book: "استكمل الحجز",
-    pending: "سيُضاف مسار إتمام حجز الإيفنت في خطوة التنفيذ التالية.",
+    pending: "استكمل الحجز، والسيرفر هيأكد السعر النهائي قبل الدفع.",
     note: "يُعتمد التوافر والسعر النهائي من سيرفر الحجز قبل الدفع.",
     missing: "لم تُنشر باقات لهذه المناسبة بعد.",
     choose: "اختر موعدًا وباقة متاحة لمراجعة اختيارك.",
-    preview: "أسعار وتوافر تجريبي للمعاينة — غير قابل للحجز",
+    preview: "معاينة تطوير — بدون حجز أو دفع حقيقي",
   },
 } as const;
 
@@ -98,7 +99,7 @@ export function EventPackageSelector({ event, isDemo }: { event: EventDetail; is
   const maxQuantity = selected && availabilityLine
     ? Math.min(selected.max_quantity, availabilityLine.remaining_units)
     : selected?.max_quantity ?? 1;
-  const eligible = bookable && !isDemo && availability.state === "ready"
+  const eligible = bookable && availability.state === "ready"
     && availabilityLine?.available === true && selected != null
     && quantity >= selected.min_quantity && quantity <= maxQuantity;
   const estimate = useMemo(() => {
@@ -234,11 +235,20 @@ export function EventPackageSelector({ event, isDemo }: { event: EventDetail; is
               <span className="text-sm text-[#C4BEB6]">{t.total}</span>
               <strong className="text-xl font-medium text-[#E1BE82]">{formattedEventMoney(estimate, availabilityLine?.currency ?? selected.currency, locale)}</strong>
             </div>
-            <button type="button" disabled className="mt-5 flex min-h-[50px] w-full items-center justify-center rounded-sm bg-[#C9A35C] px-4 text-sm font-semibold text-[#050505] opacity-55">
-              {t.book}
-            </button>
+            {eligible && selected && occurrenceId ? (
+              <Link
+                href={`/events/${event.slug}/book?occurrence_id=${occurrenceId}&package_id=${selected.id}&quantity=${quantity}`}
+                className="mt-5 flex min-h-[50px] w-full items-center justify-center rounded-sm bg-[#C9A35C] px-4 text-center text-sm font-semibold text-[#050505] transition-colors hover:bg-[#E1BE82] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#E1BE82]"
+              >
+                {t.book}
+              </Link>
+            ) : (
+              <button type="button" disabled className="mt-5 flex min-h-[50px] w-full items-center justify-center rounded-sm bg-[#C9A35C] px-4 text-sm font-semibold text-[#050505] opacity-40">
+                {t.book}
+              </button>
+            )}
             <p className="mt-3 text-center text-xs leading-relaxed text-[#C4BEB6]">{isDemo ? t.preview : t.pending}</p>
-            {!eligible ? <span className="sr-only">{t.choose}</span> : null}
+            {!eligible ? <p className="mt-2 text-center text-xs text-[#C4BEB6]">{t.choose}</p> : null}
           </div>
         </div>
       ) : null}
