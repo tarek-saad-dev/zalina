@@ -97,6 +97,25 @@ export function BookingDetails({ booking, locale }: BookingDetailsProps) {
           ) : null}
         </>
       )}
+      {booking.product_type === "event" && (
+        <>
+          {booking.event_title_ar || booking.event_title_en ? (
+            <Row
+              label={locale === "ar" ? "المناسبة" : "Event"}
+              value={(locale === "ar" ? booking.event_title_ar : booking.event_title_en)
+                || booking.event_title_en || booking.event_title_ar || ""}
+            />
+          ) : null}
+          {booking.event_items?.map((line, index) => (
+            <Row
+              key={line.event_package_id + "-" + index}
+              label={locale === "ar" ? "الباقة" : "Package"}
+              value={`${(locale === "ar" ? line.name_ar : line.name_en)
+                || line.name_en || line.name_ar || String(line.event_package_id)} × ${line.quantity}`}
+            />
+          ))}
+        </>
+      )}
       <Row
         label={t(locale, "valid")}
         value={formatBookingDateRange(
