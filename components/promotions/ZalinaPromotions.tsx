@@ -207,6 +207,7 @@ export function ZalinaPromotions() {
 
   // No intrusive floating card on sensitive booking / payment / recovery flows.
   const inCheckout =
+    /^\/events\/[^/]+\/book(?:\/|$)/.test(pathname) ||
     pathname.startsWith("/book-now") ||
     pathname.startsWith("/booking") ||
     pathname.startsWith("/checkout") ||
