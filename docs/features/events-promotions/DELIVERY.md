@@ -2,7 +2,7 @@
 
 **Owner:** Next.js frontend team.
 **Target outcome:** Finish ALL guest-facing UX and frontend integration adapters without needing the Laravel backend or CMS to exist yet. Backend/CMS developers receive ready-to-implement, explicit contracts.
-**Status:** Phase 1 promotion bar/card and Phase 2 public Event catalog/detail/package selector are implemented on the feature branch (automated/browser QA pending). Phase 3 Event Booking V2 and Phase 4 final QA/handoff remain outstanding.
+**Status:** Phase 1 promotion bar/card, Phase 2 Event catalog and Phase 3 standalone Event Booking V2 frontend are implemented on the feature branch. **Build/CI and browser QA are not complete; the PR remains draft.** Phase 4 final verification/integration handoff is outstanding.
 **Explicitly out of scope for this frontend delivery:** Laravel migrations, CRUD implementation, real admin CMS screens, gateway/server-side pricing, inventory locks, webhook processing, backend deployment.
 
 ## Four execution steps — no separate wireframe or design phase
@@ -28,7 +28,7 @@
 - `docs/features/events-promotions/EVENTS-API-HANDOFF.md`.
 - `sections/home/LuxuryFooter.tsx` + localized footer messages for discovery.
 - `ZALINA_EVENTS_DEMO=true` local server fixture switch, forcibly off in production.
-- Event Checkout CTA remains intentionally disabled until Step 3. This is not a launched booking feature.
+- Event Checkout CTA now routes to `/[locale]/events/[slug]/book` for live available selections and safe local preview. The button is disabled only when no valid available selection exists. Real booking/payment requires the missing Laravel event backend.
 
 ### 3. Complete frontend Event Booking V2 and payment states
 - Event-only booking wizard integrated with existing common checkout patterns: choose occurrence and package(s), quantity, guests, details, review, server-priced estimate, create booking, hold countdown, initiate payment, redirect.
@@ -37,6 +37,19 @@
 - Explicitly implement idle/loading/validation/sold-out/409/rate-limit/network/expired/paid/failed/cancelled/unknown/error states. Never trust client price.
 - Payment success remains authoritative ONLY after backend confirmation. Fixtures simulate *responses* for preview/tests, not production payments.
 - CTA from campaign `/events/[slug]` to selectable package to checkout to confirmation is navigable end-to-end in frontend demo mode.
+
+**Phase 3 implemented files:**
+- `app/[locale]/events/[slug]/book/page.tsx` and its loading state.
+- `components/events/EventCheckout.tsx`: guest details → review → create event hold → pay / payment recovery.
+- `lib/events/checkout.ts`, `checkout.test.ts` and `integration.test.ts`.
+- `lib/api/booking-types.ts`, `lib/api/bookings.ts`, `lib/api/adapters.ts`, `lib/api/index.ts`: new `event` booking type and package snapshots.
+- Shared payment handoff and booking status screens accept/display event booking type and a confirmed event ticket.
+- `components/promotions/ZalinaPromotions.tsx`: no promotions while entering event checkout.
+- `components/layout/LuxuryNavbar.tsx`: language switch preserves selected occurrence/package query parameters.
+- `docs/features/events-promotions/EVENT-BOOKING-API-HANDOFF.md`: server DTO, errors, stock locks, webhook and tickets.
+- `.github/workflows/frontend-checks.yml`: PR-level TypeScript and unit tests.
+- Local demo checkout exercises the form/review and preview status states **without creating or paying for a booking**.
+- **No real event checkout or payment is live until the backend implements and validates the proposed contract.**
 
 ### 4. Close frontend quality + handoff documentation
 - Typecheck, unit/component/browser/mobile/RTL tests; accessibility/performance and checkout regression verification.
