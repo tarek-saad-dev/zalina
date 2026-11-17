@@ -72,7 +72,8 @@ export function parsePendingPaymentHandoff(
   if (
     c.product_type !== "day_use" &&
     c.product_type !== "bubble_stay" &&
-    c.product_type !== "wedding"
+    c.product_type !== "wedding" &&
+    c.product_type !== "event"
   ) {
     return null;
   }
