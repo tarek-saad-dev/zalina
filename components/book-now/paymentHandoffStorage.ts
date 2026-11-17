@@ -31,7 +31,12 @@ export function savePendingPaymentBooking(
 
   const store = storage();
   if (store) {
-    store.setItem(PAYMENT_HANDOFF_STORAGE_KEY, JSON.stringify(handoff));
+    try {
+      store.setItem(PAYMENT_HANDOFF_STORAGE_KEY, JSON.stringify(handoff));
+    } catch {
+      // Browser may deny sessionStorage. Do not fail a successfully created hold.
+      // The active checkout still shows the reference and links to status recovery.
+    }
   }
   return handoff;
 }
