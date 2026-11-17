@@ -162,10 +162,15 @@ function CampaignFloatingCard({
 export function ZalinaPromotions() {
   const locale = (useLocale() === "ar" ? "ar" : "en") as PromotionLocale;
   const pathname = usePathname() || "/";
-  const [campaigns, setCampaigns] = useState<PromotionCampaign[]>([]);
+  const routeKey = `${locale}:${pathname}`;
+  const [feed, setFeed] = useState<{ key: string; campaigns: PromotionCampaign[] }>({
+    key: "",
+    campaigns: [],
+  });
+  const campaigns = feed.key === routeKey ? feed.campaigns : [];
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [clock, setClock] = useState(0);
-  const [floatingVisible, setFloatingVisible] = useState(false);
+  const [visibleFloatingId, setVisibleFloatingId] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = window.setInterval(() => setClock(Date.now()), 30_000);
@@ -174,8 +179,8 @@ export function ZalinaPromotions() {
 
   useEffect(() => {
     let mounted = true;
-    setCampaigns([]);
-    void getActivePromotions(locale, pathname).then((result) => {
+    const load = async () => {
+      const result = await getActivePromotions(locale, pathname);
       if (!mounted) return;
       setDismissed((current) => {
         const next = new Set(current);
@@ -184,10 +189,14 @@ export function ZalinaPromotions() {
         });
         return next;
       });
-      setCampaigns(result);
-    });
+      setFeed({ key: `${locale}:${pathname}`, campaigns: result });
+    };
+    void load();
+    // An admin switching a campaign off is reflected on already-open pages.
+    const refresh = window.setInterval(() => { void load(); }, 30_000);
     return () => {
       mounted = false;
+      window.clearInterval(refresh);
     };
   }, [locale, pathname]);
 
@@ -208,15 +217,17 @@ export function ZalinaPromotions() {
     [campaigns, dismissed, clock, inCheckout]
   );
 
+  const floatingId = floating?.id ?? null;
+  const floatingDelay = floating?.display_delay_seconds ?? 0;
   useEffect(() => {
-    setFloatingVisible(false);
-    if (!floating) return;
+    setVisibleFloatingId(null);
+    if (!floatingId) return;
     const timeout = window.setTimeout(
-      () => setFloatingVisible(true),
-      floating.display_delay_seconds * 1000
+      () => setVisibleFloatingId(floatingId),
+      floatingDelay * 1000
     );
     return () => window.clearTimeout(timeout);
-  }, [floating?.id, floating?.display_delay_seconds]);
+  }, [floatingId, floatingDelay]);
 
   const dismiss = (campaign: PromotionCampaign) => {
     if (campaign.dismiss_for_hours > 0) {
@@ -241,7 +252,7 @@ export function ZalinaPromotions() {
           onClose={() => dismiss(topBar)}
         />
       ) : null}
-      {floating && floatingVisible ? (
+      {floating && visibleFloatingId === floating.id ? (
         <CampaignFloatingCard
           campaign={floating}
           locale={locale}
