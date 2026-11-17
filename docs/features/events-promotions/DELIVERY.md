@@ -22,7 +22,7 @@
 - Real typed API adapters and local deterministic **fixture** responses for development/screens/tests. No fake booking success.
 
 **Phase 2 implemented files:**
-- `app/[locale]/events/page.tsx` and `app/[locale]/events/[slug]/page.tsx`.
+- `app/[locale]/events/page.tsx` and `app/[locale]/events/[slug]/page.tsx`, with route-local loading/not-found screens.
 - `components/events/EventsCatalog.tsx`, `EventDetailView.tsx` and `EventPackageSelector.tsx`.
 - `lib/events/domain.ts`, `lib/events/api.ts`, `lib/events/fixtures.ts` and `lib/events/domain.test.ts`.
 - `docs/features/events-promotions/EVENTS-API-HANDOFF.md`.
