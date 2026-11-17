@@ -77,3 +77,33 @@ test("Unknown event shows a usable not-found recovery link", async ({ page }) =>
   await page.getByRole("link", { name: "Back to all events" }).click();
   await expect(page).toHaveURL(/\/en\/events\/?$/);
 });
+
+
+test("Both promotion placements fit below the navbar, dismiss independently and persist dismissals", async ({ page }) => {
+  await page.goto("/en/events");
+  const top = page.getByRole("complementary", { name: "Zalina announcement" });
+  const floating = page.getByRole("complementary", { name: "Zalina featured event" });
+  await expect(top).toBeVisible();
+  await expect(floating).toBeVisible();
+  await expect(top.getByRole("link", { name: "Explore packages" })).toHaveAttribute("href", "/en/events/christmas-night-preview");
+  const navBox = await page.locator(".zalina-navbar").boundingBox();
+  const topBox = await top.boundingBox();
+  expect(navBox).not.toBeNull();
+  expect(topBox).not.toBeNull();
+  expect(topBox!.y).toBeGreaterThanOrEqual(navBox!.y + navBox!.height - 2);
+  await page.getByRole("button", { name: "Dismiss announcement" }).click();
+  await expect(top).toHaveCount(0);
+  await expect(floating).toBeVisible();
+  await page.getByRole("button", { name: "Dismiss offer" }).click();
+  await expect(floating).toHaveCount(0);
+  await page.reload();
+  await expect(top).toHaveCount(0);
+  await expect(floating).toHaveCount(0);
+});
+
+test("Promotion surfaces are suppressed throughout event checkout", async ({ page }) => {
+  await page.goto("/en/events/christmas-night-preview/book?occurrence_id=9101&package_id=9201&quantity=1");
+  await expect(page.getByRole("heading", { level: 1, name: "Reserve your occasion" })).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Zalina announcement" })).toHaveCount(0);
+  await expect(page.getByRole("complementary", { name: "Zalina featured event" })).toHaveCount(0);
+});
