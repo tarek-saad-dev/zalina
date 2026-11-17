@@ -96,7 +96,7 @@ export function normalizePromotions(raw: unknown): PromotionCampaign[] {
     campaigns.push({
       id,
       slug: optionalString(item.slug) ?? id,
-      placements: [...new Set(placements)],
+      placements: Array.from(new Set(placements)),
       priority: safeNumber(item.priority, 0, 10000),
       title_ar: titleAr,
       title_en: titleEn,
