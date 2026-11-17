@@ -740,8 +740,8 @@
     },
     "products": {
       "eyebrow": "Experience",
-      "title": "How would you like to arrive?",
-      "subtitle": "Three distinct ways to experience Zalina. Observatory includes Day Use; Cabin Stay reservations will open soon.",
+      "title": "Choose your Zalina experience",
+      "subtitle": "From an unforgettable day to a night under the stars. Find the visit that feels right for you.",
       "comingSoon": "Coming Soon",
       "dayUse": {
         "title": "Day Use",
@@ -757,7 +757,15 @@
         "title": "Observatory Experience",
         "description": "Day Use access included, with a dedicated Observatory experience. Full inclusions are provided with the selected package.",
         "tag": "SIGNATURE EXPERIENCE"
-      }
+      },
+      "collection": "The Zalina Collection",
+      "perGuestHint": "Pricing per guest",
+      "realTimeHint": "Availability checked before booking",
+      "from": "From",
+      "selectTicket": "Explore this experience",
+      "signature": "Signature",
+      "chooseTicketAria": "Explore {name}",
+      "availabilityNote": "More experiences are on their way. Available tickets can be reserved securely in the next steps."
     },
     "dayUseProduct": {
       "eyebrow": "Day Use",

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { dayUseProductToSettings } from "@/lib/api";
 import { useBookingState, type BookingCatalog } from "./useBookingState";
-import { BookingHero } from "./BookingHero";
 import { BookingProgress } from "./BookingProgress";
 import { BookingSummary } from "./BookingSummary";
 import { MobileBookingBar } from "./MobileBookingBar";
@@ -184,9 +183,26 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     [getEntry, state.bubbleStay]
   );
 
+  const scrollToBookingTop = () => {
+    if (typeof window === "undefined") return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  };
+
+  // Ticket cards are the action; don't require a second Continue click.
+  const handleChooseTicket = (choice: Parameters<typeof setTicketChoice>[0]) => {
+    if (hasActiveHold || isBusy) return;
+    setTicketChoice(choice);
+    nextStep();
+    scrollToBookingTop();
+  };
+
   const handleNext = () => {
     if (hasActiveHold || !productSelectionValid) return;
-    if (proceed) nextStep();
+    if (proceed) {
+      nextStep();
+      scrollToBookingTop();
+    }
   };
 
   const handleBack = () => {
@@ -196,6 +212,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
       return;
     }
     prevStep();
+    scrollToBookingTop();
   };
 
   const handleReturnToBubbles = () => {
@@ -236,16 +253,17 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
 
   return (
     <main style={{ minHeight: "100vh" }} className="page-atmosphere">
-      <BookingHero />
-
-      <BookingProgress
-        steps={activeSteps}
-        currentStepIndex={state.currentStepIndex}
-        onStepClick={(index) => {
-          if (hasActiveHold || isBusy) return;
-          goToStep(index);
-        }}
-      />
+      {currentStep.id !== "product" && (
+        <BookingProgress
+          steps={activeSteps}
+          currentStepIndex={state.currentStepIndex}
+          onStepClick={(index) => {
+            if (hasActiveHold || isBusy) return;
+            goToStep(index);
+            scrollToBookingTop();
+          }}
+        />
+      )}
 
       <section
         style={{
@@ -257,18 +275,18 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         <div
           className="mx-auto"
           style={{
-            maxWidth: "1280px",
-            padding: "48px 24px 0",
+            maxWidth: currentStep.id === "product" ? "1360px" : "1280px",
+            padding: currentStep.id === "product" ? "clamp(32px, 5vw, 72px) clamp(18px, 3.5vw, 36px) 0" : "48px 24px 0",
           }}
         >
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
             <div className="flex-1 min-w-0">
               <div
                 style={{
-                  background: "rgba(255,255,255,0.022)",
-                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: currentStep.id === "product" ? "transparent" : "rgba(255,255,255,0.022)",
+                  border: currentStep.id === "product" ? "none" : "1px solid rgba(255,255,255,0.06)",
                   borderRadius: "18px",
-                  padding: "clamp(24px, 4vw, 40px)",
+                  padding: currentStep.id === "product" ? 0 : "clamp(24px, 4vw, 40px)",
                 }}
               >
                 {hasActiveHold && currentStep.id !== "review" && (
@@ -308,7 +326,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   onNext={handleNext}
                   onBack={handleBack}
                   canProceed={proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold}
-                  onSetTicketChoice={setTicketChoice}
+                  onSetTicketChoice={handleChooseTicket}
                   onSetVisitDate={setVisitDate}
                   onSetDayUseGuests={setDayUseGuests}
                   onSetBubbleStayDates={setBubbleStayDates}
@@ -327,7 +345,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
               </div>
             </div>
 
-            <div
+            {currentStep.id !== "product" && <div
               className="hidden lg:block"
               style={{
                 width: "340px",
@@ -357,12 +375,12 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                 }
                 ctaLabel={summaryCTALabel}
               />
-            </div>
+            </div>}
           </div>
         </div>
       </section>
 
-      <MobileBookingBar
+      {currentStep.id !== "product" && <MobileBookingBar
         state={state}
         estimatedTotal={estimatedWithAddOn}
         allocatedGuests={derived.allocatedGuests}
@@ -381,7 +399,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
               : t("cta.reserve")
             : t("cta.continue")
         }
-      />
+      />}
     </main>
   );
 }

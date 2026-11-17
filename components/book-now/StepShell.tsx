@@ -116,6 +116,7 @@ export function StepShell(props: StepShellProps) {
         {currentStep.id === "product" && (
           <StepProduct
             state={state}
+            dayUseProducts={props.allDayUseProducts}
             onSetTicketChoice={props.onSetTicketChoice}
             observatoryAvailable={observatoryIsBookable(props.allDayUseProducts)}
           />
@@ -195,7 +196,7 @@ export function StepShell(props: StepShellProps) {
         )}
       </motion.div>
 
-      {!isReview && (
+      {!isReview && currentStep.id !== "product" && (
         <div
           className="flex items-center justify-between mt-10 pt-6"
           style={{ borderTop: "1px solid rgba(212,175,55,0.09)" }}
