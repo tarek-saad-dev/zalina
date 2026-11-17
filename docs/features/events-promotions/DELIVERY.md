@@ -62,7 +62,7 @@ Example:
 
 **Field rules:** `placements` accepts `top_bar`, `floating_card` or both; integer `priority` 0–10000; `display_delay_seconds` 0–30 (floating only); `dismiss_for_hours` 0–720; internal `cta_href` starts with a single `/` (no external targets in phase 1); all AR/EN titles and CTA labels required; `starts_at < ends_at` when both given; `image_url` HTTPS or local path. Public response excludes private campaign/internal data.
 
-**Targeting:** per-page paths and optional device targeting should be evaluated by Laravel using a documented device signal or exposed in the response in phase 2. The phase 1 frontend filters by route, schedule and placement, but does NOT implement device targeting.
+**Targeting:** per-page paths and optional device targeting should be evaluated by Laravel using a documented device signal or exposed in the response in phase 2. The phase 1 frontend submits the route for backend targeting and filters the returned campaigns by schedule and placement; it does NOT independently implement route or device targeting.
 
 **Update propagation:** the frontend should re-fetch active campaigns at route changes and at least every 30 seconds while an open page stays active. Publisher-side cache must be invalidated on Off/Publish.
 
