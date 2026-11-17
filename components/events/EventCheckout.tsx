@@ -256,7 +256,13 @@ export function EventCheckout({
     setMessage(null);
     try {
       // Revalidate stock and estimate immediately before creating a hold.
-      const live = await getEventAvailability(event.slug, selected.occurrence.id, locale, isDemo);
+      let live: EventAvailability;
+      try {
+        live = await getEventAvailability(event.slug, selected.occurrence.id, locale, isDemo);
+      } catch {
+        setMessage({ text: t.noAvailability, kind: "unavailable" });
+        return;
+      }
       const isCurrent = findEventSelection(event, selected.occurrence.id, selected.package.id, selected.quantity, live);
       const liveEstimate = estimateEventTotal(live, selected);
       if (!isCurrent.ok || !liveEstimate) {
