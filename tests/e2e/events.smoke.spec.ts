@@ -52,7 +52,10 @@ test("Arabic event booking is RTL, preserves package selection, and validates gu
   await expect(page).toHaveURL(/\/ar\/events\/christmas-night-preview\/book\?/);
   await expect(page.getByRole("heading", { level: 1, name: "احجز مناسبتك" })).toBeVisible();
   const button = page.getByRole("button", { name: "مراجعة الحجز" });
-  await expect(button).toBeDisabled();
+  // Empty details are submit-able to surface localized field validation errors.
+  await button.click();
+  await expect(page.getByText("من فضلك اكتب بيانات صحيحة.")).toBeVisible();
+  await expect(page.locator("#event-guest-name")).toHaveAttribute("aria-invalid", "true");
   await page.locator("#event-guest-name").fill("زائر تجريبي");
   await page.locator("#event-guest-email").fill("demo@example.com");
   await page.locator("#event-guest-phone").fill("+201001234567");
