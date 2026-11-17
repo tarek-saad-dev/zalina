@@ -126,7 +126,7 @@ function CampaignFloatingCard({
             width={100}
             height={132}
             loading="lazy"
-            className="h-[132px] w-[100px] flex-shrink-0 rounded-sm object-cover"
+            className="hidden h-[132px] w-[100px] flex-shrink-0 rounded-sm object-cover sm:block"
           />
         ) : null}
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 pt-1">
@@ -140,7 +140,7 @@ function CampaignFloatingCard({
               {copy.title}
             </h2>
             {copy.description ? (
-              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#C4BEB6]">
+              <p className="mt-1.5 hidden line-clamp-2 text-xs leading-relaxed text-[#C4BEB6] sm:block">
                 {copy.description}
               </p>
             ) : null}
@@ -171,6 +171,7 @@ export function ZalinaPromotions() {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [clock, setClock] = useState(0);
   const [visibleFloatingId, setVisibleFloatingId] = useState<string | null>(null);
+  const [scrolledIntoContent, setScrolledIntoContent] = useState(false);
 
   useEffect(() => {
     const interval = window.setInterval(() => setClock(Date.now()), 30_000);
@@ -213,10 +214,24 @@ export function ZalinaPromotions() {
     pathname.startsWith("/checkout") ||
     pathname.startsWith("/payment");
 
+  // Event details and checkout contain conversion-critical controls. A floating
+  // overlay must not obscure their price, package or payment CTA.
+  const inEventDetail = /^\/events\/[^/]+$/.test(pathname);
   const floating = useMemo(
-    () => (inCheckout ? null : selectCampaign(campaigns, "floating_card", dismissed, clock || Date.now())),
-    [campaigns, dismissed, clock, inCheckout]
+    () => (inCheckout || inEventDetail ? null : selectCampaign(campaigns, "floating_card", dismissed, clock || Date.now())),
+    [campaigns, dismissed, clock, inCheckout, inEventDetail]
   );
+
+  useEffect(() => {
+    const checkPosition = () => {
+      const threshold = Math.max(240, Math.round(window.innerHeight * 0.55));
+      setScrolledIntoContent(window.scrollY >= threshold);
+    };
+    setScrolledIntoContent(false);
+    checkPosition();
+    window.addEventListener("scroll", checkPosition, { passive: true });
+    return () => window.removeEventListener("scroll", checkPosition);
+  }, [pathname]);
 
   const floatingId = floating?.id ?? null;
   const floatingDelay = floating?.display_delay_seconds ?? 0;
@@ -257,7 +272,7 @@ export function ZalinaPromotions() {
           onClose={() => dismiss(topBar)}
         />
       ) : null}
-      {floating && visibleFloatingId === floating.id ? (
+      {floating && scrolledIntoContent && visibleFloatingId === floating.id ? (
         <CampaignFloatingCard
           campaign={floating}
           locale={locale}
