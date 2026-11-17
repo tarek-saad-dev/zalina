@@ -196,6 +196,26 @@ export function DigitalTicket({ booking, ticket, locale }: DigitalTicketProps) {
               </div>
             )}
 
+            {booking.product_type === "event" && (
+              <div style={{ fontSize: "14px", color: MUTED, lineHeight: 1.7 }}>
+                {(ticket?.event_title_ar || ticket?.event_title_en || booking.event_title_ar || booking.event_title_en) ? (
+                  <p style={{ color: TEXT, fontWeight: 600, marginBottom: "8px" }}>
+                    {(locale === "ar" ? ticket?.event_title_ar || booking.event_title_ar : ticket?.event_title_en || booking.event_title_en)
+                      || ticket?.event_title_en || booking.event_title_en
+                      || ticket?.event_title_ar || booking.event_title_ar}
+                  </p>
+                ) : null}
+                {(ticket?.event_items?.length ? ticket.event_items : booking.event_items ?? []).map((line, index) => (
+                  <p key={line.event_package_id + "-" + index} style={{ marginBottom: "4px" }}>
+                    {(locale === "ar" ? line.name_ar : line.name_en)
+                      || line.name_en || line.name_ar || String(line.event_package_id)}
+                    {" × "}{line.quantity}
+                  </p>
+                ))}
+                <p>{formatBookingDateRange(validFrom, validTo, locale)}{" · "}{guests} {t(locale, "guests").toLowerCase()}</p>
+              </div>
+            )}
+
             <p
               style={{
                 marginTop: "20px",
