@@ -46,3 +46,7 @@ coverage/
 # Misc
 *.pem
 .cache/
+
+# Playwright browser artifacts
+playwright-report/
+test-results/
