@@ -24,6 +24,7 @@ export type EventSelectionResult =
   | { ok: false; reason: "closed" | "invalid" | "sold_out" | "unavailable" };
 
 export function positiveInt(value: unknown): number | null {
+  if (typeof value === "string" && !/^[0-9]+$/.test(value)) return null;
   const number = typeof value === "string" ? Number(value) : value;
   if (typeof number !== "number" || !Number.isSafeInteger(number) || number < 1) return null;
   return number;
