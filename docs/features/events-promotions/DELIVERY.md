@@ -2,7 +2,7 @@
 
 **Owner:** Next.js frontend team.
 **Target outcome:** Finish ALL guest-facing UX and frontend integration adapters without needing the Laravel backend or CMS to exist yet. Backend/CMS developers receive ready-to-implement, explicit contracts.
-**Status:** The Phase 1 promotion bar/card is implemented on the feature branch; the remaining frontend flows are planned, NOT yet completed.
+**Status:** Phase 1 promotion bar/card and Phase 2 public Event catalog/detail/package selector are implemented on the feature branch (automated/browser QA pending). Phase 3 Event Booking V2 and Phase 4 final QA/handoff remain outstanding.
 **Explicitly out of scope for this frontend delivery:** Laravel migrations, CRUD implementation, real admin CMS screens, gateway/server-side pricing, inventory locks, webhook processing, backend deployment.
 
 ## Four execution steps — no separate wireframe or design phase
@@ -20,6 +20,15 @@
 - Bookable events are independent from accommodations and CMS marketing `experiences`.
 - Buttons route into the event checkout; changing language preserves event path and meaningful selection.
 - Real typed API adapters and local deterministic **fixture** responses for development/screens/tests. No fake booking success.
+
+**Phase 2 implemented files:**
+- `app/[locale]/events/page.tsx` and `app/[locale]/events/[slug]/page.tsx`.
+- `components/events/EventsCatalog.tsx`, `EventDetailView.tsx` and `EventPackageSelector.tsx`.
+- `lib/events/domain.ts`, `lib/events/api.ts`, `lib/events/fixtures.ts` and `lib/events/domain.test.ts`.
+- `docs/features/events-promotions/EVENTS-API-HANDOFF.md`.
+- `sections/home/LuxuryFooter.tsx` + localized footer messages for discovery.
+- `ZALINA_EVENTS_DEMO=true` local server fixture switch, forcibly off in production.
+- Event Checkout CTA remains intentionally disabled until Step 3. This is not a launched booking feature.
 
 ### 3. Complete frontend Event Booking V2 and payment states
 - Event-only booking wizard integrated with existing common checkout patterns: choose occurrence and package(s), quantity, guests, details, review, server-priced estimate, create booking, hold countdown, initiate payment, redirect.
