@@ -336,7 +336,10 @@ export function normalizeDayUseProduct(raw: RawDayUseProduct): DayUseProduct {
     description_ar: raw.description_ar ?? "",
     price_per_guest: moneyString(raw.price_per_guest),
     currency: raw.currency,
-    is_active: raw.is_active !== false,
+    // Observatory is a new paid product: require explicit activation; legacy Day Use stays compatible.
+    is_active: raw.ticket_category === "observatory_experience"
+      ? raw.is_active === true
+      : raw.is_active !== false,
     ticket_category: raw.ticket_category === "observatory_experience" ? "observatory_experience" : "day_use",
     included_features: Array.isArray(raw.included_features)
       ? raw.included_features.filter((f) => typeof f?.name_en === "string" && typeof f?.name_ar === "string") : [],

@@ -39,11 +39,22 @@ describe("new ticket options, V2-compatible", () => {
     expect(productsForTicketChoice(catalog,"observatory_experience").map((p)=>p.id)).toEqual([8]);
     expect(observatoryIsBookable(catalog.slice(1))).toBe(false);
   });
+  it("requires explicit is_active true on Observatory rows without changing old Day Use defaults", () => {
+    expect(normalizeDayUseProduct({...original,is_active:undefined}).is_active).toBe(true);
+    for (const flag of [undefined, null, false, "true", 1]) {
+      const candidate=normalizeDayUseProduct({...obs,is_active:flag as boolean | undefined});
+      expect(candidate.is_active).toBe(false);
+      expect(observatoryIsBookable([candidate])).toBe(false);
+    }
+    expect(observatoryIsBookable([normalizeDayUseProduct(obs)])).toBe(true);
+  });
   it("fails closed on unsupported / non-bookable Lantern catalog", () => {
     const lantern={id:21,code:"lantern",name_en:"Lantern",name_ar:"فانوس",price_per_guest:"25",currency:"EGP",is_active:true,checkout_enabled:true,supported_tickets:["day_use","observatory_experience"]};
     expect(normalizeBookableTicketAddOns({data:[lantern]})).toHaveLength(1);
     expect(normalizeBookableTicketAddOns({data:[{...lantern,checkout_enabled:false}]})).toHaveLength(0);
     expect(normalizeBookableTicketAddOns({data:[{...lantern,price_per_guest:"NaN"}]})).toHaveLength(0);
+    expect(normalizeBookableTicketAddOns({data:[{...lantern,price_per_guest:""}]})).toHaveLength(0);
+    expect(normalizeBookableTicketAddOns({data:[{...lantern,price_per_guest:"   "}]})).toHaveLength(0);
     expect(normalizeBookableTicketAddOns({data:[{...lantern,supported_tickets:[]}]})).toHaveLength(0);
     expect(normalizeBookableTicketAddOns({data:[{...lantern,code:"other"}]})).toHaveLength(0);
   });
