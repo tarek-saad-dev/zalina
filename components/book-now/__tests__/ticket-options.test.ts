@@ -26,6 +26,19 @@ describe("new ticket options, V2-compatible", () => {
     expect(productsForTicketChoice(products,"observatory_experience").map((p)=>p.id)).toEqual([8]);
     expect(observatoryIsBookable(products)).toBe(true);
   });
+  it("does not expose invalid Observatory options when another valid one enables the card", () => {
+    const valid=normalizeDayUseProduct(obs);
+    const invalidPrice={...valid,id:9,price_per_guest:"NaN"};
+    const blankCurrency={...valid,id:10,currency:" "};
+    const emptyPrice={...valid,id:11,price_per_guest:""};
+    const negativePrice={...valid,id:12,price_per_guest:"-1"};
+    const disabled={...valid,id:13,is_active:false};
+    const invalidId={...valid,id:-1};
+    const catalog=[valid,invalidPrice,blankCurrency,emptyPrice,negativePrice,disabled,invalidId];
+    expect(observatoryIsBookable(catalog)).toBe(true);
+    expect(productsForTicketChoice(catalog,"observatory_experience").map((p)=>p.id)).toEqual([8]);
+    expect(observatoryIsBookable(catalog.slice(1))).toBe(false);
+  });
   it("fails closed on unsupported / non-bookable Lantern catalog", () => {
     const lantern={id:21,code:"lantern",name_en:"Lantern",name_ar:"فانوس",price_per_guest:"25",currency:"EGP",is_active:true,checkout_enabled:true,supported_tickets:["day_use","observatory_experience"]};
     expect(normalizeBookableTicketAddOns({data:[lantern]})).toHaveLength(1);
