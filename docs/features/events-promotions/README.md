@@ -11,6 +11,7 @@
 5. [EVENT-BOOKING-API-HANDOFF.md](./EVENT-BOOKING-API-HANDOFF.md) — standalone event Booking V2 payload, pricing, holds, Paymob, status and QR tickets.
 6. [CMS-REQUIREMENTS.md](./CMS-REQUIREMENTS.md) — editor fields, screens, publish/on-off, scheduling, targeting, roles, validation and audit.
 7. [ACCEPTANCE.md](./ACCEPTANCE.md) — frontend QA, staging/live checks, release and rollback gates.
+8. [SOURCE-ALIGNMENT.md](./SOURCE-ALIGNMENT.md) — explicit differences between ANV v1 project PDF specs and the active Booking V2 frontend.
 
 ## Clear role split
 
@@ -25,6 +26,7 @@
 With `NODE_ENV=development`, set:
 ```env
 ZALINA_EVENTS_DEMO=true
+NEXT_PUBLIC_ZALINA_PROMOTIONS_DEMO=true
 NEXT_PUBLIC_ZALINA_PROMOTIONS_DEMO=true
 NEXT_PUBLIC_API_BASE_URL=https://api.zalinaarabianvillage.com
 ```
