@@ -72,14 +72,13 @@ describe("Phase 3 journey UI helpers", () => {
     ]);
   });
 
-  it("product options are only day_use and bubble_stay", () => {
-    expect(PRODUCT_OPTIONS.map((o) => o.id).sort()).toEqual([
-      "bubble_stay",
+  it("product options are Day Use, Observatory Experience and Cabin Stay", () => {
+    expect(PRODUCT_OPTIONS.map((o) => o.id)).toEqual([
       "day_use",
+      "observatory_experience",
+      "cabin_stay",
     ]);
-    expect(PRODUCT_OPTIONS.find((o) => o.id === "bubble_stay")?.comingSoon).toBe(
-      true
-    );
+    expect(PRODUCT_OPTIONS.find((o) => o.id === "cabin_stay")?.comingSoon).toBe(true);
     expect(PRODUCT_OPTIONS.find((o) => o.id === "day_use")?.comingSoon).toBeFalsy();
   });
 
