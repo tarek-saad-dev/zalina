@@ -211,8 +211,9 @@ export function normalizeAvailability(raw: unknown, expectedOccurrenceId: number
   });
   return { occurrence_id: expectedOccurrenceId, packages, checked_at: date(o.checked_at) };
 }
-export function localized(entry: { [key: string]: unknown }, key: string, locale: EventLocale): string {
-  return string(entry[`${key}_${locale}`]) || string(entry[`${key}_${locale === "ar" ? "en" : "ar"}`]);
+export function localized(entry: object, key: string, locale: EventLocale): string {
+  const values = entry as Record<string, unknown>;
+  return string(values[`${key}_${locale}`]) || string(values[`${key}_${locale === "ar" ? "en" : "ar"}`]);
 }
 export function formattedEventDate(value: string | null, locale: EventLocale): string {
   if (!value || !Number.isFinite(Date.parse(value))) return locale === "ar" ? "يُحدد لاحقًا" : "To be announced";
