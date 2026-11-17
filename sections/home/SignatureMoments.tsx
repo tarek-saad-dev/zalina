@@ -1,285 +1,222 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import {
   NEUTRAL_MEDIA_FALLBACK,
   type CatalogMediaCard,
 } from "@/lib/media";
-import {
-  detectRtlScrollMode,
-  isNearEnd,
-  isNearStart,
-  scrollForward,
-  scrollToStart,
-  type RtlScrollMode,
-} from "@/lib/rtl/scroll";
-
-const cardWidths = ["340px", "380px", "320px", "360px", "300px"];
-const AUTO_SCROLL_PX = 380;
-const MANUAL_SCROLL_PX = 400;
+import { selectSignatureMomentCards } from "./signatureMomentsLayout";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
 }
 
+/**
+ * Editorial gallery rather than an automatically moving carousel:
+ * - no off-screen or half-clipped cards, including in RTL
+ * - captions never compete with detailed photography
+ * - every card is fully readable, keyboard-accessible, and links to the catalog
+ * - existing CMS media and copy remain the source of truth
+ */
 export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const t = useTranslations("home.signatureMoments");
   const isArabic = useLocale() === "ar";
+  const Arrow = isArabic ? ArrowLeft : ArrowRight;
   const titleFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-display), 'Cormorant Garamond', serif";
   const bodyFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollModeRef = useRef<RtlScrollMode>("ltr");
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(true);
 
-  const items =
-    moments.length > 0
-      ? moments
-      : [
-          {
-            id: "neutral",
-            title: t("fallbackTitle"),
-            subtitle: t("fallbackSubtitle"),
-            image: NEUTRAL_MEDIA_FALLBACK,
-            alt: t("fallbackAlt"),
-          },
-        ];
-
-  const checkScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const mode = scrollModeRef.current;
-    setCanScrollPrev(!isNearStart(el, 10, mode));
-    setCanScrollNext(!isNearEnd(el, 10, mode));
-  };
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    scrollModeRef.current = detectRtlScrollMode(el);
-    checkScroll();
-    el.addEventListener("scroll", checkScroll, { passive: true });
-    return () => el.removeEventListener("scroll", checkScroll);
-  }, [items.length, isArabic]);
-
-  const scrollByDir = (dir: "prev" | "next") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const mode = scrollModeRef.current;
-    if (dir === "next") {
-      scrollForward(el, MANUAL_SCROLL_PX, "smooth", mode);
-    } else {
-      scrollForward(el, -MANUAL_SCROLL_PX, "smooth", mode);
-    }
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const el = scrollRef.current;
-      if (!el) return;
-      const mode = scrollModeRef.current;
-
-      if (isNearEnd(el, 50, mode)) {
-        scrollToStart(el, "smooth", mode);
-      } else {
-        scrollForward(el, AUTO_SCROLL_PX, "smooth", mode);
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [isArabic]);
+  const items = selectSignatureMomentCards(moments, {
+    id: "neutral",
+    title: t("fallbackTitle"),
+    subtitle: t("fallbackSubtitle"),
+    image: NEUTRAL_MEDIA_FALLBACK,
+    alt: t("fallbackAlt"),
+  });
+  const featured = items[0];
+  const remaining = items.slice(1);
 
   return (
     <section
-      className="relative overflow-hidden lux-section-compact"
+      className="lux-section-compact relative isolate overflow-hidden"
+      aria-labelledby="signature-moments-heading"
       style={{ background: "var(--lux-surface)" }}
     >
-      <div className="lux-container" style={{ marginBottom: "var(--space-5)" }}>
-        <div className="text-center relative">
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lux-eyebrow"
-            style={{ marginBottom: "var(--space-3)" }}
-          >
-            {t("eyebrow")}
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="lux-heading-lg"
-          >
-            {t("title")}
-          </motion.h2>
-
-          <div className="hidden md:flex gap-2 absolute bottom-0 inset-inline-end-0">
-            <button
-              type="button"
-              onClick={() => scrollByDir("prev")}
-              disabled={!canScrollPrev}
-              aria-label="Previous"
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                canScrollPrev
-                  ? "bg-white/10 hover:bg-white/20 border border-white/20"
-                  : "bg-white/5 border border-white/10 opacity-50 cursor-not-allowed"
-              }`}
+      <div className="lux-container">
+        <div className="mb-8 flex flex-col gap-5 sm:mb-10 md:mb-12 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-[640px]">
+            <p className="lux-eyebrow mb-3">{t("eyebrow")}</p>
+            <h2
+              id="signature-moments-heading"
+              className="lux-heading-lg"
+              style={{ fontSize: isArabic ? "clamp(1.8rem,3vw,2.7rem)" : "clamp(2rem,3.6vw,3.25rem)" }}
             >
-              {isArabic ? (
-                <ChevronRight size={24} className="text-white" />
-              ) : (
-                <ChevronLeft size={24} className="text-white" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollByDir("next")}
-              disabled={!canScrollNext}
-              aria-label="Next"
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                canScrollNext
-                  ? "bg-white/10 hover:bg-white/20 border border-white/20"
-                  : "bg-white/5 border border-white/10 opacity-50 cursor-not-allowed"
-              }`}
+              {t("title")}
+            </h2>
+            <p
+              className="mt-4 max-w-[530px] text-[13px] leading-[1.9] sm:text-[15px]"
+              style={{ fontFamily: bodyFont, color: "rgba(246,240,232,0.65)" }}
             >
-              {isArabic ? (
-                <ChevronLeft size={24} className="text-white" />
-              ) : (
-                <ChevronRight size={24} className="text-white" />
-              )}
-            </button>
+              {t("intro")}
+            </p>
           </div>
-        </div>
-      </div>
-
-      <div
-        ref={scrollRef}
-        dir={isArabic ? "rtl" : "ltr"}
-        className="flex overflow-x-auto scrollbar-hide"
-        style={{
-          gap: "16px",
-          paddingInlineStart:
-            "max(24px, calc((100vw - 1440px) / 2 + 80px))",
-          paddingInlineEnd: "24px",
-          scrollSnapType: "x mandatory",
-          WebkitOverflowScrolling: "touch",
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-        }}
-      >
-        {items.map((moment, index) => (
-          <motion.div
-            key={moment.id}
-            initial={{ opacity: 0, x: isArabic ? -30 : 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
-            className="relative overflow-hidden flex-shrink-0"
-            style={{
-              width: cardWidths[index % cardWidths.length],
-              height: "420px",
-              scrollSnapAlign: "start",
-            }}
+          <Link
+            href="/experiences"
+            className="hidden shrink-0 items-center gap-3 rounded-full border px-5 py-3 text-[13px] font-medium transition-colors hover:border-[#C9A35C] hover:bg-[#C9A35C]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D8BC7D] md:inline-flex"
+            style={{ color: "#E7D1A0", borderColor: "rgba(201,163,92,0.35)", fontFamily: bodyFont }}
           >
-            <div
-              className="absolute inset-0"
-              style={{ width: "100%", height: "100%" }}
-            >
-              <CmsImage
-                src={moment.image}
-                alt={moment.alt || moment.title}
-                fill
-                sizes="(max-width: 768px) 85vw, 400px"
-                className="object-cover"
-                priority={index < 3}
-                loading={index < 3 ? undefined : "eager"}
-                fadeIn={false}
-                quality={75}
-              />
-            </div>
+            {t("exploreAll")}
+            <Arrow size={16} aria-hidden="true" />
+          </Link>
+        </div>
 
-            <div
-              className="absolute inset-0 pointer-events-none"
+        <div className={remaining.length
+          ? "grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-5"
+          : "mx-auto max-w-[820px]"
+        }>
+          <Link
+            href="/experiences"
+            aria-label={t("cardAria", { title: featured.title })}
+            className="group block min-w-0 rounded-[20px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D8BC7D]"
+          >
+            <article
+              className="flex h-full min-w-0 flex-col overflow-hidden rounded-[20px] border transition-colors duration-300 group-hover:border-[rgba(217,185,108,0.58)] lg:min-h-[636px]"
               style={{
-                background: `
-                  linear-gradient(
-                    to top,
-                    rgba(5,5,5,0.92) 0%,
-                    rgba(5,5,5,0.72) 28%,
-                    rgba(5,5,5,0.35) 52%,
-                    rgba(5,5,5,0.08) 72%,
-                    transparent 100%
-                  )
-                `,
+                borderColor: "rgba(201,163,92,0.2)",
+                background: "#16130F",
+                boxShadow: "0 20px 48px rgba(0,0,0,0.18)",
               }}
-            />
-
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <div className="flex flex-col" style={{ minHeight: "5.75rem" }}>
-                <h3
-                  className="text-white leading-tight line-clamp-1"
+            >
+              <div className="relative h-[235px] w-full overflow-hidden sm:h-[310px] lg:h-[402px]">
+                <CmsImage
+                  src={featured.image}
+                  alt={featured.alt || featured.title}
+                  fill
+                  sizes="(max-width: 1023px) 100vw, 60vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+                  priority
+                  fadeIn={false}
+                />
+                <div className="pointer-events-none absolute inset-0" style={{
+                  background: "linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.2))",
+                }} />
+                <div
+                  className="absolute start-5 top-5 flex items-center gap-2 rounded-full border px-3 py-2 text-[10px] font-semibold tracking-[0.12em] sm:start-6 sm:top-6"
                   style={{
-                    fontFamily: titleFont,
-                    fontSize: isArabic
-                      ? "clamp(0.95rem, 1.5vw + 0.5rem, 1.1rem)"
-                      : "clamp(1.05rem, 1.2vw + 0.6rem, 1.25rem)",
-                    fontWeight: isArabic ? 500 : 400,
-                    letterSpacing: isArabic ? "0" : "0.02em",
-                    lineHeight: isArabic ? 1.45 : 1.25,
-                    marginBottom: "var(--space-2)",
-                    textShadow:
-                      "0 2px 12px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7)",
+                    background: "rgba(12,10,8,0.72)",
+                    color: "#E9D5A7",
+                    borderColor: "rgba(233,213,167,0.24)",
+                    backdropFilter: "blur(10px)",
                   }}
                 >
-                  {moment.title}
-                </h3>
-                <p
-                  className="line-clamp-2"
-                  style={{
-                    fontSize: isArabic ? "0.8125rem" : "0.875rem",
-                    fontFamily: bodyFont,
-                    fontWeight: 400,
-                    letterSpacing: isArabic ? "0" : undefined,
-                    lineHeight: isArabic ? 1.7 : 1.55,
-                    color: "rgba(255,255,255,0.72)",
-                    textShadow: "0 1px 8px rgba(0,0,0,0.85)",
-                  }}
-                >
-                  {moment.subtitle || "\u00A0"}
-                </p>
+                  <Sparkles size={13} aria-hidden />
+                  {t("feature")}
+                </div>
               </div>
 
-              <div
-                className="mt-4 h-[2px] w-12"
-                style={{
-                  background: isArabic
-                    ? "linear-gradient(270deg, #D4AF37, transparent)"
-                    : "linear-gradient(90deg, #D4AF37, transparent)",
-                }}
-              />
+              <div className="flex flex-1 flex-col px-5 pb-6 pt-5 sm:px-8 sm:pb-8 sm:pt-7">
+                <span className="mb-2 text-[11px] font-semibold tracking-[0.18em]" style={{ color: "#C9A35C" }}>
+                  01 <span className="mx-1 opacity-50">/</span> {String(items.length).padStart(2, "0")}
+                </span>
+                <h3
+                  className="text-[clamp(1.5rem,3vw,2rem)] leading-[1.45]"
+                  style={{ fontFamily: titleFont, color: "#F7F1E8", fontWeight: isArabic ? 600 : 400 }}
+                >
+                  {featured.title}
+                </h3>
+                {featured.subtitle?.trim() && (
+                  <p
+                    className="mt-2 line-clamp-2 text-[13px] leading-[1.8] sm:text-sm"
+                    style={{ fontFamily: bodyFont, color: "rgba(247,241,232,0.7)" }}
+                  >
+                    {featured.subtitle}
+                  </p>
+                )}
+                <span
+                  className="mt-auto inline-flex items-center gap-2.5 pt-5 text-[13px] font-semibold transition-colors group-hover:text-[#F3D9A5]"
+                  style={{ fontFamily: bodyFont, color: "#D9BA76" }}
+                >
+                  {t("discover")} <Arrow size={16} aria-hidden="true" />
+                </span>
+              </div>
+            </article>
+          </Link>
+
+          {remaining.length > 0 && (
+            <div className="flex min-w-0 flex-col gap-4 lg:h-full lg:gap-5">
+              {remaining.map((moment, index) => (
+                <Link
+                  key={moment.id}
+                  href="/experiences"
+                  aria-label={t("cardAria", { title: moment.title })}
+                  className="group block min-w-0 flex-1 rounded-[18px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D8BC7D]"
+                >
+                  <article
+                    className="flex h-full min-h-[166px] min-w-0 overflow-hidden rounded-[18px] border transition-colors duration-300 group-hover:border-[rgba(217,185,108,0.58)] sm:min-h-[185px]"
+                    style={{
+                      borderColor: "rgba(201,163,92,0.19)",
+                      background: "#16130F",
+                    }}
+                  >
+                    <div className="relative w-[36%] shrink-0 overflow-hidden sm:w-[39%] lg:w-[37%]">
+                      <CmsImage
+                        src={moment.image}
+                        alt={moment.alt || moment.title}
+                        fill
+                        sizes="(max-width: 767px) 36vw, (max-width: 1023px) 40vw, 230px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                        fadeIn={false}
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-black/10" />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col px-4 py-4 sm:px-6 sm:py-5">
+                      <span className="mb-1.5 text-[10px] font-semibold tracking-[0.14em]" style={{ color: "#C9A35C" }}>
+                        {String(index + 2).padStart(2, "0")} <span className="mx-1 opacity-50">/</span> {String(items.length).padStart(2, "0")}
+                      </span>
+                      <h3
+                        className="line-clamp-2 text-[clamp(1rem,1.5vw,1.35rem)] leading-[1.5]"
+                        style={{ fontFamily: titleFont, color: "#F7F1E8", fontWeight: isArabic ? 600 : 400 }}
+                      >
+                        {moment.title}
+                      </h3>
+                      {moment.subtitle?.trim() && (
+                        <p
+                          className="mt-1.5 line-clamp-2 text-[12px] leading-[1.65] sm:text-[13px]"
+                          style={{ fontFamily: bodyFont, color: "rgba(247,241,232,0.61)" }}
+                        >
+                          {moment.subtitle}
+                        </p>
+                      )}
+                      <span
+                        className="mt-auto inline-flex items-center gap-2 pt-2 text-[12px] font-semibold"
+                        style={{ fontFamily: bodyFont, color: "#D9BA76" }}
+                      >
+                        {t("discover")} <Arrow size={14} aria-hidden="true" />
+                      </span>
+                    </div>
+                  </article>
+                </Link>
+              ))}
             </div>
-          </motion.div>
-        ))}
+          )}
+        </div>
 
-        <div style={{ width: "24px", flexShrink: 0 }} aria-hidden />
+        <div className="mt-7 flex justify-center md:hidden">
+          <Link
+            href="/experiences"
+            className="inline-flex min-h-[48px] items-center gap-3 rounded-full border px-6 text-[13px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D8BC7D]"
+            style={{ color: "#E9D5A7", borderColor: "rgba(201,163,92,0.42)", fontFamily: bodyFont }}
+          >
+            {t("exploreAll")} <Arrow size={16} aria-hidden="true" />
+          </Link>
+        </div>
       </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </section>
   );
 }
