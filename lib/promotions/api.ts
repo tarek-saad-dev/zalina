@@ -16,8 +16,8 @@ export async function getActivePromotions(
   ) {
     const { demoPromotions } = await import("./fixtures");
     // Display fixtures ONLY on marketing routes; never on payment/booking.
-    const excluded = /^\\/(?:book-now|booking|checkout|payment)(?:\\/|$)/.test(path) ||
-      /^\\/events\\/[^/]+\\/book(?:\\/|$)/.test(path);
+    const excluded = /^\/(?:book-now|booking|checkout|payment)(?:\/|$)/.test(path) ||
+      /^\/events\/[^/]+\/book(?:\/|$)/.test(path);
     return excluded ? [] : demoPromotions;
   }
   const raw = await apiFetchSafe<unknown>("/promotions/active", [], {
