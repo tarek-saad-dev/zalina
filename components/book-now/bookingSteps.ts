@@ -1,5 +1,5 @@
 import type { BookingProductType } from "@/lib/api";
-import type { BookingStepDefinition, BookingStepId } from "./types";
+import type { BookingStepDefinition, BookingStepId, TicketChoice } from "./types";
 
 /** Message path under `bookNow.steps.*` for each wizard step id. */
 export const STEP_MESSAGE_KEYS: Record<
@@ -83,20 +83,9 @@ export function getStepIndexById(
   return getActiveSteps(productType).findIndex((s) => s.id === stepId);
 }
 
-/** Structural product cards — copy comes from `bookNow.products.*`. */
-export const PRODUCT_OPTIONS: Array<{
-  id: BookingProductType;
-  /** Key under `bookNow.products` (`dayUse` | `bubbleStay`). */
-  messageKey: "dayUse" | "bubbleStay";
-  comingSoon?: boolean;
-}> = [
-  {
-    id: "bubble_stay",
-    messageKey: "bubbleStay",
-    comingSoon: true,
-  },
-  {
-    id: "day_use",
-    messageKey: "dayUse",
-  },
+/** Three guest-facing ticket options; internal V2 booking product types remain unchanged. */
+export const PRODUCT_OPTIONS: Array<{ id: TicketChoice; messageKey: "dayUse" | "observatory" | "bubbleStay"; comingSoon?: boolean }> = [
+  { id: "day_use", messageKey: "dayUse" },
+  { id: "observatory_experience", messageKey: "observatory" },
+  { id: "cabin_stay", messageKey: "bubbleStay", comingSoon: true },
 ];

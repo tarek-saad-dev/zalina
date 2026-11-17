@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
-const HERO_TAG_KEYS = ["dayUse", "bubbleStay"] as const;
+const HERO_TAG_KEYS = ["dayUse", "observatory", "bubbleStay"] as const;
 
 export function BookingHero() {
   const t = useTranslations("bookNow");

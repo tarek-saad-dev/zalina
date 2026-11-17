@@ -35,6 +35,7 @@ import type {
   BookingStepId,
   BubbleSelection,
   GuestDetailsState,
+  TicketChoice,
 } from "./types";
 
 export type { BookingCatalog };
@@ -105,6 +106,8 @@ export function useBookingState(
       return {
         ...prev,
         productType: type,
+        ticketChoice: type === "bubble_stay" ? "cabin_stay" : "day_use",
+        lanternAddOnId: null,
         currentStepIndex: 0,
         dayUse:
           type === "day_use" ? prev.dayUse : createEmptyDayUseState(),
@@ -117,6 +120,27 @@ export function useBookingState(
         submissionError: null,
       };
     });
+  }, []);
+
+  /** Ticket choice never changes the legacy backend product_type enum. */
+  const setTicketChoice = useCallback((choice: TicketChoice) => {
+    setState((prev) => {
+      if (prev.ticketChoice === choice) return prev;
+      return {
+        ...prev,
+        productType: choice === "cabin_stay" ? "bubble_stay" : "day_use",
+        ticketChoice: choice,
+        lanternAddOnId: null,
+        dayUse: createEmptyDayUseState(),
+        bubbleStay: createEmptyBubbleStayState(),
+        currentStepIndex: 0,
+        bookingStatus: "idle", bookingReference: null, submissionError: null,
+      };
+    });
+  }, []);
+
+  const setLanternAddOnId = useCallback((id: number | null) => {
+    setState((prev) => ({ ...prev, lanternAddOnId: id, submissionError: null }));
   }, []);
 
   const setVisitDate = useCallback((visitDate: string | null) => {
@@ -469,6 +493,8 @@ export function useBookingState(
     currentStepIndex: state.currentStepIndex,
     derived,
     setProductType,
+    setTicketChoice,
+    setLanternAddOnId,
     setVisitDate,
     setDayUseProductId,
     setDayUseGuests,

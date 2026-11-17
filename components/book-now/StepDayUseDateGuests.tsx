@@ -22,6 +22,7 @@ interface StepDayUseDateGuestsProps {
   onReloadSettings: () => void;
   onSetVisitDate: (date: string | null) => void;
   onSetDayUseGuests: (n: number) => void;
+  estimatedTotal?: number | null;
 }
 
 export function StepDayUseDateGuests({
@@ -32,6 +33,7 @@ export function StepDayUseDateGuests({
   onReloadSettings,
   onSetVisitDate,
   onSetDayUseGuests,
+  estimatedTotal,
 }: StepDayUseDateGuestsProps) {
   const t = useTranslations("bookNow");
   const locale = useBookingLocale();
@@ -126,7 +128,7 @@ export function StepDayUseDateGuests({
 
   const pricePerGuest = parseMoney(settings?.price_per_guest);
   const currency = settings?.currency;
-  const estimate =
+  const estimate = estimatedTotal !== undefined ? estimatedTotal :
     pricePerGuest != null ? pricePerGuest * state.dayUse.guests : null;
 
   return (

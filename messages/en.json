@@ -19,7 +19,6 @@
     "night": "night",
     "nights": "nights"
   },
-
   "nav": {
     "homeAria": "Zalina Arabian Village home",
     "logoAlt": "Zalina Arabian Village",
@@ -38,7 +37,6 @@
     },
     "cta": "Book Now"
   },
-
   "footer": {
     "brand": "Zalina Arabian Village",
     "tagline": "An immersive cultural village in Luxor",
@@ -77,7 +75,6 @@
     },
     "copyright": "© 2026 Zalina Arabian Village. All rights reserved."
   },
-
   "home": {
     "loader": {
       "location": "Luxor · Egypt",
@@ -195,7 +192,6 @@
       "ctaSecondary": "Explore Experiences"
     }
   },
-
   "about": {
     "hero": {
       "imageAlt": "Zalina Arabian Village",
@@ -293,7 +289,6 @@
       "secondary": "Book a Visit"
     }
   },
-
   "experiences": {
     "hero": {
       "ariaLabel": "Experiences hero",
@@ -446,7 +441,6 @@
       "secondary": "View Experiences"
     }
   },
-
   "zones": {
     "hero": {
       "ariaLabel": "Zones hero",
@@ -593,7 +587,6 @@
       "secondary": "View All Zones"
     }
   },
-
   "gallery": {
     "hero": {
       "ariaLabel": "Gallery hero",
@@ -617,7 +610,7 @@
       "all": "All",
       "experiences": "Experiences",
       "zones": "Zones",
-      "bubbles": "Bubble Stays"
+      "bubbles": "Cabin Stays"
     },
     "empty": {
       "title": "No moments in the gallery yet",
@@ -655,7 +648,6 @@
       "next": "Next image"
     }
   },
-
   "seo": {
     "home": {
       "title": "Zalina Arabian Village | Cultural Experiences in Luxor, Egypt",
@@ -692,7 +684,7 @@
     },
     "bookNow": {
       "title": "Book Now | Zalina Arabian Village",
-      "description": "Book Day Use or Bubble Stay at Zalina Arabian Village."
+      "description": "Book Day Use or Cabin Stay at Zalina Arabian Village."
     },
     "booking": {
       "title": "Booking Recovery | Zalina Arabian Village",
@@ -703,15 +695,15 @@
       "description": "View your Zalina reservation status and digital ticket."
     }
   },
-
   "bookNow": {
     "hero": {
       "eyebrow": "Zalina Arabian Village",
       "title": "Book Your Zalina Experience",
-      "subtitle": "Choose Day Use or Bubble Stay for your visit to Zalina Arabian Village in Luxor, then complete your booking details.",
+      "subtitle": "Choose Day Use, Observatory Experience or Cabin Stay to discover Zalina in Luxor. Select dates and guests to see live pricing.",
       "tags": {
         "dayUse": "Day Use",
-        "bubbleStay": "Bubble Stay"
+        "bubbleStay": "Cabin Stay",
+        "observatory": "Observatory Experience"
       }
     },
     "steps": {
@@ -748,8 +740,8 @@
     },
     "products": {
       "eyebrow": "Experience",
-      "title": "How would you like to arrive?",
-      "subtitle": "Choose an overnight Bubble Stay, or a Day Use visit to experience Zalina’s cultural village in Luxor.",
+      "title": "Choose your Zalina experience",
+      "subtitle": "From an unforgettable day to a night under the stars. Find the visit that feels right for you.",
       "comingSoon": "Coming Soon",
       "dayUse": {
         "title": "Day Use",
@@ -757,10 +749,23 @@
         "tag": "DAY VISIT"
       },
       "bubbleStay": {
-        "title": "Bubble Stay",
-        "description": "An overnight stay in Zalina’s private bubbles — choose your bubbles, allocate guests, and settle into a quiet Luxor night.",
+        "title": "Cabin Stay",
+        "description": "Our overnight cabin experience. Booking opens once availability and per-guest pricing are confirmed.",
         "tag": "OVERNIGHT"
-      }
+      },
+      "observatory": {
+        "title": "Observatory Experience",
+        "description": "Day Use access included, with a dedicated Observatory experience. Full inclusions are provided with the selected package.",
+        "tag": "SIGNATURE EXPERIENCE"
+      },
+      "collection": "The Zalina Collection",
+      "perGuestHint": "Pricing per guest",
+      "realTimeHint": "Availability checked before booking",
+      "from": "From",
+      "selectTicket": "Explore this experience",
+      "signature": "Signature",
+      "chooseTicketAria": "Explore {name}",
+      "availabilityNote": "More experiences are on their way. Available tickets can be reserved securely in the next steps."
     },
     "dayUseProduct": {
       "eyebrow": "Day Use",
@@ -770,7 +775,11 @@
       "loading": "Loading Day Use experiences…",
       "errorFallback": "Day Use experiences could not be loaded.",
       "tryAgain": "Try again",
-      "empty": "No Day Use experiences are available right now. Please check back soon."
+      "empty": "No Day Use experiences are available right now. Please check back soon.",
+      "observatoryEyebrow": "Observatory Experience",
+      "observatoryTitle": "Choose Observatory Experience",
+      "observatorySubtitle": "Every Observatory ticket includes Day Use. Select the live package and see its included features.",
+      "observatoryEmpty": "Observatory booking is being prepared. Check back when packages become available."
     },
     "dayUseDateGuests": {
       "eyebrow": "Day Use — Date & Guests",
@@ -885,7 +894,7 @@
       "title": "Booking summary",
       "experience": "Experience",
       "dayUse": "Day Use",
-      "bubbleStay": "Bubble Stay",
+      "bubbleStay": "Cabin Stay",
       "notSelected": "Not selected",
       "visit": "Visit",
       "guests": "Guests",
@@ -901,7 +910,8 @@
       "serverTotalNote": "Server total is final for this reservation.",
       "estimatedTotal": "Estimated total",
       "estimateNote": "Estimate only — server total after create is final.",
-      "emDash": "—"
+      "emDash": "—",
+      "observatory": "Observatory Experience"
     },
     "cta": {
       "continue": "Continue",
@@ -929,7 +939,7 @@
       "selectVisitDate": "Select visit date",
       "selectStayDates": "Select stay dates",
       "chooseExperience": "Choose an experience",
-      "dayUseOrBubbleStay": "Day Use or Bubble Stay",
+      "dayUseOrBubbleStay": "Choose a Zalina experience",
       "visitSummary": "{date} · {count} guests",
       "staySummary": "{nights} nights · {allocated}/{total} guests · {bubbles} bubbles",
       "staySummaryOneNight": "{nights} night · {allocated}/{total} guests · {bubbles} bubbles",
@@ -964,11 +974,21 @@
       "paymentNetwork": "Payment could not be started due to a network issue. Your reservation hold is unchanged — you can retry payment.",
       "paymentRetryNoNew": "Unable to start payment. You can retry without creating a new booking.",
       "productsLoadFailed": "Could not load Day Use products."
+    },
+    "lantern": {
+      "title": "Lantern Add-on",
+      "description": "Enhance your visit with the Lantern add-on.",
+      "perGuest": "per guest",
+      "comingSoon": "Booking add-on coming soon",
+      "select": "Add Lantern for all {count} guests",
+      "selected": "Lantern added for all {count} guests",
+      "includedForGuests": "For {count} guests",
+      "loading": "Checking availability…",
+      "note": "Final prices and availability are confirmed by Zalina at reservation."
     }
   },
-
   "validation": {
-    "missing_product": "Choose Day Use or Bubble Stay.",
+    "missing_product": "Choose Day Use or Cabin Stay.",
     "missing_day_use_product": "Choose a Day Use experience.",
     "invalid_visit_date": "Choose a visit date on or after {minDate}.",
     "invalid_check_in": "Check-in must be on or after {minDate}.",
@@ -990,7 +1010,6 @@
     "invalid_guest_email": "Enter a valid email address.",
     "invalid_guest_phone": "Phone is required."
   },
-
   "bookingStatus": {
     "confirming": "Confirming your reservation…",
     "preparingTicket": "Your reservation is confirmed. Preparing your digital ticket…",

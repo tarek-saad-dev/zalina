@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { dayUseProductToSettings } from "@/lib/api";
 import { useBookingState, type BookingCatalog } from "./useBookingState";
-import { BookingHero } from "./BookingHero";
 import { BookingProgress } from "./BookingProgress";
 import { BookingSummary } from "./BookingSummary";
 import { MobileBookingBar } from "./MobileBookingBar";
@@ -15,6 +14,8 @@ import { useAvailabilityCache } from "./useAvailabilityCache";
 import { useBookingCheckout } from "./useBookingCheckout";
 import { parseMoney } from "./bookingMedia";
 import { isBusyCheckoutPhase } from "./checkoutTypes";
+import { useTicketAddOns } from "./useTicketAddOns";
+import { productsForTicketChoice } from "./ticketProducts";
 
 interface BookNowPageProps {
   catalog: BookingCatalog;
@@ -27,6 +28,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     enabled: true,
     locale,
   });
+  const ticketAddOnQuery = useTicketAddOns(locale);
 
   const {
     state,
@@ -38,7 +40,8 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     prevStep,
     goToStep,
     jumpToStepId,
-    setProductType,
+    setTicketChoice,
+    setLanternAddOnId,
     setVisitDate,
     setDayUseProductId,
     setDayUseGuests,
@@ -57,17 +60,42 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     dayUseProductsStatus: dayUseQuery.status,
   });
 
+  const eligibleDayUseProducts = useMemo(
+    () => productsForTicketChoice(dayUseQuery.products, state.ticketChoice),
+    [dayUseQuery.products, state.ticketChoice]
+  );
+
   const selectedDayUseProduct = useMemo(() => {
     if (state.dayUse.productId == null) return null;
     return (
-      dayUseQuery.products.find((p) => p.id === state.dayUse.productId) ?? null
+      eligibleDayUseProducts.find((p) => p.id === state.dayUse.productId) ?? null
     );
-  }, [dayUseQuery.products, state.dayUse.productId]);
+  }, [eligibleDayUseProducts, state.dayUse.productId]);
 
   const dayUseSettings = selectedDayUseProduct
     ? dayUseProductToSettings(selectedDayUseProduct)
     : null;
   const dayUsePrice = parseMoney(selectedDayUseProduct?.price_per_guest);
+  const currentTicket = state.ticketChoice === "observatory_experience" ? "observatory_experience" :
+    state.ticketChoice === "cabin_stay" ? "cabin_stay" : "day_use";
+  const lanternOption = ticketAddOnQuery.items.find((item) =>
+    item.supported_tickets.includes(currentTicket) &&
+    item.currency === selectedDayUseProduct?.currency
+  ) ?? null;
+  const lanternSelected = Boolean(lanternOption && state.lanternAddOnId === lanternOption.id);
+  const lanternPrice = lanternSelected ? parseMoney(lanternOption?.price_per_guest) ?? 0 : 0;
+  const productSelectionValid = state.productType !== "day_use" ||
+    state.dayUse.productId == null || selectedDayUseProduct != null;
+
+  // Never submit an add-on that has disappeared, changed currency, or is not checkout-ready.
+  useEffect(() => {
+    if (state.lanternAddOnId != null && ticketAddOnQuery.status !== "loading" && !lanternSelected) {
+      setLanternAddOnId(null);
+    }
+  }, [state.lanternAddOnId, ticketAddOnQuery.status, lanternSelected, setLanternAddOnId]);
+
+  const estimatedWithAddOn = derived.estimatedTotal == null ? null :
+    derived.estimatedTotal + (state.productType === "day_use" ? lanternPrice * state.dayUse.guests : 0);
 
   const {
     getEntry,
@@ -117,7 +145,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   } = useBookingCheckout({
     state,
     accommodationTypes,
-    dayUsePricePerGuest: dayUsePrice,
+    dayUsePricePerGuest: dayUsePrice == null ? null : dayUsePrice + lanternPrice,
     locale,
     onBubbleConflict: handleBubbleConflict,
   });
@@ -155,9 +183,26 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
     [getEntry, state.bubbleStay]
   );
 
+  const scrollToBookingTop = () => {
+    if (typeof window === "undefined") return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  };
+
+  // Ticket cards are the action; don't require a second Continue click.
+  const handleChooseTicket = (choice: Parameters<typeof setTicketChoice>[0]) => {
+    if (hasActiveHold || isBusy) return;
+    setTicketChoice(choice);
+    nextStep();
+    scrollToBookingTop();
+  };
+
   const handleNext = () => {
-    if (hasActiveHold) return;
-    if (proceed) nextStep();
+    if (hasActiveHold || !productSelectionValid) return;
+    if (proceed) {
+      nextStep();
+      scrollToBookingTop();
+    }
   };
 
   const handleBack = () => {
@@ -167,6 +212,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
       return;
     }
     prevStep();
+    scrollToBookingTop();
   };
 
   const handleReturnToBubbles = () => {
@@ -176,6 +222,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   };
 
   const handleCheckoutCta = () => {
+    if (!productSelectionValid || (state.lanternAddOnId != null && !lanternSelected)) return;
     if (checkout.booking && checkout.phase === "error") {
       void retryPayment();
       return;
@@ -199,21 +246,31 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
   const lastStepCanProceed =
     isLastStep &&
     canSubmit &&
+    productSelectionValid &&
+    (state.lanternAddOnId == null || lanternSelected) &&
     checkout.phase !== "expired" &&
     checkout.phase !== "already_paid";
 
   return (
-    <main style={{ minHeight: "100vh" }} className="page-atmosphere">
-      <BookingHero />
-
-      <BookingProgress
-        steps={activeSteps}
-        currentStepIndex={state.currentStepIndex}
-        onStepClick={(index) => {
-          if (hasActiveHold || isBusy) return;
-          goToStep(index);
-        }}
-      />
+    <main
+      style={{
+        minHeight: "100vh",
+        // This page no longer has a tall hero, so reserve space for the fixed navbar.
+        paddingTop: "calc(var(--zalina-nav-height, 80px) + env(safe-area-inset-top, 0px))",
+      }}
+      className="page-atmosphere"
+    >
+      {currentStep.id !== "product" && (
+        <BookingProgress
+          steps={activeSteps}
+          currentStepIndex={state.currentStepIndex}
+          onStepClick={(index) => {
+            if (hasActiveHold || isBusy) return;
+            goToStep(index);
+            scrollToBookingTop();
+          }}
+        />
+      )}
 
       <section
         style={{
@@ -225,18 +282,18 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         <div
           className="mx-auto"
           style={{
-            maxWidth: "1280px",
-            padding: "48px 24px 0",
+            maxWidth: currentStep.id === "product" ? "1360px" : "1280px",
+            padding: currentStep.id === "product" ? "clamp(32px, 5vw, 72px) clamp(18px, 3.5vw, 36px) 0" : "48px 24px 0",
           }}
         >
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
             <div className="flex-1 min-w-0">
               <div
                 style={{
-                  background: "rgba(255,255,255,0.022)",
-                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: currentStep.id === "product" ? "transparent" : "rgba(255,255,255,0.022)",
+                  border: currentStep.id === "product" ? "none" : "1px solid rgba(255,255,255,0.06)",
                   borderRadius: "18px",
-                  padding: "clamp(24px, 4vw, 40px)",
+                  padding: currentStep.id === "product" ? 0 : "clamp(24px, 4vw, 40px)",
                 }}
               >
                 {hasActiveHold && currentStep.id !== "review" && (
@@ -260,8 +317,12 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   locale={locale}
                   allocatedGuests={derived.allocatedGuests}
                   remainingGuests={derived.remainingGuests}
-                  estimatedTotal={derived.estimatedTotal}
-                  dayUseProducts={dayUseQuery.products}
+                  estimatedTotal={estimatedWithAddOn}
+                  dayUseProducts={eligibleDayUseProducts}
+                  allDayUseProducts={dayUseQuery.products}
+                  lanternOption={lanternOption}
+                  lanternStatus={ticketAddOnQuery.status}
+                  onToggleLantern={() => setLanternAddOnId(lanternSelected ? null : lanternOption?.id ?? null)}
                   dayUseSettings={dayUseSettings}
                   dayUseSettingsStatus={dayUseQuery.status}
                   dayUseSettingsError={dayUseQuery.error}
@@ -271,8 +332,8 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   fetchAvailability={(input) => fetchAvailability(input)}
                   onNext={handleNext}
                   onBack={handleBack}
-                  canProceed={proceed && !isBusy && !hasActiveHold}
-                  onSetProductType={setProductType}
+                  canProceed={proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold}
+                  onSetTicketChoice={handleChooseTicket}
                   onSetVisitDate={setVisitDate}
                   onSetDayUseGuests={setDayUseGuests}
                   onSetBubbleStayDates={setBubbleStayDates}
@@ -283,7 +344,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                   onClearBubbleSelections={clearBubbleSelections}
                   onSetGuestDetails={setGuestDetails}
                   checkout={checkout}
-                  onReserveAndPay={() => void reserveAndPay()}
+                  onReserveAndPay={handleCheckoutCta}
                   onRetryPayment={() => void retryPayment()}
                   onStartNewReservation={startNewReservation}
                   onReturnToBubbles={handleReturnToBubbles}
@@ -291,7 +352,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
               </div>
             </div>
 
-            <div
+            {currentStep.id !== "product" && <div
               className="hidden lg:block"
               style={{
                 width: "340px",
@@ -305,7 +366,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                 state={state}
                 accommodationTypes={accommodationTypes}
                 locale={locale}
-                estimatedTotal={derived.estimatedTotal}
+                estimatedTotal={estimatedWithAddOn}
                 allocatedGuests={derived.allocatedGuests}
                 remainingGuests={derived.remainingGuests}
                 dayUseSettings={dayUseSettings}
@@ -317,18 +378,18 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
                 canProceed={
                   isLastStep
                     ? lastStepCanProceed
-                    : proceed && !isBusy && !hasActiveHold
+                    : proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold
                 }
                 ctaLabel={summaryCTALabel}
               />
-            </div>
+            </div>}
           </div>
         </div>
       </section>
 
-      <MobileBookingBar
+      {currentStep.id !== "product" && <MobileBookingBar
         state={state}
-        estimatedTotal={derived.estimatedTotal}
+        estimatedTotal={estimatedWithAddOn}
         allocatedGuests={derived.allocatedGuests}
         dayUseCurrency={dayUseSettings?.currency}
         checkout={checkout}
@@ -336,7 +397,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
         canProceed={
           isLastStep
             ? lastStepCanProceed
-            : proceed && !isBusy && !hasActiveHold
+            : proceed && productSelectionValid && (state.lanternAddOnId == null || lanternSelected) && !isBusy && !hasActiveHold
         }
         ctaLabel={
           isLastStep
@@ -345,7 +406,7 @@ export function BookNowPage({ catalog }: BookNowPageProps) {
               : t("cta.reserve")
             : t("cta.continue")
         }
-      />
+      />}
     </main>
   );
 }

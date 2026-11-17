@@ -44,7 +44,7 @@ export function StepDayUseProduct({
   if (status === "loading" || status === "idle") {
     return (
       <div aria-busy="true" aria-live="polite">
-        <StepHeading t={t} />
+        <StepHeading t={t} observatory={state.ticketChoice === "observatory_experience"} />
         <div style={panelStyle}>{t("dayUseProduct.loading")}</div>
       </div>
     );
@@ -53,7 +53,7 @@ export function StepDayUseProduct({
   if (status === "error") {
     return (
       <div>
-        <StepHeading t={t} />
+        <StepHeading t={t} observatory={state.ticketChoice === "observatory_experience"} />
         <div
           role="alert"
           style={{
@@ -77,9 +77,9 @@ export function StepDayUseProduct({
   if (products.length === 0) {
     return (
       <div>
-        <StepHeading t={t} />
+        <StepHeading t={t} observatory={state.ticketChoice === "observatory_experience"} />
         <div role="status" style={panelStyle}>
-          {t("dayUseProduct.empty")}
+          {state.ticketChoice === "observatory_experience" ? t("dayUseProduct.observatoryEmpty") : t("dayUseProduct.empty")}
         </div>
       </div>
     );
@@ -87,7 +87,7 @@ export function StepDayUseProduct({
 
   return (
     <div>
-      <StepHeading t={t} />
+      <StepHeading t={t} observatory={state.ticketChoice === "observatory_experience"} />
       <p
         style={{
           fontFamily: "var(--font-body)",
@@ -98,7 +98,7 @@ export function StepDayUseProduct({
           lineHeight: 1.7,
         }}
       >
-        {t("dayUseProduct.subtitle")}
+        {t(state.ticketChoice === "observatory_experience" ? "dayUseProduct.observatorySubtitle" : "dayUseProduct.subtitle")}
       </p>
 
       <div className="grid gap-4">
@@ -172,6 +172,13 @@ export function StepDayUseProduct({
                 >
                   {t("dayUseProduct.perGuest")}
                 </p>
+                {product.included_features && product.included_features.length > 0 && (
+                  <ul className="mt-3 space-y-1" style={{color:TEXT_MUTED,fontSize:"12px",lineHeight:1.55}}>
+                    {product.included_features.map((feature,index) => (
+                      <li key={index}>✓ {locale === "ar" ? feature.name_ar : feature.name_en}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <span
                 aria-hidden
@@ -203,8 +210,10 @@ export function StepDayUseProduct({
 
 function StepHeading({
   t,
+  observatory,
 }: {
   t: ReturnType<typeof useTranslations<"bookNow">>;
+  observatory: boolean;
 }) {
   return (
     <>
@@ -219,7 +228,7 @@ function StepHeading({
           marginBottom: "10px",
         }}
       >
-        {t("dayUseProduct.eyebrow")}
+        {t(observatory ? "dayUseProduct.observatoryEyebrow" : "dayUseProduct.eyebrow")}
       </p>
       <h2
         style={{
@@ -230,7 +239,7 @@ function StepHeading({
           marginBottom: "12px",
         }}
       >
-        {t("dayUseProduct.title")}
+        {t(observatory ? "dayUseProduct.observatoryTitle" : "dayUseProduct.title")}
       </h2>
     </>
   );

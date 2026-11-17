@@ -17,6 +17,8 @@ export {
 export { clearMediaRequestCache, UnsupportedMediaOwnerError } from "./media";
 
 export { getDayUseProducts, getDayUseSettings } from "./day-use";
+export { getBookableTicketAddOns } from "./ticket-add-ons";
+export type { BookableTicketAddOn } from "./ticket-add-ons";
 
 export {
   listAccommodationTypes,

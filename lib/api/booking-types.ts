@@ -76,6 +76,8 @@ export interface DayUseProduct {
   price_per_guest: string;
   currency: string;
   is_active: boolean;
+  ticket_category?: "day_use" | "observatory_experience";
+  included_features?: Array<{ name_en: string; name_ar: string }>;
 }
 
 /** @deprecated Prefer DayUseProduct — kept for estimate/currency display helpers. */
@@ -150,6 +152,7 @@ export interface CreateDayUseBookingPayload {
   guest_name: string;
   guest_email: string;
   guest_phone: string;
+  ticket_add_ons?: Array<{ id: number; quantity: number }>;
 }
 
 export interface BubbleStayManualBubbleLine {

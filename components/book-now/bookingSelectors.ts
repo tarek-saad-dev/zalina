@@ -96,6 +96,7 @@ export function getDayUseBookingInput(
     guest_name: state.guest.name.trim(),
     guest_email: state.guest.email.trim(),
     guest_phone: state.guest.phone.replace(/\s+/g, " ").trim(),
+    ...(state.lanternAddOnId != null ? { ticket_add_ons: [{ id: state.lanternAddOnId, quantity: state.dayUse.guests }] } : {}),
   });
 }
 
