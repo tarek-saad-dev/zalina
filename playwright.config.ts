@@ -29,6 +29,7 @@ export default defineConfig({
       ...process.env,
       NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.zalinaarabianvillage.com",
       ZALINA_EVENTS_DEMO: "true",
+      NEXT_PUBLIC_ZALINA_PROMOTIONS_DEMO: "true",
     },
   },
 });
