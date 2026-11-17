@@ -98,7 +98,7 @@ The ON toggle must NOT bypass draft approval. Publish with enabled=false should 
 - **Save draft** (valid partial content), **Validate/Ready**, **Preview** (access-controlled, both locales and both placements), **Schedule**, **Publish**, **Pause/Off**, **Resume/On**, **Duplicate to disabled draft**, **Archive**.
 - Bulk scheduling for Christmas/New Year's/other occasions prepared months ahead; calendar shows overlaps and conflicting priorities.
 - Show exact next transition time in Africa/Cairo and current server effective status.
-- High-priority overlapping campaigns: select only **one active record per placement**. A Campaign may own both simultaneously. On dismiss, next eligible campaign may appear; CMS preview should make this clear.
+- High-priority overlapping campaigns: select only **one active record per placement**. A Campaign may own both simultaneously. On dismiss, next eligible campaign may appear; CMS preview should make this clear. **Frontend suppression overrides placement:** floating cards wait until scroll and do not render on individual event detail pages or any checkout/payment route, even if the public API returns them.
 - Admin preview must never leak unpublished assets or pricing through public API, and must set noindex/no-cache.
 - Maintain audit records for every mutation, including before/after and admin ID. Require a reason for cancellation or reduction of sellable capacity.
 - Prevent deleting an event/package with paid or pending bookings; archive instead.
