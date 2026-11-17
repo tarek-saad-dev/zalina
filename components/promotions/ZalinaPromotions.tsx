@@ -241,7 +241,11 @@ export function ZalinaPromotions() {
         // Private browsing / denied storage: current visit still honors dismissal.
       }
     }
-    setDismissed((current) => new Set([...current, campaign.id]));
+    setDismissed((current) => {
+      const next = new Set(current);
+      next.add(campaign.id);
+      return next;
+    });
   };
 
   return (
