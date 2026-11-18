@@ -127,7 +127,13 @@
       "feature": "THE FEATURED MOMENT",
       "discover": "Discover this experience",
       "exploreAll": "Explore all experiences",
-      "cardAria": "Explore {title}"
+      "cardAria": "Explore {title}",
+      "carouselAria": "Vertical 3D gallery of curated Zalina experiences",
+      "navigationAria": "Browse experiences vertically",
+      "previousAria": "Previous experience",
+      "nextAria": "Next experience",
+      "navigateHint": "Browse moments",
+      "pickMomentAria": "Show {title}"
     },
     "dayNight": {
       "day": {

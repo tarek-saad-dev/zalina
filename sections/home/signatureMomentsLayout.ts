@@ -20,3 +20,11 @@ export function selectSignatureMomentCards(
 
   return valid.length ? valid : [fallback];
 }
+
+/** Signed shortest distance around a cyclic, vertically stacked card deck. */
+export function signedCarouselDistance(index: number, activeIndex: number, total: number): number {
+  if (total <= 1) return 0;
+  const forward = (index - activeIndex + total) % total;
+  const backward = forward - total;
+  return forward <= total / 2 ? forward : backward;
+}

@@ -127,7 +127,13 @@
       "feature": "تجربة تستحق الاكتشاف",
       "discover": "اكتشف التجربة",
       "exploreAll": "استكشف كل التجارب",
-      "cardAria": "استكشف {title}"
+      "cardAria": "استكشف {title}",
+      "carouselAria": "معرض ثلاثي الأبعاد للتجارب المختارة في زالينا",
+      "navigationAria": "التنقل بين التجارب رأسيًا",
+      "previousAria": "التجربة السابقة",
+      "nextAria": "التجربة التالية",
+      "navigateHint": "تصفح التجارب",
+      "pickMomentAria": "عرض {title}"
     },
     "dayNight": {
       "day": {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { selectSignatureMomentCards } from "../signatureMomentsLayout";
+import { selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
 
 const fallback: CatalogMediaCard = {
   id: "fallback", title: "Zalina", image: "/assets/day.webp", alt: "Zalina"
@@ -39,5 +39,21 @@ describe("Signature Moments editorial layout data", () => {
       id: "one", title: "One", image: "/image.webp", alt: "One",
     };
     expect(selectSignatureMomentCards([one], fallback)).toEqual([one]);
+  });
+});
+
+describe("vertical 3D carousel navigation", () => {
+  it("wraps safely in both directions", () => {
+    expect(signedCarouselDistance(3, 0, 4)).toBe(-1);
+    expect(signedCarouselDistance(0, 3, 4)).toBe(1);
+    expect(signedCarouselDistance(1, 0, 4)).toBe(1);
+    expect(signedCarouselDistance(0, 0, 4)).toBe(0);
+  });
+  it("works for one and two CMS cards", () => {
+    expect(signedCarouselDistance(0, 0, 1)).toBe(0);
+    expect(signedCarouselDistance(1, 0, 2)).toBe(1);
+  });
+  it("places the farthest item behind the active card", () => {
+    expect(signedCarouselDistance(2, 0, 4)).toBe(2);
   });
 });
