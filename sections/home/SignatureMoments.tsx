@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent, type TouchEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { canAutoAdvanceMoments, getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
+import { canAutoAdvanceMoments, getMomentDeckPose, highlightMomentCopy, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -46,8 +46,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const bodyFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
-  const PrevIcon = isArabic ? ChevronRight : ChevronLeft;
-  const NextIcon = isArabic ? ChevronLeft : ChevronRight;
   const DirectionArrow = isArabic ? ArrowLeft : ArrowRight;
 
   const items = selectSignatureMomentCards(moments, {
@@ -65,6 +63,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const visibleDetail = canExpand && !expanded
     ? detail.slice(0, PREVIEW_CHARS).trimEnd() + "…"
     : detail;
+  const detailSegments = highlightMomentCopy(visibleDetail, isArabic ? "ar" : "en");
 
   useEffect(() => {
     setActiveIndex((index) => index < count ? index : 0);
@@ -172,7 +171,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
         </header>
 
         <div
-          className="signature-moments-stage relative z-0 mt-7 w-full sm:mt-8"
+          className="signature-moments-stage relative z-0 mt-7 w-full cursor-grab select-none sm:mt-8 active:cursor-grabbing"
           style={{ perspective: "1250px", transformStyle: "preserve-3d" }}
           role="region"
           aria-roledescription="carousel"
@@ -255,11 +254,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 <div className="pointer-events-none absolute inset-0" style={{
                   background: "linear-gradient(110deg,rgba(249,186,91,0.25),rgba(236,173,67,0.04) 34%,transparent 56%,rgba(4,3,3,0.48)),linear-gradient(to top,rgba(6,5,4,0.8),transparent 42%)",
                 }}/>
-                <div className="absolute start-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold tracking-[0.1em]" style={{
-                  background: "rgba(8,7,6,0.67)", color: CREAM, borderColor: "rgba(244,222,178,0.4)",
-                }}>
-                  {String(index + 1).padStart(2, "0")}
-                </div>
                 <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-7" style={{ background: "linear-gradient(to top,rgba(5,4,3,0.73),transparent)" }}>
                   <span className="block text-[12px] leading-[1.5] sm:text-sm" style={{ color: CREAM, fontFamily: titleFont, overflowWrap: "anywhere" }}>
                     {item.title}
@@ -270,81 +264,68 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
           })}
         </div>
 
-        <div className="mx-auto mt-1 flex w-full max-w-[1100px] flex-col items-center gap-2 lg:mt-0">
-          <div className="flex w-full items-start justify-between gap-3 sm:items-center">
-            <div className="min-w-0" dir={isArabic ? "rtl" : "ltr"}>
-              <p className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.15em]" style={{ color: GOLD, fontFamily: bodyFont }}>
-                <Sparkles size={14} aria-hidden="true" />{t("feature")}
-                <span className="ms-2 tabular-nums" style={{ color: "rgba(249,240,223,0.45)" }}>
-                  {String(currentIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                </span>
-              </p>
-              <div aria-live={userInteracted ? "polite" : "off"} aria-atomic="true">
-                <motion.div
-                  key={active.id}
-                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.25 }}
+        <div className="relative mx-auto mt-2 flex w-full max-w-[860px] flex-col items-center text-center sm:mt-3" dir={isArabic ? "rtl" : "ltr"}>
+          <div className="w-full" aria-live={userInteracted ? "polite" : "off"} aria-atomic="true">
+            <motion.div
+              key={active.id}
+              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.3 }}
+            >
+              <h3 className="sr-only">{active.title}</h3>
+              {detail && (
+                <p
+                  className="mx-auto max-w-[780px] text-[13px] leading-[1.95] sm:text-[14px] md:text-[15px]"
+                  style={{
+                    color: "rgba(249,240,223,0.75)",
+                    fontFamily: bodyFont,
+                    overflowWrap: "anywhere",
+                  }}
                 >
-                <h3 className="mt-1 text-[clamp(1.2rem,2.1vw,1.85rem)] leading-[1.3]" style={{
-                  color: CREAM, fontFamily: titleFont, fontWeight: isArabic ? 600 : 400, overflowWrap: "anywhere",
-                }}>{active.title}</h3>
-                {detail && <p className="mt-1 max-w-[680px] text-[12px] leading-[1.75] sm:text-[13px]" style={{
-                  color: "rgba(249,240,223,0.69)", fontFamily: bodyFont, overflowWrap: "anywhere",
-                }}>{visibleDetail}</p>}
-                {canExpand && <button type="button" onClick={() => { stopAutoAdvance(); setExpanded((value) => !value); }} className="mt-1 text-[12px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{ color: "#E6C786", fontFamily: bodyFont }}>
+                  {detailSegments.map((segment, index) => segment.highlight ? (
+                    <span key={index} className="font-semibold" style={{ color: "#E8C682" }}>
+                      {segment.text}
+                    </span>
+                  ) : (
+                    <span key={index}>{segment.text}</span>
+                  ))}
+                </p>
+              )}
+              {canExpand && (
+                <button
+                  type="button"
+                  onClick={() => { stopAutoAdvance(); setExpanded((value) => !value); }}
+                  className="mt-1 inline-flex min-h-8 items-center text-[12px] underline decoration-[#D5AC62]/50 underline-offset-[5px] transition-colors hover:text-[#F2D99B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
+                  style={{ color: "#D5AC62", fontFamily: bodyFont }}
+                >
                   {expanded ? t("readLess") : t("readMore")}
-                </button>}
-                </motion.div>
-              </div>
-            </div>
-            {count > 1 && (
-              <div className="hidden shrink-0 gap-2 sm:flex" role="group" aria-label={t("navigationAria")}>
-                <button type="button" aria-label={t("previousAria")} onClick={() => navigate(-1)}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-[#D5AC62] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
-                  <PrevIcon size={20} aria-hidden="true" />
                 </button>
-                <button type="button" aria-label={t("nextAria")} onClick={() => navigate(1)}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-[#D5AC62] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
-                  <NextIcon size={20} aria-hidden="true" />
-                </button>
-              </div>
-            )}
+              )}
+            </motion.div>
           </div>
 
-          <div className="mt-1 flex w-full flex-wrap items-center justify-between gap-2 border-t pt-3" style={{ borderColor: "rgba(213,172,98,0.2)" }}>
-            <div className="flex min-w-0 items-center gap-3">
-              <Link href={active.href || "/experiences"} aria-label={t("cardAria",{title:active.title})}
-                className="inline-flex min-h-[40px] items-center gap-2 rounded-full border px-4 text-[12px] font-semibold transition-colors hover:bg-[#D5AC62]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{
-                borderColor: "rgba(213,172,98,0.5)", color: "#F2DBA8", fontFamily: bodyFont,
-              }}>{t("discover")} <DirectionArrow size={14} aria-hidden="true"/></Link>
-              <Link href="/experiences" className="hidden text-[12px] hover:text-[#F3D69B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C] md:inline" style={{
-                color: "rgba(247,226,186,0.65)", fontFamily: bodyFont,
-              }}>{t("exploreAll")}</Link>
-            </div>
-            {count > 1 && (
-              <div className="flex items-center gap-1" role="group" aria-label={t("pickMomentAria")}>
-                <button type="button" onClick={() => navigate(-1)} aria-label={t("previousAria")}
-                  className="flex h-10 w-9 items-center justify-center rounded-full text-white sm:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
-                  <PrevIcon size={18} aria-hidden="true"/>
-                </button>
-                {items.map((item,index) => (
-                  <button key={item.id} type="button" onClick={() => select(index)}
-                    aria-label={t("showMomentAria",{title:item.title})}
-                    aria-pressed={index === currentIndex}
-                    className="flex h-10 w-7 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
-                    <span className="block h-[5px] rounded-full transition-all" style={{
-                      width: index === currentIndex ? 20 : 6,
-                      background: index === currentIndex ? GOLD : "rgba(249,240,223,0.3)",
-                    }}/>
-                  </button>
-                ))}
-                <button type="button" onClick={() => navigate(1)} aria-label={t("nextAria")}
-                  className="flex h-10 w-9 items-center justify-center rounded-full text-white sm:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
-                  <NextIcon size={18} aria-hidden="true"/>
-                </button>
-              </div>
-            )}
+          <div className="mt-4 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mt-5">
+            <Link
+              href={active.href || "/experiences"}
+              aria-label={t("cardAria", { title: active.title })}
+              className="group inline-flex min-h-[44px] items-center justify-center gap-3 rounded-full px-6 text-[12px] font-semibold shadow-[0_10px_28px_rgba(169,115,43,0.16)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(169,115,43,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
+              style={{
+                color: "#20160A",
+                background: "linear-gradient(120deg,#F1D59D 0%,#C9A05A 100%)",
+                fontFamily: bodyFont,
+              }}
+            >
+              {t("discover")}
+              <DirectionArrow size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
+            </Link>
+            <Link
+              href="/experiences"
+              className="inline-flex min-h-[40px] items-center gap-2 text-[12px] font-medium transition-colors hover:text-[#F1D59D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
+              style={{ color: "rgba(246,229,194,0.66)", fontFamily: bodyFont }}
+            >
+              {t("exploreAll")}
+              <DirectionArrow size={13} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </div>

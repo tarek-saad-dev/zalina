@@ -76,3 +76,34 @@ export function canAutoAdvanceMoments({
 }): boolean {
   return count > 1 && isInView && !userInteracted && !isHovered && !hasFocusWithin && !reducedMotion;
 }
+
+/** Keep CMS descriptions intact; accent at most two meaningful phrases per slide. */
+export function highlightMomentCopy(
+  text: string,
+  locale: "ar" | "en"
+): Array<{ text: string; highlight: boolean }> {
+  if (!text) return [];
+  const keywords = locale === "ar"
+    ? ["الأجواء التراثية", "النكهات التقليدية", "القرية العربية", "الخيام", "الأجواء", "السوق", "التراثية", "الضيافة", "النكهات", "التسوق", "الصور", "العشاء", "المصري", "العربي", "الطهي", "الليل", "النجوم", "النيل"]
+    : ["traditional atmosphere", "arabian village", "traditional flavors", "authentic", "heritage", "market", "village", "tents", "flavours", "flavors", "hospitality", "shopping", "cuisine", "dinner", "sunset", "lanterns", "stars"];
+  const found: Array<{ start: number; end: number }> = [];
+  const lower = text.toLocaleLowerCase(locale);
+  for (const keyword of keywords) {
+    const start = lower.indexOf(keyword.toLocaleLowerCase(locale));
+    if (start < 0) continue;
+    const end = start + keyword.length;
+    if (found.some((entry) => start < entry.end && end > entry.start)) continue;
+    found.push({ start, end });
+    if (found.length >= 2) break;
+  }
+  found.sort((a,b) => a.start-b.start);
+  const segments: Array<{ text: string; highlight: boolean }> = [];
+  let cursor = 0;
+  for (const entry of found) {
+    if (entry.start > cursor) segments.push({ text: text.slice(cursor, entry.start), highlight: false });
+    segments.push({ text: text.slice(entry.start, entry.end), highlight: true });
+    cursor = entry.end;
+  }
+  if (cursor < text.length) segments.push({ text: text.slice(cursor), highlight: false });
+  return segments.length ? segments : [{ text, highlight: false }];
+}

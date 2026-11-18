@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { canAutoAdvanceMoments, getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
+import { canAutoAdvanceMoments, getMomentDeckPose, highlightMomentCopy, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
 
 const fallback: CatalogMediaCard = {
   id: "fallback", title: "Zalina", image: "/assets/day.webp", alt: "Zalina"
@@ -101,5 +101,22 @@ describe("autoplay eligibility and manual takeover", () => {
     expect(canAutoAdvanceMoments({ ...enabled, isInView: false })).toBe(false);
     expect(canAutoAdvanceMoments({ ...enabled, reducedMotion: true })).toBe(false);
     expect(canAutoAdvanceMoments({ ...enabled, count: 1 })).toBe(false);
+  });
+});
+
+describe("restrained editorial description highlighting", () => {
+  it("accents meaningful Arabic phrases without modifying the CMS text", () => {
+    const input = "استكشف القرية العربية وسوقها، واكتشف الخيام والأجواء التراثية والتسوق.";
+    const segments = highlightMomentCopy(input, "ar");
+    expect(segments.map(s => s.text).join("")).toEqual(input);
+    expect(segments.filter(s=>s.highlight)).toHaveLength(2);
+  });
+  it("works for English, unknown copy and empty CMS descriptions", () => {
+    const input="Experience traditional atmosphere and discover the market.";
+    const segments=highlightMomentCopy(input,"en");
+    expect(segments.map(s=>s.text).join("")).toBe(input);
+    expect(segments.filter(s=>s.highlight)).toHaveLength(2);
+    expect(highlightMomentCopy("Simple quiet moment","en")).toEqual([{text:"Simple quiet moment",highlight:false}]);
+    expect(highlightMomentCopy("","ar")).toEqual([]);
   });
 });
