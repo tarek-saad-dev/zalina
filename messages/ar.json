@@ -135,7 +135,8 @@
       "navigateHint": "تصفح التجارب",
       "pickMomentAria": "اختيار تجربة",
       "readMore": "اقرأ الوصف كاملًا",
-      "readLess": "عرض أقل"
+      "readLess": "عرض أقل",
+      "showMomentAria": "عرض {title}"
     },
     "dayNight": {
       "day": {

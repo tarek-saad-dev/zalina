@@ -135,7 +135,8 @@
       "navigateHint": "Browse moments",
       "pickMomentAria": "Choose a moment",
       "readMore": "Read full description",
-      "readLess": "Show less"
+      "readLess": "Show less",
+      "showMomentAria": "Show {title}"
     },
     "dayNight": {
       "day": {
