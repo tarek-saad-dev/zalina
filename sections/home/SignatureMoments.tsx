@@ -252,7 +252,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   src={item.image}
                   alt={item.alt || item.title}
                   fill
-                  sizes="(max-width: 639px) 56vw, (max-width: 1023px) 280px, 320px"
+                  sizes="(max-width: 767px) 56vw, (max-width: 1199px) 340px, 400px"
                   className="object-cover"
                   fadeIn={false}
                   draggable={false}
