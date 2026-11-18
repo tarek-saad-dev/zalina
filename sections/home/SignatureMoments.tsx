@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "luci
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { getMomentDeckPose, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
+import { getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -142,7 +142,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             const selected = offset === 0;
             const transform = [
               "translate(-50%, -50%)",
-              "translate3d(calc(var(--moment-stride) * " + visualOffset + "), 0px, " + (reduceMotion ? 0 : pose.depth) + "px)",
+              "translate3d(" + momentDeckXShift(visualOffset) + ", 0px, " + (reduceMotion ? 0 : pose.depth) + "px)",
               "rotateY(" + (reduceMotion ? 0 : pose.rotateY) + "deg)",
               "scale(" + (reduceMotion ? (selected ? 1 : 0.8) : pose.scale) + ")",
             ].join(" ");

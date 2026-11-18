@@ -52,3 +52,13 @@ export function getMomentDeckPose(visualOffset: number): MomentDeckPose {
   };
   return { depth: -410, rotateY: 0, scale: 0.6, opacity: 0, zIndex: 0, visible: false };
 }
+
+/** CSS arithmetic compatible with browsers that do not support calc() multiplication. */
+export function momentDeckXShift(offset: number): string {
+  if (offset === 0) return "0px";
+  const magnitude = Math.min(2, Math.abs(offset));
+  const segments = Array.from({length:magnitude}, () => "var(--moment-stride)");
+  return offset > 0
+    ? magnitude === 1 ? segments[0] : "calc(" + segments.join(" + ") + ")"
+    : "calc(0px - " + segments.join(" - ") + ")";
+}

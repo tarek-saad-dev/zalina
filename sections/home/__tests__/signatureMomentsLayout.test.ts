@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { getMomentDeckPose, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
+import { getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
 
 const fallback: CatalogMediaCard = {
   id: "fallback", title: "Zalina", image: "/assets/day.webp", alt: "Zalina"
@@ -74,5 +74,15 @@ describe("portrait coverflow 3D geometry", () => {
     expect(getMomentDeckPose(2).depth).toBeLessThan(getMomentDeckPose(1).depth);
     expect(getMomentDeckPose(-2).visible).toBe(true);
     expect(getMomentDeckPose(3).visible).toBe(false);
+  });
+});
+
+describe("cross-browser CSS deck positioning", () => {
+  it("uses only CSS calc addition/subtraction rather than unsupported multiplication", () => {
+    expect(momentDeckXShift(0)).toBe("0px");
+    expect(momentDeckXShift(1)).toBe("var(--moment-stride)");
+    expect(momentDeckXShift(-1)).toBe("calc(0px - var(--moment-stride))");
+    expect(momentDeckXShift(2)).toBe("calc(var(--moment-stride) + var(--moment-stride))");
+    expect(momentDeckXShift(-2)).toBe("calc(0px - var(--moment-stride) - var(--moment-stride))");
   });
 });
