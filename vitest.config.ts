@@ -9,6 +9,7 @@ export default defineConfig({
       "lib/**/__tests__/**/*.test.ts",
       "components/**/*.test.ts",
       "components/**/__tests__/**/*.test.ts",
+      "sections/**/__tests__/**/*.test.ts",
     ],
   },
   resolve: {

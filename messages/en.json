@@ -122,7 +122,21 @@
       "title": "Signature Moments",
       "fallbackTitle": "Zalina Arabian Village",
       "fallbackSubtitle": "Curated experiences from the CMS catalog",
-      "fallbackAlt": "Zalina Arabian Village"
+      "fallbackAlt": "Zalina Arabian Village",
+      "intro": "A closer look at the atmosphere, flavours and traditions that make every visit memorable.",
+      "feature": "THE FEATURED MOMENT",
+      "discover": "Discover this experience",
+      "exploreAll": "Explore all experiences",
+      "cardAria": "Explore {title}",
+      "carouselAria": "3D carousel of portrait experience cards",
+      "navigationAria": "Navigate experiences",
+      "previousAria": "Previous experience",
+      "nextAria": "Next experience",
+      "navigateHint": "Use ← and → to explore experiences",
+      "pickMomentAria": "Choose a moment",
+      "readMore": "Read full description",
+      "readLess": "Show less",
+      "showMomentAria": "Show {title}"
     },
     "dayNight": {
       "day": {
