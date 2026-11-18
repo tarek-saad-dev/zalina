@@ -154,7 +154,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 onClick={() => select(index)}
                 aria-label={t("showMomentAria", { title: item.title })}
                 aria-pressed={selected}
-                tabIndex={pose.visible ? 0 : -1}
+                tabIndex={selected ? 0 : -1}
                 className="signature-moments-card absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden rounded-[19px] border bg-[#100D0A] p-0 text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
                 style={{
                   width: "var(--moment-card-width)",
@@ -209,14 +209,13 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   {String(currentIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                 </span>
               </p>
-              <motion.div
-                key={active.id}
-                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reduceMotion ? 0 : 0.25 }}
-                aria-live="polite"
-                aria-atomic="true"
-              >
+              <div aria-live="polite" aria-atomic="true">
+                <motion.div
+                  key={active.id}
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.25 }}
+                >
                 <h3 className="mt-1 text-[clamp(1.2rem,2.1vw,1.85rem)] leading-[1.3]" style={{
                   color: CREAM, fontFamily: titleFont, fontWeight: isArabic ? 600 : 400, overflowWrap: "anywhere",
                 }}>{active.title}</h3>
@@ -226,7 +225,8 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 {canExpand && <button type="button" onClick={() => setExpanded((value) => !value)} className="mt-1 text-[12px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{ color: "#E6C786", fontFamily: bodyFont }}>
                   {expanded ? t("readLess") : t("readMore")}
                 </button>}
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
             {count > 1 && (
               <div className="hidden shrink-0 gap-2 sm:flex" role="group" aria-label={t("navigationAria")}>
