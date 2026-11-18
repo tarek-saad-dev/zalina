@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
+import { canAutoAdvanceMoments, getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
 
 const fallback: CatalogMediaCard = {
   id: "fallback", title: "Zalina", image: "/assets/day.webp", alt: "Zalina"
@@ -84,5 +84,22 @@ describe("cross-browser CSS deck positioning", () => {
     expect(momentDeckXShift(-1)).toBe("calc(0px - var(--moment-stride))");
     expect(momentDeckXShift(2)).toBe("calc(var(--moment-stride) + var(--moment-stride))");
     expect(momentDeckXShift(-2)).toBe("calc(0px - var(--moment-stride) - var(--moment-stride))");
+  });
+});
+
+describe("autoplay eligibility and manual takeover", () => {
+  const enabled = { count: 5, isInView: true, userInteracted: false, isHovered: false, hasFocusWithin: false, reducedMotion: false };
+  it("auto-advances a visible multi-card deck on desktop or mobile", () => {
+    expect(canAutoAdvanceMoments(enabled)).toBe(true);
+  });
+  it("stops permanently once a user manually moves the carousel", () => {
+    expect(canAutoAdvanceMoments({ ...enabled, userInteracted: true })).toBe(false);
+  });
+  it("pauses on hover, keyboard focus, hidden viewport and motion preference", () => {
+    expect(canAutoAdvanceMoments({ ...enabled, isHovered: true })).toBe(false);
+    expect(canAutoAdvanceMoments({ ...enabled, hasFocusWithin: true })).toBe(false);
+    expect(canAutoAdvanceMoments({ ...enabled, isInView: false })).toBe(false);
+    expect(canAutoAdvanceMoments({ ...enabled, reducedMotion: true })).toBe(false);
+    expect(canAutoAdvanceMoments({ ...enabled, count: 1 })).toBe(false);
   });
 });

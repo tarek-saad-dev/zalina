@@ -62,3 +62,17 @@ export function momentDeckXShift(offset: number): string {
     ? magnitude === 1 ? segments[0] : "calc(" + segments.join(" + ") + ")"
     : "calc(0px - " + segments.join(" - ") + ")";
 }
+
+/** Autoplay never starts for short catalogs, motion-sensitive users or after manual input. */
+export function canAutoAdvanceMoments({
+  count, isInView, userInteracted, isHovered, hasFocusWithin, reducedMotion,
+}: {
+  count: number;
+  isInView: boolean;
+  userInteracted: boolean;
+  isHovered: boolean;
+  hasFocusWithin: boolean;
+  reducedMotion: boolean;
+}): boolean {
+  return count > 1 && isInView && !userInteracted && !isHovered && !hasFocusWithin && !reducedMotion;
+}

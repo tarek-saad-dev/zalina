@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "luci
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
+import { canAutoAdvanceMoments, getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -16,11 +16,13 @@ interface SignatureMomentsProps {
 const GOLD = "#D5AC62";
 const CREAM = "#F9F0DF";
 const PREVIEW_CHARS = 148;
+const AUTO_ADVANCE_MS = 5800;
 
 /**
  * Portrait 3D coverflow, inspired by the user's reference: one dominant front
  * card, smaller tilted side cards receding in Z, and directional golden light.
  * Do not block vertical page scrolling; horizontal swipes navigate on touch.
+ * Auto-play runs only in view and ends permanently after any manual slide.
  */
 export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const t = useTranslations("home.signatureMoments");
@@ -30,6 +32,13 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const mouseStart = useRef<{ x: number; y: number } | null>(null);
+  const suppressCardClick = useRef(false);
+  const stageSectionRef = useRef<HTMLElement | null>(null);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasFocusWithin, setHasFocusWithin] = useState(false);
 
   const titleFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
@@ -61,22 +70,49 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     setActiveIndex((index) => index < count ? index : 0);
   }, [count]);
 
+  // Every direct interaction opts out of autoplay until this page is reloaded.
+  const stopAutoAdvance = useCallback(() => setUserInteracted(true), []);
+
   const select = useCallback((index: number) => {
     if (index < 0 || index >= count) return;
+    stopAutoAdvance();
     setActiveIndex(index);
     setExpanded(false);
-  }, [count]);
+  }, [count, stopAutoAdvance]);
 
   const navigate = useCallback((direction: -1 | 1) => {
     if (count < 2) return;
+    stopAutoAdvance();
     setActiveIndex((index) => (index + direction + count) % count);
     setExpanded(false);
-  }, [count]);
+  }, [count, stopAutoAdvance]);
+
+  useEffect(() => {
+    const section = stageSectionRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      (entries) => setIsInView(Boolean(entries[0]?.isIntersecting)),
+      { threshold: 0.35 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!canAutoAdvanceMoments({ count, isInView, userInteracted, isHovered, hasFocusWithin, reducedMotion: reduceMotion !== false })) return;
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      setActiveIndex((index) => (index + 1) % count);
+      setExpanded(false);
+    }, AUTO_ADVANCE_MS);
+    return () => window.clearInterval(timer);
+  }, [count, isInView, userInteracted, isHovered, hasFocusWithin, reduceMotion]);
 
   const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
     if (!touch) return;
     touchStart.current = { x: touch.clientX, y: touch.clientY };
+    suppressCardClick.current = false;
   };
   const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
     const start = touchStart.current;
@@ -87,12 +123,35 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     const dy = touch.clientY - start.y;
     // Never intercept a natural vertical page scroll.
     if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      suppressCardClick.current = true;
+      navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
+    }
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    mouseStart.current = { x: event.clientX, y: event.clientY };
+    suppressCardClick.current = false;
+  };
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = mouseStart.current;
+    mouseStart.current = null;
+    if (event.pointerType !== "mouse" || !start) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      suppressCardClick.current = true;
       navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
     }
   };
 
   return (
     <section
+      ref={stageSectionRef}
+      onPointerEnter={(event) => { if (event.pointerType === "mouse") setIsHovered(true); }}
+      onPointerLeave={(event) => { if (event.pointerType === "mouse") setIsHovered(false); }}
+      onFocusCapture={() => setHasFocusWithin(true)}
+      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHasFocusWithin(false); }}
       className="signature-moments-section lux-section-compact relative isolate overflow-hidden"
       aria-labelledby="signature-moments-heading"
       style={{ background: "var(--lux-surface)", paddingBlock: "clamp(18px, 2.5vh, 30px)" }}
@@ -131,6 +190,10 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
           }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={() => { mouseStart.current = null; }}
+          onDragStart={(event) => event.preventDefault()}
         >
           <div className="signature-moments-aura pointer-events-none absolute left-1/2 top-1/2" aria-hidden="true" />
           <div className="signature-moments-ground pointer-events-none absolute bottom-[1%] left-1/2" aria-hidden="true" />
@@ -151,7 +214,13 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => select(index)}
+                onClick={() => {
+                  if (suppressCardClick.current) {
+                    suppressCardClick.current = false;
+                    return;
+                  }
+                  select(index);
+                }}
                 aria-label={t("showMomentAria", { title: item.title })}
                 aria-pressed={selected}
                 tabIndex={selected ? 0 : -1}
@@ -180,6 +249,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   sizes="(max-width: 639px) 56vw, (max-width: 1023px) 280px, 320px"
                   className="object-cover"
                   fadeIn={false}
+                  draggable={false}
                   priority={index === 0}
                 />
                 <div className="pointer-events-none absolute inset-0" style={{
@@ -209,7 +279,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   {String(currentIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                 </span>
               </p>
-              <div aria-live="polite" aria-atomic="true">
+              <div aria-live={userInteracted ? "polite" : "off"} aria-atomic="true">
                 <motion.div
                   key={active.id}
                   initial={reduceMotion ? false : { opacity: 0, y: 8 }}
@@ -222,7 +292,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 {detail && <p className="mt-1 max-w-[680px] text-[12px] leading-[1.75] sm:text-[13px]" style={{
                   color: "rgba(249,240,223,0.69)", fontFamily: bodyFont, overflowWrap: "anywhere",
                 }}>{visibleDetail}</p>}
-                {canExpand && <button type="button" onClick={() => setExpanded((value) => !value)} className="mt-1 text-[12px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{ color: "#E6C786", fontFamily: bodyFont }}>
+                {canExpand && <button type="button" onClick={() => { stopAutoAdvance(); setExpanded((value) => !value); }} className="mt-1 text-[12px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{ color: "#E6C786", fontFamily: bodyFont }}>
                   {expanded ? t("readLess") : t("readMore")}
                 </button>}
                 </motion.div>
