@@ -13,7 +13,6 @@ interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
 }
 
-const GOLD = "#D5AC62";
 const CREAM = "#F9F0DF";
 const AUTO_ADVANCE_MS = 5800;
 
@@ -123,17 +122,28 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     mouseStart.current = { x: event.clientX, y: event.clientY };
     suppressCardClick.current = false;
   };
-  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    const start = mouseStart.current;
-    mouseStart.current = null;
-    if (event.pointerType !== "mouse" || !start) return;
-    const dx = event.clientX - start.x;
-    const dy = event.clientY - start.y;
-    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-      suppressCardClick.current = true;
-      navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
-    }
-  };
+  // Window-level pointer release covers dragging beyond the carousel bounds.
+  // Unlike capture on pointer-down, this preserves normal clicks on side cards.
+  useEffect(() => {
+    const onRelease = (event: globalThis.PointerEvent) => {
+      const start = mouseStart.current;
+      mouseStart.current = null;
+      if (!start || event.pointerType !== "mouse") return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        suppressCardClick.current = true;
+        navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
+      }
+    };
+    const cancel = () => { mouseStart.current = null; };
+    window.addEventListener("pointerup", onRelease);
+    window.addEventListener("pointercancel", cancel);
+    return () => {
+      window.removeEventListener("pointerup", onRelease);
+      window.removeEventListener("pointercancel", cancel);
+    };
+  }, [navigate, isArabic]);
 
   return (
     <section
@@ -174,17 +184,17 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             if (count < 2) return;
             if (event.key === "ArrowLeft") {
               event.preventDefault();
+              event.currentTarget.focus();
               navigate(isArabic ? 1 : -1);
             } else if (event.key === "ArrowRight") {
               event.preventDefault();
+              event.currentTarget.focus();
               navigate(isArabic ? -1 : 1);
             }
           }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={() => { mouseStart.current = null; }}
           onDragStart={(event) => event.preventDefault()}
         >
           <div className="signature-moments-aura pointer-events-none absolute left-1/2 top-1/2" aria-hidden="true" />
