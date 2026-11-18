@@ -7,7 +7,7 @@ import type { CatalogMediaCard } from "@/lib/media";
 export function selectSignatureMomentCards(
   moments: CatalogMediaCard[],
   fallback: CatalogMediaCard,
-  limit = 5
+  limit = 9
 ): CatalogMediaCard[] {
   const valid = moments
     .filter((moment) => (
@@ -16,12 +16,12 @@ export function selectSignatureMomentCards(
       typeof moment.image === "string" &&
       moment.image.trim().length > 0
     ))
-    .slice(0, Math.max(1, Math.floor(limit) || 5));
+    .slice(0, Math.max(1, Math.floor(limit) || 9));
 
   return valid.length ? valid : [fallback];
 }
 
-/** Signed shortest distance around a cyclic, vertically stacked card deck. */
+/** Signed shortest distance around a cyclic 3D portrait coverflow. */
 export function signedCarouselDistance(index: number, activeIndex: number, total: number): number {
   if (total <= 1) return 0;
   const forward = (index - activeIndex + total) % total;
@@ -50,14 +50,19 @@ export function getMomentDeckPose(visualOffset: number): MomentDeckPose {
     depth: -295, rotateY: visualOffset > 0 ? -66 : 66,
     scale: 0.72, opacity: 0.64, zIndex: 10, visible: true,
   };
-  return { depth: -410, rotateY: 0, scale: 0.6, opacity: 0, zIndex: 0, visible: false };
+  if (distance === 3) return {
+    depth: -410, rotateY: visualOffset > 0 ? -72 : 72,
+    scale: 0.6, opacity: 0.42, zIndex: 5, visible: true,
+  };
+  return { depth: -480, rotateY: 0, scale: 0.52, opacity: 0, zIndex: 0, visible: false };
 }
 
 /** CSS arithmetic compatible with browsers that do not support calc() multiplication. */
 export function momentDeckXShift(offset: number): string {
   if (offset === 0) return "0px";
-  const magnitude = Math.min(2, Math.abs(offset));
-  const segments = Array.from({length:magnitude}, () => "var(--moment-stride)");
+  const magnitude = Math.min(3, Math.abs(offset));
+  const segments = Array.from({length:Math.min(2,magnitude)}, () => "var(--moment-stride)");
+  if (magnitude === 3) segments.push("var(--moment-outer-step)");
   return offset > 0
     ? magnitude === 1 ? segments[0] : "calc(" + segments.join(" + ") + ")"
     : "calc(0px - " + segments.join(" - ") + ")";
@@ -77,33 +82,22 @@ export function canAutoAdvanceMoments({
   return count > 1 && isInView && !userInteracted && !isHovered && !hasFocusWithin && !reducedMotion;
 }
 
-/** Keep CMS descriptions intact; accent at most two meaningful phrases per slide. */
-export function highlightMomentCopy(
-  text: string,
-  locale: "ar" | "en"
-): Array<{ text: string; highlight: boolean }> {
-  if (!text) return [];
-  const keywords = locale === "ar"
-    ? ["الأجواء التراثية", "النكهات التقليدية", "القرية العربية", "الخيام", "الأجواء", "السوق", "التراثية", "الضيافة", "النكهات", "التسوق", "الصور", "العشاء", "المصري", "العربي", "الطهي", "الليل", "النجوم", "النيل"]
-    : ["traditional atmosphere", "arabian village", "traditional flavors", "authentic", "heritage", "market", "village", "tents", "flavours", "flavors", "hospitality", "shopping", "cuisine", "dinner", "sunset", "lanterns", "stars"];
-  const found: Array<{ start: number; end: number }> = [];
-  const lower = text.toLocaleLowerCase(locale);
-  for (const keyword of keywords) {
-    const start = lower.indexOf(keyword.toLocaleLowerCase(locale));
-    if (start < 0) continue;
-    const end = start + keyword.length;
-    if (found.some((entry) => start < entry.end && end > entry.start)) continue;
-    found.push({ start, end });
-    if (found.length >= 2) break;
-  }
-  found.sort((a,b) => a.start-b.start);
-  const segments: Array<{ text: string; highlight: boolean }> = [];
-  let cursor = 0;
-  for (const entry of found) {
-    if (entry.start > cursor) segments.push({ text: text.slice(cursor, entry.start), highlight: false });
-    segments.push({ text: text.slice(entry.start, entry.end), highlight: true });
-    cursor = entry.end;
-  }
-  if (cursor < text.length) segments.push({ text: text.slice(cursor), highlight: false });
-  return segments.length ? segments : [{ text, highlight: false }];
+/** Split the full CMS description without changing text or whitespace.
+ * Only the first three words receive an accent, regardless of locale. */
+export interface MomentDescriptionToken {
+  text: string;
+  isWord: boolean;
+  highlight: boolean;
+  wordIndex: number;
+}
+export function tokenizeMomentDescription(text: string): MomentDescriptionToken[] {
+  const parts = text.match(/\s+|\S+/gu) || [];
+  let wordCount = 0;
+  return parts.map((part) => {
+    if (/^\s+$/u.test(part)) {
+      return { text: part, isWord: false, highlight: false, wordIndex: 0 };
+    }
+    wordCount += 1;
+    return { text: part, isWord: true, highlight: wordCount <= 3, wordIndex: wordCount };
+  });
 }

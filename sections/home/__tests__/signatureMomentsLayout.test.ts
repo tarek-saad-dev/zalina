@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { canAutoAdvanceMoments, getMomentDeckPose, highlightMomentCopy, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
+import { canAutoAdvanceMoments, getMomentDeckPose, tokenizeMomentDescription, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
 
 const fallback: CatalogMediaCard = {
   id: "fallback", title: "Zalina", image: "/assets/day.webp", alt: "Zalina"
@@ -19,7 +19,7 @@ describe("Signature Moments editorial layout data", () => {
       alt: `Experience ${index}`,
     }));
     expect(selectSignatureMomentCards(items, fallback).map((item) => item.id))
-      .toEqual(["0", "1", "2", "3", "4"]);
+      .toEqual(["0", "1", "2", "3", "4", "5", "6"]);
     expect(items).toHaveLength(7);
   });
 
@@ -73,7 +73,8 @@ describe("portrait coverflow 3D geometry", () => {
   it("shows two depth tiers and hides items outside the five-card fan", () => {
     expect(getMomentDeckPose(2).depth).toBeLessThan(getMomentDeckPose(1).depth);
     expect(getMomentDeckPose(-2).visible).toBe(true);
-    expect(getMomentDeckPose(3).visible).toBe(false);
+    expect(getMomentDeckPose(3).visible).toBe(true);
+    expect(getMomentDeckPose(4).visible).toBe(false);
   });
 });
 
@@ -84,6 +85,8 @@ describe("cross-browser CSS deck positioning", () => {
     expect(momentDeckXShift(-1)).toBe("calc(0px - var(--moment-stride))");
     expect(momentDeckXShift(2)).toBe("calc(var(--moment-stride) + var(--moment-stride))");
     expect(momentDeckXShift(-2)).toBe("calc(0px - var(--moment-stride) - var(--moment-stride))");
+    expect(momentDeckXShift(3)).toBe("calc(var(--moment-stride) + var(--moment-stride) + var(--moment-outer-step))");
+    expect(momentDeckXShift(-3)).toBe("calc(0px - var(--moment-stride) - var(--moment-stride) - var(--moment-outer-step))");
   });
 });
 
@@ -104,19 +107,24 @@ describe("autoplay eligibility and manual takeover", () => {
   });
 });
 
-describe("restrained editorial description highlighting", () => {
-  it("accents meaningful Arabic phrases without modifying the CMS text", () => {
-    const input = "استكشف القرية العربية وسوقها، واكتشف الخيام والأجواء التراثية والتسوق.";
-    const segments = highlightMomentCopy(input, "ar");
-    expect(segments.map(s => s.text).join("")).toEqual(input);
-    expect(segments.filter(s=>s.highlight)).toHaveLength(2);
+describe("full description and first-three-words accent", () => {
+  it("preserves Arabic text while accenting exactly its first three words", () => {
+    const copy = "استكشف القرية العربية وسوقها، واكتشف الخيام والأجواء التراثية.";
+    const tokens = tokenizeMomentDescription(copy);
+    expect(tokens.map(t => t.text).join("")).toEqual(copy);
+    expect(tokens.filter(t => t.highlight).map(t => t.text)).toEqual(["استكشف","القرية","العربية"]);
   });
-  it("works for English, unknown copy and empty CMS descriptions", () => {
-    const input="Experience traditional atmosphere and discover the market.";
-    const segments=highlightMomentCopy(input,"en");
-    expect(segments.map(s=>s.text).join("")).toBe(input);
-    expect(segments.filter(s=>s.highlight)).toHaveLength(2);
-    expect(highlightMomentCopy("Simple quiet moment","en")).toEqual([{text:"Simple quiet moment",highlight:false}]);
-    expect(highlightMomentCopy("","ar")).toEqual([]);
+  it("works for English, repeated spaces and empty text", () => {
+    const copy = "Explore  the Arabian Village and its market.";
+    const tokens = tokenizeMomentDescription(copy);
+    expect(tokens.map(t => t.text).join("")).toBe(copy);
+    expect(tokens.filter(t => t.highlight).map(t => t.text)).toEqual(["Explore","the","Arabian"]);
+    expect(tokenizeMomentDescription("")).toEqual([]);
+    expect(tokenizeMomentDescription("One word").filter(t => t.highlight)).toHaveLength(2);
+  });
+  it("can consume nine genuine CMS cards without inventing filler", () => {
+    const cards = Array.from({length:11},(_,i)=>({id:String(i),title:`Experience ${i}`,image:`/media/${i}.webp`,alt:"Experience"}));
+    expect(selectSignatureMomentCards(cards, fallback)).toHaveLength(9);
+    expect(selectSignatureMomentCards(cards.slice(0,3),fallback)).toHaveLength(3);
   });
 });

@@ -3427,6 +3427,7 @@ a:hover {
   --moment-card-width: clamp(192px, 17vw, 240px);
   --moment-card-height: clamp(248px, 24vw, 300px);
   --moment-stride: clamp(170px, 20vw, 268px);
+  --moment-outer-step: clamp(85px, 9vw, 125px);
 }
 .signature-moments-stage {
   height: clamp(295px, 40svh, 355px);
@@ -3462,6 +3463,7 @@ a:hover {
     --moment-card-width: clamp(155px, 47vw, 194px);
     --moment-card-height: clamp(208px, 60vw, 260px);
     --moment-stride: clamp(94px, 31vw, 145px);
+    --moment-outer-step: 55px;
   }
   .signature-moments-stage {
     height: clamp(234px, 68vw, 285px);
@@ -3476,9 +3478,56 @@ a:hover {
     --moment-card-width: clamp(168px, 17vw, 205px);
     --moment-card-height: clamp(224px, 32svh, 258px);
     --moment-stride: clamp(150px, 19vw, 232px);
+    --moment-outer-step: clamp(70px, 9vw, 100px);
   }
   .signature-moments-stage { height: clamp(270px, 39svh, 310px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .signature-moments-card { transition: none !important; }
+}
+
+/* Seven 3D portraits on spacious desktops; five on tablets, three on phones. */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .signature-moments-card[data-distance="3"] {
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none !important;
+  }
+}
+@media (max-width: 767px) {
+  .signature-moments-card[data-distance="2"],
+  .signature-moments-card[data-distance="3"] {
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none !important;
+  }
+}
+.signature-moments-copy-panel {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.signature-moments-typing-word {
+  display: inline-block;
+  opacity: 0;
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(.18,.7,.24,1);
+  animation-fill-mode: forwards;
+}
+.signature-moments-typing-ltr { animation-name: signature-moments-word-ltr; }
+.signature-moments-typing-rtl { animation-name: signature-moments-word-rtl; }
+@keyframes signature-moments-word-ltr {
+  from { opacity: 0; transform: translate3d(-5px,2px,0); filter: blur(3px); }
+  to { opacity: 1; transform: translate3d(0,0,0); filter: blur(0); }
+}
+@keyframes signature-moments-word-rtl {
+  from { opacity: 0; transform: translate3d(5px,2px,0); filter: blur(3px); }
+  to { opacity: 1; transform: translate3d(0,0,0); filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signature-moments-typing-word {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
 }
