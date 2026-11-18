@@ -101,19 +101,19 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
         background: "radial-gradient(ellipse 45% 60% at 18% 54%, rgba(187,119,47,0.13),transparent 72%)",
       }} />
       <div className="lux-container relative z-10">
-        <header className="mx-auto max-w-[760px] text-center">
+        <header className="relative z-20 mx-auto max-w-[760px] text-center">
           <p className="lux-eyebrow mb-1.5 sm:mb-2">{t("eyebrow")}</p>
           <h2 id="signature-moments-heading" className="lux-heading-lg" style={{
             fontSize: isArabic ? "clamp(1.55rem,2.8vw,2.25rem)" : "clamp(1.95rem,3.2vw,2.75rem)",
             lineHeight: 1.25,
           }}>{t("title")}</h2>
-          <p className="mx-auto mt-2 hidden max-w-[600px] text-[13px] leading-[1.6] sm:block" style={{
+          <p className="mx-auto mt-2 block max-w-[600px] px-2 text-[12px] leading-[1.65] sm:text-[13px]" style={{
             color: "rgba(249,240,223,0.64)", fontFamily: bodyFont,
           }}>{t("intro")}</p>
         </header>
 
         <div
-          className="signature-moments-stage relative mt-2 w-full sm:mt-3"
+          className="signature-moments-stage relative z-0 mt-7 w-full sm:mt-8"
           style={{ perspective: "1250px", transformStyle: "preserve-3d" }}
           role="region"
           aria-roledescription="carousel"
