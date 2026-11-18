@@ -214,21 +214,14 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             ].join(" ");
 
             return (
-              <button
+              <div
                 key={item.id}
-                type="button"
-                onClick={() => {
-                  if (suppressCardClick.current) {
-                    suppressCardClick.current = false;
-                    return;
-                  }
-                  select(index);
-                }}
-                aria-label={t("showMomentAria", { title: item.title })}
-                aria-pressed={selected}
-                tabIndex={selected ? 0 : -1}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={item.title}
+                aria-hidden={!pose.visible}
                 data-distance={distance}
-                className="signature-moments-card absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden rounded-[19px] border bg-[#100D0A] p-0 text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
+                className="signature-moments-card absolute left-1/2 top-1/2 block overflow-hidden rounded-[19px] border bg-[#100D0A] p-0 text-start"
                 style={{
                   width: "var(--moment-card-width)",
                   height: "var(--moment-card-height)",
@@ -260,8 +253,8 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   background: "linear-gradient(110deg,rgba(249,186,91,0.25),rgba(236,173,67,0.04) 34%,transparent 56%,rgba(4,3,3,0.48)),linear-gradient(to top,rgba(6,5,4,0.8),transparent 42%)",
                 }}/>
                 <div
-                  className="absolute inset-x-0 bottom-0 px-4 pb-5 pt-10 sm:px-5"
-                  style={{ background: "linear-gradient(to top,rgba(5,4,3,0.94),rgba(6,4,3,0.6) 62%,transparent)" }}
+                  className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4 pt-14 sm:px-5 sm:pb-5"
+                  style={{ background: "linear-gradient(to top,rgba(5,4,3,0.96),rgba(6,4,3,0.74) 52%,transparent)" }}
                 >
                   <span
                     className="line-clamp-2 block text-[13px] font-semibold leading-[1.48] tracking-[0.01em] sm:text-[15px]"
@@ -269,8 +262,40 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   >
                     {item.title}
                   </span>
+                  {selected && (
+                    <Link
+                      href={item.href || "/experiences"}
+                      aria-label={t("cardAria", { title: item.title })}
+                      onClick={(event) => {
+                        if (suppressCardClick.current) {
+                          event.preventDefault();
+                          suppressCardClick.current = false;
+                        }
+                      }}
+                      className="group mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-xl border border-[#F2DCB4]/45 bg-white/[0.13] px-3 py-2 text-[12px] font-semibold text-[#FFF5E4] shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_8px_24px_rgba(0,0,0,0.3)] backdrop-blur-[14px] transition-all duration-300 hover:border-[#F4D499]/80 hover:bg-[#E5BE79]/25 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_8px_30px_rgba(0,0,0,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F1D399]"
+                    >
+                      <span>{t("discover")}</span>
+                      <DirectionArrow size={15} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"/>
+                    </Link>
+                  )}
                 </div>
-              </button>
+                {!selected && pose.visible && (
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-label={t("showMomentAria", { title: item.title })}
+                    onClick={() => {
+                      if (suppressCardClick.current) {
+                        suppressCardClick.current = false;
+                        return;
+                      }
+                      select(index);
+                    }}
+                    className="absolute inset-0 z-20 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#F1D399]"
+                    style={{ background: "transparent" }}
+                  />
+                )}
+              </div>
             );
           })}
         </div>
@@ -318,25 +343,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
               )}
             </div>
           </div>
-          <div className="flex w-full flex-wrap items-center justify-center gap-x-7 gap-y-3">
-            <Link
-              href={active.href || "/experiences"}
-              aria-label={t("cardAria", { title: active.title })}
-              className="group inline-flex min-h-[44px] items-center justify-center gap-3 rounded-full px-6 text-[13px] font-semibold shadow-[0_10px_28px_rgba(169,115,43,0.16)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(169,115,43,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
-              style={{ color: "#20160A", background: "linear-gradient(120deg,#F1D59D 0%,#C9A05A 100%)", fontFamily: bodyFont }}
-            >
-              {t("discover")}
-              <DirectionArrow size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
-            </Link>
-            <Link
-              href="/experiences"
-              className="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent text-[13px] font-medium transition-colors hover:border-[#C9A05A]/60 hover:text-[#F1D59D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-              style={{ color: "rgba(246,229,194,0.7)", fontFamily: bodyFont }}
-            >
-              {t("exploreAll")}
-              <DirectionArrow size={14} aria-hidden="true" />
-            </Link>
-          </div>
+
         </div>
       </div>
     </section>
