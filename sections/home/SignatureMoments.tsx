@@ -31,7 +31,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const mouseStart = useRef<{ x: number; y: number } | null>(null);
   const suppressCardClick = useRef(false);
-  const stageSectionRef = useRef<HTMLElement | null>(null);
+  const carouselStageRef = useRef<HTMLDivElement | null>(null);
   const [userInteracted, setUserInteracted] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -78,13 +78,14 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   }, [count, stopAutoAdvance]);
 
   useEffect(() => {
-    const section = stageSectionRef.current;
-    if (!section || typeof IntersectionObserver === "undefined") return;
+    // Watching the stage (not the whole section) works even with very long CMS descriptions.
+    const stage = carouselStageRef.current;
+    if (!stage || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       (entries) => setIsInView(Boolean(entries[0]?.isIntersecting)),
-      { threshold: 0.35 }
+      { threshold: 0.45 }
     );
-    observer.observe(section);
+    observer.observe(stage);
     return () => observer.disconnect();
   }, []);
 
@@ -147,7 +148,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
 
   return (
     <section
-      ref={stageSectionRef}
       onPointerEnter={(event) => { if (event.pointerType === "mouse") setIsHovered(true); }}
       onPointerLeave={(event) => { if (event.pointerType === "mouse") setIsHovered(false); }}
       onFocusCapture={() => setHasFocusWithin(true)}
@@ -174,6 +174,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
         </header>
 
         <div
+          ref={carouselStageRef}
           className="signature-moments-stage relative z-0 mt-5 w-full cursor-grab select-none sm:mt-6 active:cursor-grabbing"
           style={{ perspective: "1250px", transformStyle: "preserve-3d" }}
           role="region"
@@ -318,7 +319,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   key={active.id}
                   className="mx-auto max-w-[820px] text-[13px] leading-[1.95] sm:text-[14px] md:text-[15px]"
                   dir={isArabic ? "rtl" : "ltr"}
-                  aria-label={detail}
                   style={{
                     color: "rgba(249,240,223,0.85)",
                     fontFamily: bodyFont,
@@ -329,7 +329,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                   {detailTokens.map((token, index) => token.isWord ? (
                     <span
                       key={index}
-                      aria-hidden="true"
                       className={`signature-moments-typing-word ${isArabic ? "signature-moments-typing-rtl" : "signature-moments-typing-ltr"} ${token.highlight ? "font-bold" : ""}`}
                       style={{
                         color: token.highlight ? "#EBCB8E" : undefined,
