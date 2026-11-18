@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { canAutoAdvanceMoments, getMomentDeckPose, highlightMomentCopy, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
+import { canAutoAdvanceMoments, getMomentDeckPose, momentDeckXShift, selectSignatureMomentCards, signedCarouselDistance, tokenizeMomentDescription } from "./signatureMomentsLayout";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -15,7 +15,6 @@ interface SignatureMomentsProps {
 
 const GOLD = "#D5AC62";
 const CREAM = "#F9F0DF";
-const PREVIEW_CHARS = 148;
 const AUTO_ADVANCE_MS = 5800;
 
 /**
@@ -30,7 +29,6 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const isArabic = locale === "ar";
   const reduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const mouseStart = useRef<{ x: number; y: number } | null>(null);
   const suppressCardClick = useRef(false);
@@ -59,11 +57,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const currentIndex = Math.min(activeIndex, count - 1);
   const active = items[currentIndex];
   const detail = active.subtitle?.trim() || "";
-  const canExpand = detail.length > PREVIEW_CHARS;
-  const visibleDetail = canExpand && !expanded
-    ? detail.slice(0, PREVIEW_CHARS).trimEnd() + "…"
-    : detail;
-  const detailSegments = highlightMomentCopy(visibleDetail, isArabic ? "ar" : "en");
+  const detailTokens = tokenizeMomentDescription(detail);
 
   useEffect(() => {
     setActiveIndex((index) => index < count ? index : 0);
@@ -76,14 +70,12 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     if (index < 0 || index >= count) return;
     stopAutoAdvance();
     setActiveIndex(index);
-    setExpanded(false);
   }, [count, stopAutoAdvance]);
 
   const navigate = useCallback((direction: -1 | 1) => {
     if (count < 2) return;
     stopAutoAdvance();
     setActiveIndex((index) => (index + direction + count) % count);
-    setExpanded(false);
   }, [count, stopAutoAdvance]);
 
   useEffect(() => {
@@ -102,8 +94,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       setActiveIndex((index) => (index + 1) % count);
-      setExpanded(false);
-    }, AUTO_ADVANCE_MS);
+      }, AUTO_ADVANCE_MS);
     return () => window.clearInterval(timer);
   }, [count, isInView, userInteracted, isHovered, hasFocusWithin, reduceMotion]);
 
@@ -160,18 +151,20 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
       }} />
       <div className="lux-container relative z-10">
         <header className="relative z-20 mx-auto max-w-[760px] text-center">
-          <p className="lux-eyebrow mb-1.5 sm:mb-2">{t("eyebrow")}</p>
-          <h2 id="signature-moments-heading" className="lux-heading-lg" style={{
-            fontSize: isArabic ? "clamp(1.55rem,2.8vw,2.25rem)" : "clamp(1.95rem,3.2vw,2.75rem)",
-            lineHeight: 1.25,
-          }}>{t("title")}</h2>
-          <p className="mx-auto mt-2 block max-w-[600px] px-2 text-[12px] leading-[1.65] sm:text-[13px]" style={{
-            color: "rgba(249,240,223,0.64)", fontFamily: bodyFont,
-          }}>{t("intro")}</p>
+          <h2
+            id="signature-moments-heading"
+            className="lux-heading-lg"
+            style={{
+              fontSize: isArabic ? "clamp(1.8rem,3.2vw,2.6rem)" : "clamp(2.15rem,3.5vw,3rem)",
+              lineHeight: 1.2,
+            }}
+          >
+            {t("title")}
+          </h2>
         </header>
 
         <div
-          className="signature-moments-stage relative z-0 mt-7 w-full cursor-grab select-none sm:mt-8 active:cursor-grabbing"
+          className="signature-moments-stage relative z-0 mt-5 w-full cursor-grab select-none sm:mt-6 active:cursor-grabbing"
           style={{ perspective: "1250px", transformStyle: "preserve-3d" }}
           role="region"
           aria-roledescription="carousel"
@@ -202,6 +195,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             const visualOffset = offset * (isArabic ? -1 : 1);
             const pose = getMomentDeckPose(visualOffset);
             const selected = offset === 0;
+            const distance = Math.abs(offset);
             const transform = [
               "translate(-50%, -50%)",
               "translate3d(" + momentDeckXShift(visualOffset) + ", 0px, " + (reduceMotion ? 0 : pose.depth) + "px)",
@@ -223,6 +217,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 aria-label={t("showMomentAria", { title: item.title })}
                 aria-pressed={selected}
                 tabIndex={selected ? 0 : -1}
+                data-distance={distance}
                 className="signature-moments-card absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden rounded-[19px] border bg-[#100D0A] p-0 text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
                 style={{
                   width: "var(--moment-card-width)",
@@ -254,8 +249,14 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                 <div className="pointer-events-none absolute inset-0" style={{
                   background: "linear-gradient(110deg,rgba(249,186,91,0.25),rgba(236,173,67,0.04) 34%,transparent 56%,rgba(4,3,3,0.48)),linear-gradient(to top,rgba(6,5,4,0.8),transparent 42%)",
                 }}/>
-                <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-7" style={{ background: "linear-gradient(to top,rgba(5,4,3,0.73),transparent)" }}>
-                  <span className="block text-[12px] leading-[1.5] sm:text-sm" style={{ color: CREAM, fontFamily: titleFont, overflowWrap: "anywhere" }}>
+                <div
+                  className="absolute inset-x-0 bottom-0 px-4 pb-5 pt-10 sm:px-5"
+                  style={{ background: "linear-gradient(to top,rgba(5,4,3,0.94),rgba(6,4,3,0.6) 62%,transparent)" }}
+                >
+                  <span
+                    className="line-clamp-2 block text-[13px] font-semibold leading-[1.48] tracking-[0.01em] sm:text-[15px]"
+                    style={{ color: CREAM, fontFamily: titleFont, overflowWrap: "anywhere", textShadow: "0 1px 12px rgba(0,0,0,0.75)" }}
+                  >
                     {item.title}
                   </span>
                 </div>
@@ -264,67 +265,66 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
           })}
         </div>
 
-        <div className="relative mx-auto mt-2 flex w-full max-w-[860px] flex-col items-center text-center sm:mt-3" dir={isArabic ? "rtl" : "ltr"}>
-          <div className="w-full" aria-live={userInteracted ? "polite" : "off"} aria-atomic="true">
-            <motion.div
-              key={active.id}
-              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.3 }}
-            >
-              <h3 className="sr-only">{active.title}</h3>
+
+        <div className="relative mx-auto mt-2 flex w-full max-w-[900px] flex-col items-center gap-3 text-center" dir={isArabic ? "rtl" : "ltr"}>
+          <div
+            className="signature-moments-copy-panel relative w-full overflow-hidden rounded-[18px] border px-5 py-4 sm:px-8 sm:py-5"
+            style={{
+              borderColor: "rgba(213,172,98,0.26)",
+              background: "linear-gradient(125deg,rgba(40,31,21,0.88),rgba(17,15,13,0.86))",
+              boxShadow: "inset 0 1px 0 rgba(255,237,194,0.06),0 14px 35px rgba(0,0,0,0.22)",
+            }}
+          >
+            <span aria-hidden="true" className="pointer-events-none absolute inset-x-[28%] top-0 h-px"
+              style={{ background: "linear-gradient(90deg,transparent,#D5AC62,transparent)" }} />
+            <div className="relative" aria-live={userInteracted ? "polite" : "off"} aria-atomic="true">
               {detail && (
                 <p
-                  className="mx-auto max-w-[780px] text-[13px] leading-[1.95] sm:text-[14px] md:text-[15px]"
+                  key={active.id}
+                  className="mx-auto max-w-[820px] text-[13px] leading-[1.95] sm:text-[14px] md:text-[15px]"
+                  dir={isArabic ? "rtl" : "ltr"}
+                  aria-label={detail}
                   style={{
-                    color: "rgba(249,240,223,0.75)",
+                    color: "rgba(249,240,223,0.85)",
                     fontFamily: bodyFont,
                     overflowWrap: "anywhere",
+                    whiteSpace: "pre-wrap",
                   }}
                 >
-                  {detailSegments.map((segment, index) => segment.highlight ? (
-                    <span key={index} className="font-semibold" style={{ color: "#E8C682" }}>
-                      {segment.text}
+                  {detailTokens.map((token, index) => token.isWord ? (
+                    <span
+                      key={index}
+                      aria-hidden="true"
+                      className={`signature-moments-typing-word ${isArabic ? "signature-moments-typing-rtl" : "signature-moments-typing-ltr"} ${token.highlight ? "font-bold" : ""}`}
+                      style={{
+                        color: token.highlight ? "#EBCB8E" : undefined,
+                        animationDelay: `${Math.min(token.wordIndex - 1, 30) * 42}ms`,
+                      }}
+                    >
+                      {token.text}
                     </span>
-                  ) : (
-                    <span key={index}>{segment.text}</span>
-                  ))}
+                  ) : token.text)}
                 </p>
               )}
-              {canExpand && (
-                <button
-                  type="button"
-                  onClick={() => { stopAutoAdvance(); setExpanded((value) => !value); }}
-                  className="mt-1 inline-flex min-h-8 items-center text-[12px] underline decoration-[#D5AC62]/50 underline-offset-[5px] transition-colors hover:text-[#F2D99B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-                  style={{ color: "#D5AC62", fontFamily: bodyFont }}
-                >
-                  {expanded ? t("readLess") : t("readMore")}
-                </button>
-              )}
-            </motion.div>
+            </div>
           </div>
-
-          <div className="mt-4 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mt-5">
+          <div className="flex w-full flex-wrap items-center justify-center gap-x-7 gap-y-3">
             <Link
               href={active.href || "/experiences"}
               aria-label={t("cardAria", { title: active.title })}
-              className="group inline-flex min-h-[44px] items-center justify-center gap-3 rounded-full px-6 text-[12px] font-semibold shadow-[0_10px_28px_rgba(169,115,43,0.16)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(169,115,43,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
-              style={{
-                color: "#20160A",
-                background: "linear-gradient(120deg,#F1D59D 0%,#C9A05A 100%)",
-                fontFamily: bodyFont,
-              }}
+              className="group inline-flex min-h-[44px] items-center justify-center gap-3 rounded-full px-6 text-[13px] font-semibold shadow-[0_10px_28px_rgba(169,115,43,0.16)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(169,115,43,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
+              style={{ color: "#20160A", background: "linear-gradient(120deg,#F1D59D 0%,#C9A05A 100%)", fontFamily: bodyFont }}
             >
               {t("discover")}
               <DirectionArrow size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
             </Link>
             <Link
               href="/experiences"
-              className="inline-flex min-h-[40px] items-center gap-2 text-[12px] font-medium transition-colors hover:text-[#F1D59D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-              style={{ color: "rgba(246,229,194,0.66)", fontFamily: bodyFont }}
+              className="inline-flex min-h-[44px] items-center gap-2 border-b border-transparent text-[13px] font-medium transition-colors hover:border-[#C9A05A]/60 hover:text-[#F1D59D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
+              style={{ color: "rgba(246,229,194,0.7)", fontFamily: bodyFont }}
             >
               {t("exploreAll")}
-              <DirectionArrow size={13} aria-hidden="true" />
+              <DirectionArrow size={14} aria-hidden="true" />
             </Link>
           </div>
         </div>
