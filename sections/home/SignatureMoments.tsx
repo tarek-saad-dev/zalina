@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
+import { getMomentDeckPose, selectSignatureMomentCards, signedCarouselDistance } from "./signatureMomentsLayout";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -15,11 +15,12 @@ interface SignatureMomentsProps {
 
 const GOLD = "#D5AC62";
 const CREAM = "#F9F0DF";
+const PREVIEW_CHARS = 148;
 
 /**
- * Curated vertical 3D deck. The photography lives on a dimensional stack while
- * all meaningful copy is in a readable panel, outside the images.
- * Navigation is intentional (no autoplay or hijacking vertical page scroll).
+ * Portrait 3D coverflow, inspired by the user's reference: one dominant front
+ * card, smaller tilted side cards receding in Z, and directional golden light.
+ * Do not block vertical page scrolling; horizontal swipes navigate on touch.
  */
 export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const t = useTranslations("home.signatureMoments");
@@ -27,12 +28,17 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const isArabic = locale === "ar";
   const reduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
   const titleFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-display), 'Cormorant Garamond', serif";
   const bodyFont = isArabic
     ? "var(--font-body-ar), 'Alexandria', sans-serif"
     : "var(--font-body), 'Inter', sans-serif";
+  const PrevIcon = isArabic ? ChevronRight : ChevronLeft;
+  const NextIcon = isArabic ? ChevronLeft : ChevronRight;
   const DirectionArrow = isArabic ? ArrowLeft : ArrowRight;
 
   const items = selectSignatureMomentCards(moments, {
@@ -45,266 +51,230 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const count = items.length;
   const currentIndex = Math.min(activeIndex, count - 1);
   const active = items[currentIndex];
+  const detail = active.subtitle?.trim() || "";
+  const canExpand = detail.length > PREVIEW_CHARS;
+  const visibleDetail = canExpand && !expanded
+    ? detail.slice(0, PREVIEW_CHARS).trimEnd() + "…"
+    : detail;
 
   useEffect(() => {
-    setActiveIndex((index) => (index < count ? index : 0));
+    setActiveIndex((index) => index < count ? index : 0);
+  }, [count]);
+
+  const select = useCallback((index: number) => {
+    if (index < 0 || index >= count) return;
+    setActiveIndex(index);
+    setExpanded(false);
   }, [count]);
 
   const navigate = useCallback((direction: -1 | 1) => {
+    if (count < 2) return;
     setActiveIndex((index) => (index + direction + count) % count);
+    setExpanded(false);
   }, [count]);
 
-  const select = (index: number) => {
-    if (index >= 0 && index < count) setActiveIndex(index);
+  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    const touch = event.changedTouches[0];
+    if (!start || !touch || count < 2) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    // Never intercept a natural vertical page scroll.
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
+    }
   };
 
   return (
     <section
-      className="lux-section-compact relative isolate overflow-hidden"
+      className="signature-moments-section lux-section-compact relative isolate overflow-hidden"
       aria-labelledby="signature-moments-heading"
-      style={{ background: "var(--lux-surface)" }}
+      style={{ background: "var(--lux-surface)", paddingBlock: "clamp(18px, 2.5vh, 30px)" }}
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 46% 57% at 17% 50%, rgba(172,115,45,0.105) 0%,transparent 75%)",
-        }}
-        aria-hidden="true"
-      />
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{
+        background: "radial-gradient(ellipse 45% 60% at 18% 54%, rgba(187,119,47,0.13),transparent 72%)",
+      }} />
       <div className="lux-container relative z-10">
-        <div className="mx-auto max-w-[700px] text-center">
-          <p className="lux-eyebrow mb-3">{t("eyebrow")}</p>
-          <h2
-            id="signature-moments-heading"
-            className="lux-heading-lg"
-            style={{ fontSize: isArabic ? "clamp(1.8rem,3.5vw,2.7rem)" : "clamp(2.1rem,3.7vw,3.2rem)" }}
-          >
-            {t("title")}
-          </h2>
-          <p
-            className="mx-auto mt-4 max-w-[550px] text-sm leading-[1.9] sm:text-[15px]"
-            style={{ color: "rgba(249,240,223,0.67)", fontFamily: bodyFont }}
-          >
-            {t("intro")}
-          </p>
-        </div>
+        <header className="mx-auto max-w-[760px] text-center">
+          <p className="lux-eyebrow mb-1.5 sm:mb-2">{t("eyebrow")}</p>
+          <h2 id="signature-moments-heading" className="lux-heading-lg" style={{
+            fontSize: isArabic ? "clamp(1.55rem,2.8vw,2.25rem)" : "clamp(1.95rem,3.2vw,2.75rem)",
+            lineHeight: 1.25,
+          }}>{t("title")}</h2>
+          <p className="mx-auto mt-2 hidden max-w-[600px] text-[13px] leading-[1.6] sm:block" style={{
+            color: "rgba(249,240,223,0.64)", fontFamily: bodyFont,
+          }}>{t("intro")}</p>
+        </header>
 
-        <div className="mt-6 grid items-center gap-4 lg:mt-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-x-16">
-          <div
-            className="relative isolate mx-auto h-[465px] w-full max-w-[670px] sm:h-[560px] lg:h-[600px]"
-            style={{ perspective: "1100px" }}
-            role="region"
-            aria-roledescription="carousel"
-            aria-label={t("carouselAria")}
-            tabIndex={count > 1 ? 0 : undefined}
-            onKeyDown={(event) => {
-              if (count <= 1) return;
-              if (event.key === "ArrowUp") {
-                event.preventDefault();
-                navigate(-1);
-              } else if (event.key === "ArrowDown") {
-                event.preventDefault();
-                navigate(1);
-              }
-            }}
-          >
-            <div
-              className="pointer-events-none absolute inset-y-[14%] start-[6%] w-[58%] rounded-full blur-[70px]"
-              style={{
-                background: "radial-gradient(ellipse,rgba(237,178,87,0.29),rgba(181,114,36,0.08) 55%,transparent 77%)",
-              }}
-              aria-hidden="true"
-            />
-            <div
-              className="pointer-events-none absolute inset-x-0 top-0 z-[25] h-[15%]"
-              style={{ background: "linear-gradient(to bottom,var(--lux-surface),transparent)" }}
-              aria-hidden="true"
-            />
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[25] h-[15%]"
-              style={{ background: "linear-gradient(to top,var(--lux-surface),transparent)" }}
-              aria-hidden="true"
-            />
+        <div
+          className="signature-moments-stage relative mt-2 w-full sm:mt-3"
+          style={{ perspective: "1250px", transformStyle: "preserve-3d" }}
+          role="region"
+          aria-roledescription="carousel"
+          aria-label={t("carouselAria")}
+          tabIndex={count > 1 ? 0 : undefined}
+          onKeyDown={(event) => {
+            if (count < 2) return;
+            if (event.key === "ArrowLeft") {
+              event.preventDefault();
+              navigate(isArabic ? 1 : -1);
+            } else if (event.key === "ArrowRight") {
+              event.preventDefault();
+              navigate(isArabic ? -1 : 1);
+            }
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="signature-moments-aura pointer-events-none absolute left-1/2 top-1/2" aria-hidden="true" />
+          <div className="signature-moments-ground pointer-events-none absolute bottom-[1%] left-1/2" aria-hidden="true" />
 
-            {items.map((item, index) => {
-              const offset = signedCarouselDistance(index, currentIndex, count);
-              const distance = Math.abs(offset);
-              const selected = offset === 0;
-              const light = isArabic
-                ? "linear-gradient(255deg,rgba(239,186,91,0.27),transparent 46%,rgba(4,3,2,0.35) 100%)"
-                : "linear-gradient(105deg,rgba(239,186,91,0.27),transparent 46%,rgba(4,3,2,0.35) 100%)";
-              const directionalShadow = isArabic
-                ? "18px 18px 55px rgba(232,175,85,0.23)"
-                : "-18px 18px 55px rgba(232,175,85,0.23)";
+          {items.map((item, index) => {
+            const offset = signedCarouselDistance(index, currentIndex, count);
+            const visualOffset = offset * (isArabic ? -1 : 1);
+            const pose = getMomentDeckPose(visualOffset);
+            const selected = offset === 0;
+            const transform = [
+              "translate(-50%, -50%)",
+              "translate3d(calc(var(--moment-stride) * " + visualOffset + "), 0px, " + (reduceMotion ? 0 : pose.depth) + "px)",
+              "rotateY(" + (reduceMotion ? 0 : pose.rotateY) + "deg)",
+              "scale(" + (reduceMotion ? (selected ? 1 : 0.8) : pose.scale) + ")",
+            ].join(" ");
 
-              return (
-                <div
-                  key={item.id}
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center"
-                  aria-hidden="true"
-                  style={{ zIndex: selected ? 20 : distance === 1 ? 12 : 5 }}
-                >
-                  <motion.div
-                    className="relative h-[260px] w-[82%] max-w-[465px] overflow-hidden rounded-[22px] border sm:h-[315px] lg:h-[370px]"
-                    initial={false}
-                    animate={reduceMotion ? {
-                      y: offset * 165,
-                      scale: selected ? 1 : distance === 1 ? 0.80 : 0.63,
-                      opacity: selected ? 1 : distance === 1 ? 0.65 : 0.2,
-                    } : {
-                      y: offset * 168,
-                      z: selected ? 70 : distance === 1 ? -90 : -180,
-                      rotateX: selected ? 0 : offset < 0 ? 14 : -14,
-                      rotateY: isArabic ? -4 : 4,
-                      scale: selected ? 1 : distance === 1 ? 0.84 : 0.69,
-                      opacity: selected ? 1 : distance === 1 ? 0.74 : 0.22,
-                    }}
-                    transition={reduceMotion ? { duration: 0.01 } : {
-                      type: "spring",
-                      stiffness: 130,
-                      damping: 23,
-                      mass: 0.85,
-                    }}
-                    style={{
-                      borderColor: selected ? "rgba(244,205,135,0.72)" : "rgba(221,179,104,0.34)",
-                      boxShadow: selected
-                        ? `0 32px 70px rgba(0,0,0,0.77),${directionalShadow}, inset 0 0 25px rgba(229,163,65,0.16)`
-                        : "0 18px 46px rgba(0,0,0,0.7)",
-                      background: "#14100B",
-                      backfaceVisibility: "hidden",
-                    }}
-                  >
-                    <CmsImage
-                      src={item.image}
-                      alt={item.alt || item.title}
-                      fill
-                      sizes="(max-width: 639px) 82vw, (max-width: 1023px) 470px, 480px"
-                      className="object-cover"
-                      fadeIn={false}
-                      priority={index === 0}
-                    />
-                    <div className="pointer-events-none absolute inset-0" style={{ background: light }} />
-                    <div
-                      className="absolute start-4 top-4 rounded-full border px-3 py-1.5 text-[10px] font-semibold tracking-[0.14em]"
-                      style={{
-                        color: CREAM,
-                        borderColor: "rgba(255,245,230,0.4)",
-                        background: "rgba(9,8,7,0.63)",
-                        backdropFilter: "blur(8px)",
-                      }}
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-                    {!selected && <div className="absolute inset-0 bg-black/25" />}
-                  </motion.div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="relative mx-auto w-full max-w-[570px] pb-5 pt-1 lg:pb-0 lg:pt-0" dir={isArabic ? "rtl" : "ltr"}>
-            <div className="mb-5 flex items-center gap-3" style={{ color: GOLD }}>
-              <Sparkles size={18} aria-hidden="true"/>
-              <span className="text-[11px] font-semibold tracking-[0.16em]" style={{ fontFamily: bodyFont }}>
-                {t("feature")}
-              </span>
-              <span className="ms-auto text-xs tabular-nums" style={{ color: "rgba(249,240,223,0.5)" }}>
-                {String(currentIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-              </span>
-            </div>
-
-            <div aria-live="polite" aria-atomic="true" className="min-h-[140px]">
-              <motion.div
-                key={active.id}
-                initial={reduceMotion ? false : { opacity: 0, y: 13 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reduceMotion ? 0 : 0.32 }}
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => select(index)}
+                aria-label={t("showMomentAria", { title: item.title })}
+                aria-pressed={selected}
+                tabIndex={pose.visible ? 0 : -1}
+                className="signature-moments-card absolute left-1/2 top-1/2 block cursor-pointer overflow-hidden rounded-[19px] border bg-[#100D0A] p-0 text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
+                style={{
+                  width: "var(--moment-card-width)",
+                  height: "var(--moment-card-height)",
+                  zIndex: pose.zIndex,
+                  transform,
+                  opacity: pose.visible ? (selected ? 1 : pose.opacity) : 0,
+                  filter: selected ? "brightness(1.06)" : "brightness(0.72)",
+                  boxShadow: selected
+                    ? "0 30px 65px rgba(0,0,0,0.85), -22px 12px 58px rgba(206,143,58,0.28), inset 3px 0 15px rgba(233,173,78,0.22)"
+                    : "0 24px 45px rgba(0,0,0,0.82), -9px 3px 22px rgba(184,112,43,0.14)",
+                  borderColor: selected ? "rgba(238,192,112,0.76)" : "rgba(213,172,98,0.27)",
+                  pointerEvents: pose.visible ? "auto" : "none",
+                  transition: reduceMotion ? "none" :
+                    "transform 670ms cubic-bezier(.22,1,.36,1), opacity 480ms ease, filter 550ms ease, box-shadow 500ms ease",
+                  backfaceVisibility: "hidden",
+                }}
               >
-                <h3
-                  className="text-[clamp(1.55rem,2.8vw,2.5rem)] leading-[1.48]"
-                  style={{ fontFamily: titleFont, fontWeight: isArabic ? 600 : 400, color: CREAM, overflowWrap: "anywhere" }}
-                >
-                  {active.title}
-                </h3>
-                {active.subtitle?.trim() && (
-                  <p
-                    className="mt-4 text-[14px] leading-[1.95] sm:text-[15px]"
-                    style={{ fontFamily: bodyFont, color: "rgba(249,240,223,0.72)", overflowWrap: "anywhere" }}
-                  >
-                    {active.subtitle}
-                  </p>
-                )}
-              </motion.div>
-            </div>
-
-            <Link
-              href={active.href || "/experiences"}
-              aria-label={t("cardAria", { title: active.title })}
-              className="mt-7 inline-flex min-h-[48px] items-center gap-3 rounded-full border px-6 text-[13px] font-semibold transition-colors hover:border-[#EBCB8C] hover:bg-[#B8833E]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBCB8C]"
-              style={{
-                borderColor: "rgba(226,183,102,0.6)",
-                color: "#F2DBA8",
-                fontFamily: bodyFont,
-              }}
-            >
-              {t("discover")} <DirectionArrow size={16} aria-hidden="true" />
-            </Link>
-
-            {count > 1 && (
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t pt-5" style={{ borderColor: "rgba(223,180,105,0.19)" }}>
-                <div className="flex items-center gap-2" role="group" aria-label={t("navigationAria")}>
-                  <button
-                    type="button"
-                    onClick={() => navigate(-1)}
-                    aria-label={t("previousAria")}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border transition-all hover:border-[#D5AC62] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-                    style={{ color: CREAM, borderColor: "rgba(249,240,223,0.25)" }}
-                  >
-                    <ChevronUp size={22} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => navigate(1)}
-                    aria-label={t("nextAria")}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border transition-all hover:border-[#D5AC62] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-                    style={{ color: CREAM, borderColor: "rgba(249,240,223,0.25)" }}
-                  >
-                    <ChevronDown size={22} aria-hidden="true" />
-                  </button>
-                  <span className="ms-2 text-[11px]" style={{ color: "rgba(249,240,223,0.48)", fontFamily: bodyFont }}>
-                    {t("navigateHint")}
+                <CmsImage
+                  src={item.image}
+                  alt={item.alt || item.title}
+                  fill
+                  sizes="(max-width: 639px) 56vw, (max-width: 1023px) 280px, 320px"
+                  className="object-cover"
+                  fadeIn={false}
+                  priority={index === 0}
+                />
+                <div className="pointer-events-none absolute inset-0" style={{
+                  background: "linear-gradient(110deg,rgba(249,186,91,0.25),rgba(236,173,67,0.04) 34%,transparent 56%,rgba(4,3,3,0.48)),linear-gradient(to top,rgba(6,5,4,0.8),transparent 42%)",
+                }}/>
+                <div className="absolute start-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold tracking-[0.1em]" style={{
+                  background: "rgba(8,7,6,0.67)", color: CREAM, borderColor: "rgba(244,222,178,0.4)",
+                }}>
+                  {String(index + 1).padStart(2, "0")}
+                </div>
+                <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-7" style={{ background: "linear-gradient(to top,rgba(5,4,3,0.73),transparent)" }}>
+                  <span className="block text-[12px] leading-[1.5] sm:text-sm" style={{ color: CREAM, fontFamily: titleFont, overflowWrap: "anywhere" }}>
+                    {item.title}
                   </span>
                 </div>
-                <div className="flex items-center gap-2" role="group" aria-label={t("pickMomentAria")}>
-                  {items.map((item, index) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => select(index)}
-                      aria-label={t("showMomentAria", { title: item.title })}
-                      aria-pressed={index === currentIndex}
-                      className="flex h-10 w-10 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-                    >
-                      <span
-                        className="block h-[5px] rounded-full transition-all"
-                        style={{
-                          width: index === currentIndex ? "22px" : "7px",
-                          background: index === currentIndex ? GOLD : "rgba(249,240,223,0.27)",
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mx-auto mt-1 flex w-full max-w-[1100px] flex-col items-center gap-2 lg:mt-0">
+          <div className="flex w-full items-start justify-between gap-3 sm:items-center">
+            <div className="min-w-0" dir={isArabic ? "rtl" : "ltr"}>
+              <p className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.15em]" style={{ color: GOLD, fontFamily: bodyFont }}>
+                <Sparkles size={14} aria-hidden="true" />{t("feature")}
+                <span className="ms-2 tabular-nums" style={{ color: "rgba(249,240,223,0.45)" }}>
+                  {String(currentIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+                </span>
+              </p>
+              <motion.div
+                key={active.id}
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.25 }}
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <h3 className="mt-1 text-[clamp(1.2rem,2.1vw,1.85rem)] leading-[1.3]" style={{
+                  color: CREAM, fontFamily: titleFont, fontWeight: isArabic ? 600 : 400, overflowWrap: "anywhere",
+                }}>{active.title}</h3>
+                {detail && <p className="mt-1 max-w-[680px] text-[12px] leading-[1.75] sm:text-[13px]" style={{
+                  color: "rgba(249,240,223,0.69)", fontFamily: bodyFont, overflowWrap: "anywhere",
+                }}>{visibleDetail}</p>}
+                {canExpand && <button type="button" onClick={() => setExpanded((value) => !value)} className="mt-1 text-[12px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{ color: "#E6C786", fontFamily: bodyFont }}>
+                  {expanded ? t("readLess") : t("readMore")}
+                </button>}
+              </motion.div>
+            </div>
+            {count > 1 && (
+              <div className="hidden shrink-0 gap-2 sm:flex" role="group" aria-label={t("navigationAria")}>
+                <button type="button" aria-label={t("previousAria")} onClick={() => navigate(-1)}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-[#D5AC62] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
+                  <PrevIcon size={20} aria-hidden="true" />
+                </button>
+                <button type="button" aria-label={t("nextAria")} onClick={() => navigate(1)}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-[#D5AC62] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
+                  <NextIcon size={20} aria-hidden="true" />
+                </button>
               </div>
             )}
-            <Link
-              href="/experiences"
-              className="mt-5 inline-flex min-h-10 items-center gap-2 text-[12px] transition-colors hover:text-[#F3D69B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]"
-              style={{ color: "rgba(247,226,186,0.73)", fontFamily: bodyFont }}
-            >
-              {t("exploreAll")} <DirectionArrow size={14} aria-hidden="true" />
-            </Link>
+          </div>
+
+          <div className="mt-1 flex w-full flex-wrap items-center justify-between gap-2 border-t pt-3" style={{ borderColor: "rgba(213,172,98,0.2)" }}>
+            <div className="flex min-w-0 items-center gap-3">
+              <Link href={active.href || "/experiences"} aria-label={t("cardAria",{title:active.title})}
+                className="inline-flex min-h-[40px] items-center gap-2 rounded-full border px-4 text-[12px] font-semibold transition-colors hover:bg-[#D5AC62]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]" style={{
+                borderColor: "rgba(213,172,98,0.5)", color: "#F2DBA8", fontFamily: bodyFont,
+              }}>{t("discover")} <DirectionArrow size={14} aria-hidden="true"/></Link>
+              <Link href="/experiences" className="hidden text-[12px] hover:text-[#F3D69B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C] md:inline" style={{
+                color: "rgba(247,226,186,0.65)", fontFamily: bodyFont,
+              }}>{t("exploreAll")}</Link>
+            </div>
+            {count > 1 && (
+              <div className="flex items-center gap-1" role="group" aria-label={t("pickMomentAria")}>
+                <button type="button" onClick={() => navigate(-1)} aria-label={t("previousAria")}
+                  className="flex h-10 w-9 items-center justify-center rounded-full text-white sm:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
+                  <PrevIcon size={18} aria-hidden="true"/>
+                </button>
+                {items.map((item,index) => (
+                  <button key={item.id} type="button" onClick={() => select(index)}
+                    aria-label={t("showMomentAria",{title:item.title})}
+                    aria-pressed={index === currentIndex}
+                    className="flex h-10 w-7 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
+                    <span className="block h-[5px] rounded-full transition-all" style={{
+                      width: index === currentIndex ? 20 : 6,
+                      background: index === currentIndex ? GOLD : "rgba(249,240,223,0.3)",
+                    }}/>
+                  </button>
+                ))}
+                <button type="button" onClick={() => navigate(1)} aria-label={t("nextAria")}
+                  className="flex h-10 w-9 items-center justify-center rounded-full text-white sm:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EBCB8C]">
+                  <NextIcon size={18} aria-hidden="true"/>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

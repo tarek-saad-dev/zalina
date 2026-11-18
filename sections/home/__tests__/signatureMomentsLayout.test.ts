@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
+import { getMomentDeckPose, selectSignatureMomentCards, signedCarouselDistance } from "../signatureMomentsLayout";
 
 const fallback: CatalogMediaCard = {
   id: "fallback", title: "Zalina", image: "/assets/day.webp", alt: "Zalina"
@@ -19,7 +19,7 @@ describe("Signature Moments editorial layout data", () => {
       alt: `Experience ${index}`,
     }));
     expect(selectSignatureMomentCards(items, fallback).map((item) => item.id))
-      .toEqual(["0", "1", "2", "3"]);
+      .toEqual(["0", "1", "2", "3", "4"]);
     expect(items).toHaveLength(7);
   });
 
@@ -55,5 +55,24 @@ describe("vertical 3D carousel navigation", () => {
   });
   it("places the farthest item behind the active card", () => {
     expect(signedCarouselDistance(2, 0, 4)).toBe(2);
+  });
+});
+
+describe("portrait coverflow 3D geometry", () => {
+  it("promotes the centered card and angles left/right neighbors toward it", () => {
+    const center = getMomentDeckPose(0);
+    const left = getMomentDeckPose(-1);
+    const right = getMomentDeckPose(1);
+    expect(center.zIndex).toBeGreaterThan(left.zIndex);
+    expect(center.depth).toBeGreaterThan(left.depth);
+    expect(center.scale).toBe(1);
+    expect(left.rotateY).toBeGreaterThan(0);
+    expect(right.rotateY).toBeLessThan(0);
+    expect(left.opacity).toBeLessThan(center.opacity);
+  });
+  it("shows two depth tiers and hides items outside the five-card fan", () => {
+    expect(getMomentDeckPose(2).depth).toBeLessThan(getMomentDeckPose(1).depth);
+    expect(getMomentDeckPose(-2).visible).toBe(true);
+    expect(getMomentDeckPose(3).visible).toBe(false);
   });
 });

@@ -128,12 +128,14 @@
       "discover": "اكتشف التجربة",
       "exploreAll": "استكشف كل التجارب",
       "cardAria": "استكشف {title}",
-      "carouselAria": "معرض ثلاثي الأبعاد للتجارب المختارة في زالينا",
-      "navigationAria": "التنقل بين التجارب رأسيًا",
+      "carouselAria": "كاروسيل ثلاثي الأبعاد لكروت التجارب الطولية",
+      "navigationAria": "التنقل بين التجارب",
       "previousAria": "التجربة السابقة",
       "nextAria": "التجربة التالية",
       "navigateHint": "تصفح التجارب",
-      "pickMomentAria": "عرض {title}"
+      "pickMomentAria": "اختيار تجربة",
+      "readMore": "اقرأ الوصف كاملًا",
+      "readLess": "عرض أقل"
     },
     "dayNight": {
       "day": {

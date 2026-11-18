@@ -7,7 +7,7 @@ import type { CatalogMediaCard } from "@/lib/media";
 export function selectSignatureMomentCards(
   moments: CatalogMediaCard[],
   fallback: CatalogMediaCard,
-  limit = 4
+  limit = 5
 ): CatalogMediaCard[] {
   const valid = moments
     .filter((moment) => (
@@ -16,7 +16,7 @@ export function selectSignatureMomentCards(
       typeof moment.image === "string" &&
       moment.image.trim().length > 0
     ))
-    .slice(0, Math.max(1, Math.floor(limit) || 4));
+    .slice(0, Math.max(1, Math.floor(limit) || 5));
 
   return valid.length ? valid : [fallback];
 }
@@ -27,4 +27,28 @@ export function signedCarouselDistance(index: number, activeIndex: number, total
   const forward = (index - activeIndex + total) % total;
   const backward = forward - total;
   return forward <= total / 2 ? forward : backward;
+}
+
+export interface MomentDeckPose {
+  depth: number;
+  rotateY: number;
+  scale: number;
+  opacity: number;
+  zIndex: number;
+  visible: boolean;
+}
+
+/** Dimensionless fan geometry; X spacing is provided by responsive CSS. */
+export function getMomentDeckPose(visualOffset: number): MomentDeckPose {
+  const distance = Math.abs(visualOffset);
+  if (distance === 0) return { depth: 90, rotateY: 0, scale: 1, opacity: 1, zIndex: 30, visible: true };
+  if (distance === 1) return {
+    depth: -135, rotateY: visualOffset > 0 ? -51 : 51,
+    scale: 0.86, opacity: 0.9, zIndex: 20, visible: true,
+  };
+  if (distance === 2) return {
+    depth: -295, rotateY: visualOffset > 0 ? -66 : 66,
+    scale: 0.72, opacity: 0.64, zIndex: 10, visible: true,
+  };
+  return { depth: -410, rotateY: 0, scale: 0.6, opacity: 0, zIndex: 0, visible: false };
 }

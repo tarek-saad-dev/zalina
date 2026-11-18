@@ -128,12 +128,14 @@
       "discover": "Discover this experience",
       "exploreAll": "Explore all experiences",
       "cardAria": "Explore {title}",
-      "carouselAria": "Vertical 3D gallery of curated Zalina experiences",
-      "navigationAria": "Browse experiences vertically",
+      "carouselAria": "3D carousel of portrait experience cards",
+      "navigationAria": "Navigate experiences",
       "previousAria": "Previous experience",
       "nextAria": "Next experience",
       "navigateHint": "Browse moments",
-      "pickMomentAria": "Show {title}"
+      "pickMomentAria": "Choose a moment",
+      "readMore": "Read full description",
+      "readLess": "Show less"
     },
     "dayNight": {
       "day": {
