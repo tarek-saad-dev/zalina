@@ -30,7 +30,8 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const mouseStart = useRef<{ x: number; y: number } | null>(null);
-  const suppressCardClick = useRef(false);
+  // Only suppress the immediate synthetic pointer click following a swipe, never a keyboard activation.
+  const suppressPointerClickUntil = useRef(0);
   const carouselStageRef = useRef<HTMLDivElement | null>(null);
   const [userInteracted, setUserInteracted] = useState(false);
   const [isInView, setIsInView] = useState(false);
@@ -102,7 +103,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     const touch = event.touches[0];
     if (!touch) return;
     touchStart.current = { x: touch.clientX, y: touch.clientY };
-    suppressCardClick.current = false;
+    suppressPointerClickUntil.current = 0;
   };
   const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
     const start = touchStart.current;
@@ -113,7 +114,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
     const dy = touch.clientY - start.y;
     // Never intercept a natural vertical page scroll.
     if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-      suppressCardClick.current = true;
+      suppressPointerClickUntil.current = Date.now() + 550;
       navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
     }
   };
@@ -121,7 +122,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "mouse" || event.button !== 0) return;
     mouseStart.current = { x: event.clientX, y: event.clientY };
-    suppressCardClick.current = false;
+    suppressPointerClickUntil.current = 0;
   };
   // Window-level pointer release covers dragging beyond the carousel bounds.
   // Unlike capture on pointer-down, this preserves normal clicks on side cards.
@@ -133,7 +134,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
       const dx = event.clientX - start.x;
       const dy = event.clientY - start.y;
       if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-        suppressCardClick.current = true;
+        suppressPointerClickUntil.current = Date.now() + 550;
         navigate((dx * (isArabic ? -1 : 1) < 0 ? 1 : -1));
       }
     };
@@ -175,11 +176,12 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
 
         <div
           ref={carouselStageRef}
-          className="signature-moments-stage relative z-0 mt-5 w-full cursor-grab select-none sm:mt-6 active:cursor-grabbing"
+          className="signature-moments-stage group relative z-0 mt-5 w-full cursor-grab select-none sm:mt-6 active:cursor-grabbing"
           style={{ perspective: "1250px", transformStyle: "preserve-3d" }}
           role="region"
           aria-roledescription="carousel"
           aria-label={t("carouselAria")}
+          aria-describedby="signature-moments-keyboard-hint"
           tabIndex={count > 1 ? 0 : undefined}
           onKeyDown={(event) => {
             if (count < 2) return;
@@ -198,6 +200,12 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
           onPointerDown={handlePointerDown}
           onDragStart={(event) => event.preventDefault()}
         >
+          <span
+            id="signature-moments-keyboard-hint"
+            className="pointer-events-none absolute bottom-0 left-1/2 z-[40] -translate-x-1/2 whitespace-nowrap rounded-full border border-[#D5AC62]/30 bg-black/75 px-3 py-1.5 text-[11px] text-[#F3DCAD] opacity-0 transition-opacity group-focus-within:opacity-100"
+          >
+            {t("navigateHint")}
+          </span>
           <div className="signature-moments-aura pointer-events-none absolute left-1/2 top-1/2" aria-hidden="true" />
           <div className="signature-moments-ground pointer-events-none absolute bottom-[1%] left-1/2" aria-hidden="true" />
 
@@ -268,10 +276,9 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                       href={item.href || "/experiences"}
                       aria-label={t("cardAria", { title: item.title })}
                       onClick={(event) => {
-                        if (suppressCardClick.current) {
-                          event.preventDefault();
-                          suppressCardClick.current = false;
-                        }
+                        const blocked = event.detail > 0 && Date.now() < suppressPointerClickUntil.current;
+                        suppressPointerClickUntil.current = 0;
+                        if (blocked) event.preventDefault();
                       }}
                       className="group mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-xl border border-[#F2DCB4]/45 bg-white/[0.13] px-3 py-2 text-[12px] font-semibold text-[#FFF5E4] shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_8px_24px_rgba(0,0,0,0.3)] backdrop-blur-[14px] transition-all duration-300 hover:border-[#F4D499]/80 hover:bg-[#E5BE79]/25 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_8px_30px_rgba(0,0,0,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F1D399]"
                     >
@@ -285,12 +292,10 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
                     type="button"
                     tabIndex={-1}
                     aria-label={t("showMomentAria", { title: item.title })}
-                    onClick={() => {
-                      if (suppressCardClick.current) {
-                        suppressCardClick.current = false;
-                        return;
-                      }
-                      select(index);
+                    onClick={(event) => {
+                      const blocked = event.detail > 0 && Date.now() < suppressPointerClickUntil.current;
+                      suppressPointerClickUntil.current = 0;
+                      if (!blocked) select(index);
                     }}
                     className="absolute inset-0 z-20 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#F1D399]"
                     style={{ background: "transparent" }}
