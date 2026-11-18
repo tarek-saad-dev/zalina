@@ -91,10 +91,10 @@ export interface MomentDescriptionToken {
   wordIndex: number;
 }
 export function tokenizeMomentDescription(text: string): MomentDescriptionToken[] {
-  const parts = text.match(/\s+|\S+/gu) || [];
+  const parts = text.match(/\s+|\S+/g) || [];
   let wordCount = 0;
   return parts.map((part) => {
-    if (/^\s+$/u.test(part)) {
+    if (/^\s+$/.test(part)) {
       return { text: part, isWord: false, highlight: false, wordIndex: 0 };
     }
     wordCount += 1;
