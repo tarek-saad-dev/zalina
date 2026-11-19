@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { CMS_PAGES, CMS_IMAGE_SLOTS, staticCopyEntries, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, emptyCms } from "@/lib/static-cms/schema";
 import { LockKeyhole, ImagePlus, FileText, Search, RefreshCcw, LogOut, Check, UploadCloud } from "lucide-react";
 import { mergeLoadedWithDrafts } from "@/lib/static-cms/drafts";
+import { isEditorSelectionReady, editorSelectionKey } from "@/lib/static-cms/editor-selection";
 
 const PAGE_LABELS:Record<CmsPage,{ar:string;en:string}>={
   home:{ar:"الرئيسية",en:"Home"}, about:{ar:"عن زالينا",en:"About"},
@@ -23,6 +24,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  const [locale,setLocale]=useState<CmsLocale>("ar");
  const [view,setView]=useState<View>("texts");
  const [defaults,setDefaults]=useState<Record<string,string>>({});
+ const [loadedSelection,setLoadedSelection]=useState("");
  const [published,setPublished]=useState<CmsPublished>(emptyCms());
  const [inputs,setInputs]=useState<Record<string,string>>({});
  const editedTextKeys=useRef(new Set<string>());
@@ -52,6 +54,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    if(sequence!==requestSequence.current)return;
    setDefaults(data.defaults||{});
    setPublished(data.published||emptyCms());
+   setLoadedSelection(editorSelectionKey(locale,page));
    const merged:Record<string,string>={};
    for(const [key,val] of Object.entries(data.defaults||{}) as [string,string][])
      merged[locale+":"+page+"."+key]=data.published?.texts?.[locale]?.[page+"."+key]||val;
@@ -73,6 +76,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    const entries=staticCopyEntries(locale,page);
    const source=Object.fromEntries(entries.map(entry=>[entry.key.slice(page.length+1),entry.value]));
    setDefaults(source);setPublished(emptyCms());
+   setLoadedSelection(editorSelectionKey(locale,page));
    setInputs(current=>mergeLoadedWithDrafts(current,Object.fromEntries(entries.map(entry=>[locale+":"+entry.key,entry.value])),editedTextKeys.current));
  },[auth,locale,page]);
 
@@ -83,16 +87,17 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
       headers:{"Content-Type":"application/json"},body:JSON.stringify({password})});
      const body=await res.json().catch(()=>({}));
      if(!res.ok)throw new Error(body.message||t("بيانات الدخول غير صحيحة","Sign-in failed"));
-     setPassword("");setAuth("ready");
+     setPassword("");setLoadedSelection("");setAuth("ready");
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
  async function logout(){
    await fetch("/api/cms/auth",{method:"DELETE",credentials:"same-origin"});
    editedTextKeys.current.clear();editedAltSlots.current.clear();
-   setInputs({});setAlts({});
+   setInputs({});setAlts({});setLoadedSelection("");
    setAuth("login");setPublished(emptyCms());setNotice("");
  }
  async function saveText(key:string){
+   if(auth!=="ready"||!isEditorSelectionReady(loadedSelection,locale,page)||busy)return;
    setBusy(key);setNotice("");
    try{
     const res=await fetch("/api/cms/manage",{
@@ -129,7 +134,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    setImagePreviews(current=>{const v={...current};delete v[slot];return v;});
  }
  async function saveAlt(slot:CmsImageSlot){
-   if(!published.images[slot]||busy)return;
+   if(auth!=="ready"||!isEditorSelectionReady(loadedSelection,locale,page)||!published.images[slot]||busy)return;
    setBusy(slot);setNotice("");
    try{
      const alt_ar=alts[slot]?.ar||"", alt_en=alts[slot]?.en||"";
@@ -149,6 +154,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  }
 
  async function saveImage(slot:CmsImageSlot,restore=false){
+   if(auth!=="ready"||!isEditorSelectionReady(loadedSelection,locale,page)||busy)return;
    const file=selectedFiles[slot];
    if(!restore&&!file)return;
    setBusy(slot);setNotice("");
@@ -183,6 +189,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    const full=page+"."+key;return {key:full,label:key,original:fallback,now:inputs[locale+":"+full]??fallback,modified:published.texts?.[locale]?.[full]};
  }).filter(x=>(x.key+" "+x.now+" "+x.original).toLocaleLowerCase().includes(search.toLocaleLowerCase())),[page,defaults,inputs,published,locale,search]);
  const slots=CMS_IMAGE_SLOTS.filter(x=>x.page===page);
+ const selectionReady=isEditorSelectionReady(loadedSelection,locale,page);
  const fieldClass="w-full rounded-lg border border-[#D4AF37]/20 bg-[#100E0B] px-3 py-2.5 text-[14px] leading-7 text-[#F4ECDD] outline-none focus:border-[#D4AF37]/70";
  return <main dir={arabic?"rtl":"ltr"} className="min-h-screen bg-[#090807] px-4 pb-20 pt-32 text-[#F5EDDE] sm:px-8">
   <div className="mx-auto max-w-6xl">
@@ -229,7 +236,8 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
       <button className={cssButton(locale==="en")} onClick={()=>setLocale("en")}>English</button>
      </div>
     </div>
-    {view==="texts"&&<>
+    {!selectionReady&&<div role="status" className="rounded-xl border border-white/15 p-6 text-sm text-white/65">{t("جاري تحميل محتوى القسم واللغة المختارين...", "Loading the selected page and language...")}</div>}
+    {view==="texts"&&selectionReady&&<>
      <label className="mb-6 flex items-center gap-2 rounded-xl border border-white/15 px-4"><Search size={18} className="text-white/40"/>
       <input value={search} onChange={e=>{setSearch(e.target.value);setLimit(35);}} placeholder={t("ابحث عن عنوان أو نص","Search by text or field")}
        className="w-full bg-transparent py-3 text-sm outline-none"/>
@@ -258,7 +266,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
      </button>}
      {entries.length===0&&<p className="py-10 text-center text-white/45">{t("مفيش نتائج","No matches")}</p>}
     </>}
-    {view==="images"&&<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    {view==="images"&&selectionReady&&<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
       {slots.length===0&&<div className="rounded-xl border border-white/15 p-6 text-sm text-white/60">
        {t("الصفحة دي نصوصها ثابتة، وصورها بتتحدد من الـ Backend أو لسه مفيهاش صور ثابتة مخصصة.", "This page has no independent static photo slots; catalog images remain backend-managed.")}
       </div>}
@@ -304,6 +312,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  </main>;
 
  async function restoreText(key:string){
+   if(auth!=="ready"||!isEditorSelectionReady(loadedSelection,locale,page)||busy)return;
    setBusy(key);setNotice("");
    try{
      const url="/api/cms/manage?locale="+encodeURIComponent(locale)+"&key="+encodeURIComponent(key);
