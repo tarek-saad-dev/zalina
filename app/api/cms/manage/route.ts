@@ -51,11 +51,35 @@ export async function PATCH(req:NextRequest){
  refresh();
  return NextResponse.json({success:true,updatedAt:updated.updatedAt},{headers:{"Cache-Control":"no-store"}});
 }
+const MAX_UPLOAD_BODY=11*1024*1024;
+/** Refuse chunked/forged oversized bodies before multipart parsing allocates them. */
+async function parseLimitedForm(req:NextRequest):Promise<FormData> {
+  const contentType=req.headers.get("content-type")||"";
+  if(!contentType.startsWith("multipart/form-data;")||!req.body)throw new Error("Invalid multipart request");
+  const reader=req.body.getReader();
+  const parts:Uint8Array[]=[];
+  let total=0;
+  while(true){
+    const result=await reader.read();
+    if(result.done)break;
+    total+=result.value.byteLength;
+    if(total>MAX_UPLOAD_BODY){
+      await reader.cancel().catch(()=>undefined);
+      throw new Error("File too large");
+    }
+    parts.push(result.value);
+  }
+  const response=new Request("http://local.invalid",{
+    method:"POST",headers:{"Content-Type":contentType},body:new Uint8Array(Buffer.concat(parts))
+  });
+  return response.formData();
+}
+
 export async function PUT(req:NextRequest){
  const error=deny(req,true);if(error)return error;
  const size=Number(req.headers.get("content-length")||0);
- if(size>11*1024*1024)return NextResponse.json({message:"File too large"},{status:413});
- const data=await req.formData().catch(()=>null);
+ if(size>MAX_UPLOAD_BODY)return NextResponse.json({message:"File too large"},{status:413});
+ const data=await parseLimitedForm(req).catch(()=>null);
  const slot=data?.get("slot");
  const file=data?.get("image");
  const alt_ar=data?.get("alt_ar"),alt_en=data?.get("alt_en");
