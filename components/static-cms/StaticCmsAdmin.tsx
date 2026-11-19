@@ -24,6 +24,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  const [defaults,setDefaults]=useState<Record<string,string>>({});
  const [published,setPublished]=useState<CmsPublished>(emptyCms());
  const [inputs,setInputs]=useState<Record<string,string>>({});
+ const requestSequence=useRef(0);
  const [alts,setAlts]=useState<Record<string,{ar:string;en:string}>>({});
  const [imagePreviews,setImagePreviews]=useState<Record<string,string>>({});
  const [selectedFiles,setSelectedFiles]=useState<Record<string,File>>({});
@@ -39,29 +40,37 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  ).catch(()=>setAuth("disabled"));return ()=>{Object.values(previewRef.current).forEach(URL.revokeObjectURL);};},[]);
 
  const load=useCallback(async()=>{
+   const sequence=++requestSequence.current;
    const res=await fetch("/api/cms/manage?locale="+locale+"&page="+page,{credentials:"same-origin",cache:"no-store"});
+   if(sequence!==requestSequence.current)return;
    if(res.status===401){setAuth("login");return;}
    if(!res.ok)throw new Error(t("تعذر تحميل المحتوى","Could not load CMS content"));
    const data=await res.json();
+   if(sequence!==requestSequence.current)return;
    setDefaults(data.defaults||{});
    setPublished(data.published||emptyCms());
    const merged:Record<string,string>={};
    for(const [key,val] of Object.entries(data.defaults||{}) as [string,string][])
-     merged[page+"."+key]=data.published?.texts?.[locale]?.[page+"."+key]||val;
-   setInputs(merged);
-   setAlts(Object.fromEntries(Object.entries(data.published?.images||{}).map(([k,v])=>{
+     merged[locale+":"+page+"."+key]=data.published?.texts?.[locale]?.[page+"."+key]||val;
+   // Preserve locally edited values across page/locale changes.
+   setInputs(current=>({...merged,...current}));
+   const publishedAlts=Object.fromEntries(Object.entries(data.published?.images||{}).map(([k,v])=>{
       const img=v as {alt_ar?:string;alt_en?:string};
       return [k,{ar:img.alt_ar||"",en:img.alt_en||""}];
    })));
+   setAlts(current=>({...publishedAlts,...current}));
  },[page,locale,arabic]);
- useEffect(()=>{if(auth==="ready")void load().catch(err=>setNotice(err.message));},[auth,load]);
+ useEffect(()=>{
+   if(auth==="ready")void load().catch(err=>setNotice(err.message));
+   return ()=>{requestSequence.current++;};
+ },[auth,load]);
  // Vercel Preview has no persistent disk/secrets; provide a safe local-only demo.
  useEffect(()=>{
    if(auth!=="disabled")return;
    const entries=staticCopyEntries(locale,page);
    const source=Object.fromEntries(entries.map(entry=>[entry.key.slice(page.length+1),entry.value]));
    setDefaults(source);setPublished(emptyCms());
-   setInputs(Object.fromEntries(entries.map(entry=>[entry.key,entry.value])));
+   setInputs(current=>({...Object.fromEntries(entries.map(entry=>[locale+":"+entry.key,entry.value])),...current}));
  },[auth,locale,page]);
 
  async function login(event:FormEvent){
