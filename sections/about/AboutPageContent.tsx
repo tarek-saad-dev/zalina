@@ -134,7 +134,9 @@ function AboutHeroSection({ media, locale }: AboutSectionProps) {
       ))}
 
       <motion.div
-        className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 text-center md:px-12"
+        className={isArabic
+          ? "relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 text-center md:px-12"
+          : "relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center md:px-12"}
         style={{ opacity: fadeOut, paddingTop: "100px", paddingBottom: "80px" }}
       >
         {isArabic ? (
@@ -171,6 +173,14 @@ function AboutHeroSection({ media, locale }: AboutSectionProps) {
                 {t("hero.titleAccent")}
               </span>
             </motion.h1>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1, delay: 0.65 }}
+              className="lux-divider mx-auto mt-7 mb-1 origin-center"
+              style={{ maxWidth: "140px", opacity: 0.75 }}
+              aria-hidden="true"
+            />
             <motion.p
               variants={fadeUp}
               initial="hidden"
@@ -243,7 +253,7 @@ function AboutHeroSection({ media, locale }: AboutSectionProps) {
 
           </>
         )}
-        {!isArabic && (
+        {(
           <>
         <motion.div
           initial={{ opacity: 0 }}
