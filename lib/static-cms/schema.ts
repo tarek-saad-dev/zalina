@@ -21,10 +21,33 @@ export const CMS_IMAGE_SLOTS = [
   { id:"about.cta", page:"about", ar:"عن زالينا — صورة الخاتمة", en:"About — Ending", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"experiences.hero", page:"experiences", ar:"التجارب — صورة الغلاف", en:"Experiences — Hero", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"zones.hero", page:"zones", ar:"المناطق — صورة الغلاف", en:"Zones — Hero", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.overview", page:"zones", ar:"المناطق — نظرة عامة", en:"Zones — Overview", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.featured", page:"zones", ar:"المناطق — المنطقة المميزة", en:"Zones — Featured zone", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.journey.arrival", page:"zones", ar:"المناطق — الرحلة — الوصول", en:"Zones — Journey — Arrival", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.journey.explore", page:"zones", ar:"المناطق — الرحلة — الاستكشاف", en:"Zones — Journey — Explore", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.journey.live", page:"zones", ar:"المناطق — الرحلة — التجربة", en:"Zones — Journey — Live", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.journey.depart", page:"zones", ar:"المناطق — الرحلة — المغادرة", en:"Zones — Journey — Depart", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.booking.weddings", page:"zones", ar:"المناطق — الحجز — الأعراس", en:"Zones — Booking — Weddings", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.booking.corporate", page:"zones", ar:"المناطق — الحجز — الشركات", en:"Zones — Booking — Corporate", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.booking.private", page:"zones", ar:"المناطق — الحجز — المناسبات الخاصة", en:"Zones — Booking — Private", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"zones.cta", page:"zones", ar:"المناطق — صورة الخاتمة", en:"Zones — Final backdrop", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"gallery.hero", page:"gallery", ar:"المعرض — صورة الغلاف", en:"Gallery — Hero", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"gallery.cta", page:"gallery", ar:"المعرض — صورة الخاتمة", en:"Gallery — CTA", fallback:"/assets/zalina-hero-bg.webp" },
 ] as const;
-export type CmsImageSlot = (typeof CMS_IMAGE_SLOTS)[number]["id"];
+export type CmsImageSlot = (typeof CMS_IMAGE_SLOTS)[number]["id"] | `zones.main.${number}`;
+export type CmsSlotDefinition = { id: CmsImageSlot; page: CmsPage; ar: string; en: string; fallback: string };
+export function zoneImageSlot(id: number | undefined): CmsImageSlot | null {
+  return typeof id === "number" && Number.isSafeInteger(id) && id > 0 ? `zones.main.${id}` : null;
+}
+export function zoneImageSlots(zones: { id: number; title: string; image: string; titleAr?: string }[]): CmsSlotDefinition[] {
+  const seen = new Set<string>();
+  return zones.flatMap(zone => {
+    const id = zoneImageSlot(zone.id);
+    if (!id || seen.has(id)) return [];
+    seen.add(id);
+    return [{ id, page: "zones" as const, ar: `المناطق — المناطق الرئيسية — ${zone.titleAr || zone.title}`, en: `Zones — Main zones — ${zone.title}`, fallback: zone.image }];
+  });
+}
 
 export type CmsImage = { src: string; alt_ar?: string; alt_en?: string };
 export type CmsPublished = {
@@ -66,7 +89,7 @@ export function isCmsImageSlot(id: string): id is CmsImageSlot {
   return CMS_IMAGE_SLOTS.some(slot=>slot.id===id);
 }
 export function fallbackImage(slot: CmsImageSlot): string {
-  return CMS_IMAGE_SLOTS.find(x=>x.id===slot)!.fallback;
+  return CMS_IMAGE_SLOTS.find(x=>x.id===slot)?.fallback || "/assets/zalina-hero-bg.webp";
 }
 export function mergeCmsMessages(locale: CmsLocale, changes: Record<string,string>): Record<string,any> {
   const source = BASE_MESSAGES[locale] as unknown as Record<string,unknown>;

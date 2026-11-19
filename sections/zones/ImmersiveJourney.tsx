@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { CmsPhoto } from "@/components/static-cms/CmsPhoto";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { JOURNEY_STEPS, type Zone } from "./zones.data";
@@ -95,8 +95,9 @@ export function ImmersiveJourney({ zones = [] }: ImmersiveJourneyProps) {
                 transition={{ duration: 0.6, delay: index * 0.12 }}
                 whileHover={!prefersReduced ? { y: -5 } : undefined}
               >
-                <Image
-                  src={step.image}
+                <CmsPhoto
+                  slot={`zones.journey.${step.messageKey}`}
+              src={step.image}
                   alt={step.imageAlt}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
+import { CmsPhoto } from "@/components/static-cms/CmsPhoto";
+import { zoneImageSlot } from "@/lib/static-cms/schema";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -109,7 +110,8 @@ export function MainZones({ zones }: MainZonesProps) {
                     }`}
                   >
                     <div className="relative w-full lg:w-[55%] h-[220px] sm:h-[260px] lg:h-[340px] overflow-hidden">
-                      <Image
+                      <CmsPhoto
+                        slot={zoneImageSlot(zone.apiId)}
                         src={zone.image}
                         alt={`${zone.title} — ${zone.mood}`}
                         fill

@@ -7,6 +7,7 @@ import {
 } from "@/lib/static-cms/schema";
 import { cmsConfigured, isCmsAdmin, safeCmsOrigin } from "@/lib/static-cms/auth";
 import { readCms, updateCms, persistCmsImage } from "@/lib/static-cms/store";
+import { catalogZoneData } from "@/lib/static-cms/zone-slots";
 import { revalidatePath } from "next/cache";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -19,19 +20,29 @@ function deny(req:NextRequest,write=false):NextResponse|null {
 }
 function refresh():void {
  for(const lang of ["ar","en"]){
-   revalidatePath("/"+lang);
+   revalidatePath("/"+lang, "layout");
    for(const p of CMS_PAGES) revalidatePath("/"+lang+"/"+p);
  }
+}
+async function validSlot(slot: string) {
+ return isCmsImageSlot(slot) || (/^zones\.main\.[1-9][0-9]{0,15}$/.test(slot) && (await catalogZoneData()).slots.some(item => item.id === slot));
 }
 export async function GET(req:NextRequest){
  const error=deny(req);if(error)return error;
  const locale=req.nextUrl.searchParams.get("locale")==="en"?"en":"ar";
  const pageParam=req.nextUrl.searchParams.get("page")||"home";
  const page=(CMS_PAGES as readonly string[]).includes(pageParam)?pageParam as CmsPage:"home";
+ const catalog = page === "zones" ? await catalogZoneData(locale) : { slots: [], featured: undefined, images: [] as string[] };
+ const zoneSlots = catalog.slots;
+ const fixedSlots = CMS_IMAGE_SLOTS.map(slot => {
+   if (slot.id === "zones.featured") return {...slot, fallback: catalog.featured || slot.fallback};
+   const journey = ["zones.journey.arrival", "zones.journey.explore", "zones.journey.live", "zones.journey.depart"].indexOf(slot.id);
+   return journey >= 0 && catalog.images.length ? {...slot, fallback: catalog.images[journey % catalog.images.length]} : slot;
+ });
  return NextResponse.json({
   published:readCms(),
   defaults:Object.fromEntries(staticCopyEntries(locale,page).map(item=>[item.key.slice(page.length+1),item.value])),
-  slots:CMS_IMAGE_SLOTS,
+  slots:fixedSlots.flatMap(slot => slot.id === "zones.overview" ? [slot, ...zoneSlots] : [slot]),
   page,locale
  },{headers:{"Cache-Control":"no-store"}});
 }
@@ -83,7 +94,7 @@ export async function PUT(req:NextRequest){
  const slot=data?.get("slot");
  const file=data?.get("image");
  const alt_ar=data?.get("alt_ar"),alt_en=data?.get("alt_en");
- if(typeof slot!=="string"||!isCmsImageSlot(slot)||
+ if(typeof slot!=="string"||!await validSlot(slot)||
    !(file instanceof Blob) || file.size===0||file.size>10*1024*1024 ||
    !["image/jpeg","image/png","image/webp"].includes(file.type)||
    (typeof alt_ar!=="string" && alt_ar!==null)||(typeof alt_en!=="string"&&alt_en!==null)||
@@ -99,8 +110,8 @@ export async function PUT(req:NextRequest){
    // Strip EXIF/GPS, normalize orientation, downsample to safe maximum dimensions.
    const output=await photo.rotate().resize(2400,1600,{fit:"inside",withoutEnlargement:true})
      .webp({quality:86,effort:4}).toBuffer();
-   const url=persistCmsImage(slot,output);
-   updateCms(cms=>{cms.images[slot]={src:url,alt_ar:String(alt_ar||"").trim(),alt_en:String(alt_en||"").trim()};});
+   const url=persistCmsImage(slot as CmsImageSlot,output);
+   updateCms(cms=>{cms.images[slot as CmsImageSlot]={src:url,alt_ar:String(alt_ar||"").trim(),alt_en:String(alt_en||"").trim()};});
    refresh();
    return NextResponse.json({success:true,url},{headers:{"Cache-Control":"no-store"}});
  }catch{
@@ -111,14 +122,15 @@ export async function POST(req:NextRequest){
  const error=deny(req,true);if(error)return error;
  const input=await req.json().catch(()=>null);
  const slot=input?.slot,alt_ar=input?.alt_ar,alt_en=input?.alt_en;
- if(typeof slot!=="string"||!isCmsImageSlot(slot)||
+ if(typeof slot!=="string"||!await validSlot(slot)||
    typeof alt_ar!=="string"||typeof alt_en!=="string"||
    alt_ar.length>180||alt_en.length>180||/[<>]/.test(alt_ar+alt_en))
    return NextResponse.json({message:"Invalid alt description"},{status:422});
- if(!readCms().images[slot])return NextResponse.json({message:"Publish image first"},{status:404});
+ if(!readCms().images[slot as CmsImageSlot])return NextResponse.json({message:"Publish image first"},{status:404});
  updateCms(cms=>{
-   if(!cms.images[slot])throw new Error("Image changed");
-   cms.images[slot]={...cms.images[slot],alt_ar:alt_ar.trim(),alt_en:alt_en.trim()};
+   const existing = cms.images[slot as CmsImageSlot];
+   if(!existing)throw new Error("Image changed");
+   cms.images[slot as CmsImageSlot]={...existing,alt_ar:alt_ar.trim(),alt_en:alt_en.trim()};
  });
  refresh();
  return NextResponse.json({success:true},{headers:{"Cache-Control":"no-store"}});
@@ -129,8 +141,8 @@ export async function DELETE(req:NextRequest){
  const slot=req.nextUrl.searchParams.get("slot");
  const locale=req.nextUrl.searchParams.get("locale");
  const key=req.nextUrl.searchParams.get("key");
- if(slot&&isCmsImageSlot(slot)){
-   updateCms(cms=>{delete cms.images[slot];});
+ if(slot&&await validSlot(slot)){
+   updateCms(cms=>{delete cms.images[slot as CmsImageSlot];});
  }else if((locale==="ar"||locale==="en")&&key&&isEditableText(locale,key)){
    updateCms(cms=>{delete cms.texts[locale][key];});
  }else return NextResponse.json({message:"Unknown CMS item"},{status:422});
