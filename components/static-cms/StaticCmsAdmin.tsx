@@ -86,7 +86,12 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
       body:JSON.stringify({locale,key,value:inputs[key]||""}),
     });
     if(!res.ok)throw new Error((await res.json().catch(()=>({}))).message||"Request failed");
-    await load();
+    const publishedValue=(inputs[key]||"").trim();
+    setPublished(current=>({
+      ...current,
+      texts:{...current.texts,[locale]:{...current.texts[locale],[key]:publishedValue}},
+    }));
+    setInputs(current=>({...current,[key]:publishedValue||defaults[key.slice(page.length+1)]||""}));
     setNotice(t("تم نشر التعديل بنجاح","Content published successfully"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
@@ -123,8 +128,18 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
     });
     if(res.status===401){setAuth("login");throw new Error(t("انتهت الجلسة، سجل الدخول","Session expired"));}
     if(!res.ok)throw new Error((await res.json().catch(()=>({}))).message||"Upload failed");
+    const data=await res.json().catch(()=>({}));
+    setPublished(current=>{
+      const images={...current.images};
+      if(restore)delete images[slot];
+      else if(typeof data.url==="string")images[slot]={
+        src:data.url,alt_ar:alts[slot]?.ar||"",alt_en:alts[slot]?.en||""
+      };
+      return {...current,images};
+    });
     clearPreview(slot);
-    await load();setNotice(t("تم نشر صورة الموقع","Site image published"));
+    setNotice(t(restore?"تم استرجاع الصورة الأصلية":"تم نشر صورة الموقع",
+      restore?"Original image restored":"Site image published"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
  const entries=useMemo(()=>Object.entries(defaults).map(([key,fallback])=>{
@@ -252,7 +267,13 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
      const url="/api/cms/manage?locale="+encodeURIComponent(locale)+"&key="+encodeURIComponent(key);
      const res=await fetch(url,{method:"DELETE",credentials:"same-origin"});
      if(!res.ok)throw new Error((await res.json().catch(()=>({}))).message||"Could not restore");
-     await load();setNotice(t("تم استرجاع النص الأصلي","Original text restored"));
+     setPublished(current=>{
+       const translations={...current.texts[locale]};
+       delete translations[key];
+       return {...current,texts:{...current.texts,[locale]:translations}};
+     });
+     setInputs(current=>({...current,[key]:defaults[key.slice(page.length+1)]||""}));
+     setNotice(t("تم استرجاع النص الأصلي","Original text restored"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
 }
