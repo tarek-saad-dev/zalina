@@ -8,6 +8,8 @@ import {
   type TouchEvent as ReactTouchEvent,
 } from "react";
 import Image from "next/image";
+import { useCmsImage } from "@/components/static-cms/CmsImagesProvider";
+
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -62,6 +64,8 @@ export function GalleryPageContent({
   availableFilters,
 }: GalleryPageContentProps) {
   const t = useTranslations("gallery");
+  const heroImage=useCmsImage("gallery.hero", NEUTRAL_MEDIA_FALLBACK);
+  const ctaImage=useCmsImage("gallery.cta", NEUTRAL_MEDIA_FALLBACK);
   const locale = useLocale() === "ar" ? "ar" : "en";
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
@@ -209,7 +213,7 @@ export function GalleryPageContent({
           transition={{ duration: 14, ease: "easeOut" }}
         >
           <Image
-            src={NEUTRAL_MEDIA_FALLBACK}
+            src={heroImage}
             alt={t("hero.imageAlt")}
             fill
             priority
@@ -638,7 +642,7 @@ export function GalleryPageContent({
             viewport={{ once: true }}
           >
             <Image
-              src={NEUTRAL_MEDIA_FALLBACK}
+              src={ctaImage}
               alt=""
               fill
               sizes="100vw"

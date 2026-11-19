@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useCmsImage } from "@/components/static-cms/CmsImagesProvider";
+
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -58,6 +60,10 @@ function ExperienceBackground({
 
 export function DayNightExperience() {
   const t = useTranslations("home.dayNight");
+  const cmsDay=useCmsImage("home.day", DAY_IMAGES[0]);
+  const cmsNight=useCmsImage("home.night", NIGHT_IMAGES[0]);
+  const dayImages=useMemo<readonly string[]>(()=>cmsDay!==DAY_IMAGES[0]?[cmsDay]:DAY_IMAGES,[cmsDay]);
+  const nightImages=useMemo<readonly string[]>(()=>cmsNight!==NIGHT_IMAGES[0]?[cmsNight]:NIGHT_IMAGES,[cmsNight]);
   const isArabic = useLocale() === "ar";
 
   return (
@@ -76,7 +82,7 @@ export function DayNightExperience() {
         >
           {/* Background Image */}
           <ExperienceBackground
-            images={DAY_IMAGES}
+            images={dayImages}
             alt={t("day.imageAlt")}
           />
 
@@ -174,7 +180,7 @@ export function DayNightExperience() {
         >
           {/* Background Image */}
           <ExperienceBackground
-            images={NIGHT_IMAGES}
+            images={nightImages}
             alt={t("night.imageAlt")}
           />
 

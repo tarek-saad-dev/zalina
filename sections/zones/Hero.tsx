@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useCmsImage } from "@/components/static-cms/CmsImagesProvider";
+
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -15,6 +17,7 @@ import {
 
 export function Hero() {
   const t = useTranslations("zones");
+  const heroImage=useCmsImage("zones.hero", NEUTRAL_MEDIA_FALLBACK);
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
   const markHeroReady = useMarkHeroReady();
@@ -38,7 +41,7 @@ export function Hero() {
         transition={{ duration: 12, ease: "easeOut" }}
       >
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
+          src={heroImage}
           alt={t("hero.imageAlt")}
           fill
           className="object-cover"

@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useCmsImage } from "@/components/static-cms/CmsImagesProvider";
+
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
@@ -25,6 +27,7 @@ const PARTICLE_POSITIONS = [
 
 export function Hero() {
   const t = useTranslations("experiences");
+  const heroImage=useCmsImage("experiences.hero", NEUTRAL_MEDIA_FALLBACK);
   const prefersReducedMotion = useReducedMotion();
   const reduce = Boolean(prefersReducedMotion);
   const [isMobile, setIsMobile] = useState(false);
@@ -50,7 +53,7 @@ export function Hero() {
     >
       <motion.div className="absolute inset-0 will-change-transform" style={{ y, scale }}>
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
+          src={heroImage}
           alt={t("hero.imageAlt")}
           fill
           priority
