@@ -36,6 +36,7 @@ describe("About page image slots", () => {
   it("retains current images before API integration", () => {
     expect(normalizeAboutMedia(null)).toEqual({});
     expect(normalizeAboutMedia({ data: [] })).toEqual({});
-    expect(resolveAboutImage({}, "story.primary", "ar", "صورة")).toEqual({ src: "/assets/day.webp", alt: "صورة" });
+    expect(resolveAboutImage({}, "story.primary", "ar", "صورة")).toEqual({ src: "/assets/zalina-hero-bg.webp", alt: "صورة" });
+    expect(resolveAboutImage({}, "story.secondary", "en", "Photo")).toEqual({ src: "/assets/zalina-hero-bg.webp", alt: "Photo" });
   });
 });
