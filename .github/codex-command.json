@@ -1,6 +1,6 @@
 {
-  "action": "REVIEW",
-  "number": 21,
+  "action": "EXECUTE",
+  "number": 22,
   "requested_by": "tarek-saad-dev",
-  "request_id": "pr-21-remove-static-featured-and-sunset-offer-review-1"
+  "request_id": "issue-22-execute-1"
 }
