@@ -5,7 +5,7 @@ import {
 } from "../schema";
 describe("Zalina Mini CMS static-only contract",()=>{
  it("limits content editing to marketing translations",()=>{
-   expect(CMS_PAGES).toEqual(["home","about","experiences","zones","gallery","weddings"]);
+   expect(CMS_PAGES).toEqual(["home","about","experiences","zones","gallery","nav","footer","common"]);
    expect(isEditableText("ar","about.hero.subtitle")).toBe(true);
    expect(isEditableText("ar","booking.price")).toBe(false);
    expect(isEditableText("en","seo.home.title")).toBe(false);

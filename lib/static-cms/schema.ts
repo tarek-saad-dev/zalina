@@ -1,7 +1,7 @@
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 
-export const CMS_PAGES = ["home","about","experiences","zones","gallery","weddings"] as const;
+export const CMS_PAGES = ["home","about","experiences","zones","gallery","nav","footer","common"] as const;
 export type CmsPage = (typeof CMS_PAGES)[number];
 export type CmsLocale = "ar" | "en";
 

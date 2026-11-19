@@ -5,7 +5,7 @@ A lightweight native editor for marketing text and hardcoded photos. Laravel-pow
 ## Editor
 - AR: /ar/admin/content
 - EN: /en/admin/content
-- Static copy: Home, About, Experiences, Zones, Gallery and Weddings translation namespaces; keys containing ICU variables are not editable.
+- Static copy: Home, About, Experiences, Zones, Gallery, Navigation, Footer and general UI translation namespaces; keys containing ICU variables are not editable.
 - Static images: 17 named image slots. Images sourced from the Laravel API are never replaced.
 - Select page, language, Text or Images, edit one item, Publish, or Restore original.
 - Real JPG, PNG and WebP photos up to 10 MiB, optimized using Sharp to WebP; Arabic and English alt text.
