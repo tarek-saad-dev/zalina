@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
- cmsConfigured, cmsLoginAllowed, cmsLoginAttempt, verifyCmsPassword,
+ cmsConfigured, reserveCmsLoginAttempt, verifyCmsPassword,
  makeSession, isCmsAdmin, safeCmsOrigin, CMS_SESSION_COOKIE, CMS_COOKIE_SECONDS,
 } from "@/lib/static-cms/auth";
 export const runtime="nodejs";
@@ -12,7 +12,8 @@ export async function GET(req:NextRequest){
 export async function POST(req:NextRequest){
  if(!cmsConfigured())return NextResponse.json({message:"CMS is not configured on this server"},{status:503});
  if(!safeCmsOrigin(req))return NextResponse.json({message:"Invalid origin"},{status:403});
- if(!cmsLoginAllowed(req))return NextResponse.json({message:"Too many login attempts"},{status:429});
+ // Reserve a slot before any async request parsing, so concurrent logins count.
+ if(!reserveCmsLoginAttempt())return NextResponse.json({message:"Too many login attempts"},{status:429});
  // Cap public login requests even if Content-Length is missing or forged.
  const reader=req.body?.getReader();
  if(!reader)return NextResponse.json({message:"Empty request"},{status:400});
@@ -31,7 +32,6 @@ export async function POST(req:NextRequest){
  let data: {password?:unknown} | null=null;
  try{data=JSON.parse(Buffer.concat(chunks).toString("utf8"));}catch{}
  const valid=verifyCmsPassword(typeof data?.password==="string"?data.password:"");
- cmsLoginAttempt(req,valid);
  if(!valid)return NextResponse.json({message:"Incorrect CMS password"},{status:401,headers:{"Cache-Control":"no-store"}});
  const result=NextResponse.json({authenticated:true},{headers:{"Cache-Control":"no-store"}});
  result.cookies.set(CMS_SESSION_COOKIE,makeSession(),{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"strict",path:"/",maxAge:CMS_COOKIE_SECONDS});

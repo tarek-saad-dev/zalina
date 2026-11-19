@@ -241,7 +241,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
        return <section key={item.key} className="rounded-xl border border-[#D4AF37]/15 bg-[#17130F] p-5">
         <div className="mb-2 break-all font-mono text-xs text-[#D4AF37]/80">{item.label}</div>
         <label className="mb-2 block text-xs text-white/45">{t("النص المنشور","Editable published copy")}</label>
-        <textarea dir={locale==="ar"?"rtl":"ltr"} rows={item.now.length>100?4:2} maxLength={1200}
+        <textarea disabled={!!busy} dir={locale==="ar"?"rtl":"ltr"} rows={item.now.length>100?4:2} maxLength={1200}
           value={inputs[locale+":"+item.key]??item.original}
           onChange={e=>{editedTextKeys.current.add(locale+":"+item.key);setInputs(v=>({...v,[locale+":"+item.key]:e.target.value}));}} className={fieldClass}/>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -273,11 +273,11 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
         <div className="space-y-3 p-4">
          <h2 className="font-semibold">{slot[arabic?"ar":"en"]}</h2>
          <p className="font-mono text-[11px] text-[#D4AF37]/70">{id}</p>
-         <input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>selectImage(id,e.target.files?.[0])}
+         <input type="file" disabled={!!busy} accept="image/jpeg,image/png,image/webp" onChange={e=>selectImage(id,e.target.files?.[0])}
           className="w-full rounded-lg border border-white/10 bg-black/30 p-2 text-xs file:me-3 file:rounded-md file:border-0 file:bg-[#D4AF37]/20 file:px-3 file:py-1.5 file:text-[#F4ECDD]"/>
-         <input className={fieldClass} dir="rtl" maxLength={180} placeholder="وصف الصورة بالعربي" value={alts[id]?.ar||""}
+         <input disabled={!!busy} className={fieldClass} dir="rtl" maxLength={180} placeholder="وصف الصورة بالعربي" value={alts[id]?.ar||""}
           onChange={e=>{editedAltSlots.current.add(id);setAlts(x=>({...x,[id]:{...(x[id]||{ar:asset?.alt_ar||"",en:asset?.alt_en||""}),ar:e.target.value}}));}}/>
-         <input className={fieldClass} dir="ltr" maxLength={180} placeholder="English alt text" value={alts[id]?.en||""}
+         <input disabled={!!busy} className={fieldClass} dir="ltr" maxLength={180} placeholder="English alt text" value={alts[id]?.en||""}
           onChange={e=>{editedAltSlots.current.add(id);setAlts(x=>({...x,[id]:{...(x[id]||{ar:asset?.alt_ar||"",en:asset?.alt_en||""}),en:e.target.value}}));}}/>
          <div className="flex gap-2">
           <button disabled={auth!=="ready"||!selectedFiles[id]||!!busy} onClick={()=>void saveImage(id)}

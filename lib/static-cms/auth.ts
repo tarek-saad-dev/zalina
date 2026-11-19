@@ -2,12 +2,12 @@ import "server-only";
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { NextRequest } from "next/server";
 import { cmsDirectory } from "./store";
+import { createLoginAttemptLimiter } from "./login-rate";
 
 const COOKIE = "zalina_cms_session";
 const LIFETIME_MS = 8 * 60 * 60 * 1000;
-// Global fail-closed throttle prevents bypass using spoofed client IP headers.
-const LOGIN_WINDOW_MS = 10 * 60 * 1000;
-let failures = { count: 0, until: 0 };
+// Global limiter for the one-process Zalina VPS; never trust spoofable IP headers.
+const loginLimiter = createLoginAttemptLimiter();
 
 export function cmsConfigured(): boolean {
   const hash=process.env.ZALINA_CMS_PASSWORD_HASH || "";
@@ -51,14 +51,6 @@ export function safeCmsOrigin(req:NextRequest):boolean {
   const expected=process.env.ZALINA_CMS_ORIGIN?.trim() || req.nextUrl.origin;
   return Boolean(origin && origin === expected);
 }
-export function cmsLoginAllowed(_req:NextRequest):boolean {
-  const now=Date.now();
-  if(now >= failures.until)failures={count:0,until:now+LOGIN_WINDOW_MS};
-  return failures.count < 12;
-}
-export function cmsLoginAttempt(_req:NextRequest,success:boolean):void {
-  if(success){failures={count:0,until:0};return;}
-  const now=Date.now();
-  if(now >= failures.until)failures={count:0,until:now+LOGIN_WINDOW_MS};
-  failures.count++;
+export function reserveCmsLoginAttempt(): boolean {
+  return loginLimiter.reserve();
 }
