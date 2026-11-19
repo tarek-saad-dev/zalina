@@ -7,8 +7,8 @@ export type CmsLocale = "ar" | "en";
 
 export const CMS_IMAGE_SLOTS = [
   { id:"home.hero", page:"home", ar:"الرئيسية — صورة الغلاف", en:"Home — Hero", fallback:"/assets/zalina-hero-bg.webp" },
-  { id:"home.day", page:"home", ar:"الرئيسية — النهار", en:"Home — Day", fallback:"/assets/day.webp" },
-  { id:"home.night", page:"home", ar:"الرئيسية — الليل", en:"Home — Night", fallback:"/assets/night.webp" },
+  { id:"home.day", page:"home", ar:"الرئيسية — النهار", en:"Home — Day", fallback:"/assets/day-experience.webp" },
+  { id:"home.night", page:"home", ar:"الرئيسية — الليل", en:"Home — Night", fallback:"/assets/night-experience.webp" },
   { id:"about.hero", page:"about", ar:"عن زالينا — صورة الغلاف", en:"About — Hero", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"about.story.primary", page:"about", ar:"عن زالينا — الصورة الكبيرة", en:"About — Main story", fallback:"/assets/day.webp" },
   { id:"about.story.secondary", page:"about", ar:"عن زالينا — الصورة المتداخلة", en:"About — Overlay story", fallback:"/assets/night-experience.webp" },
