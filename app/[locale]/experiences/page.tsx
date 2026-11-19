@@ -3,8 +3,6 @@ import { LuxuryFooter } from "@/sections/home";
 import {
   Hero,
   ExperiencesCatalog,
-  EditorialSpotlight,
-  ExclusiveOffer,
   WhyChooseZalina,
   ExperienceJourney,
   MicroInfoPreview,
@@ -49,8 +47,6 @@ export default async function ExperiencesPage({
           experiences={experiences}
           initialCategory={searchParams?.category}
         />
-        <EditorialSpotlight />
-        <ExclusiveOffer />
         <WhyChooseZalina />
         <ExperienceJourney />
         <MicroInfoPreview />
