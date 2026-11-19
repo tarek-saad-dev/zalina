@@ -66,9 +66,9 @@ export function GalleryPageContent({
   const t = useTranslations("gallery");
   const heroImage=useCmsImage("gallery.hero", NEUTRAL_MEDIA_FALLBACK);
   const ctaImage=useCmsImage("gallery.cta", NEUTRAL_MEDIA_FALLBACK);
+  const locale = useLocale() === "ar" ? "ar" : "en";
   const cmsHeroAlt=useCmsAlt("gallery.hero",locale,t("hero.imageAlt"));
   const cmsCtaAlt=useCmsAlt("gallery.cta",locale,t("cta.imageAlt"));
-  const locale = useLocale() === "ar" ? "ar" : "en";
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
   const initialFilter: GalleryFilterId =

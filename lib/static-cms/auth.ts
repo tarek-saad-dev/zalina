@@ -5,7 +5,9 @@ import { cmsDirectory } from "./store";
 
 const COOKIE = "zalina_cms_session";
 const LIFETIME_MS = 8 * 60 * 60 * 1000;
-const failed = new Map<string,{count:number,until:number}>();
+// Global fail-closed throttle prevents bypass using spoofed client IP headers.
+const LOGIN_WINDOW_MS = 10 * 60 * 1000;
+let failures = { count: 0, until: 0 };
 
 export function cmsConfigured(): boolean {
   const hash=process.env.ZALINA_CMS_PASSWORD_HASH || "";
@@ -49,16 +51,14 @@ export function safeCmsOrigin(req:NextRequest):boolean {
   const expected=process.env.ZALINA_CMS_ORIGIN?.trim() || req.nextUrl.origin;
   return Boolean(origin && origin === expected);
 }
-export function cmsLoginAllowed(req:NextRequest):boolean {
-  const key=(req.headers.get("x-real-ip")||"unknown").slice(0,120);
-  const now=Date.now(),last=failed.get(key);
-  if(last&&last.until>now&&last.count>=8)return false;
-  return true;
+export function cmsLoginAllowed(_req:NextRequest):boolean {
+  const now=Date.now();
+  if(now >= failures.until)failures={count:0,until:now+LOGIN_WINDOW_MS};
+  return failures.count < 12;
 }
-export function cmsLoginAttempt(req:NextRequest,success:boolean):void {
-  const key=(req.headers.get("x-real-ip")||req.ip||"unknown").slice(0,120);
-  if(success){failed.delete(key);return;}
-  const now=Date.now(),last=failed.get(key),counter=last&&last.until>now?last.count+1:1;
-  failed.set(key,{count:counter,until:now+10*60*1000});
-  if(failed.size>500)failed.clear();
+export function cmsLoginAttempt(_req:NextRequest,success:boolean):void {
+  if(success){failures={count:0,until:0};return;}
+  const now=Date.now();
+  if(now >= failures.until)failures={count:0,until:now+LOGIN_WINDOW_MS};
+  failures.count++;
 }

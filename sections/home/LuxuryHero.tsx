@@ -39,9 +39,9 @@ const RAIL_KEYS = [
 
 export function LuxuryHero() {
   const t = useTranslations("home.hero");
+  const isArabic = useLocale() === "ar";
   const heroImage = useCmsImage("home.hero", NEUTRAL_MEDIA_FALLBACK);
   const heroAlt=useCmsAlt("home.hero",isArabic?"ar":"en",t("imageAlt"));
-  const isArabic = useLocale() === "ar";
   const containerRef = useRef<HTMLDivElement>(null);
   const markHeroReady = useMarkHeroReady();
 
