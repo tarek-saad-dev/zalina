@@ -2,14 +2,14 @@ import "server-only";
 import path from "node:path";
 import fs from "node:fs";
 import { randomBytes } from "node:crypto";
-import { emptyCms, type CmsPublished, type CmsImageSlot } from "./schema";
+import { emptyCms, type CmsPublished, type CmsImageSlot, type CmsImage } from "./schema";
 
 const FILE_NAME = "published.json";
 
 export function cmsDirectory(): string | null {
   const dir = process.env.ZALINA_STATIC_CMS_DIR?.trim();
   // Never write content inside git source, /tmp, or a serverless ephemeral directory.
-  if (!dir || !path.isAbsolute(dir) || dir === "/" || dir.startsWith("/tmp/") || dir.startsWith(process.cwd()+path.sep)) return null;
+  if (!dir || !path.isAbsolute(dir) || dir === "/" || dir.startsWith("/tmp/") || dir===process.cwd() || dir.startsWith(process.cwd()+path.sep)) return null;
   return dir;
 }
 export function readCms(): CmsPublished {
@@ -36,7 +36,9 @@ export function updateCms(mutate: (data: CmsPublished) => void): CmsPublished {
   const tmp=path.join(dir, "."+FILE_NAME+"."+randomBytes(8).toString("hex")+".tmp");
   try {
     fs.writeFileSync(tmp,JSON.stringify(data,null,2)+"\n",{encoding:"utf8",mode:0o600,flag:"wx"});
-    fs.renameSync(tmp,path.join(dir,FILE_NAME));
+    const current=path.join(dir,FILE_NAME);
+    if(fs.existsSync(current))fs.copyFileSync(current,path.join(dir,"published.previous.json"));
+    fs.renameSync(tmp,current);
   } finally {
     if(fs.existsSync(tmp)) fs.unlinkSync(tmp);
   }
@@ -56,10 +58,10 @@ export function persistCmsImage(slot: CmsImageSlot, bytes: Buffer): string {
   fs.writeFileSync(path.join(folder,filename),bytes,{flag:"wx",mode:0o600});
   return "/api/cms/media/"+filename;
 }
-export function cmsImageUrls(): Record<string,string> {
-  const result: Record<string,string> = {};
+export function cmsImageUrls(): Record<string,CmsImage> {
+  const result: Record<string,CmsImage> = {};
   for(const [key, image] of Object.entries(readCms().images)) {
-    if(image?.src?.startsWith("/api/cms/media/")) result[key]=image.src;
+    if(image?.src?.startsWith("/api/cms/media/")) result[key]=image;
   }
   return result;
 }

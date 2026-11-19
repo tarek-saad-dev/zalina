@@ -8,7 +8,7 @@ import {
   type TouchEvent as ReactTouchEvent,
 } from "react";
 import Image from "next/image";
-import { useCmsImage } from "@/components/static-cms/CmsImagesProvider";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -66,6 +66,8 @@ export function GalleryPageContent({
   const t = useTranslations("gallery");
   const heroImage=useCmsImage("gallery.hero", NEUTRAL_MEDIA_FALLBACK);
   const ctaImage=useCmsImage("gallery.cta", NEUTRAL_MEDIA_FALLBACK);
+  const cmsHeroAlt=useCmsAlt("gallery.hero",locale,t("hero.imageAlt"));
+  const cmsCtaAlt=useCmsAlt("gallery.cta",locale,t("cta.imageAlt"));
   const locale = useLocale() === "ar" ? "ar" : "en";
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
@@ -214,7 +216,7 @@ export function GalleryPageContent({
         >
           <Image
             src={heroImage}
-            alt={t("hero.imageAlt")}
+            alt={cmsHeroAlt}
             fill
             priority
             fetchPriority="high"

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useCmsImage } from "@/components/static-cms/CmsImagesProvider";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -65,6 +65,8 @@ export function DayNightExperience() {
   const dayImages=useMemo<readonly string[]>(()=>cmsDay!==DAY_IMAGES[0]?[cmsDay]:DAY_IMAGES,[cmsDay]);
   const nightImages=useMemo<readonly string[]>(()=>cmsNight!==NIGHT_IMAGES[0]?[cmsNight]:NIGHT_IMAGES,[cmsNight]);
   const isArabic = useLocale() === "ar";
+  const dayAlt=useCmsAlt("home.day",isArabic?"ar":"en",t("day.imageAlt"));
+  const nightAlt=useCmsAlt("home.night",isArabic?"ar":"en",t("night.imageAlt"));
 
   return (
     <section
@@ -83,7 +85,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <ExperienceBackground
             images={dayImages}
-            alt={t("day.imageAlt")}
+            alt={dayAlt}
           />
 
           {/* Warm Day Overlay */}
@@ -181,7 +183,7 @@ export function DayNightExperience() {
           {/* Background Image */}
           <ExperienceBackground
             images={nightImages}
-            alt={t("night.imageAlt")}
+            alt={nightAlt}
           />
 
           {/* Cool Night Overlay */}
