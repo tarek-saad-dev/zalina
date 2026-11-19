@@ -38,6 +38,7 @@ export function isAboutImageSlot(id: string): id is AboutImageSlot {
 export function isApprovedAboutImageUrl(value: unknown): value is string {
   if (typeof value !== "string" || !value.trim()) return false;
   const url = value.trim();
+  if (/^\/api\/cms\/media\/[a-z0-9-]+-[a-f0-9]{16}\.webp$/.test(url)) return true;
   if (/^\/(assets|storage|media)\//.test(url) && !url.includes("..") && !url.includes("?")) return true;
   try {
     const parsed = new URL(url);
