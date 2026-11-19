@@ -272,7 +272,7 @@ function BrandStorySection() {
               }}
             >
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
+                src="/assets/day.webp"
                 alt={t("story.imageAltPrimary")}
                 fill
                 className="object-cover"
@@ -298,7 +298,7 @@ function BrandStorySection() {
               }}
             >
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
+                src="/assets/night-experience.webp"
                 alt={t("story.imageAltSecondary")}
                 fill
                 className="object-cover"
@@ -404,8 +404,8 @@ function BrandStorySection() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 1.1, delay: 0.4 }}
-              className="relative pl-6"
-              style={{ borderLeft: "2px solid rgba(212,175,55,0.45)" }}
+              className="relative ps-6"
+              style={{ borderInlineStart: "2px solid rgba(212,175,55,0.45)" }}
             >
               <p
                 style={{

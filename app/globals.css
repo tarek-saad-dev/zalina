@@ -3552,3 +3552,29 @@ a:hover {
     filter: none !important;
   }
 }
+
+/* About only: Arabic typography must not inherit Cormorant Garamond or italic
+   treatments intended for Latin display text. Keep English styling untouched. */
+html[lang="ar"] .zalina-about-page :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  font-style: normal !important;
+  font-weight: 500;
+  letter-spacing: 0 !important;
+  line-height: 1.45 !important;
+}
+html[lang="ar"] .zalina-about-page :is(h1, h2, h3, h4, h5, h6) span {
+  font-family: inherit !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+}
+html[lang="ar"] .zalina-about-page :is(p, blockquote, blockquote p) {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+  line-height: 1.85;
+}
+@media (max-width: 767px) {
+  html[lang="ar"] .zalina-about-page :is(h1, h2, h3, h4, h5, h6) {
+    line-height: 1.55 !important;
+  }
+}

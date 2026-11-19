@@ -17,7 +17,7 @@ export default function AboutPage({ params }: Props) {
 
   return (
     <HeroRevealGate>
-      <main className="w-full min-h-screen" style={{ background: "#050505" }}>
+      <main className="zalina-about-page w-full min-h-screen" style={{ background: "#050505" }}>
         <AboutPageContent />
         <LuxuryFooter />
       </main>
