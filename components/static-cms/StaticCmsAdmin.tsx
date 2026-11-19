@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { CMS_PAGES, CMS_IMAGE_SLOTS, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, emptyCms } from "@/lib/static-cms/schema";
+import { CMS_PAGES, CMS_IMAGE_SLOTS, staticCopyEntries, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, emptyCms } from "@/lib/static-cms/schema";
 import { LockKeyhole, ImagePlus, FileText, Search, RefreshCcw, LogOut, Check, UploadCloud } from "lucide-react";
 
 const PAGE_LABELS:Record<CmsPage,{ar:string;en:string}>={
@@ -54,6 +54,14 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    })));
  },[page,locale,arabic]);
  useEffect(()=>{if(auth==="ready")void load().catch(err=>setNotice(err.message));},[auth,load]);
+ // Vercel Preview has no persistent disk/secrets; provide a safe local-only demo.
+ useEffect(()=>{
+   if(auth!=="disabled")return;
+   const entries=staticCopyEntries(locale,page);
+   const source=Object.fromEntries(entries.map(entry=>[entry.key.slice(page.length+1),entry.value]));
+   setDefaults(source);setPublished(emptyCms());
+   setInputs(Object.fromEntries(entries.map(entry=>[entry.key,entry.value])));
+ },[auth,locale,page]);
 
  async function login(event:FormEvent){
    event.preventDefault();setBusy("login");setNotice("");
@@ -138,9 +146,9 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    </div>
    {notice&&<div role="status" className="mb-5 rounded-lg border border-[#D4AF37]/30 bg-[#201A12] p-3 text-sm">{notice}</div>}
    {auth==="loading"&&<p>{t("جاري التحميل…","Loading…")}</p>}
-   {auth==="disabled"&&<div className="rounded-xl border border-[#D4AF37]/30 p-6 leading-8">
-    {t("الـ CMS جاهز للربط، لكن إعدادات الحفظ وكلمة مرور المدير مش موجودة على السيرفر. تفعيلها موضح في مستند إعداد الـ VPS.",
-      "CMS preview is installed, but the persistent storage and admin secrets are not configured on this server. See deployment instructions.")}
+   {auth==="disabled"&&<div role="status" className="mb-6 rounded-xl border border-[#D4AF37]/30 p-6 leading-8">
+    {t("دي معاينة فقط: تقدر تختار صورك وتشوف شكلها، لكن النشر مقفول لحد إعداد التخزين وكلمة مرور المدير على VPS.",
+      "This preview is read-only: select photos to preview locally, then configure VPS persistence and admin credentials for publishing.")}
    </div>}
    {auth==="login"&&<form onSubmit={login} className="mx-auto max-w-md rounded-2xl border border-[#D4AF37]/25 bg-[#17130E] p-7">
     <LockKeyhole className="mb-5 text-[#D4AF37]" size={30}/>
@@ -151,7 +159,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
      {t("دخول","Sign in")}
     </button>
    </form>}
-   {auth==="ready"&&<>
+   {(auth==="ready"||auth==="disabled")&&<>
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap gap-2">
        {CMS_PAGES.map(p=><button key={p} onClick={()=>{setPage(p);setLimit(35);setSearch("");}} className={cssButton(page===p)}>
@@ -185,9 +193,9 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
           value={inputs[item.key]??item.original}
           onChange={e=>setInputs(v=>({...v,[item.key]:e.target.value}))} className={fieldClass}/>
         <div className="mt-3 flex flex-wrap gap-2">
-         <button disabled={!needsSave||!!busy} onClick={()=>void saveText(item.key)}
+         <button disabled={auth!=="ready"||!needsSave||!!busy} onClick={()=>void saveText(item.key)}
           className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF37] px-4 py-2 text-sm font-semibold text-black disabled:opacity-35"><Check size={15}/>{t("نشر التعديل","Publish")}</button>
-         <button disabled={!changed||!!busy} onClick={()=>void restoreText(item.key)}
+         <button disabled={auth!=="ready"||!changed||!!busy} onClick={()=>void restoreText(item.key)}
           className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-sm text-white/75 disabled:opacity-35"><RefreshCcw size={15}/>{t("الأصل","Restore")}</button>
         </div>
        </section>;
@@ -220,10 +228,10 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
          <input className={fieldClass} dir="ltr" maxLength={180} placeholder="English alt text" value={alts[id]?.en||""}
           onChange={e=>setAlts(x=>({...x,[id]:{...(x[id]||{ar:"",en:""}),en:e.target.value}}))}/>
          <div className="flex gap-2">
-          <button disabled={!selectedFiles[id]||!!busy} onClick={()=>void saveImage(id)}
+          <button disabled={auth!=="ready"||!selectedFiles[id]||!!busy} onClick={()=>void saveImage(id)}
            className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-sm font-semibold text-black disabled:opacity-35">
            <UploadCloud size={16}/>{t("نشر الصورة","Publish image")}</button>
-          <button disabled={!asset||!!busy} onClick={()=>void saveImage(id,true)}
+          <button disabled={auth!=="ready"||!asset||!!busy} onClick={()=>void saveImage(id,true)}
            className="min-h-11 rounded-lg border border-white/20 px-3 text-xs text-white/70 disabled:opacity-35">{t("الأصل","Restore")}</button>
          </div>
         </div>
