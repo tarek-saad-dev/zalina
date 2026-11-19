@@ -1,6 +1,6 @@
 {
-  "action": "EXECUTE",
-  "number": 22,
+  "action": "REVIEW",
+  "number": 23,
   "requested_by": "tarek-saad-dev",
-  "request_id": "issue-22-execute-1"
+  "request_id": "pr-23-zones-image-coverage-review-1"
 }
