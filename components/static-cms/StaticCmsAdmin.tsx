@@ -57,7 +57,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    const publishedAlts=Object.fromEntries(Object.entries(data.published?.images||{}).map(([k,v])=>{
       const img=v as {alt_ar?:string;alt_en?:string};
       return [k,{ar:img.alt_ar||"",en:img.alt_en||""}];
-   })));
+   }));
    setAlts(current=>({...publishedAlts,...current}));
  },[page,locale,arabic]);
  useEffect(()=>{
@@ -93,15 +93,15 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
     const res=await fetch("/api/cms/manage",{
       method:"PATCH",credentials:"same-origin",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({locale,key,value:inputs[key]||""}),
+      body:JSON.stringify({locale,key,value:inputs[locale+":"+key]||""}),
     });
     if(!res.ok)throw new Error((await res.json().catch(()=>({}))).message||"Request failed");
-    const publishedValue=(inputs[key]||"").trim();
+    const publishedValue=(inputs[locale+":"+key]||"").trim();
     setPublished(current=>({
       ...current,
       texts:{...current.texts,[locale]:{...current.texts[locale],[key]:publishedValue}},
     }));
-    setInputs(current=>({...current,[key]:publishedValue||defaults[key.slice(page.length+1)]||""}));
+    setInputs(current=>({...current,[locale+":"+key]:publishedValue||defaults[key.slice(page.length+1)]||""}));
     setNotice(t("تم نشر التعديل بنجاح","Content published successfully"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
@@ -172,7 +172,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
  const entries=useMemo(()=>Object.entries(defaults).map(([key,fallback])=>{
-   const full=page+"."+key;return {key:full,label:key,original:fallback,now:inputs[full]??fallback,modified:published.texts?.[locale]?.[full]};
+   const full=page+"."+key;return {key:full,label:key,original:fallback,now:inputs[locale+":"+full]??fallback,modified:published.texts?.[locale]?.[full]};
  }).filter(x=>(x.key+" "+x.now+" "+x.original).toLocaleLowerCase().includes(search.toLocaleLowerCase())),[page,defaults,inputs,published,locale,search]);
  const slots=CMS_IMAGE_SLOTS.filter(x=>x.page===page);
  const fieldClass="w-full rounded-lg border border-[#D4AF37]/20 bg-[#100E0B] px-3 py-2.5 text-[14px] leading-7 text-[#F4ECDD] outline-none focus:border-[#D4AF37]/70";
@@ -234,8 +234,8 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
         <div className="mb-2 break-all font-mono text-xs text-[#D4AF37]/80">{item.label}</div>
         <label className="mb-2 block text-xs text-white/45">{t("النص المنشور","Editable published copy")}</label>
         <textarea dir={locale==="ar"?"rtl":"ltr"} rows={item.now.length>100?4:2} maxLength={1200}
-          value={inputs[item.key]??item.original}
-          onChange={e=>setInputs(v=>({...v,[item.key]:e.target.value}))} className={fieldClass}/>
+          value={inputs[locale+":"+item.key]??item.original}
+          onChange={e=>setInputs(v=>({...v,[locale+":"+item.key]:e.target.value}))} className={fieldClass}/>
         <div className="mt-3 flex flex-wrap gap-2">
          <button disabled={auth!=="ready"||!needsSave||!!busy} onClick={()=>void saveText(item.key)}
           className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF37] px-4 py-2 text-sm font-semibold text-black disabled:opacity-35"><Check size={15}/>{t("نشر التعديل","Publish")}</button>
@@ -306,7 +306,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
        delete translations[key];
        return {...current,texts:{...current.texts,[locale]:translations}};
      });
-     setInputs(current=>({...current,[key]:defaults[key.slice(page.length+1)]||""}));
+     setInputs(current=>({...current,[locale+":"+key]:defaults[key.slice(page.length+1)]||""}));
      setNotice(t("تم استرجاع النص الأصلي","Original text restored"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
