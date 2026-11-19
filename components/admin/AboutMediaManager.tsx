@@ -122,6 +122,11 @@ export function AboutMediaManager({ locale }: { locale: string }) {
       });
       if (!response.ok) throw new Error(ar ? "تعذر استرجاع الصورة." : "Could not restore image.");
       await load();
+      const oldPreview = previewUrls.current[slot];
+      if (oldPreview) URL.revokeObjectURL(oldPreview);
+      delete previewUrls.current[slot];
+      setFiles(current => ({ ...current, [slot]: undefined }));
+      setPreviews(current => ({ ...current, [slot]: undefined }));
       setNotice(ar ? "تم استرجاع الصورة الافتراضية." : "Default image restored.");
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Request failed");
