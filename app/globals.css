@@ -3591,14 +3591,15 @@ html[lang="ar"] .zalina-about-page h1.about-hero-home-headline .about-hero-accen
   font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif !important;
   font-style: normal !important;
   font-weight: 400 !important;
-  font-size: var(--laxr-size-hero);
-  line-height: var(--laxr-lh);
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
+  line-height: 1.2 !important;
   letter-spacing: 0 !important;
+  text-align: center;
   white-space: normal;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 430px) {
   html[lang="ar"] .zalina-about-page h1.about-hero-home-headline .about-hero-accent {
-    font-size: clamp(1.6rem, 6.9vw, 2rem);
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
   }
 }

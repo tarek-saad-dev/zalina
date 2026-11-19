@@ -4,7 +4,6 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { ArrowUpRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
@@ -117,16 +116,6 @@ function AboutHeroSection() {
         }}
       />
 
-      {isArabic && (
-        <div
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background: "linear-gradient(270deg,rgba(5,5,5,0.78) 0%,rgba(5,5,5,0.43) 36%,rgba(5,5,5,0.08) 69%,transparent 100%)",
-          }}
-        />
-      )}
-
       {STARS.map((s, i) => (
         <div
           key={i}
@@ -143,94 +132,43 @@ function AboutHeroSection() {
       ))}
 
       <motion.div
-        className={isArabic
-          ? "relative z-10 flex min-h-[100svh] flex-col justify-center px-5 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] pt-[calc(var(--zalina-nav-height)+env(safe-area-inset-top,0px)+2rem)] sm:px-8 md:px-12 lg:px-20"
-          : "relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 md:px-12"}
-        style={isArabic
-          ? { opacity: fadeOut }
-          : { opacity: fadeOut, paddingTop: "100px", paddingBottom: "80px" }}
+        className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 text-center md:px-12"
+        style={{ opacity: fadeOut, paddingTop: "100px", paddingBottom: "80px" }}
       >
         {isArabic ? (
-          <div className="mx-auto w-full max-w-7xl" dir="rtl">
-            <div className="lux-hero-copy flex w-full max-w-[min(42rem,100%)] flex-col items-start text-right">
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.08 }}
-                className="mb-5 inline-flex items-center self-start gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/[0.07] px-3 py-1.5"
-              >
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]" />
-                <span
-                  className="text-[11px] text-[#D4AF37]/90"
-                  style={{ fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif" }}
-                >
-                  {t("hero.eyebrow")}
-                </span>
-              </motion.div>
+          <div className="mx-auto flex w-full max-w-[920px] flex-col items-center justify-center text-center" dir="rtl">
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="lux-eyebrow mb-5 text-center"
+            >
+              {t("hero.eyebrow")}
+            </motion.p>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.95, delay: 0.28 }}
-                className="about-hero-home-headline flex w-full flex-col items-start gap-3 text-right sm:gap-5"
+            <motion.h1
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.95, delay: 0.28 }}
+              className="about-hero-home-headline flex w-full flex-col items-center justify-center gap-3 text-center sm:gap-5"
+            >
+              <span
+                className="block w-full text-center text-[#F8F5ED]/95"
+                style={{
+                  fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif",
+                  fontSize: "clamp(2rem, 3.6vw, 3.15rem)",
+                  fontWeight: 400,
+                  lineHeight: 1.35,
+                }}
               >
-                <span
-                  className="block w-full text-[#F8F5ED]/95"
-                  style={{
-                    fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif",
-                    fontSize: "clamp(1.85rem, 3.6vw, 3.15rem)",
-                    fontWeight: 400,
-                    lineHeight: 1.35,
-                  }}
-                >
-                  {t("hero.titleLine1")}
-                </span>
-                <span className="about-hero-accent lux-laxr lux-laxr--hero block w-full text-[#D4AF37]">
-                  {t("hero.titleAccent")}
-                </span>
-              </motion.h1>
-
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.95, delay: 0.82 }}
-                className="lux-divider mt-6 mb-4 w-full origin-right"
-                style={{ maxWidth: "7.5rem", opacity: 0.8 }}
-              />
-
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.95 }}
-                className="max-w-[36rem] text-right text-[13px] leading-[1.85] text-[#F8F5ED]/65 sm:text-[15px]"
-                style={{ fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif" }}
-              >
-                {t("hero.subtitle")}
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 1.1 }}
-                className="mt-7 flex w-full flex-wrap items-center gap-4"
-              >
-                <Link
-                  href="/book-now"
-                  className="inline-flex min-h-[47px] items-center justify-center rounded-[2px] bg-gradient-to-br from-[#D4AF37] to-[#B8963E] px-8 py-3 text-[12px] font-medium text-[#050505] shadow-[0_8px_24px_rgba(212,175,55,0.2)] transition-all duration-300 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F1D399]"
-                  style={{ fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif" }}
-                >
-                  {t("cta.secondary")}
-                </Link>
-                <Link
-                  href="/experiences"
-                  className="group inline-flex min-h-[44px] items-center gap-2 text-[12px] text-[#F8F5ED]/65 transition-colors hover:text-[#D4AF37] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F1D399]"
-                  style={{ fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif" }}
-                >
-                  <span>{t("cta.primary")}</span>
-                  <ArrowUpRight size={14} className="scale-x-[-1] transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
-                </Link>
-              </motion.div>
-            </div>
+                {t("hero.titleLine1")}
+              </span>
+              <span className="about-hero-accent lux-laxr lux-laxr--hero block w-full text-center text-[#D4AF37]">
+                {t("hero.titleAccent")}
+              </span>
+            </motion.h1>
           </div>
         ) : (
           <>
