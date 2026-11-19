@@ -228,8 +228,8 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
      </label>
      <div className="grid gap-4 md:grid-cols-2">
       {entries.slice(0,limit).map(item=>{
-       const changed=(inputs[item.key]??item.original)!==item.original;
-       const needsSave=(inputs[item.key]??item.original)!==(item.modified??item.original);
+       const changed=item.now!==item.original;
+       const needsSave=item.now!==(item.modified??item.original);
        return <section key={item.key} className="rounded-xl border border-[#D4AF37]/15 bg-[#17130F] p-5">
         <div className="mb-2 break-all font-mono text-xs text-[#D4AF37]/80">{item.label}</div>
         <label className="mb-2 block text-xs text-white/45">{t("النص المنشور","Editable published copy")}</label>
