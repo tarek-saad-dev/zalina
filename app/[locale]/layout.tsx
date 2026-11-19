@@ -8,6 +8,8 @@ import { LuxuryNavbar } from "@/components/layout/LuxuryNavbar";
 import { InitialPageLoader } from "@/components/layout/InitialPageLoader";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import "../globals.css";
+import { cmsImageUrls } from "@/lib/static-cms/store";
+import { CmsImagesProvider } from "@/components/static-cms/CmsImagesProvider";
 
 /** Local Arabic display face (from Cut Salon) — hero / section titles only. */
 const laxr = localFont({
@@ -63,6 +65,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   setRequestLocale(locale);
 
   const messages = await getMessages();
+  const cmsImages = cmsImageUrls();
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   const jsonLd = {
@@ -101,11 +104,13 @@ export default async function LocaleLayout({ children, params }: Props) {
         className={`${laxr.variable} antialiased min-h-screen bg-bg-main`}
       >
         <NextIntlClientProvider messages={messages}>
+          <CmsImagesProvider images={cmsImages}>
           <MotionProvider>
             <InitialPageLoader />
             <LuxuryNavbar />
             {children}
           </MotionProvider>
+          </CmsImagesProvider>
         </NextIntlClientProvider>
       </body>
     </html>

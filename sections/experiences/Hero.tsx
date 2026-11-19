@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
+
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
@@ -25,6 +27,8 @@ const PARTICLE_POSITIONS = [
 
 export function Hero() {
   const t = useTranslations("experiences");
+  const heroImage=useCmsImage("experiences.hero", NEUTRAL_MEDIA_FALLBACK);
+  const heroAlt=useCmsAlt("experiences.hero",useLocale()==="ar"?"ar":"en",t("hero.imageAlt"));
   const prefersReducedMotion = useReducedMotion();
   const reduce = Boolean(prefersReducedMotion);
   const [isMobile, setIsMobile] = useState(false);
@@ -50,8 +54,8 @@ export function Hero() {
     >
       <motion.div className="absolute inset-0 will-change-transform" style={{ y, scale }}>
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
-          alt={t("hero.imageAlt")}
+          src={heroImage}
+          alt={heroAlt}
           fill
           priority
           fetchPriority="high"

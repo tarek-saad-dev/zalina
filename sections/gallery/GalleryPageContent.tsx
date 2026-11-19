@@ -8,6 +8,8 @@ import {
   type TouchEvent as ReactTouchEvent,
 } from "react";
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
+
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -62,7 +64,11 @@ export function GalleryPageContent({
   availableFilters,
 }: GalleryPageContentProps) {
   const t = useTranslations("gallery");
+  const heroImage=useCmsImage("gallery.hero", NEUTRAL_MEDIA_FALLBACK);
+  const ctaImage=useCmsImage("gallery.cta", NEUTRAL_MEDIA_FALLBACK);
   const locale = useLocale() === "ar" ? "ar" : "en";
+  const cmsHeroAlt=useCmsAlt("gallery.hero",locale,t("hero.imageAlt"));
+  const cmsCtaAlt=useCmsAlt("gallery.cta",locale,"");
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
   const initialFilter: GalleryFilterId =
@@ -209,8 +215,8 @@ export function GalleryPageContent({
           transition={{ duration: 14, ease: "easeOut" }}
         >
           <Image
-            src={NEUTRAL_MEDIA_FALLBACK}
-            alt={t("hero.imageAlt")}
+            src={heroImage}
+            alt={cmsHeroAlt}
             fill
             priority
             fetchPriority="high"
@@ -638,8 +644,8 @@ export function GalleryPageContent({
             viewport={{ once: true }}
           >
             <Image
-              src={NEUTRAL_MEDIA_FALLBACK}
-              alt=""
+              src={ctaImage}
+              alt={cmsCtaAlt}
               fill
               sizes="100vw"
               className="object-cover"

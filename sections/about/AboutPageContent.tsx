@@ -2,11 +2,11 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
+import { resolveAboutImage, type AboutMediaMap } from "@/lib/about/media";
 import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
 import {
   HERO_BLUR_DATA_URL,
@@ -33,6 +33,8 @@ const STARS = [
   { top: "7%", left: "68%", size: 2, delay: "2.0s", dur: "4.3s" },
 ];
 
+type AboutSectionProps = { media: AboutMediaMap; locale: string };
+
 const MANIFESTO_KEYS = ["heritage", "presence", "evenings"] as const;
 const PILLAR_KEYS = ["heritage", "atmosphere", "celebration"] as const;
 const STORY_KEYS = [
@@ -51,8 +53,9 @@ const DIFFERENCE_KEYS = [
 ] as const;
 
 /* ─── Section: Hero ─────────────────────────────────────── */
-function AboutHeroSection() {
+function AboutHeroSection({ media, locale }: AboutSectionProps) {
   const t = useTranslations("about");
+  const isArabic = useLocale() === "ar";
   const ref = useRef<HTMLDivElement>(null);
   const markHeroReady = useMarkHeroReady();
   const { scrollYProgress } = useScroll({
@@ -71,8 +74,8 @@ function AboutHeroSection() {
     >
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
-          alt={t("hero.imageAlt")}
+          src={resolveAboutImage(media, "hero", locale, t("hero.imageAlt")).src}
+          alt={resolveAboutImage(media, "hero", locale, t("hero.imageAlt")).alt}
           fill
           className="object-cover object-center"
           priority
@@ -131,9 +134,66 @@ function AboutHeroSection() {
       ))}
 
       <motion.div
-        className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 md:px-12"
+        className={isArabic
+          ? "relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 text-center md:px-12"
+          : "relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center md:px-12"}
         style={{ opacity: fadeOut, paddingTop: "100px", paddingBottom: "80px" }}
       >
+        {isArabic ? (
+          <div className="mx-auto flex w-full max-w-[920px] flex-col items-center justify-center text-center" dir="rtl">
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="lux-eyebrow mb-5 text-center"
+            >
+              {t("hero.eyebrow")}
+            </motion.p>
+
+            <motion.h1
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.95, delay: 0.28 }}
+              className="about-hero-home-headline flex w-full flex-col items-center justify-center gap-3 text-center sm:gap-5"
+            >
+              <span
+                className="block w-full text-center text-[#F8F5ED]/95"
+                style={{
+                  fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif",
+                  fontSize: "clamp(2rem, 3.6vw, 3.15rem)",
+                  fontWeight: 400,
+                  lineHeight: 1.35,
+                }}
+              >
+                {t("hero.titleLine1")}
+              </span>
+              <span className="about-hero-accent lux-laxr lux-laxr--hero block w-full text-center text-[#D4AF37]">
+                {t("hero.titleAccent")}
+              </span>
+            </motion.h1>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1, delay: 0.65 }}
+              className="lux-divider mx-auto mt-7 mb-1 origin-center"
+              style={{ maxWidth: "140px", opacity: 0.75 }}
+              aria-hidden="true"
+            />
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.8, delay: 0.75 }}
+              className="mx-auto mt-7 max-w-[640px] text-center text-[clamp(14px,1.35vw,18px)] leading-[1.9] text-[#F8F5ED]/75"
+              style={{ fontFamily: "var(--font-body-ar), 'Alexandria', sans-serif" }}
+            >
+              {t("hero.subtitle")}
+            </motion.p>
+          </div>
+        ) : (
+          <>
         <motion.p
           variants={fadeUp}
           initial="hidden"
@@ -190,6 +250,11 @@ function AboutHeroSection() {
           {t("hero.subtitle")}
         </motion.p>
 
+
+          </>
+        )}
+        {(
+          <>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -222,13 +287,16 @@ function AboutHeroSection() {
             />
           </motion.div>
         </motion.div>
+
+          </>
+        )}
       </motion.div>
     </section>
   );
 }
 
 /* ─── Section: Brand Story ───────────────────────────────── */
-function BrandStorySection() {
+function BrandStorySection({ media, locale }: AboutSectionProps) {
   const t = useTranslations("about");
 
   return (
@@ -272,8 +340,8 @@ function BrandStorySection() {
               }}
             >
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
-                alt={t("story.imageAltPrimary")}
+                src={resolveAboutImage(media, "story.primary", locale, t("story.imageAltPrimary")).src}
+                alt={resolveAboutImage(media, "story.primary", locale, t("story.imageAltPrimary")).alt}
                 fill
                 className="object-cover"
               />
@@ -298,8 +366,8 @@ function BrandStorySection() {
               }}
             >
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
-                alt={t("story.imageAltSecondary")}
+                src={resolveAboutImage(media, "story.secondary", locale, t("story.imageAltSecondary")).src}
+                alt={resolveAboutImage(media, "story.secondary", locale, t("story.imageAltSecondary")).alt}
                 fill
                 className="object-cover"
               />
@@ -404,8 +472,8 @@ function BrandStorySection() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 1.1, delay: 0.4 }}
-              className="relative pl-6"
-              style={{ borderLeft: "2px solid rgba(212,175,55,0.45)" }}
+              className="relative ps-6"
+              style={{ borderInlineStart: "2px solid rgba(212,175,55,0.45)" }}
             >
               <p
                 style={{
@@ -557,7 +625,7 @@ function ManifestoSection() {
 }
 
 /* ─── Section: Signature Pillars ─────────────────────────── */
-function PillarsSection() {
+function PillarsSection({ media, locale }: AboutSectionProps) {
   const t = useTranslations("about");
 
   return (
@@ -615,8 +683,8 @@ function PillarsSection() {
               >
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
                   <Image
-                    src={NEUTRAL_MEDIA_FALLBACK}
-                    alt={title}
+                    src={resolveAboutImage(media, `pillars.${key}`, locale, title).src}
+                    alt={resolveAboutImage(media, `pillars.${key}`, locale, title).alt}
                     fill
                     className="object-cover"
                   />
@@ -679,7 +747,7 @@ function PillarsSection() {
 }
 
 /* ─── Section: Immersive Stories ─────────────────────────── */
-function ImmersiveStoriesSection() {
+function ImmersiveStoriesSection({ media, locale }: AboutSectionProps) {
   const t = useTranslations("about");
 
   return (
@@ -804,8 +872,8 @@ function ImmersiveStoriesSection() {
           >
             <div className="relative w-full h-full" style={{ minHeight: "580px" }}>
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
-                alt={t("stories.imageAlt")}
+                src={resolveAboutImage(media, "stories", locale, t("stories.imageAlt")).src}
+                alt={resolveAboutImage(media, "stories", locale, t("stories.imageAlt")).alt}
                 fill
                 className="object-cover"
                 style={{ border: "1px solid rgba(212,175,55,0.18)" }}
@@ -840,7 +908,7 @@ function ImmersiveStoriesSection() {
 }
 
 /* ─── Section: The Zalina Difference ─────────────────────── */
-function DifferenceSection() {
+function DifferenceSection({ media, locale }: AboutSectionProps) {
   const t = useTranslations("about");
 
   return (
@@ -961,8 +1029,8 @@ function DifferenceSection() {
               }}
             >
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
-                alt={t("difference.imageAltNight")}
+                src={resolveAboutImage(media, "difference.night", locale, t("difference.imageAltNight")).src}
+                alt={resolveAboutImage(media, "difference.night", locale, t("difference.imageAltNight")).alt}
                 fill
                 className="object-cover"
               />
@@ -987,8 +1055,8 @@ function DifferenceSection() {
               }}
             >
               <Image
-                src={NEUTRAL_MEDIA_FALLBACK}
-                alt={t("difference.imageAltDay")}
+                src={resolveAboutImage(media, "difference.day", locale, t("difference.imageAltDay")).src}
+                alt={resolveAboutImage(media, "difference.day", locale, t("difference.imageAltDay")).alt}
                 fill
                 className="object-cover"
               />
@@ -1014,7 +1082,7 @@ function DifferenceSection() {
 }
 
 /* ─── Section: Final CTA ─────────────────────────────────── */
-function AboutCTASection() {
+function AboutCTASection({ media, locale }: AboutSectionProps) {
   const t = useTranslations("about");
 
   return (
@@ -1024,8 +1092,8 @@ function AboutCTASection() {
     >
       <div className="absolute inset-0">
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
-          alt={t("cta.imageAlt")}
+          src={resolveAboutImage(media, "cta", locale, t("cta.imageAlt")).src}
+          alt={resolveAboutImage(media, "cta", locale, t("cta.imageAlt")).alt}
           fill
           className="object-cover"
         />
@@ -1180,16 +1248,16 @@ function AboutCTASection() {
 }
 
 /* ─── Main Export ────────────────────────────────────────── */
-export function AboutPageContent() {
+export function AboutPageContent({ media, locale }: AboutSectionProps) {
   return (
     <div className="lux-page w-full">
-      <AboutHeroSection />
-      <BrandStorySection />
+      <AboutHeroSection media={media} locale={locale} />
+      <BrandStorySection media={media} locale={locale} />
       <ManifestoSection />
-      <PillarsSection />
-      <ImmersiveStoriesSection />
-      <DifferenceSection />
-      <AboutCTASection />
+      <PillarsSection media={media} locale={locale} />
+      <ImmersiveStoriesSection media={media} locale={locale} />
+      <DifferenceSection media={media} locale={locale} />
+      <AboutCTASection media={media} locale={locale} />
     </div>
   );
 }

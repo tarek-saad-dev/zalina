@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
+
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
@@ -15,6 +17,8 @@ import {
 
 export function Hero() {
   const t = useTranslations("zones");
+  const heroImage=useCmsImage("zones.hero", NEUTRAL_MEDIA_FALLBACK);
+  const heroAlt=useCmsAlt("zones.hero",useLocale()==="ar"?"ar":"en",t("hero.imageAlt"));
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
   const markHeroReady = useMarkHeroReady();
@@ -38,8 +42,8 @@ export function Hero() {
         transition={{ duration: 12, ease: "easeOut" }}
       >
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
-          alt={t("hero.imageAlt")}
+          src={heroImage}
+          alt={heroAlt}
           fill
           className="object-cover"
           priority

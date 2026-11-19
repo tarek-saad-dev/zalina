@@ -15,7 +15,11 @@ export function HeritageStory() {
   return (
     <section
       className="relative overflow-hidden lux-section-compact"
-      style={{ background: "transparent" }}
+      style={{
+        background: "transparent",
+        // Tighten only the transition into Signature Moments.
+        paddingBottom: "clamp(12px, 1.7vh, 20px)",
+      }}
     >
       {/* Subtle Pattern Background */}
       <div className="absolute inset-0 lux-pattern opacity-50" />
@@ -107,7 +111,7 @@ export function HeritageStory() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.5 }}
             className="flex justify-center"
-            style={{ marginTop: "var(--space-6)" }}
+            style={{ marginTop: "clamp(12px, 1.8vh, 20px)" }}
           >
             <div className="lux-ornament">
               <svg

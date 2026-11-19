@@ -2,6 +2,8 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
+
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -38,6 +40,8 @@ const RAIL_KEYS = [
 export function LuxuryHero() {
   const t = useTranslations("home.hero");
   const isArabic = useLocale() === "ar";
+  const heroImage = useCmsImage("home.hero", NEUTRAL_MEDIA_FALLBACK);
+  const heroAlt=useCmsAlt("home.hero",isArabic?"ar":"en",t("imageAlt"));
   const containerRef = useRef<HTMLDivElement>(null);
   const markHeroReady = useMarkHeroReady();
 
@@ -71,8 +75,8 @@ export function LuxuryHero() {
     >
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <Image
-          src={NEUTRAL_MEDIA_FALLBACK}
-          alt={t("imageAlt")}
+          src={heroImage}
+          alt={heroAlt}
           fill
           className="object-cover object-center"
           priority

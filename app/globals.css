@@ -3552,3 +3552,54 @@ a:hover {
     filter: none !important;
   }
 }
+
+/* About only: Arabic typography must not inherit Cormorant Garamond or italic
+   treatments intended for Latin display text. Keep English styling untouched. */
+html[lang="ar"] .zalina-about-page :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  font-style: normal !important;
+  font-weight: 500;
+  letter-spacing: 0 !important;
+  line-height: 1.45 !important;
+}
+html[lang="ar"] .zalina-about-page :is(h1, h2, h3, h4, h5, h6) span {
+  font-family: inherit !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+}
+html[lang="ar"] .zalina-about-page :is(p, blockquote, blockquote p) {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+  line-height: 1.85;
+}
+@media (max-width: 767px) {
+  html[lang="ar"] .zalina-about-page :is(h1, h2, h3, h4, h5, h6) {
+    line-height: 1.55 !important;
+  }
+}
+
+/* About AR hero: match the homepage's Alexandria lead + LAXR signature. */
+html[lang="ar"] .zalina-about-page h1.about-hero-home-headline {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif !important;
+  font-weight: 400 !important;
+  font-size: inherit;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+html[lang="ar"] .zalina-about-page h1.about-hero-home-headline .about-hero-accent {
+  font-family: var(--font-laxr), "LAXR", "Alexandria", sans-serif !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 430px) {
+  html[lang="ar"] .zalina-about-page h1.about-hero-home-headline .about-hero-accent {
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
+  }
+}

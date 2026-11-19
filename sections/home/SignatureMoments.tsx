@@ -14,7 +14,7 @@ interface SignatureMomentsProps {
 }
 
 const CREAM = "#F9F0DF";
-const AUTO_ADVANCE_MS = 5800;
+const AUTO_ADVANCE_MS = 3500;
 
 /**
  * Portrait 3D coverflow, inspired by the user's reference: one dominant front
@@ -155,7 +155,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
       onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHasFocusWithin(false); }}
       className="signature-moments-section lux-section-compact relative isolate overflow-hidden"
       aria-labelledby="signature-moments-heading"
-      style={{ background: "var(--lux-surface)", paddingBlock: "clamp(18px, 2.5vh, 30px)" }}
+      style={{ background: "var(--lux-surface)", paddingBlock: "clamp(12px, 1.6vh, 20px)" }}
     >
       <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{
         background: "radial-gradient(ellipse 45% 60% at 18% 54%, rgba(187,119,47,0.13),transparent 72%)",

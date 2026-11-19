@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
+
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -58,7 +60,13 @@ function ExperienceBackground({
 
 export function DayNightExperience() {
   const t = useTranslations("home.dayNight");
+  const cmsDay=useCmsImage("home.day", DAY_IMAGES[0]);
+  const cmsNight=useCmsImage("home.night", NIGHT_IMAGES[0]);
+  const dayImages=useMemo<readonly string[]>(()=>cmsDay!==DAY_IMAGES[0]?[cmsDay]:DAY_IMAGES,[cmsDay]);
+  const nightImages=useMemo<readonly string[]>(()=>cmsNight!==NIGHT_IMAGES[0]?[cmsNight]:NIGHT_IMAGES,[cmsNight]);
   const isArabic = useLocale() === "ar";
+  const dayAlt=useCmsAlt("home.day",isArabic?"ar":"en",t("day.imageAlt"));
+  const nightAlt=useCmsAlt("home.night",isArabic?"ar":"en",t("night.imageAlt"));
 
   return (
     <section
@@ -76,8 +84,8 @@ export function DayNightExperience() {
         >
           {/* Background Image */}
           <ExperienceBackground
-            images={DAY_IMAGES}
-            alt={t("day.imageAlt")}
+            images={dayImages}
+            alt={dayAlt}
           />
 
           {/* Warm Day Overlay */}
@@ -174,8 +182,8 @@ export function DayNightExperience() {
         >
           {/* Background Image */}
           <ExperienceBackground
-            images={NIGHT_IMAGES}
-            alt={t("night.imageAlt")}
+            images={nightImages}
+            alt={nightAlt}
           />
 
           {/* Cool Night Overlay */}
