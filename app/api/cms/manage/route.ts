@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import {
- CMS_PAGES, CMS_IMAGE_SLOTS, BASE_MESSAGES, emptyCms,
- flattenCopy, isEditableText, isCmsImageSlot,
+ CMS_PAGES, CMS_IMAGE_SLOTS, staticCopyEntries,
+ isEditableText, isCmsImageSlot,
  type CmsLocale, type CmsPage, type CmsImageSlot
 } from "@/lib/static-cms/schema";
 import { cmsConfigured, isCmsAdmin, safeCmsOrigin } from "@/lib/static-cms/auth";
@@ -30,7 +30,7 @@ export async function GET(req:NextRequest){
  const page=(CMS_PAGES as readonly string[]).includes(pageParam)?pageParam as CmsPage:"home";
  return NextResponse.json({
   published:readCms(),
-  defaults:flattenCopy(BASE_MESSAGES[locale][page]),
+  defaults:Object.fromEntries(staticCopyEntries(locale,page).map(item=>[item.key.slice(page.length+1),item.value])),
   slots:CMS_IMAGE_SLOTS,
   page,locale
  },{headers:{"Cache-Control":"no-store"}});
@@ -42,7 +42,7 @@ export async function PATCH(req:NextRequest){
  const key=input?.key as string;
  const value=input?.value;
  if(!["ar","en"].includes(locale)||typeof key!=="string"||!isEditableText(locale,key)||
-    typeof value!=="string"||value.length>1200||/[<>]/.test(value))
+    typeof value!=="string"||value.length>1200||/[<>{}]/.test(value))
    return NextResponse.json({message:"Invalid static text key/value"},{status:422});
  const updated=updateCms(cms=>{
   if(!value.trim())delete cms.texts[locale][key];
@@ -60,7 +60,7 @@ export async function PUT(req:NextRequest){
  const file=data?.get("image");
  const alt_ar=data?.get("alt_ar"),alt_en=data?.get("alt_en");
  if(typeof slot!=="string"||!isCmsImageSlot(slot)||
-   !(file instanceof File) || file.size===0||file.size>10*1024*1024 ||
+   !(file instanceof Blob) || file.size===0||file.size>10*1024*1024 ||
    !["image/jpeg","image/png","image/webp"].includes(file.type)||
    (typeof alt_ar!=="string" && alt_ar!==null)||(typeof alt_en!=="string"&&alt_en!==null)||
    String(alt_ar||"").length>180||String(alt_en||"").length>180)

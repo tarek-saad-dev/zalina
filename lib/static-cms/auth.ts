@@ -50,7 +50,7 @@ export function safeCmsOrigin(req:NextRequest):boolean {
   return Boolean(origin && origin === expected);
 }
 export function cmsLoginAllowed(req:NextRequest):boolean {
-  const key=(req.headers.get("x-real-ip")||req.ip||"unknown").slice(0,120);
+  const key=(req.headers.get("x-real-ip")||"unknown").slice(0,120);
   const now=Date.now(),last=failed.get(key);
   if(last&&last.until>now&&last.count>=8)return false;
   return true;

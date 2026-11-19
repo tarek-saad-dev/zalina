@@ -68,7 +68,7 @@ export function isCmsImageSlot(id: string): id is CmsImageSlot {
 export function fallbackImage(slot: CmsImageSlot): string {
   return CMS_IMAGE_SLOTS.find(x=>x.id===slot)!.fallback;
 }
-export function mergeCmsMessages(locale: CmsLocale, changes: Record<string,string>): Record<string,unknown> {
+export function mergeCmsMessages(locale: CmsLocale, changes: Record<string,string>): Record<string,any> {
   const source = BASE_MESSAGES[locale] as unknown as Record<string,unknown>;
   const copy = JSON.parse(JSON.stringify(source)) as Record<string,unknown>;
   for(const [path, value] of Object.entries(changes)){

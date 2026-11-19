@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { CMS_PAGES, CMS_IMAGE_SLOTS, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, emptyCms } from "@/lib/static-cms/schema";
 import { LockKeyhole, ImagePlus, FileText, Search, RefreshCcw, LogOut, Check, UploadCloud } from "lucide-react";
 
@@ -55,7 +55,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  },[page,locale,arabic]);
  useEffect(()=>{if(auth==="ready")void load().catch(err=>setNotice(err.message));},[auth,load]);
 
- async function login(event:React.FormEvent){
+ async function login(event:FormEvent){
    event.preventDefault();setBusy("login");setNotice("");
    try{
      const res=await fetch("/api/cms/auth",{method:"POST",credentials:"same-origin",
@@ -69,15 +69,14 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    await fetch("/api/cms/auth",{method:"DELETE",credentials:"same-origin"});
    setAuth("login");setPublished(emptyCms());setNotice("");
  }
- async function saveText(key:string,restore=false){
+ async function saveText(key:string){
    setBusy(key);setNotice("");
    try{
     const res=await fetch("/api/cms/manage",{
-      method:restore?"DELETE":"PATCH",credentials:"same-origin",
-      headers:restore?undefined:{"Content-Type":"application/json"},
-      ...restore?{}:{body:JSON.stringify({locale,key,value:inputs[key]||""})},
-    } as RequestInit & { body?:BodyInit });
-    // DELETE must carry the key in the query string, not a body.
+      method:"PATCH",credentials:"same-origin",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({locale,key,value:inputs[key]||""}),
+    });
     if(!res.ok)throw new Error((await res.json().catch(()=>({}))).message||"Request failed");
     await load();
     setNotice(t("تم نشر التعديل بنجاح","Content published successfully"));
@@ -107,6 +106,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    try{
     const form=new FormData();
     if(!restore){
+     if(!file)return;
      form.set("slot",slot);form.set("image",file);
      form.set("alt_ar",alts[slot]?.ar||"");form.set("alt_en",alts[slot]?.en||"");
     }
