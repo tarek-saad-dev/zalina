@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { CMS_PAGES, CMS_IMAGE_SLOTS, staticCopyEntries, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, emptyCms } from "@/lib/static-cms/schema";
 import { LockKeyhole, ImagePlus, FileText, Search, RefreshCcw, LogOut, Check, UploadCloud } from "lucide-react";
+import { mergeLoadedWithDrafts } from "@/lib/static-cms/drafts";
 
 const PAGE_LABELS:Record<CmsPage,{ar:string;en:string}>={
   home:{ar:"الرئيسية",en:"Home"}, about:{ar:"عن زالينا",en:"About"},
@@ -24,6 +25,8 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  const [defaults,setDefaults]=useState<Record<string,string>>({});
  const [published,setPublished]=useState<CmsPublished>(emptyCms());
  const [inputs,setInputs]=useState<Record<string,string>>({});
+ const editedTextKeys=useRef(new Set<string>());
+ const editedAltSlots=useRef(new Set<string>());
  const requestSequence=useRef(0);
  const [alts,setAlts]=useState<Record<string,{ar:string;en:string}>>({});
  const [imagePreviews,setImagePreviews]=useState<Record<string,string>>({});
@@ -53,12 +56,12 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    for(const [key,val] of Object.entries(data.defaults||{}) as [string,string][])
      merged[locale+":"+page+"."+key]=data.published?.texts?.[locale]?.[page+"."+key]||val;
    // Preserve locally edited values across page/locale changes.
-   setInputs(current=>({...merged,...current}));
+   setInputs(current=>mergeLoadedWithDrafts(current,merged,editedTextKeys.current));
    const publishedAlts=Object.fromEntries(Object.entries(data.published?.images||{}).map(([k,v])=>{
       const img=v as {alt_ar?:string;alt_en?:string};
       return [k,{ar:img.alt_ar||"",en:img.alt_en||""}];
    }));
-   setAlts(current=>({...publishedAlts,...current}));
+   setAlts(current=>mergeLoadedWithDrafts(current,publishedAlts,editedAltSlots.current));
  },[page,locale,arabic]);
  useEffect(()=>{
    if(auth==="ready")void load().catch(err=>setNotice(err.message));
@@ -70,7 +73,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    const entries=staticCopyEntries(locale,page);
    const source=Object.fromEntries(entries.map(entry=>[entry.key.slice(page.length+1),entry.value]));
    setDefaults(source);setPublished(emptyCms());
-   setInputs(current=>({...Object.fromEntries(entries.map(entry=>[locale+":"+entry.key,entry.value])),...current}));
+   setInputs(current=>mergeLoadedWithDrafts(current,Object.fromEntries(entries.map(entry=>[locale+":"+entry.key,entry.value])),editedTextKeys.current));
  },[auth,locale,page]);
 
  async function login(event:FormEvent){
@@ -85,6 +88,8 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  }
  async function logout(){
    await fetch("/api/cms/auth",{method:"DELETE",credentials:"same-origin"});
+   editedTextKeys.current.clear();editedAltSlots.current.clear();
+   setInputs({});setAlts({});
    setAuth("login");setPublished(emptyCms());setNotice("");
  }
  async function saveText(key:string){
@@ -101,6 +106,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
       ...current,
       texts:{...current.texts,[locale]:{...current.texts[locale],[key]:publishedValue}},
     }));
+    editedTextKeys.current.delete(locale+":"+key);
     setInputs(current=>({...current,[locale+":"+key]:publishedValue||defaults[key.slice(page.length+1)]||""}));
     setNotice(t("تم نشر التعديل بنجاح","Content published successfully"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
@@ -137,6 +143,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
      setPublished(current=>({
        ...current,images:{...current.images,[slot]:{...current.images[slot]!,alt_ar,alt_en}}
      }));
+     editedAltSlots.current.delete(slot);
      setNotice(t("تم تعديل وصف الصورة","Image description updated"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
  }
@@ -167,6 +174,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
       return {...current,images};
     });
     clearPreview(slot);
+    editedAltSlots.current.delete(slot);
     setNotice(t(restore?"تم استرجاع الصورة الأصلية":"تم نشر صورة الموقع",
       restore?"Original image restored":"Site image published"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
@@ -235,7 +243,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
         <label className="mb-2 block text-xs text-white/45">{t("النص المنشور","Editable published copy")}</label>
         <textarea dir={locale==="ar"?"rtl":"ltr"} rows={item.now.length>100?4:2} maxLength={1200}
           value={inputs[locale+":"+item.key]??item.original}
-          onChange={e=>setInputs(v=>({...v,[locale+":"+item.key]:e.target.value}))} className={fieldClass}/>
+          onChange={e=>{editedTextKeys.current.add(locale+":"+item.key);setInputs(v=>({...v,[locale+":"+item.key]:e.target.value}));}} className={fieldClass}/>
         <div className="mt-3 flex flex-wrap gap-2">
          <button disabled={auth!=="ready"||!needsSave||!!busy} onClick={()=>void saveText(item.key)}
           className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF37] px-4 py-2 text-sm font-semibold text-black disabled:opacity-35"><Check size={15}/>{t("نشر التعديل","Publish")}</button>
@@ -268,9 +276,9 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>selectImage(id,e.target.files?.[0])}
           className="w-full rounded-lg border border-white/10 bg-black/30 p-2 text-xs file:me-3 file:rounded-md file:border-0 file:bg-[#D4AF37]/20 file:px-3 file:py-1.5 file:text-[#F4ECDD]"/>
          <input className={fieldClass} dir="rtl" maxLength={180} placeholder="وصف الصورة بالعربي" value={alts[id]?.ar||""}
-          onChange={e=>setAlts(x=>({...x,[id]:{...(x[id]||{ar:"",en:""}),ar:e.target.value}}))}/>
+          onChange={e=>{editedAltSlots.current.add(id);setAlts(x=>({...x,[id]:{...(x[id]||{ar:asset?.alt_ar||"",en:asset?.alt_en||""}),ar:e.target.value}}));}}/>
          <input className={fieldClass} dir="ltr" maxLength={180} placeholder="English alt text" value={alts[id]?.en||""}
-          onChange={e=>setAlts(x=>({...x,[id]:{...(x[id]||{ar:"",en:""}),en:e.target.value}}))}/>
+          onChange={e=>{editedAltSlots.current.add(id);setAlts(x=>({...x,[id]:{...(x[id]||{ar:asset?.alt_ar||"",en:asset?.alt_en||""}),en:e.target.value}}));}}/>
          <div className="flex gap-2">
           <button disabled={auth!=="ready"||!selectedFiles[id]||!!busy} onClick={()=>void saveImage(id)}
            className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-sm font-semibold text-black disabled:opacity-35">
@@ -306,6 +314,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
        delete translations[key];
        return {...current,texts:{...current.texts,[locale]:translations}};
      });
+     editedTextKeys.current.delete(locale+":"+key);
      setInputs(current=>({...current,[locale+":"+key]:defaults[key.slice(page.length+1)]||""}));
      setNotice(t("تم استرجاع النص الأصلي","Original text restored"));
    }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}

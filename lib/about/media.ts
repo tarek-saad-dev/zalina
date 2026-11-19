@@ -19,8 +19,8 @@ export type AboutMediaMap = Partial<Record<AboutImageSlot, AboutMediaImage>>;
 
 export const ABOUT_MEDIA_FALLBACKS: Record<AboutImageSlot, string> = {
   hero: NEUTRAL_MEDIA_FALLBACK,
-  "story.primary": "/assets/day.webp",
-  "story.secondary": "/assets/night-experience.webp",
+  "story.primary": NEUTRAL_MEDIA_FALLBACK,
+  "story.secondary": NEUTRAL_MEDIA_FALLBACK,
   "pillars.heritage": NEUTRAL_MEDIA_FALLBACK,
   "pillars.atmosphere": NEUTRAL_MEDIA_FALLBACK,
   "pillars.celebration": NEUTRAL_MEDIA_FALLBACK,
