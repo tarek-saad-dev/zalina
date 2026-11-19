@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { CMS_PAGES, CMS_IMAGE_SLOTS, staticCopyEntries, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, emptyCms } from "@/lib/static-cms/schema";
+import { CMS_PAGES, CMS_IMAGE_SLOTS, staticCopyEntries, type CmsLocale, type CmsPage, type CmsPublished, type CmsImageSlot, type CmsSlotDefinition, emptyCms } from "@/lib/static-cms/schema";
 import { LockKeyhole, ImagePlus, FileText, Search, RefreshCcw, LogOut, Check, UploadCloud } from "lucide-react";
 import { mergeLoadedWithDrafts } from "@/lib/static-cms/drafts";
 import { isEditorSelectionReady, editorSelectionKey } from "@/lib/static-cms/editor-selection";
@@ -23,6 +23,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  const [page,setPage]=useState<CmsPage>("home");
  const [locale,setLocale]=useState<CmsLocale>("ar");
  const [view,setView]=useState<View>("texts");
+ const [availableSlots,setAvailableSlots]=useState<CmsSlotDefinition[]>([...CMS_IMAGE_SLOTS]);
  const [defaults,setDefaults]=useState<Record<string,string>>({});
  const [loadedSelection,setLoadedSelection]=useState("");
  const [published,setPublished]=useState<CmsPublished>(emptyCms());
@@ -53,6 +54,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    const data=await res.json();
    if(sequence!==requestSequence.current)return;
    setDefaults(data.defaults||{});
+   setAvailableSlots(data.slots||[...CMS_IMAGE_SLOTS]);
    setPublished(data.published||emptyCms());
    setLoadedSelection(editorSelectionKey(locale,page));
    const merged:Record<string,string>={};
@@ -180,6 +182,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
       return {...current,images};
     });
     clearPreview(slot);
+    if(restore) setAlts(current=>({...current,[slot]:{ar:"",en:""}}));
     editedAltSlots.current.delete(slot);
     setNotice(t(restore?"تم استرجاع الصورة الأصلية":"تم نشر صورة الموقع",
       restore?"Original image restored":"Site image published"));
@@ -188,7 +191,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
  const entries=useMemo(()=>Object.entries(defaults).map(([key,fallback])=>{
    const full=page+"."+key;return {key:full,label:key,original:fallback,now:inputs[locale+":"+full]??fallback,modified:published.texts?.[locale]?.[full]};
  }).filter(x=>(x.key+" "+x.now+" "+x.original).toLocaleLowerCase().includes(search.toLocaleLowerCase())),[page,defaults,inputs,published,locale,search]);
- const slots=CMS_IMAGE_SLOTS.filter(x=>x.page===page);
+ const slots=availableSlots.filter(x=>x.page===page);
  const selectionReady=isEditorSelectionReady(loadedSelection,locale,page);
  const fieldClass="w-full rounded-lg border border-[#D4AF37]/20 bg-[#100E0B] px-3 py-2.5 text-[14px] leading-7 text-[#F4ECDD] outline-none focus:border-[#D4AF37]/70";
  return <main dir={arabic?"rtl":"ltr"} className="min-h-screen bg-[#090807] px-4 pb-20 pt-32 text-[#F5EDDE] sm:px-8">
@@ -291,7 +294,7 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
           <button disabled={auth!=="ready"||!selectedFiles[id]||!!busy} onClick={()=>void saveImage(id)}
            className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-sm font-semibold text-black disabled:opacity-35">
            <UploadCloud size={16}/>{t("نشر الصورة","Publish image")}</button>
-          <button disabled={auth!=="ready"||!asset||!!busy} onClick={()=>void saveImage(id,true)}
+          <button disabled={auth!=="ready"||!asset||!!busy||!!preview||editedAltSlots.current.has(id)} onClick={()=>void saveImage(id,true)}
            className="min-h-11 rounded-lg border border-white/20 px-3 text-xs text-white/70 disabled:opacity-35">{t("الأصل","Restore")}</button>
          </div>
          <button disabled={auth!=="ready"||!asset||!!busy||((alts[id]?.ar||"")===(asset?.alt_ar||"")&&(alts[id]?.en||"")===(asset?.alt_en||""))}

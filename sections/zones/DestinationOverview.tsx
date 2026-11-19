@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { CmsPhoto } from "@/components/static-cms/CmsPhoto";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { NEUTRAL_MEDIA_FALLBACK } from "@/lib/media";
@@ -76,7 +76,8 @@ export function DestinationOverview() {
                 "0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(200,155,82,0.08)",
             }}
           >
-            <Image
+            <CmsPhoto
+              slot={"zones.overview"}
               src={NEUTRAL_MEDIA_FALLBACK}
               alt={t("overview.imageAlt")}
               fill

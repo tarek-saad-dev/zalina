@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { CmsPhoto } from "@/components/static-cms/CmsPhoto";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -33,7 +33,8 @@ export function FinalCTA() {
           transition={{ duration: 0.8 }}
         >
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <Image
+            <CmsPhoto
+              slot={"zones.cta"}
               src={NEUTRAL_MEDIA_FALLBACK}
               alt=""
               fill

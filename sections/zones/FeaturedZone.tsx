@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { CmsPhoto } from "@/components/static-cms/CmsPhoto";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -140,7 +140,8 @@ export function FeaturedZone({ zone }: FeaturedZoneProps) {
           </div>
 
           <div className="relative w-full lg:w-[55%] h-[300px] sm:h-[360px] lg:h-auto lg:min-h-[520px] overflow-hidden group">
-            <Image
+            <CmsPhoto
+              slot={"zones.featured"}
               src={zone.image}
               alt={t("featured.imageAlt", { title: zone.title })}
               fill

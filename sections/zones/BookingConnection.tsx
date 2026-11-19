@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { CmsPhoto } from "@/components/static-cms/CmsPhoto";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -68,8 +68,9 @@ export function BookingConnection() {
                 }
               >
                 <div className="relative w-full h-[200px] overflow-hidden">
-                  <Image
-                    src={card.image}
+                  <CmsPhoto
+                    slot={`zones.booking.${card.messageKey}`}
+              src={card.image}
                     alt={t("booking.imageAlt", { title })}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
