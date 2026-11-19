@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import { WEDDING_COPY } from "./content/weddingCopy";
@@ -10,8 +11,10 @@ import { resolveWeddingMediaSrc, WEDDING_MEDIA } from "./content/weddingMedia";
 
 export function SignatureSpotlight() {
   const locale = useBookingLocale();
+  const signatureCmsSrc = useCmsImage("weddings.signature", resolveWeddingMediaSrc("signature"));
+  const signatureCmsAlt = useCmsAlt("weddings.signature", locale, pickLocale(locale, WEDDING_MEDIA.signature.alt));
   const prefersReduced = useReducedMotion();
-  const src = resolveWeddingMediaSrc("signature");
+  const src = signatureCmsSrc;
 
   return (
     <section
@@ -70,7 +73,7 @@ export function SignatureSpotlight() {
           >
             <Image
               src={src}
-              alt={pickLocale(locale, WEDDING_MEDIA.signature.alt)}
+              alt={signatureCmsAlt}
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 42vw"

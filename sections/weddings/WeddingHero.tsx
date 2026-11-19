@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import { useMarkHeroReady } from "@/components/media/HeroRevealGate";
@@ -17,11 +18,13 @@ function scrollToId(id: string) {
 
 export function WeddingHero() {
   const locale = useBookingLocale();
+  const heroCmsSrc = useCmsImage("weddings.hero", resolveWeddingMediaSrc("hero"));
+  const heroCmsAlt = useCmsAlt("weddings.hero", locale, pickLocale(locale, WEDDING_MEDIA.hero.alt));
   const prefersReduced = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
   const markHeroReady = useMarkHeroReady();
-  const src = resolveWeddingMediaSrc("hero");
-  const alt = pickLocale(locale, WEDDING_MEDIA.hero.alt);
+  const src = heroCmsSrc;
+  const alt = heroCmsAlt;
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);

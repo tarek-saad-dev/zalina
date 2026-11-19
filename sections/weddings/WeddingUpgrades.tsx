@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import {
@@ -14,10 +15,12 @@ import { resolveWeddingMediaSrc, WEDDING_MEDIA } from "./content/weddingMedia";
 
 export function WeddingUpgrades() {
   const locale = useBookingLocale();
+  const upgradesHospitalityCmsSrc = useCmsImage("weddings.upgrades.hospitality", resolveWeddingMediaSrc("upgradesHospitality"));
+  const upgradesHospitalityCmsAlt = useCmsAlt("weddings.upgrades.hospitality", locale, pickLocale(locale, WEDDING_MEDIA.upgradesHospitality.alt));
   const prefersReduced = useReducedMotion();
   const conciergeHref = getWeddingConciergeHref();
   const conciergeReady = isWeddingConciergeConfigured();
-  const hospitalitySrc = resolveWeddingMediaSrc("upgradesHospitality");
+  const hospitalitySrc = upgradesHospitalityCmsSrc;
 
   return (
     <section
@@ -60,7 +63,7 @@ export function WeddingUpgrades() {
           >
             <Image
               src={hospitalitySrc}
-              alt={pickLocale(locale, WEDDING_MEDIA.upgradesHospitality.alt)}
+              alt={upgradesHospitalityCmsAlt}
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 45vw"
