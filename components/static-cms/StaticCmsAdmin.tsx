@@ -113,6 +113,25 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
    setSelectedFiles(current=>{const v={...current};delete v[slot];return v;});
    setImagePreviews(current=>{const v={...current};delete v[slot];return v;});
  }
+ async function saveAlt(slot:CmsImageSlot){
+   if(!published.images[slot]||busy)return;
+   setBusy(slot);setNotice("");
+   try{
+     const alt_ar=alts[slot]?.ar||"", alt_en=alts[slot]?.en||"";
+     const response=await fetch("/api/cms/manage",{
+       method:"POST",credentials:"same-origin",
+       headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({slot,alt_ar,alt_en}),
+     });
+     if(response.status===401){setAuth("login");throw new Error(t("انتهت الجلسة","Session expired"));}
+     if(!response.ok)throw new Error((await response.json().catch(()=>({}))).message||"Save failed");
+     setPublished(current=>({
+       ...current,images:{...current.images,[slot]:{...current.images[slot]!,alt_ar,alt_en}}
+     }));
+     setNotice(t("تم تعديل وصف الصورة","Image description updated"));
+   }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy("");}
+ }
+
  async function saveImage(slot:CmsImageSlot,restore=false){
    const file=selectedFiles[slot];
    if(!restore&&!file)return;
@@ -250,6 +269,11 @@ export function StaticCmsAdmin({uiLocale}:{uiLocale:string}){
           <button disabled={auth!=="ready"||!asset||!!busy} onClick={()=>void saveImage(id,true)}
            className="min-h-11 rounded-lg border border-white/20 px-3 text-xs text-white/70 disabled:opacity-35">{t("الأصل","Restore")}</button>
          </div>
+         <button disabled={auth!=="ready"||!asset||!!busy||((alts[id]?.ar||"")===(asset?.alt_ar||"")&&(alts[id]?.en||"")===(asset?.alt_en||""))}
+           onClick={()=>void saveAlt(id)}
+           className="w-full min-h-10 rounded-lg border border-[#D4AF37]/35 text-xs text-[#E9C98C] disabled:opacity-35">
+           {t("حفظ وصف الصورة فقط","Save description only")}
+         </button>
         </div>
        </section>;
       })}

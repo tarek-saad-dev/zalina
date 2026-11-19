@@ -107,6 +107,23 @@ export async function PUT(req:NextRequest){
    return NextResponse.json({message:"Unable to process image"},{status:422});
  }
 }
+export async function POST(req:NextRequest){
+ const error=deny(req,true);if(error)return error;
+ const input=await req.json().catch(()=>null);
+ const slot=input?.slot,alt_ar=input?.alt_ar,alt_en=input?.alt_en;
+ if(typeof slot!=="string"||!isCmsImageSlot(slot)||
+   typeof alt_ar!=="string"||typeof alt_en!=="string"||
+   alt_ar.length>180||alt_en.length>180||/[<>]/.test(alt_ar+alt_en))
+   return NextResponse.json({message:"Invalid alt description"},{status:422});
+ if(!readCms().images[slot])return NextResponse.json({message:"Publish image first"},{status:404});
+ updateCms(cms=>{
+   if(!cms.images[slot])throw new Error("Image changed");
+   cms.images[slot]={...cms.images[slot],alt_ar:alt_ar.trim(),alt_en:alt_en.trim()};
+ });
+ refresh();
+ return NextResponse.json({success:true},{headers:{"Cache-Control":"no-store"}});
+}
+
 export async function DELETE(req:NextRequest){
  const error=deny(req,true);if(error)return error;
  const slot=req.nextUrl.searchParams.get("slot");

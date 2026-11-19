@@ -68,7 +68,7 @@ export function GalleryPageContent({
   const ctaImage=useCmsImage("gallery.cta", NEUTRAL_MEDIA_FALLBACK);
   const locale = useLocale() === "ar" ? "ar" : "en";
   const cmsHeroAlt=useCmsAlt("gallery.hero",locale,t("hero.imageAlt"));
-  const cmsCtaAlt=useCmsAlt("gallery.cta",locale,t("cta.imageAlt"));
+  const cmsCtaAlt=useCmsAlt("gallery.cta",locale,"");
   const prefersReduced = useReducedMotion();
   const markHeroReady = useMarkHeroReady();
   const initialFilter: GalleryFilterId =
@@ -645,7 +645,7 @@ export function GalleryPageContent({
           >
             <Image
               src={ctaImage}
-              alt=""
+              alt={cmsCtaAlt}
               fill
               sizes="100vw"
               className="object-cover"
