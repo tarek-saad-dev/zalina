@@ -1,6 +1,6 @@
 {
-  "action": "FIX_FINDINGS",
-  "number": 23,
+  "action": "EXECUTE",
+  "number": 24,
   "requested_by": "tarek-saad-dev",
-  "request_id": "pr-23-zones-image-typecheck-fix-1"
+  "request_id": "issue-24-weddings-images-execute-1"
 }
