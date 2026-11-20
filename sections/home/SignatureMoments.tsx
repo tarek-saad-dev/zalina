@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { getSignaturePanels } from "./signaturePanelsData";
+import { getSignaturePanels, getSignaturePanelTagline } from "./signaturePanelsData";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -63,7 +63,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
             >
               <span className="signature-panel-header">
                 <span className="signature-panel-title">{item.title}</span>
-                <span className="signature-panel-kicker">{t("eyebrow")}</span>
+                <span className="signature-panel-kicker">{getSignaturePanelTagline(item.subtitle, t("eyebrow"))}</span>
               </span>
 
               <span className="signature-panel-image">
