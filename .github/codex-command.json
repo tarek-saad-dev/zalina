@@ -1,6 +1,6 @@
 {
-  "action": "REVIEW",
+  "action": "FIX_FINDINGS",
   "number": 25,
   "requested_by": "tarek-saad-dev",
-  "request_id": "pr-25-weddings-release-review-1"
+  "request_id": "pr-25-weddings-verify-writable-tests-1"
 }
