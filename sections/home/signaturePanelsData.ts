@@ -27,7 +27,7 @@ export function getSignaturePanelCaption(subtitle: string | undefined, fallback:
   const full = subtitle?.replace(/\s+/g, " ").trim() || "";
   if (!full) return fallback;
 
-  let opening = full.split(/[,،؛.!?؟]/u, 1)[0].trim();
+  let opening = full.split(/[,،؛.!?؟]/, 1)[0].trim();
   if (opening.length < 24) opening = full;
   const clause = opening.split(/\s+(?:as|featuring|including|where|which|that)\s+/i, 1)[0].trim();
   if (clause.length >= 24) opening = clause;
