@@ -80,8 +80,8 @@ describe("responsive complete panel text (without CSS ellipses)", () => {
     const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
     const panels = css.slice(css.indexOf("/* Signature Moments V2"));
     expect(panels).toContain('.signature-panel-title[data-title-size="extra-long"]');
-    expect(panels).toContain("grid-template-rows: 118px minmax(0, 1fr) 78px");
-    expect(panels).toContain("height: clamp(590px, 85svh, 790px)");
+    expect(panels).toContain("grid-template-rows: minmax(118px, max-content) minmax(320px, 1fr) minmax(78px, max-content)");
+    expect(panels).toContain("min-height: clamp(590px, 85svh, 790px)");
     expect(panels).toContain("font-size: clamp(21px, 1.8vw, 29px)");
     expect(panels).toContain("font-size: clamp(10px, 0.8vw, 12.5px)");
     expect(panels).not.toContain("-webkit-line-clamp");
@@ -119,8 +119,44 @@ describe("reference-matched photographic cards", () => {
     const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
     const panels = css.slice(css.indexOf("/* Signature Moments V2"));
     expect(panels).toContain("grid-template-columns: repeat(var(--signature-panel-cols, 5), minmax(0, 1fr))");
-    expect(panels).toContain("grid-template-rows: 118px minmax(0, 1fr) 78px");
+    expect(panels).toContain("grid-template-rows: minmax(118px, max-content) minmax(320px, 1fr) minmax(78px, max-content)");
     expect(panels).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
     expect(panels).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
+    expect(panels).toContain("grid-template-rows: minmax(136px, max-content) minmax(210px, 1fr) minmax(92px, max-content)");
+    expect(panels).toContain("grid-template-rows: minmax(122px, max-content) minmax(220px, 1fr) minmax(80px, max-content)");
+    expect(panels).not.toContain("grid-template-rows: 118px minmax(0, 1fr) 78px");
+    expect(panels).toContain("height: auto");
+
+  });
+});
+
+describe("large CMS copy and zoom-safe rows", () => {
+  it("keeps long English and Arabic titles intact in the model", () => {
+    const samples = [
+      { id: "en", title: "Arabian Village Traditional Stories and Handcrafted Experiences with Local Artists",
+        image: "/cms/en.webp", alt: "English experience", subtitle: "Experience an unforgettable evening" },
+      { id: "ar", title: "أمسية تراثية عربية تتضمن العروض الموسيقية والفنون التقليدية والحكايات الشعبية",
+        image: "/cms/ar.webp", alt: "تجربة عربية", subtitle: "استكشف الأجواء التقليدية في القرية" }
+    ];
+    const actual = getSignaturePanels(samples, fallback);
+    expect(actual.map(x => x.title)).toEqual(samples.map(x => x.title));
+    for (const sample of actual) {
+      expect(sample.title).not.toContain("…");
+      expect(getSignaturePanelTitleVariant(sample.title)).toBe("extra-long");
+    }
+  });
+
+  it("uses growing content rows across desktop, tablet and mobile so increased font sizes cannot be clipped by fixed row heights", async () => {
+    const { readFileSync } = await import("node:fs");
+    const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
+    const section = css.slice(css.indexOf("/* Signature Moments V2"));
+    expect(section).toContain("grid-template-rows: minmax(118px, max-content) minmax(320px, 1fr) minmax(78px, max-content)");
+    expect(section).toContain("grid-template-rows: minmax(124px, max-content) minmax(280px, 1fr) minmax(86px, max-content)");
+    expect(section).toContain("grid-template-rows: minmax(136px, max-content) minmax(210px, 1fr) minmax(92px, max-content)");
+    expect(section).toContain("grid-template-rows: minmax(122px, max-content) minmax(220px, 1fr) minmax(80px, max-content)");
+    expect(section).toContain("min-height: clamp(590px, 85svh, 790px)");
+    expect(section).toContain("min-height: clamp(490px, 74svh, 650px)");
+    expect(section).not.toContain("height: clamp(590px, 85svh, 790px)");
+    expect(section).not.toContain("-webkit-line-clamp");
   });
 });
