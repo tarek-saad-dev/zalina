@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { getSignaturePanels, getSignaturePanelTagline, getSignaturePanelTitleVariant } from "../signaturePanelsData";
+import { getSignaturePanels, getSignaturePanelTagline, getSignaturePanelCaption, getSignaturePanelTitleVariant } from "../signaturePanelsData";
 
 const fallback: CatalogMediaCard = {
   id: "fallback",
@@ -59,9 +59,9 @@ describe("Signature Moments — all-visible portrait panels", () => {
 describe("individual CMS panel taglines", () => {
   it("uses the real experience description instead of a hardcoded repeated label", () => {
     expect(getSignaturePanelTagline("A mesmerizing performance of grace, balance and spirit.", "Experiences"))
-      .toBe("A mesmerizing performance of grace, balance");
+      .toBe("A mesmerizing performance of");
     expect(getSignaturePanelTagline("تجربة غنية بالإيقاع والفنون النوبية المميزة", "تجارب"))
-      .toBe("تجربة غنية بالإيقاع والفنون النوبية المميزة");
+      .toBe("تجربة غنية بالإيقاع والفنون");
   });
   it("uses the translated fallback when no description exists", () => {
     expect(getSignaturePanelTagline("", "Curated Experiences")).toBe("Curated Experiences");
@@ -80,11 +80,47 @@ describe("responsive complete panel text (without CSS ellipses)", () => {
     const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
     const panels = css.slice(css.indexOf("/* Signature Moments V2"));
     expect(panels).toContain('.signature-panel-title[data-title-size="extra-long"]');
-    expect(panels).toContain("min-height: clamp(170px, 19svh, 196px)");
-    expect(panels).toContain("font-size: clamp(19px, 1.7vw, 27px)");
-    expect(panels).toContain("font-size: clamp(15px, 1.23vw, 20.5px)");
-    expect(panels).toContain("font-size: clamp(11px, 0.85vw, 14px)");
+    expect(panels).toContain("grid-template-rows: 118px minmax(0, 1fr) 78px");
+    expect(panels).toContain("height: clamp(590px, 85svh, 790px)");
+    expect(panels).toContain("font-size: clamp(21px, 1.8vw, 29px)");
+    expect(panels).toContain("font-size: clamp(10px, 0.8vw, 12.5px)");
     expect(panels).not.toContain("-webkit-line-clamp");
     expect(panels).not.toContain("text-overflow: ellipsis");
+  });
+});
+
+describe("reference-matched photographic cards", () => {
+  it("summarizes the long CMS paragraph into a short footer without ellipses", () => {
+    expect(getSignaturePanelCaption(
+      "Explore the Arabian Village and its market, discover traditional tents and spaces, enjoy shopping and capture photos.",
+      "Explore",
+    )).toBe("Explore the Arabian Village and its market");
+    expect(getSignaturePanelCaption(
+      "Experience live charcoal BBQ and traditional brick-oven cooking as fresh food is prepared in front of you.",
+      "Explore",
+    )).toBe("Experience live charcoal BBQ and traditional brick-oven cooking");
+    expect(getSignaturePanelCaption("", "تجارب مختارة")).toBe("تجارب مختارة");
+    expect(getSignaturePanelCaption("Traditional music, dance and drums from Nubia", "Fallback"))
+      .toBe("Traditional music dance and drums from Nubia");
+  });
+
+  it("renders no visible CTA and leaves the whole card as the link", async () => {
+    const { readFileSync } = await import("node:fs");
+    const component = readFileSync(new URL("../SignatureMoments.tsx", import.meta.url), "utf8");
+    expect(component).toContain('className="signature-panel"');
+    expect(component).toContain('className="signature-panel-image"');
+    expect(component).toContain('className="signature-panel-footer"');
+    expect(component).not.toContain('signature-panel-discover');
+    expect(component).not.toContain('signature-panel-chevron');
+  });
+
+  it("keeps five cards on desktop and all actual CMS cards visible in rows", async () => {
+    const { readFileSync } = await import("node:fs");
+    const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
+    const panels = css.slice(css.indexOf("/* Signature Moments V2"));
+    expect(panels).toContain("grid-template-columns: repeat(var(--signature-panel-cols, 5), minmax(0, 1fr))");
+    expect(panels).toContain("grid-template-rows: 118px minmax(0, 1fr) 78px");
+    expect(panels).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+    expect(panels).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
   });
 });
