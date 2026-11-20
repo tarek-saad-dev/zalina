@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { getSignaturePanels } from "../signaturePanelsData";
+import { getSignaturePanels, getSignaturePanelTagline } from "../signaturePanelsData";
 
 const fallback: CatalogMediaCard = {
   id: "fallback",
@@ -53,5 +53,18 @@ describe("Signature Moments — all-visible portrait panels", () => {
   it("keeps a single real card without creating imaginary extra panels", () => {
     const only = { id: "one", title: "Live Band", image: "/band.webp", alt: "Band" };
     expect(getSignaturePanels([only], fallback)).toEqual([only]);
+  });
+});
+
+describe("individual CMS panel taglines", () => {
+  it("uses the real experience description instead of a hardcoded repeated label", () => {
+    expect(getSignaturePanelTagline("A mesmerizing performance of grace, balance and spirit.", "Experiences"))
+      .toBe("A mesmerizing performance of grace, balance");
+    expect(getSignaturePanelTagline("تجربة غنية بالإيقاع والفنون النوبية المميزة", "تجارب"))
+      .toBe("تجربة غنية بالإيقاع والفنون النوبية المميزة");
+  });
+  it("uses the translated fallback when no description exists", () => {
+    expect(getSignaturePanelTagline("", "Curated Experiences")).toBe("Curated Experiences");
+    expect(getSignaturePanelTagline(undefined, "تجارب مختارة")).toBe("تجارب مختارة");
   });
 });
