@@ -80,7 +80,10 @@ describe("responsive complete panel text (without CSS ellipses)", () => {
     const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
     const panels = css.slice(css.indexOf("/* Signature Moments V2"));
     expect(panels).toContain('.signature-panel-title[data-title-size="extra-long"]');
-    expect(panels).toContain("min-height: clamp(145px, 16svh, 174px)");
+    expect(panels).toContain("min-height: clamp(170px, 19svh, 196px)");
+    expect(panels).toContain("font-size: clamp(19px, 1.7vw, 27px)");
+    expect(panels).toContain("font-size: clamp(15px, 1.23vw, 20.5px)");
+    expect(panels).toContain("font-size: clamp(11px, 0.85vw, 14px)");
     expect(panels).not.toContain("-webkit-line-clamp");
     expect(panels).not.toContain("text-overflow: ellipsis");
   });
