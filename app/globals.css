@@ -3603,3 +3603,202 @@ html[lang="ar"] .zalina-about-page h1.about-hero-home-headline .about-hero-accen
     font-size: clamp(1.8rem, 8vw, 2.4rem);
   }
 }
+
+/* Signature Moments V2 — reference-matched 5-panel photographic editorial wall.
+   The original signature-moments-* 3D styles stay untouched for archived v1. */
+.signature-panels-section {
+  background: #080706;
+  color: #f4e8d3;
+  padding-block: clamp(24px, 3.5svh, 48px) clamp(30px, 4svh, 54px);
+}
+.signature-panels-container {
+  width: min(calc(100% - 24px), 1800px);
+  margin-inline: auto;
+}
+.signature-panels-intro {
+  margin: 0 auto clamp(18px, 2.8svh, 30px);
+  text-align: center;
+}
+.signature-panels-eyebrow {
+  margin: 0 0 5px;
+  color: #bca06b;
+  font-size: clamp(10px, 0.9vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.signature-panels-heading {
+  margin: 0;
+  color: #f5e8d0;
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(31px, 3.2vw, 52px);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.16;
+}
+.signature-panels-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--signature-panel-cols, 5), minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(6px, 0.5vw, 10px);
+}
+.signature-panel {
+  display: grid;
+  grid-template-rows: minmax(118px, max-content) minmax(320px, 1fr) minmax(78px, max-content);
+  height: auto;
+  min-width: 0;
+  min-height: clamp(590px, 85svh, 790px);
+  overflow: hidden;
+  border: 1px solid #ab8957;
+  border-radius: 0;
+  background: #080706;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(196, 156, 89, 0.07);
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+.signature-panel:hover {
+  border-color: #efd09a;
+  box-shadow: 0 0 20px rgba(201, 150, 78, 0.12);
+}
+.signature-panel:focus-visible {
+  outline: 3px solid #f1d69a;
+  outline-offset: 3px;
+}
+.signature-panel-header {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 7px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.signature-panel-title {
+  display: block;
+  max-width: 100%;
+  color: #f2e4c7;
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(21px, 1.8vw, 29px);
+  font-weight: 500;
+  letter-spacing: 0.047em;
+  line-height: 1.14;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.signature-panel-title[data-title-size="long"] {
+  font-size: clamp(19px, 1.52vw, 24px);
+  letter-spacing: 0.02em;
+}
+.signature-panel-title[data-title-size="extra-long"] {
+  font-size: clamp(17px, 1.32vw, 21px);
+  letter-spacing: 0.006em;
+}
+.signature-panel-kicker {
+  display: block;
+  max-width: 100%;
+  color: #d2b992;
+  font-size: clamp(10px, 0.82vw, 12.5px);
+  font-weight: 500;
+  letter-spacing: 0.115em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.signature-panel-image {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #231610;
+}
+.signature-panel-image img {
+  object-position: center;
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.signature-panel:hover .signature-panel-image img,
+.signature-panel:focus-visible .signature-panel-image img {
+  transform: scale(1.035);
+}
+.signature-panel-image-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 4, 2, 0.06), transparent 35%, rgba(8, 5, 3, 0.12));
+  pointer-events: none;
+}
+.signature-panel-footer {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 9px;
+  text-align: center;
+}
+.signature-panel-caption {
+  display: block;
+  max-width: 100%;
+  color: #d7bd92;
+  font-size: clamp(10px, 0.8vw, 12.5px);
+  font-weight: 500;
+  letter-spacing: 0.075em;
+  line-height: 1.48;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+html[lang="ar"] .signature-panels-section .signature-panels-heading,
+html[lang="ar"] .signature-panels-section .signature-panel-title {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+html[lang="ar"] .signature-panels-section .signature-panels-eyebrow,
+html[lang="ar"] .signature-panels-section .signature-panel-kicker,
+html[lang="ar"] .signature-panels-section .signature-panel-caption {
+  font-family: var(--font-body-ar), "Alexandria", sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .signature-panels-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .signature-panel { grid-template-rows: minmax(124px, max-content) minmax(280px, 1fr) minmax(86px, max-content); }
+}
+@media (min-width: 390px) and (max-width: 767px) {
+  .signature-panels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 389px) {
+  .signature-panels-grid { grid-template-columns: minmax(0, 1fr); }
+  .signature-panel { max-width: 380px; margin-inline: auto; width: 100%; }
+}
+@media (max-width: 767px) {
+  .signature-panels-container { width: min(calc(100% - 16px), 720px); }
+  .signature-panel {
+    height: auto;
+    min-height: clamp(490px, 74svh, 650px);
+    grid-template-rows: minmax(136px, max-content) minmax(210px, 1fr) minmax(92px, max-content);
+  }
+  .signature-panel-header { gap: 5px; padding: 7px 5px; }
+  .signature-panel-title { font-size: clamp(17px, 4vw, 22px); }
+  .signature-panel-title[data-title-size="long"] { font-size: clamp(15px, 3.5vw, 19px); }
+  .signature-panel-title[data-title-size="extra-long"] { font-size: clamp(13px, 3.05vw, 16.5px); }
+  .signature-panel-kicker { font-size: 9.5px; letter-spacing: 0.04em; }
+  .signature-panel-footer { padding-inline: 6px; }
+  .signature-panel-caption { font-size: clamp(9px, 2.35vw, 11px); letter-spacing: 0.015em; }
+}
+@media (max-width: 389px) {
+  .signature-panel { grid-template-rows: minmax(122px, max-content) minmax(220px, 1fr) minmax(80px, max-content); }
+  .signature-panel-title { font-size: clamp(21px, 6vw, 26px); }
+  .signature-panel-title[data-title-size="long"] { font-size: 19px; }
+  .signature-panel-title[data-title-size="extra-long"] { font-size: 17px; }
+  .signature-panel-caption { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signature-panel,
+  .signature-panel-image img { transition: none !important; transform: none !important; }
+}
