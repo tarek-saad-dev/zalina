@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/media/CmsImage";
 import { NEUTRAL_MEDIA_FALLBACK, type CatalogMediaCard } from "@/lib/media";
-import { getSignaturePanels, getSignaturePanelTagline, getSignaturePanelTitleVariant } from "./signaturePanelsData";
+import { getSignaturePanels, getSignaturePanelTagline, getSignaturePanelCaption, getSignaturePanelTitleVariant } from "./signaturePanelsData";
 
 interface SignatureMomentsProps {
   moments?: CatalogMediaCard[];
@@ -81,11 +81,7 @@ export function SignatureMoments({ moments = [] }: SignatureMomentsProps) {
 
               <span className="signature-panel-footer">
                 <span className="signature-panel-caption">
-                  {item.subtitle?.trim() || t("fallbackSubtitle")}
-                </span>
-                <span className="signature-panel-discover" aria-hidden="true">
-                  {t("discover")}
-                  <span className="signature-panel-chevron">{isArabic ? "←" : "→"}</span>
+                  {getSignaturePanelCaption(item.subtitle, t("fallbackSubtitle"))}
                 </span>
               </span>
             </Link>
