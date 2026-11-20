@@ -1,6 +1,6 @@
 {
-  "action": "EXECUTE",
-  "number": 26,
+  "action": "REVIEW",
+  "number": 29,
   "requested_by": "tarek-saad-dev",
-  "request_id": "issue-26-preserve-signature-ui-v1-1"
+  "request_id": "pr-29-signature-panels-review-1"
 }
