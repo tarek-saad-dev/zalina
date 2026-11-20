@@ -101,7 +101,7 @@ describe("reference-matched photographic cards", () => {
     )).toBe("Experience live charcoal BBQ and traditional brick-oven cooking");
     expect(getSignaturePanelCaption("", "تجارب مختارة")).toBe("تجارب مختارة");
     expect(getSignaturePanelCaption("Traditional music, dance and drums from Nubia", "Fallback"))
-      .toBe("Traditional music dance and drums from Nubia");
+      .toBe("Traditional music, dance and drums from Nubia");
   });
 
   it("renders no visible CTA and leaves the whole card as the link", async () => {
