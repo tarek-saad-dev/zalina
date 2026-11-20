@@ -12,10 +12,27 @@ export function getSignaturePanels(
   return selectSignatureMomentCards(moments, fallback, Math.max(1, moments.length));
 }
 
-/** Build a concise, per-card line for the photographic panel header. */
+/** Short header line, like the editorial reference panels (not a paragraph). */
 export function getSignaturePanelTagline(subtitle: string | undefined, fallback: string): string {
   const words = subtitle?.trim().split(/\s+/).filter(Boolean) || [];
-  return words.length ? words.slice(0, 6).join(" ").replace(/[.,!?،؛:]+$/g, "") : fallback;
+  return words.length ? words.slice(0, 4).join(" ").replace(/[.,!?،؛:]+$/g, "") : fallback;
+}
+
+/**
+ * The reference uses a compact 1–2 line footer, not the entire CMS paragraph.
+ * Keep full copy in the underlying CMS/catalog; render a human-readable teaser
+ * without inserting an ellipsis or truncating in the middle of a word.
+ */
+export function getSignaturePanelCaption(subtitle: string | undefined, fallback: string): string {
+  const full = subtitle?.replace(/\s+/g, " ").trim() || "";
+  if (!full) return fallback;
+
+  let opening = full.split(/[,،؛.!?؟]/u, 1)[0].trim();
+  if (opening.length < 24) opening = full;
+  const clause = opening.split(/\s+(?:as|featuring|including|where|which|that)\s+/i, 1)[0].trim();
+  if (clause.length >= 24) opening = clause;
+
+  return opening.split(/\s+/).slice(0, 13).join(" ").replace(/[.,!?،؛:]+$/g, "");
 }
 
 /**
