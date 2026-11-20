@@ -17,3 +17,14 @@ export function getSignaturePanelTagline(subtitle: string | undefined, fallback:
   const words = subtitle?.trim().split(/\s+/).filter(Boolean) || [];
   return words.length ? words.slice(0, 6).join(" ").replace(/[.,!?،؛:]+$/g, "") : fallback;
 }
+
+/**
+ * Extra-long CMS titles must shrink rather than acquire an ellipsis.
+ * Responsive CSS still allows natural wrapping at any width.
+ */
+export function getSignaturePanelTitleVariant(title: string): "normal" | "long" | "extra-long" {
+  const length = Array.from(title.trim()).length;
+  if (length >= 38) return "extra-long";
+  if (length >= 25) return "long";
+  return "normal";
+}
