@@ -11,3 +11,9 @@ export function getSignaturePanels(
 ): CatalogMediaCard[] {
   return selectSignatureMomentCards(moments, fallback, Math.max(1, moments.length));
 }
+
+/** Build a concise, per-card line for the photographic panel header. */
+export function getSignaturePanelTagline(subtitle: string | undefined, fallback: string): string {
+  const words = subtitle?.trim().split(/\s+/).filter(Boolean) || [];
+  return words.length ? words.slice(0, 6).join(" ").replace(/[.,!?،؛:]+$/g, "") : fallback;
+}
