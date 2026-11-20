@@ -156,7 +156,7 @@ describe("large CMS copy and zoom-safe rows", () => {
     expect(section).toContain("grid-template-rows: minmax(122px, max-content) minmax(220px, 1fr) minmax(80px, max-content)");
     expect(section).toContain("min-height: clamp(590px, 85svh, 790px)");
     expect(section).toContain("min-height: clamp(490px, 74svh, 650px)");
-    expect(section).not.toContain("height: clamp(590px, 85svh, 790px)");
+    expect(section).not.toMatch(/^\\s+height: clamp\\(590px, 85svh, 790px\\)/m);
     expect(section).not.toContain("-webkit-line-clamp");
   });
 });
