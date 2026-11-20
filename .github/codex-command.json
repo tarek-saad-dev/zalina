@@ -1,6 +1,6 @@
 {
-  "action": "EXECUTE",
-  "number": 24,
+  "action": "REVIEW",
+  "number": 25,
   "requested_by": "tarek-saad-dev",
-  "request_id": "issue-24-weddings-images-execute-1"
+  "request_id": "pr-25-weddings-release-review-1"
 }
