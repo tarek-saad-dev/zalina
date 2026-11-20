@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogMediaCard } from "@/lib/media";
-import { getSignaturePanels, getSignaturePanelTagline } from "../signaturePanelsData";
+import { getSignaturePanels, getSignaturePanelTagline, getSignaturePanelTitleVariant } from "../signaturePanelsData";
 
 const fallback: CatalogMediaCard = {
   id: "fallback",
@@ -66,5 +66,22 @@ describe("individual CMS panel taglines", () => {
   it("uses the translated fallback when no description exists", () => {
     expect(getSignaturePanelTagline("", "Curated Experiences")).toBe("Curated Experiences");
     expect(getSignaturePanelTagline(undefined, "تجارب مختارة")).toBe("تجارب مختارة");
+  });
+});
+
+describe("responsive complete panel text (without CSS ellipses)", () => {
+  it("uses smaller text for long names while preserving the original name", () => {
+    expect(getSignaturePanelTitleVariant("Nubian Show")).toBe("normal");
+    expect(getSignaturePanelTitleVariant("Egyptian & Arabian Dinner")).toBe("long");
+    expect(getSignaturePanelTitleVariant("Live Charcoal BBQ & Brick-Oven Cooking")).toBe("extra-long");
+  });
+  it("keeps every heading, kicker and caption free of CSS line clamps", async () => {
+    const { readFileSync } = await import("node:fs");
+    const css = readFileSync(new URL("../../../app/globals.css", import.meta.url), "utf8");
+    const panels = css.slice(css.indexOf("/* Signature Moments V2"));
+    expect(panels).toContain('.signature-panel-title[data-title-size="extra-long"]');
+    expect(panels).toContain("min-height: clamp(145px, 16svh, 174px)");
+    expect(panels).not.toContain("-webkit-line-clamp");
+    expect(panels).not.toContain("text-overflow: ellipsis");
   });
 });
