@@ -1,6 +1,6 @@
 {
-  "action": "REVIEW",
-  "number": 25,
+  "action": "EXECUTE",
+  "number": 26,
   "requested_by": "tarek-saad-dev",
-  "request_id": "pr-25-weddings-ci-green-review-2"
+  "request_id": "issue-26-preserve-signature-ui-v1-1"
 }
