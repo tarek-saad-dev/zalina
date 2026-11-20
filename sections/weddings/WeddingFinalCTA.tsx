@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import { WEDDING_COPY } from "./content/weddingCopy";
@@ -14,6 +15,8 @@ function scrollToId(id: string) {
 
 export function WeddingFinalCTA() {
   const locale = useBookingLocale();
+  const finalCtaCmsSrc = useCmsImage("weddings.finalCta", resolveWeddingMediaSrc("finalCta"));
+  const finalCtaCmsAlt = useCmsAlt("weddings.finalCta", locale, pickLocale(locale, WEDDING_MEDIA.finalCta.alt));
   const prefersReduced = useReducedMotion();
 
   return (
@@ -23,8 +26,8 @@ export function WeddingFinalCTA() {
     >
       <div className="absolute inset-0">
         <Image
-          src={resolveWeddingMediaSrc("finalCta")}
-          alt={pickLocale(locale, WEDDING_MEDIA.finalCta.alt)}
+          src={finalCtaCmsSrc}
+          alt={finalCtaCmsAlt}
           fill
           className="object-cover"
           sizes="100vw"

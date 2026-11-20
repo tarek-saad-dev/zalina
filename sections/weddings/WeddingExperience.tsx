@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import { WEDDING_COPY } from "./content/weddingCopy";
@@ -28,8 +29,10 @@ const PILLARS = [
 
 export function WeddingExperience() {
   const locale = useBookingLocale();
+  const experienceCmsSrc = useCmsImage("weddings.experience", resolveWeddingMediaSrc("experience"));
+  const experienceCmsAlt = useCmsAlt("weddings.experience", locale, pickLocale(locale, WEDDING_MEDIA.experience.alt));
   const prefersReduced = useReducedMotion();
-  const src = resolveWeddingMediaSrc("experience");
+  const src = experienceCmsSrc;
 
   return (
     <section
@@ -48,7 +51,7 @@ export function WeddingExperience() {
           >
             <Image
               src={src}
-              alt={pickLocale(locale, WEDDING_MEDIA.experience.alt)}
+              alt={experienceCmsAlt}
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 45vw"

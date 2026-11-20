@@ -8,7 +8,7 @@ import { isEditorSelectionReady, editorSelectionKey } from "@/lib/static-cms/edi
 const PAGE_LABELS:Record<CmsPage,{ar:string;en:string}>={
   home:{ar:"الرئيسية",en:"Home"}, about:{ar:"عن زالينا",en:"About"},
   experiences:{ar:"التجارب",en:"Experiences"},zones:{ar:"المناطق",en:"Zones"},
-  gallery:{ar:"المعرض",en:"Gallery"},nav:{ar:"القائمة",en:"Navigation"},
+  weddings:{ar:"الأفراح",en:"Weddings"},gallery:{ar:"المعرض",en:"Gallery"},nav:{ar:"القائمة",en:"Navigation"},
   footer:{ar:"الفوتر",en:"Footer"},common:{ar:"النصوص العامة",en:"General"},
 };
 type View="texts"|"images";

@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { resolveWeddingMediaSrc } from "@/sections/weddings/content/weddingMedia";
 import {
  CMS_PAGES,CMS_IMAGE_SLOTS,emptyCms,flattenCopy,staticCopyEntries,
  isEditableText,isCmsImageSlot,mergeCmsMessages,
 } from "../schema";
 describe("Zalina Mini CMS static-only contract",()=>{
  it("limits content editing to marketing translations",()=>{
-   expect(CMS_PAGES).toEqual(["home","about","experiences","zones","gallery","nav","footer","common"]);
+   expect(CMS_PAGES).toEqual(["home","about","experiences","zones","weddings","gallery","nav","footer","common"]);
    expect(isEditableText("ar","about.hero.subtitle")).toBe(true);
    expect(isEditableText("ar","booking.price")).toBe(false);
    expect(isEditableText("en","seo.home.title")).toBe(false);
@@ -31,5 +32,23 @@ describe("Zalina Mini CMS static-only contract",()=>{
    expect((b.about as any).hero.subtitle).not.toBe("A fresh intro");
    expect(emptyCms().texts.ar).toEqual({});
    expect(flattenCopy({a:{b:"text"}})).toEqual({"a.b":"text"});
+ });
+});
+
+describe("Weddings image slots", () => {
+ it("registers each live placement with its precise original", () => {
+   const expected = {
+     "weddings.hero": "hero", "weddings.experience": "experience",
+     "weddings.signature": "signature", "weddings.story.primary": "visualStoryPrimary",
+     "weddings.story.secondary": "visualStorySecondary",
+     "weddings.upgrades.hospitality": "upgradesHospitality", "weddings.finalCta": "finalCta",
+   } as const;
+   const slots = CMS_IMAGE_SLOTS.filter(slot => slot.page === "weddings");
+   expect(slots.map(slot => slot.id).sort()).toEqual(Object.keys(expected).sort());
+   for (const slot of slots) {
+     expect(slot.fallback).toBe(resolveWeddingMediaSrc(expected[slot.id as keyof typeof expected]));
+     expect(slot.ar).toBeTruthy();
+     expect(slot.en).toBeTruthy();
+   }
  });
 });

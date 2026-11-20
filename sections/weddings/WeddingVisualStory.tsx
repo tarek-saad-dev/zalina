@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useCmsImage, useCmsAlt } from "@/components/static-cms/CmsImagesProvider";
 import { motion, useReducedMotion } from "framer-motion";
 import { useBookingLocale } from "@/components/book-now/useBookingLocale";
 import { WEDDING_COPY } from "./content/weddingCopy";
@@ -9,6 +10,10 @@ import { resolveWeddingMediaSrc, WEDDING_MEDIA } from "./content/weddingMedia";
 
 export function WeddingVisualStory() {
   const locale = useBookingLocale();
+  const visualStoryPrimaryCmsSrc = useCmsImage("weddings.story.primary", resolveWeddingMediaSrc("visualStoryPrimary"));
+  const visualStoryPrimaryCmsAlt = useCmsAlt("weddings.story.primary", locale, pickLocale(locale, WEDDING_MEDIA.visualStoryPrimary.alt));
+  const visualStorySecondaryCmsSrc = useCmsImage("weddings.story.secondary", resolveWeddingMediaSrc("visualStorySecondary"));
+  const visualStorySecondaryCmsAlt = useCmsAlt("weddings.story.secondary", locale, pickLocale(locale, WEDDING_MEDIA.visualStorySecondary.alt));
   const prefersReduced = useReducedMotion();
 
   return (
@@ -45,8 +50,8 @@ export function WeddingVisualStory() {
             transition={{ duration: 0.9 }}
           >
             <Image
-              src={resolveWeddingMediaSrc("visualStoryPrimary")}
-              alt={pickLocale(locale, WEDDING_MEDIA.visualStoryPrimary.alt)}
+              src={visualStoryPrimaryCmsSrc}
+              alt={visualStoryPrimaryCmsAlt}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 66vw"
@@ -60,8 +65,8 @@ export function WeddingVisualStory() {
             transition={{ duration: 0.9, delay: 0.1 }}
           >
             <Image
-              src={resolveWeddingMediaSrc("visualStorySecondary")}
-              alt={pickLocale(locale, WEDDING_MEDIA.visualStorySecondary.alt)}
+              src={visualStorySecondaryCmsSrc}
+              alt={visualStorySecondaryCmsAlt}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 33vw"

@@ -1,7 +1,8 @@
+import { resolveWeddingMediaSrc } from "@/sections/weddings/content/weddingMedia";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 
-export const CMS_PAGES = ["home","about","experiences","zones","gallery","nav","footer","common"] as const;
+export const CMS_PAGES = ["home","about","experiences","zones","weddings","gallery","nav","footer","common"] as const;
 export type CmsPage = (typeof CMS_PAGES)[number];
 export type CmsLocale = "ar" | "en";
 
@@ -21,6 +22,13 @@ export const CMS_IMAGE_SLOTS = [
   { id:"about.cta", page:"about", ar:"عن زالينا — صورة الخاتمة", en:"About — Ending", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"experiences.hero", page:"experiences", ar:"التجارب — صورة الغلاف", en:"Experiences — Hero", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"zones.hero", page:"zones", ar:"المناطق — صورة الغلاف", en:"Zones — Hero", fallback:"/assets/zalina-hero-bg.webp" },
+  { id:"weddings.hero", page:"weddings", ar:"الأفراح — صورة الغلاف", en:"Weddings — Hero", fallback:resolveWeddingMediaSrc("hero") },
+  { id:"weddings.experience", page:"weddings", ar:"الأفراح — التجربة", en:"Weddings — Experience", fallback:resolveWeddingMediaSrc("experience") },
+  { id:"weddings.signature", page:"weddings", ar:"الأفراح — التجربة المميزة", en:"Weddings — Signature experience", fallback:resolveWeddingMediaSrc("signature") },
+  { id:"weddings.story.primary", page:"weddings", ar:"الأفراح — القصة المصورة الرئيسية", en:"Weddings — Main story image", fallback:resolveWeddingMediaSrc("visualStoryPrimary") },
+  { id:"weddings.story.secondary", page:"weddings", ar:"الأفراح — القصة المصورة الثانية", en:"Weddings — Secondary story image", fallback:resolveWeddingMediaSrc("visualStorySecondary") },
+  { id:"weddings.upgrades.hospitality", page:"weddings", ar:"الأفراح — الضيافة والترقيات", en:"Weddings — Hospitality upgrades", fallback:resolveWeddingMediaSrc("upgradesHospitality") },
+  { id:"weddings.finalCta", page:"weddings", ar:"الأفراح — الصورة الختامية", en:"Weddings — Final image", fallback:resolveWeddingMediaSrc("finalCta") },
   { id:"gallery.hero", page:"gallery", ar:"المعرض — صورة الغلاف", en:"Gallery — Hero", fallback:"/assets/zalina-hero-bg.webp" },
   { id:"gallery.cta", page:"gallery", ar:"المعرض — صورة الخاتمة", en:"Gallery — CTA", fallback:"/assets/zalina-hero-bg.webp" },
 ] as const;
