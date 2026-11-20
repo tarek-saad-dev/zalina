@@ -3644,10 +3644,10 @@ html[lang="ar"] .zalina-about-page h1.about-hero-home-headline .about-hero-accen
 }
 .signature-panel {
   display: grid;
-  grid-template-rows: 118px minmax(0, 1fr) 78px;
-  height: clamp(590px, 85svh, 790px);
+  grid-template-rows: minmax(118px, max-content) minmax(320px, 1fr) minmax(78px, max-content);
+  height: auto;
   min-width: 0;
-  min-height: 0;
+  min-height: clamp(590px, 85svh, 790px);
   overflow: hidden;
   border: 1px solid #ab8957;
   border-radius: 0;
@@ -3767,7 +3767,7 @@ html[lang="ar"] .signature-panels-section .signature-panel-caption {
 }
 @media (min-width: 768px) and (max-width: 1199px) {
   .signature-panels-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .signature-panel { grid-template-rows: 124px minmax(0, 1fr) 86px; }
+  .signature-panel { grid-template-rows: minmax(124px, max-content) minmax(280px, 1fr) minmax(86px, max-content); }
 }
 @media (min-width: 390px) and (max-width: 767px) {
   .signature-panels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -3779,8 +3779,9 @@ html[lang="ar"] .signature-panels-section .signature-panel-caption {
 @media (max-width: 767px) {
   .signature-panels-container { width: min(calc(100% - 16px), 720px); }
   .signature-panel {
-    height: clamp(490px, 74svh, 650px);
-    grid-template-rows: 136px minmax(0, 1fr) 92px;
+    height: auto;
+    min-height: clamp(490px, 74svh, 650px);
+    grid-template-rows: minmax(136px, max-content) minmax(210px, 1fr) minmax(92px, max-content);
   }
   .signature-panel-header { gap: 5px; padding: 7px 5px; }
   .signature-panel-title { font-size: clamp(17px, 4vw, 22px); }
@@ -3791,7 +3792,7 @@ html[lang="ar"] .signature-panels-section .signature-panel-caption {
   .signature-panel-caption { font-size: clamp(9px, 2.35vw, 11px); letter-spacing: 0.015em; }
 }
 @media (max-width: 389px) {
-  .signature-panel { grid-template-rows: 122px minmax(0, 1fr) 80px; }
+  .signature-panel { grid-template-rows: minmax(122px, max-content) minmax(220px, 1fr) minmax(80px, max-content); }
   .signature-panel-title { font-size: clamp(21px, 6vw, 26px); }
   .signature-panel-title[data-title-size="long"] { font-size: 19px; }
   .signature-panel-title[data-title-size="extra-long"] { font-size: 17px; }
