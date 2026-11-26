@@ -1,6 +1,6 @@
 {
-  "action": "FIX_FINDINGS",
+  "action": "REVIEW",
   "number": 31,
   "requested_by": "tarek-saad-dev",
-  "request_id": "pr-31-m9b-fix-findings-1"
+  "request_id": "pr-31-m9b-stabilization-review-2"
 }
