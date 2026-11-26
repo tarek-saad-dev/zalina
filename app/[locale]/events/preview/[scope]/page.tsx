@@ -7,7 +7,7 @@ export default async function Page({ params, searchParams }: { params: { locale:
   if ((params.scope !== "card" && params.scope !== "banner") || !searchParams.preview_token) notFound();
   try {
     const result = await getEventPreview(params.scope, searchParams.preview_token, params.locale);
-    if (!("type" in result) || result.preview_scope !== params.scope) notFound();
+    if (!("type" in result) || result.is_preview !== true || result.preview_scope !== params.scope || result.type !== params.scope) notFound();
     return <main className="page-atmosphere min-h-screen"><EventAnnouncementView announcement={result} locale={params.locale} preview /></main>;
   } catch { notFound(); }
 }

@@ -15,7 +15,8 @@ export default async function EventPage({ params, searchParams }: { params: { lo
     const event = isPreview
       ? await getEventPreview("landing", searchParams.preview_token!, params.locale)
       : await getEventEdition(params.slug, params.locale);
-    if (!("availability_state" in event) || event.slug !== params.slug) notFound();
+    if (!("availability_state" in event) || event.slug !== params.slug || event.availability_state === ("feature_disabled" as string)) notFound();
+    if (isPreview && (!("is_preview" in event) || event.is_preview !== true || !("preview_scope" in event) || event.preview_scope !== "landing" || event.purchase_enabled !== false)) notFound();
     return <EventLanding event={event} locale={params.locale} preview={isPreview} />;
   } catch (error) {
     if (error instanceof ApiError && (error.status === 404 || Boolean(searchParams.preview_token))) notFound();
