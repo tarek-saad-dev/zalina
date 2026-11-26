@@ -48,10 +48,11 @@ export function loadPendingPaymentBooking(): PendingPaymentHandoff | null {
   }
 }
 
-export function clearPendingPaymentBooking(): void {
+export function clearPendingPaymentBooking(reference?: string): void {
   const store = storage();
   if (!store) return;
   try {
+    if (reference && loadPendingPaymentBooking()?.booking_reference !== reference) return;
     store.removeItem(PAYMENT_HANDOFF_STORAGE_KEY);
   } catch {
     // ignore

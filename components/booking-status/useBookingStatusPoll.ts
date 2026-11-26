@@ -67,7 +67,7 @@ export function useBookingStatusPoll({
     bookingRef.current = next;
     setBooking(next);
     if (isDurableTerminalBooking(next)) {
-      clearPendingPaymentBooking();
+      clearPendingPaymentBooking(next.booking_reference);
     }
   }, []);
 
@@ -88,6 +88,7 @@ export function useBookingStatusPoll({
       try {
         const next = await getBooking(reference, locale);
         if (!mountedRef.current) return null;
+        if (next.booking_reference !== reference) throw new Error("Booking reference mismatch");
         applyBooking(next);
         setFetchState("ready");
         rateLimitRef.current = 0;

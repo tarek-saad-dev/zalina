@@ -15,12 +15,12 @@ export function isEventLanding(v: unknown): v is EventEdition | EventStatusOnly 
     v.packages.every((p: unknown) => object(p) && cap(p.id) && p.id > 0 && cap(p.guests_per_package) && p.guests_per_package > 0 && nullableCap(p.remaining_units) && nullableCap(p.max_purchasable_units) && typeof p.website_price === "string" && typeof p.is_active === "boolean" && typeof p.is_purchasable === "boolean");
 }
 export function isEventAvailability(v: unknown): v is EventAvailability {
-  return object(v) && states.includes(v.availability_state) && typeof v.sales_enabled === "boolean" && cap(v.remaining_guest_capacity) && Array.isArray(v.packages) && v.packages.every((p: unknown) => object(p) && cap(p.id) && p.id > 0 && nullableCap(p.remaining_units) && nullableCap(p.max_purchasable_units) && typeof p.is_purchasable === "boolean");
+  return object(v) && [...states, "feature_disabled"].includes(v.availability_state) && typeof v.sales_enabled === "boolean" && cap(v.remaining_guest_capacity) && Array.isArray(v.packages) && v.packages.every((p: unknown) => object(p) && cap(p.id) && p.id > 0 && nullableCap(p.remaining_units) && nullableCap(p.max_purchasable_units) && typeof p.is_purchasable === "boolean");
 }
 export function isEventBooking(v: unknown): boolean {
-  if (!object(v) || v.product_type !== "event" || typeof v.booking_reference !== "string" || typeof v.status !== "string" || typeof v.total !== "string") return false;
+  if (!object(v) || v.product_type !== "event" || typeof v.booking_reference !== "string" || !v.booking_reference || typeof v.booking_code !== "string" || !v.booking_code || typeof v.status !== "string" || typeof v.total !== "string" || !/^\d+(?:\.\d+)?$/.test(v.total) || typeof v.currency !== "string" || !cap(v.guests) || !date(v.hold_expires_at) || !date(v.payment_expires_at)) return false;
   if (v.event_edition != null && (!object(v.event_edition) || !dates(v.event_edition, ["event_starts_at", "admission_opens_at"]))) return false;
   if (v.event_items !== undefined && (!Array.isArray(v.event_items) || !v.event_items.every(object))) return false;
-  if (v.tickets !== undefined && (!Array.isArray(v.tickets) || !v.tickets.every((t: unknown) => object(t) && (t.valid_from == null || date(t.valid_from)) && (t.valid_to == null || date(t.valid_to))))) return false;
+  if (v.tickets !== undefined && (!Array.isArray(v.tickets) || !v.tickets.every((t: unknown) => object(t) && typeof t.ticket_code === "string" && !!t.ticket_code && typeof t.package_name_en === "string" && typeof t.package_name_ar === "string" && cap(t.guests_per_package) && t.guests_per_package > 0 && ["valid", "invalidated"].includes(t.status) && (t.valid_from == null || date(t.valid_from)) && (t.valid_to == null || date(t.valid_to))))) return false;
   return true;
 }
