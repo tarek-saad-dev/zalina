@@ -53,7 +53,7 @@ export function eventLandingPath(path: string, slug: string): string | null {
 }
 
 type CapacityPackage = Pick<EventPackage, "id" | "guests_per_package" | "is_purchasable" | "remaining_units" | "max_purchasable_units">;
-export function eventQuantitiesValid(packages: CapacityPackage[], quantities: Record<number, number>, capacity: number | null): boolean {
+export function eventQuantitiesValid(packages: CapacityPackage[], quantities: Record<string, number>, capacity: number | null): boolean {
   // Shared capacity is mandatory; only per-package caps may be null.
   if (capacity === null || !Number.isSafeInteger(capacity) || capacity < 0) return false;
   const validCap = (value: number | null) => value === null || (Number.isSafeInteger(value) && value >= 0);

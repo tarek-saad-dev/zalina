@@ -13,6 +13,7 @@ export function shouldPollEventBooking(booking: EventBooking | null): boolean {
   if (!booking) return true;
   if (booking.status === "pending_payment") return !eventDeadlinePassed(booking.hold_expires_at, booking.payment_expires_at);
   if (["cancelled", "expired", "failed", "no_show"].includes(booking.status)) return false;
+  if (booking.ticket_fulfillment_status === "completed" || booking.ticket_fulfillment_status === "failed") return false;
   return booking.status === "paid" || booking.ticket_fulfillment_status === "pending" || booking.ticket_fulfillment_status === "processing";
 }
 

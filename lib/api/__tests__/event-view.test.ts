@@ -25,6 +25,8 @@ describe("event payment and fulfillment", () => {
   });
   it("polls paid and pending fulfillment, but not terminal failures", () => {
     expect(shouldPollEventBooking({ ...booking, status: "paid" })).toBe(true);
+    expect(shouldPollEventBooking({ ...booking, status: "paid", ticket_fulfillment_status: "completed" })).toBe(false);
+    expect(shouldPollEventBooking({ ...booking, status: "paid", ticket_fulfillment_status: "failed" })).toBe(false);
     expect(shouldPollEventBooking({ ...booking, status: "confirmed", ticket_fulfillment_status: "processing" })).toBe(true);
     expect(shouldPollEventBooking({ ...booking, status: "confirmed", ticket_fulfillment_status: "failed" })).toBe(false);
     expect(shouldPollEventBooking({ ...booking, status: "confirmed", ticket_fulfillment_status: "completed" })).toBe(false);
