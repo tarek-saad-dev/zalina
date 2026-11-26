@@ -24,6 +24,8 @@ async function proxy(req: NextRequest, pathParts: string[]) {
     else headers.set("Accept", "application/json");
     if (acceptLanguage) headers.set("Accept-Language", acceptLanguage);
     if (contentType) headers.set("Content-Type", contentType);
+    const previewToken = req.headers.get("x-event-preview-token");
+    if (previewToken) headers.set("X-Event-Preview-Token", previewToken);
 
     // Do not forward Origin / Cookie — upstream currently 500s on
     // Origin: http://localhost:3000 for POST /bookings.
@@ -43,6 +45,10 @@ async function proxy(req: NextRequest, pathParts: string[]) {
     const responseHeaders = new Headers();
     const upstreamType = upstream.headers.get("content-type");
     if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
+    if (["events", "bookings", "tickets"].includes(pathParts[0])) {
+      responseHeaders.set("Cache-Control", "private, no-store");
+      responseHeaders.set("Referrer-Policy", "no-referrer");
+    }
     const requestId =
       upstream.headers.get("X-Request-Id") ??
       upstream.headers.get("x-request-id");
@@ -52,9 +58,7 @@ async function proxy(req: NextRequest, pathParts: string[]) {
       status: upstream.status,
       headers: responseHeaders,
     });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Proxy request failed";
-    console.error("[api/v1 proxy]", message);
+  } catch {
     return NextResponse.json(
       {
         success: false,
