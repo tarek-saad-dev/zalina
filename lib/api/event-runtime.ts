@@ -32,3 +32,11 @@ export function isEventBooking(v: unknown): boolean {
   if (v.tickets !== undefined && (!Array.isArray(v.tickets) || !v.tickets.every((t: unknown) => object(t) && typeof t.ticket_code === "string" && !!t.ticket_code && typeof t.package_name_en === "string" && typeof t.package_name_ar === "string" && cap(t.guests_per_package) && t.guests_per_package > 0 && ["valid", "invalidated"].includes(t.status) && (t.valid_from == null || date(t.valid_from)) && (t.valid_to == null || date(t.valid_to))))) return false;
   return true;
 }
+
+/** Validate all fields rendered by the public announcement and its preview. */
+export function isEventAnnouncement(v: unknown, preview = false): boolean {
+  if (!object(v) || !["card", "banner"].includes(v.type)) return false;
+  const title = preview ? nullableText : text;
+  return title(v.title_en) && title(v.title_ar) && nullableText(v.description_en) && nullableText(v.description_ar) && nullableText(v.image_url) &&
+    (preview ? nullableText(v.landing_path) && nullableText(v.edition_slug) : text(v.landing_path) && text(v.edition_slug));
+}

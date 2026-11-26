@@ -45,3 +45,14 @@ describe("render-safe event content", () => {
     expect(isEventBooking({ ...booking, event_edition: { name_en: {}, name_ar: "فعالية", event_starts_at: null, admission_opens_at: null } })).toBe(false);
   });
 });
+
+describe("announcement render boundaries", () => {
+  it("accepts nullable preview content and rejects renderable objects", async () => {
+    const { isEventAnnouncement } = await import("../event-runtime");
+    const preview = { type: "card", title_en: null, title_ar: null, description_en: null, description_ar: null, image_url: null, landing_path: null, edition_slug: null };
+    expect(isEventAnnouncement(preview, true)).toBe(true);
+    expect(isEventAnnouncement({ ...preview, title_en: {} }, true)).toBe(false);
+    expect(isEventAnnouncement({ ...preview, description_ar: [] }, true)).toBe(false);
+    expect(isEventAnnouncement({ ...preview, image_url: {} }, true)).toBe(false);
+  });
+});

@@ -1,9 +1,11 @@
 import { eventLandingPath, type EventAnnouncement } from "@/lib/api/events";
+import { isEventAnnouncement } from "@/lib/api/event-runtime";
 import { eventMediaUrl } from "@/lib/api/event-media";
 import { Link } from "@/i18n/navigation";
 
 export function EventAnnouncementView({ announcement, locale, preview = false }: { announcement: EventAnnouncement; locale: string; preview?: boolean }) {
-  const path = eventLandingPath(announcement.landing_path, announcement.edition_slug);
+  if (!isEventAnnouncement(announcement, preview)) return null;
+  const path = preview ? null : eventLandingPath(announcement.landing_path, announcement.edition_slug);
   if (!preview && (!path || (announcement.type !== "card" && announcement.type !== "banner") || typeof announcement.title_en !== "string" || typeof announcement.title_ar !== "string")) return null;
   const ar = locale === "ar";
   return <section className="mx-auto max-w-6xl px-6 py-10"><div className={`rounded-2xl border border-[#d4af37]/30 bg-[#201b13] p-6 text-[#f8f2e7] ${announcement.type === "banner" ? "md:flex md:items-center md:justify-between" : "md:max-w-xl"}`}>
