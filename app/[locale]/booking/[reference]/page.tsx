@@ -1,5 +1,5 @@
-﻿import { setRequestLocale } from "next-intl/server";
-import { BookingStatusPage } from "@/components/booking-status/BookingStatusPage";
+import { setRequestLocale } from "next-intl/server";
+import { EventAwareBookingStatus } from "@/components/events/EventAwareBookingStatus";
 import { buildPageMetadata } from "@/lib/i18n/metadata";
 
 type Props = {
@@ -20,5 +20,5 @@ export async function generateMetadata({ params }: Props) {
 
 export default function BookingStatusRoute({ params }: Props) {
   setRequestLocale(params.locale);
-  return <BookingStatusPage routeReference={params.reference} />;
+  return <EventAwareBookingStatus reference={params.reference} locale={params.locale} />;
 }
