@@ -1,6 +1,6 @@
 import { apiFetch } from "./client";
 
-export type EventAvailabilityState = "sales_not_open" | "booking_open" | "sold_out" | "sales_closed" | "archived" | "cancelled";
+export type EventAvailabilityState = "sales_not_open" | "booking_open" | "sold_out" | "sales_closed" | "archived" | "cancelled" | "feature_disabled";
 export interface EventAnnouncement {
   type: "card" | "banner"; title_en: string; title_ar: string;
   description_en: string | null; description_ar: string | null; image_url: string | null;
@@ -12,12 +12,12 @@ export interface EventPackage {
   is_purchasable: boolean; remaining_units: number | null; max_purchasable_units: number | null; is_active: boolean;
 }
 export interface EventEdition {
-  availability_state: EventAvailabilityState; slug: string; event_edition_id: number;
+  availability_state: Exclude<EventAvailabilityState, "archived" | "cancelled" | "feature_disabled">; slug: string; event_edition_id: number;
   name_en: string; name_ar: string; description_en: string | null; description_ar: string | null;
-  cover_url: string | null; gallery: { url: string; sort_order: number }[];
+  cover_url: string | null; gallery: { url: string | null; sort_order: number }[];
   event_starts_at: string | null; event_ends_at: string | null; admission_opens_at: string | null;
   admission_closes_at: string | null; sales_opens_at: string | null; sales_closes_at: string | null;
-  currency: string; packages: EventPackage[]; remaining_guest_capacity: number | null;
+  currency: string; packages: EventPackage[]; remaining_guest_capacity: number;
   public_sales_enabled: boolean; purchase_enabled: boolean; is_preview?: boolean;
 }
 export interface EventStatusOnly {
@@ -25,7 +25,7 @@ export interface EventStatusOnly {
   name_en: string; name_ar: string; is_cancelled: boolean; public_sales_enabled: boolean; purchase_enabled: false;
 }
 export interface EventAvailability {
-  availability_state: EventAvailabilityState; remaining_guest_capacity: number | null; sales_enabled: boolean;
+  availability_state: EventAvailabilityState; remaining_guest_capacity: number; sales_enabled: boolean;
   packages: Pick<EventPackage, "id" | "remaining_units" | "is_purchasable" | "max_purchasable_units">[];
 }
 export interface EventBookingInput {
@@ -54,17 +54,27 @@ export function eventLandingPath(path: string, slug: string): string | null {
 
 type CapacityPackage = Pick<EventPackage, "id" | "guests_per_package" | "is_purchasable" | "remaining_units" | "max_purchasable_units">;
 export function eventQuantitiesValid(packages: CapacityPackage[], quantities: Record<number, number>, capacity: number | null): boolean {
+  // Shared capacity is mandatory; only per-package caps may be null.
+  if (capacity === null || !Number.isSafeInteger(capacity) || capacity < 0) return false;
+  const validCap = (value: number | null) => value === null || (Number.isSafeInteger(value) && value >= 0);
   let guests = 0, selected = 0;
   for (const [id, quantity] of Object.entries(quantities)) {
-    if (!Number.isSafeInteger(quantity) || quantity < 0) return false;
+    const packageId = Number(id);
+    if (!Number.isSafeInteger(packageId) || packageId <= 0 || String(packageId) !== id ||
+        !Number.isSafeInteger(quantity) || quantity < 0) return false;
     if (!quantity) continue;
-    const item = packages.find(p => p.id === Number(id));
-    if (!item || !item.is_purchasable || !Number.isSafeInteger(item.guests_per_package) || item.guests_per_package <= 0 || (item.remaining_units !== null && quantity > item.remaining_units) || (item.max_purchasable_units !== null && quantity > item.max_purchasable_units)) return false;
+    const matches = packages.filter(p => p.id === packageId);
+    const item = matches[0];
+    if (matches.length !== 1 || !item || item.is_purchasable !== true ||
+        !Number.isSafeInteger(item.guests_per_package) || item.guests_per_package <= 0 ||
+        !validCap(item.remaining_units) || !validCap(item.max_purchasable_units) ||
+        (item.remaining_units !== null && quantity > item.remaining_units) ||
+        (item.max_purchasable_units !== null && quantity > item.max_purchasable_units)) return false;
     guests += quantity * item.guests_per_package;
     selected += quantity;
     if (!Number.isSafeInteger(guests) || !Number.isSafeInteger(selected)) return false;
   }
-  return selected > 0 && (capacity === null || guests <= capacity);
+  return selected > 0 && guests <= capacity;
 }
 export function getEventAnnouncement(locale?: string) { return apiFetch<EventAnnouncement | null>("/events/announcement", { locale, cache: "no-store" }); }
 export function getEventEdition(slug: string, locale?: string) { return apiFetch<EventEdition | EventStatusOnly>(`/events/editions/${encodeURIComponent(slug)}`, { locale, cache: "no-store" }); }

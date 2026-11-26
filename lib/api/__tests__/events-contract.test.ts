@@ -16,6 +16,16 @@ describe("event contract", () => {
     expect(eventQuantitiesValid(packages, { 1: 2, 2: 2 }, 8)).toBe(false);
     expect(eventQuantitiesValid(packages, { 1: 0, 2: 3 }, null)).toBe(false);
   });
+  it("fails closed on malformed shared capacity and package caps", () => {
+    const pkg = { id: 1, guests_per_package: 2, is_purchasable: true, max_purchasable_units: null, remaining_units: null };
+    expect(eventQuantitiesValid([pkg], { 1: 2 }, 4)).toBe(true);
+    for (const capacity of [null, NaN, Infinity, -1, 4.5]) {
+      expect(eventQuantitiesValid([pkg], { 1: 1 }, capacity)).toBe(false);
+    }
+    expect(eventQuantitiesValid([{ ...pkg, remaining_units: NaN }], { 1: 1 }, 4)).toBe(false);
+    expect(eventQuantitiesValid([pkg, pkg], { 1: 1 }, 4)).toBe(false);
+    expect(eventQuantitiesValid([pkg], { "1": 1, "01": 1 }, 4)).toBe(false);
+  });
   it("posts only the exact event fields", async () => {
     process.env.NEXT_PUBLIC_API_BASE_URL = "https://api.example.test";
     const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true, data: { booking_reference: "R" } }), { status: 201 }));

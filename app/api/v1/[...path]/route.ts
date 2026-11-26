@@ -9,6 +9,12 @@ function upstreamBase(): string {
 }
 
 async function proxy(req: NextRequest, pathParts: string[]) {
+  const sensitive = ["events", "bookings", "tickets"].includes(pathParts[0]);
+  const privacyHeaders = {
+    "Cache-Control": "private, no-store",
+    "Referrer-Policy": "no-referrer",
+    "X-Robots-Tag": "noindex, nofollow",
+  };
   try {
     const target = new URL(
       `/api/v1/${pathParts.map(encodeURIComponent).join("/")}`,
@@ -25,7 +31,10 @@ async function proxy(req: NextRequest, pathParts: string[]) {
     if (acceptLanguage) headers.set("Accept-Language", acceptLanguage);
     if (contentType) headers.set("Content-Type", contentType);
     const previewToken = req.headers.get("x-event-preview-token");
-    if (previewToken) headers.set("X-Event-Preview-Token", previewToken);
+    if (previewToken && pathParts[0] === "events" && pathParts[1] === "preview" &&
+        pathParts.length === 3 && ["landing", "card", "banner"].includes(pathParts[2])) {
+      headers.set("X-Event-Preview-Token", previewToken);
+    }
 
     // Do not forward Origin / Cookie — upstream currently 500s on
     // Origin: http://localhost:3000 for POST /bookings.
@@ -45,10 +54,11 @@ async function proxy(req: NextRequest, pathParts: string[]) {
     const responseHeaders = new Headers();
     const upstreamType = upstream.headers.get("content-type");
     if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
-    if (["events", "bookings", "tickets"].includes(pathParts[0])) {
-      responseHeaders.set("Cache-Control", "private, no-store");
-      responseHeaders.set("Referrer-Policy", "no-referrer");
+    if (sensitive) {
+      for (const [name, value] of Object.entries(privacyHeaders)) responseHeaders.set(name, value);
     }
+    const retryAfter = upstream.headers.get("Retry-After");
+    if (retryAfter) responseHeaders.set("Retry-After", retryAfter);
     const requestId =
       upstream.headers.get("X-Request-Id") ??
       upstream.headers.get("x-request-id");
@@ -64,7 +74,7 @@ async function proxy(req: NextRequest, pathParts: string[]) {
         success: false,
         message: "Unable to reach the booking API. Please try again.",
       },
-      { status: 502 }
+      { status: 502, ...(sensitive ? { headers: privacyHeaders } : {}) }
     );
   }
 }
