@@ -116,17 +116,20 @@ export class ApiError extends Error {
   status: number;
   errors?: Record<string, string[]>;
   requestId?: string;
+  retryAfter?: string;
 
   constructor(
     message: string,
     status: number,
     errors?: Record<string, string[]>,
-    requestId?: string
+    requestId?: string,
+    retryAfter?: string
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.errors = errors;
     this.requestId = requestId;
+    this.retryAfter = retryAfter;
   }
 }

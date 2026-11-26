@@ -130,5 +130,10 @@ export async function getBooking(
     locale: resolveApiLocale(locale),
     cache: "no-store",
   });
+  if ((raw.product_type as string) === "event") {
+    const { isEventBooking } = await import("./event-runtime");
+    if (!isEventBooking(raw)) throw new Error("Invalid event booking");
+    return raw as unknown as ApiBooking;
+  }
   return normalizeBooking(raw);
 }

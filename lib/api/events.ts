@@ -1,4 +1,5 @@
 import { apiFetch } from "./client";
+import { isEventAvailability } from "./event-runtime";
 
 export type EventAvailabilityState = "sales_not_open" | "booking_open" | "sold_out" | "sales_closed" | "archived" | "cancelled" | "feature_disabled";
 export interface EventAnnouncement {
@@ -78,7 +79,7 @@ export function eventQuantitiesValid(packages: CapacityPackage[], quantities: Re
 }
 export function getEventAnnouncement(locale?: string) { return apiFetch<EventAnnouncement | null>("/events/announcement", { locale, cache: "no-store" }); }
 export function getEventEdition(slug: string, locale?: string) { return apiFetch<EventEdition | EventStatusOnly>(`/events/editions/${encodeURIComponent(slug)}`, { locale, cache: "no-store" }); }
-export function getEventAvailability(slug: string, locale?: string) { return apiFetch<EventAvailability>(`/events/editions/${encodeURIComponent(slug)}/availability`, { locale, cache: "no-store" }); }
+export async function getEventAvailability(slug: string, locale?: string) { const value = await apiFetch<unknown>(`/events/editions/${encodeURIComponent(slug)}/availability`, { locale, cache: "no-store" }); if (!isEventAvailability(value)) throw new Error("Invalid availability"); return value; }
 export function getEventPreview(scope: EventPreviewScope, token: string, locale?: string) {
   return apiFetch<(EventEdition & { is_preview: true; preview_scope: "landing" }) | (EventAnnouncement & { is_preview: true; preview_scope: "card" | "banner" })>(`/events/preview/${scope}`, { locale, headers: { "X-Event-Preview-Token": token }, cache: "no-store" });
 }

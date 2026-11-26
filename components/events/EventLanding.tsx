@@ -27,14 +27,18 @@ export function EventLanding({ event, locale, preview }: { event: EventEdition |
   const capacity = availability ? availability.remaining_guest_capacity : full ? event.remaining_guest_capacity : null;
   const allowed = full && !preview && !disabled && event.public_sales_enabled === true && eventCanPurchase(event) && availability?.sales_enabled === true && availability.availability_state === "booking_open";
   const valid = allowed && eventQuantitiesValid(packages.map(p => ({ ...p, is_purchasable: p.is_active === true && p.is_purchasable === true })), quantities, capacity);
+  const [retryUntil, setRetryUntil] = useState(0);
+  const [clock, setClock] = useState(Date.now());
+  useEffect(() => { if (retryUntil <= Date.now()) return; const timer = setTimeout(() => setClock(Date.now()), retryUntil - Date.now()); return () => clearTimeout(timer); }, [retryUntil]);
   const [refreshing, setRefreshing] = useState(false);
   const [uncertain, setUncertain] = useState(false);
   const lockKey = `event-create-uncertain:${event.slug}`;
   useEffect(() => { if (sessionStorage.getItem(lockKey)) { setUncertain(true); setDisabled(true); } }, [lockKey]);
   async function refreshAvailability() {
+    if (refreshing || Date.now() < retryUntil) return null;
     setRefreshing(true);
     try { const next = await getEventAvailability(event.slug, locale); setAvailability(next); return next; }
-    catch { setAvailability(null); setMessage(ar ? "تعذر تحديث التوافر. يرجى المحاولة لاحقاً." : "Unable to refresh availability. Please try again later."); return null; }
+    catch (error) { if (error instanceof ApiError && error.status === 429) { const value = error.retryAfter; const seconds = value && /^\d+$/.test(value) ? Number(value) * 1000 : value ? Date.parse(value) - Date.now() : 30000; setRetryUntil(Date.now() + Math.min(300000, Math.max(1000, Number.isFinite(seconds) ? seconds : 30000))); setClock(Date.now()); } setAvailability(null); setMessage(ar ? "تعذر تحديث التوافر. يرجى المحاولة لاحقاً." : "Unable to refresh availability. Please try again later."); return null; }
     finally { setRefreshing(false); }
   }
   useEffect(() => { if (full && !preview && event.purchase_enabled) void refreshAvailability(); }, [event.slug, locale, preview]);
@@ -79,7 +83,7 @@ export function EventLanding({ event, locale, preview }: { event: EventEdition |
       {event.admission_opens_at && <p>{ar ? "الدخول" : "Admission"}: {date(event.admission_opens_at)}{event.admission_closes_at && ` — ${date(event.admission_closes_at)}`}</p>}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">{event.gallery.map((image, i) => { const src = eventMediaUrl(image.url, preview); return src ? <img key={i} src={src} alt="" referrerPolicy="no-referrer" className="aspect-[4/3] w-full rounded-xl object-cover" /> : null; })}</div>
       <form onSubmit={submit} className="space-y-6"><div className="grid gap-4 md:grid-cols-2">{packages.filter(p => p.is_active).map(p => <div key={p.id} className="rounded-xl border border-white/15 p-5">{eventMediaUrl(p.image_url, preview) && <img src={eventMediaUrl(p.image_url, preview)!} alt="" referrerPolicy="no-referrer" className="mb-4 aspect-[4/3] w-full rounded-lg object-cover" />}<h2 className="text-xl">{ar ? p.name_ar : p.name_en}</h2><p className="mt-2 opacity-75">{ar ? p.description_ar : p.description_en}</p><p className="mt-2">{p.website_price} {event.currency} · {p.guests_per_package} {ar ? "ضيوف" : "guests"}</p>{allowed && p.is_purchasable && <label className="mt-4 block">{ar ? "الكمية" : "Quantity"}<input className="ml-3 w-24 rounded bg-white/10 p-2" type="number" min="0" step="1" value={quantities[p.id] || 0} onChange={e => setQuantities({ ...quantities, [p.id]: Number(e.target.value) })} /></label>}</div>)}</div>
-      {!preview && !availability && <button type="button" disabled={refreshing} onClick={() => void refreshAvailability()} className="underline">{ar ? "تحديث التوافر" : "Refresh availability"}</button>}
+      {!preview && !availability && <button type="button" disabled={refreshing || clock < retryUntil} onClick={() => void refreshAvailability()} className="underline">{ar ? "تحديث التوافر" : "Refresh availability"}</button>}
       {allowed && <>{Object.values(quantities).some(q => q > 0) && !valid && <p role="alert">{ar ? "يرجى تعديل الكميات حسب السعة المتاحة." : "Please adjust quantities to fit the available capacity."}</p>}<p>{ar ? "تقدير الضيوف" : "Estimated guests"}: {guests} · {ar ? "الإجمالي التقديري" : "Estimated total"}: {estimate ?? "—"} {event.currency}</p><p className="opacity-70">{ar ? "الأسعار تقديرية؛ المبلغ النهائي يؤكده الحجز." : "Prices are estimates; your booking confirms the final total."}</p><div className="grid gap-4 md:grid-cols-3">{[["name", ar ? "الاسم" : "Name", "text"], ["email", ar ? "البريد الإلكتروني" : "Email", "email"], ["phone", ar ? "الهاتف" : "Phone", "tel"]].map(([name, label, type]) => <label key={name}>{label}<input required name={name} type={type} aria-invalid={Boolean(fieldErrors[`guest_${name}`])} className="mt-2 block w-full rounded border border-white/20 bg-white/10 p-3" />{fieldErrors[`guest_${name}`]?.map((error, i) => <span key={i} className="block text-sm text-red-300">{error}</span>)}</label>)}</div><button disabled={!valid || busy} className="rounded bg-[#d4af37] px-6 py-3 text-black disabled:opacity-40">{busy ? (ar ? "جارٍ الحجز…" : "Booking…") : (ar ? "احجز الآن" : "Book now")}</button></>}{message && <p role="alert">{message}</p>}</form></>}
   </div></main>;
 }

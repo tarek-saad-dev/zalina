@@ -10,6 +10,9 @@ import {
   BOOKING_POLL_RATE_LIMIT_PAUSE_MS,
   nextPollDelayMs,
 } from "./bookingPollSchedule";
+import { shouldPollEventBooking } from "@/lib/api/event-view";
+import type { EventBooking } from "@/lib/api/events";
+const shouldPoll = (booking: ApiBooking | null) => booking && (booking.product_type as string) === "event" ? shouldPollEventBooking(booking as unknown as EventBooking) : shouldPollBooking(booking);
 import { clearPendingPaymentBooking } from "@/components/book-now/paymentHandoffStorage";
 
 export type BookingStatusFetchState =
@@ -37,6 +40,7 @@ export function useBookingStatusPoll({
   const [rateLimitedUntil, setRateLimitedUntil] = useState<number | null>(null);
   const [pollAttempt, setPollAttempt] = useState(0);
 
+  const rateLimitRef = useRef(0);
   const inFlightRef = useRef(false);
   const attemptRef = useRef(0);
   const mountedRef = useRef(true);
@@ -71,7 +75,7 @@ export function useBookingStatusPoll({
     async (opts?: { silent?: boolean }): Promise<ApiBooking | null> => {
       if (!reference || !enabled) return null;
       if (inFlightRef.current) return bookingRef.current;
-      if (rateLimitedUntil && Date.now() < rateLimitedUntil) {
+      if (Date.now() < rateLimitRef.current) {
         return bookingRef.current;
       }
 
@@ -86,6 +90,7 @@ export function useBookingStatusPoll({
         if (!mountedRef.current) return null;
         applyBooking(next);
         setFetchState("ready");
+        rateLimitRef.current = 0;
         setRateLimitedUntil(null);
         return next;
       } catch (err) {
@@ -97,7 +102,8 @@ export function useBookingStatusPoll({
           return null;
         }
         if (err instanceof ApiError && err.status === 429) {
-          setRateLimitedUntil(Date.now() + BOOKING_POLL_RATE_LIMIT_PAUSE_MS);
+          rateLimitRef.current = Date.now() + BOOKING_POLL_RATE_LIMIT_PAUSE_MS;
+          setRateLimitedUntil(rateLimitRef.current);
           setErrorMessage(err.message);
           // Keep last known state
           if (bookingRef.current) setFetchState("ready");
@@ -125,11 +131,11 @@ export function useBookingStatusPoll({
     if (hiddenRef.current) return;
 
     const current = bookingRef.current;
-    if (current && !shouldPollBooking(current)) return;
+    if (current && !shouldPoll(current)) return;
 
     const delay =
-      rateLimitedUntil && Date.now() < rateLimitedUntil
-        ? Math.max(rateLimitedUntil - Date.now(), 1000)
+      rateLimitRef.current > Date.now()
+        ? Math.max(rateLimitRef.current - Date.now(), 1000)
         : nextPollDelayMs(attemptRef.current);
 
     timerRef.current = setTimeout(() => {
@@ -138,7 +144,7 @@ export function useBookingStatusPoll({
         if (!mountedRef.current) return;
         attemptRef.current += 1;
         setPollAttempt(attemptRef.current);
-        if (next && shouldPollBooking(next)) {
+        if (!next || shouldPoll(next)) {
           scheduleNext();
         }
       })();
@@ -159,6 +165,7 @@ export function useBookingStatusPoll({
     bookingRef.current = null;
     setBooking(null);
     setErrorMessage(null);
+    rateLimitRef.current = 0;
     setRateLimitedUntil(null);
     clearTimer();
 
@@ -170,7 +177,7 @@ export function useBookingStatusPoll({
     void (async () => {
       const next = await fetchOnce({ silent: false });
       if (!mountedRef.current) return;
-      if (next && shouldPollBooking(next)) {
+      if (!next || shouldPoll(next)) {
         scheduleNext();
       }
     })();
@@ -191,7 +198,7 @@ export function useBookingStatusPoll({
       }
       void (async () => {
         const next = await fetchOnce({ silent: true });
-        if (next && shouldPollBooking(next)) {
+        if (next && shouldPoll(next)) {
           scheduleNext();
         }
       })();
@@ -207,7 +214,7 @@ export function useBookingStatusPoll({
     const wait = Math.max(rateLimitedUntil - Date.now(), 0);
     const id = setTimeout(() => {
       setRateLimitedUntil(null);
-      if (bookingRef.current && shouldPollBooking(bookingRef.current)) {
+      if (!bookingRef.current || shouldPoll(bookingRef.current)) {
         scheduleNext();
       }
     }, wait + 50);
@@ -216,7 +223,7 @@ export function useBookingStatusPoll({
 
   const refresh = useCallback(async () => {
     const next = await fetchOnce({ silent: Boolean(bookingRef.current) });
-    if (next && shouldPollBooking(next)) {
+    if (next && shouldPoll(next)) {
       attemptRef.current = Math.min(attemptRef.current, 3);
       setPollAttempt(attemptRef.current);
       scheduleNext();
@@ -232,7 +239,7 @@ export function useBookingStatusPoll({
     pollAttempt,
     isPolling:
       Boolean(booking) &&
-      shouldPollBooking(booking) &&
+      shouldPoll(booking) &&
       fetchState !== "not_found",
     refresh,
     inFlight: inFlightRef,

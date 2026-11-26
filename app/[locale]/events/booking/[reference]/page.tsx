@@ -1,6 +1,6 @@
-import { EventBookingStatus } from "@/components/events/EventBookingStatus";
+import { BookingStatusPage } from "@/components/booking-status/BookingStatusPage";
 export const dynamic = "force-dynamic";
 export const metadata = { robots: { index: false, follow: false }, referrer: "no-referrer" as const };
 export default function Page({ params }: { params: { locale: string; reference: string } }) {
-  return <EventBookingStatus locale={params.locale} reference={params.reference} />;
+  return <BookingStatusPage routeReference={params.reference} />;
 }
