@@ -34,8 +34,8 @@ export interface EventBookingInput {
   guest_name: string; guest_email: string; guest_phone: string;
 }
 export interface EventTicket {
-  ticket_code: string; type?: string; package_name_en: string; package_name_ar: string;
-  guests_per_package: number; status: "valid" | "invalidated"; valid_from?: string | null; valid_to?: string | null; lookup_path?: string | null;
+  ticket_code: string; type?: string; package_name_en: string | null; package_name_ar: string | null;
+  guests_per_package: number | null; status: "valid" | "invalidated"; valid_from?: string | null; valid_to?: string | null; lookup_path?: string | null;
 }
 export interface EventBooking {
   booking_reference: string; booking_code: string; product_type: "event"; status: string;

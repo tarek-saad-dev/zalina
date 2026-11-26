@@ -56,3 +56,15 @@ describe("announcement render boundaries", () => {
     expect(isEventAnnouncement({ ...preview, image_url: {} }, true)).toBe(false);
   });
 });
+
+
+describe("nullable EventTicket fields (OpenAPI v1.1.0)", () => {
+  const booking = { product_type: "event", booking_reference: "BK-1", booking_code: "CODE", status: "confirmed", total: "0.00", currency: "EGP", guests: 2, hold_expires_at: null, payment_expires_at: null };
+  const ticket = { ticket_code: "T-1", status: "valid", package_name_en: null, package_name_ar: null, guests_per_package: null, valid_from: null, valid_to: null };
+  it("accepts nullable package names and guest count without inventing values", () => {
+    expect(isEventBooking({ ...booking, tickets: [ticket] })).toBe(true);
+    expect(isEventBooking({ ...booking, tickets: [{ ...ticket, status: "invalidated" }] })).toBe(true);
+    expect(isEventBooking({ ...booking, tickets: [{ ...ticket, package_name_en: {} }] })).toBe(false);
+    expect(isEventBooking({ ...booking, tickets: [{ ...ticket, guests_per_package: -1 }] })).toBe(false);
+  });
+});
