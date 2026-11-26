@@ -8,6 +8,9 @@ describe("event media and estimates", () => {
     expect(eventMediaUrl("/storage/123")).toBeNull();
     expect(eventMediaUrl("/media/assets/123?preview_token=secret")).toBeNull();
     expect(eventMediaUrl("/media/assets/123?preview_token=secret", true)).toContain("preview_token=secret");
+    expect(eventMediaUrl("/media/assets/123?preview_token=", true)).toBeNull();
+    expect(eventMediaUrl("/media/assets/123?preview_token=a&preview_token=b", true)).toBeNull();
+    expect(eventMediaUrl("/media/assets/123?preview_token=a&other=b", true)).toBeNull();
   });
   it("calculates decimal estimates without floating point", () => {
     expect(eventEstimate([{website_price: "0.10", quantity: 3}, {website_price: "12.99", quantity: 2}])).toBe("26.28");

@@ -7,7 +7,10 @@ export function eventMediaUrl(value: string | null | undefined, preview = false)
     const origin = new URL(base).origin;
     const url = new URL(value, origin);
     if (url.origin !== origin || !/^\/media\/assets\/[a-zA-Z0-9-]+(?:\/thumbnail)?$/.test(url.pathname) || url.hash || url.username || url.password) return null;
-    if ([...url.searchParams.keys()].some(key => key !== "preview_token") || (!preview && url.search)) return null;
+    let unknownParameter = false;
+    url.searchParams.forEach((_value, key) => { if (key !== "preview_token") unknownParameter = true; });
+    if (unknownParameter || (!preview && url.search)) return null;
+    if (url.search && (url.searchParams.getAll("preview_token").length !== 1 || !url.searchParams.get("preview_token")?.trim())) return null;
     return url.toString();
   } catch { return null; }
 }
