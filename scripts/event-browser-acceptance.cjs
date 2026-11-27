@@ -29,7 +29,7 @@ module.exports = async function acceptance(browser) {
     }
     for (const state of ['draft', 'feature_disabled']) { await control({ state }); assert.equal((await goto('/events/fixture')).status(), 404); }
     await control({});
-    for (const path of ['/events/preview/card', '/events/preview/card?preview_token=invalid', '/events/preview/card?preview_token=fixture-only-banner', '/events/fixture?preview_token=invalid']) {
+    for (const path of ['/events/preview/card', '/events/preview/card?preview_token=invalid', '/events/preview/card?preview_token=fixture-only-banner', '/events/fixture?preview_token=invalid', '/events/fixture?preview_token=fixture-only-landing&preview_token=invalid', '/events/preview/card?preview_token=fixture-only-card&preview_token=invalid']) {
       const response = await goto(path); assert.equal(response.status(), 404, path);
     }
     const preview = await goto('/events/preview/card?preview_token=fixture-only-card');

@@ -6,6 +6,7 @@ import { createEventBooking, eventQuantitiesValid, getEventAvailability, type Ev
 import { eventCanPurchase } from "@/lib/api/event-view";
 import { eventEstimate, eventMediaUrl } from "@/lib/api/event-media";
 import { ApiError } from "@/lib/api/types";
+import { sanitizeBookingReference } from "@/components/booking-status/bookingReference";
 
 export function EventLanding({ event, locale, preview }: { event: EventEdition | EventStatusOnly; locale: string; preview: boolean }) {
   const ar = locale === "ar";
@@ -36,7 +37,15 @@ export function EventLanding({ event, locale, preview }: { event: EventEdition |
   const retryDeadline = useRef(0);
   const [uncertain, setUncertain] = useState(false);
   const lockKey = `event-create-uncertain:${event.slug}`;
-  useEffect(() => { if (sessionStorage.getItem(lockKey)) { setUncertain(true); setDisabled(true); } }, [lockKey]);
+  useEffect(() => {
+    if (preview) return;
+    try {
+      if (sessionStorage.getItem(lockKey)) { setUncertain(true); setDisabled(true); }
+    } catch {
+      setDisabled(true);
+      setMessage(ar ? "الحجز غير متاح عند تعطيل التخزين في المتصفح." : "Booking is unavailable when browser storage is disabled.");
+    }
+  }, [lockKey, preview, ar]);
   async function refreshAvailability() {
     if (availabilityFlight.current || Date.now() < retryDeadline.current) return null;
     availabilityFlight.current = true;
@@ -53,18 +62,32 @@ export function EventLanding({ event, locale, preview }: { event: EventEdition |
     e.preventDefault();
     if (!valid || inFlight.current) return;
     inFlight.current = true; setBusy(true); setMessage(""); setFieldErrors({});
-    const form = new FormData(e.currentTarget);
+    let createStarted = false;
     try {
+      const form = new FormData(e.currentTarget);
       const latest = await refreshAvailability();
       const latestPackages = packages.map(p => ({ ...p, ...(latest?.packages.find(a => a.id === p.id) ?? { is_purchasable: false }), is_purchasable: p.is_active === true && p.is_purchasable === true && latest?.packages.filter(a => a.id === p.id).length === 1 && latest?.packages.find(a => a.id === p.id)?.is_purchasable === true }));
       if (!latest || latest.sales_enabled !== true || latest.availability_state !== "booking_open" || !eventQuantitiesValid(latestPackages, quantities, latest.remaining_guest_capacity)) { setMessage(ar ? "تغير التوافر. يرجى مراجعة اختيارك." : "Availability changed. Please review your selection."); return; }
+      // Persist the uncertainty marker before the mutation; fail closed if storage is unavailable.
       sessionStorage.setItem(lockKey, "1");
+      createStarted = true;
       const booking = await createEventBooking({ event_edition_id: event.event_edition_id, packages: Object.entries(quantities).filter(([, q]) => q > 0).map(([id, quantity]) => ({ package_id: Number(id), quantity })), guest_name: String(form.get("name") || "").trim(), guest_email: String(form.get("email") || "").trim(), guest_phone: String(form.get("phone") || "").trim() }, locale);
+      const reference = sanitizeBookingReference(booking?.booking_reference);
+      if (!reference || booking.product_type !== "event") throw new Error("Invalid booking response");
+      // Keep the non-PII lock if the response cannot be recovered.
       sessionStorage.removeItem(lockKey); navigated.current = true;
-      router.push(`/${locale}/events/booking/${encodeURIComponent(booking.booking_reference)}`);
+      router.push(`/${locale}/events/booking/${encodeURIComponent(reference)}`);
     } catch (error) {
-      if (error instanceof ApiError && error.status === 422) {
-        sessionStorage.removeItem(lockKey); setFieldErrors(error.errors || {});
+      if (!createStarted) {
+        setDisabled(true);
+        setMessage(ar ? "تعذر بدء الحجز. يرجى إعادة تحميل الصفحة." : "Unable to start booking. Please reload the page.");
+      } else if (error instanceof ApiError && error.status === 422) {
+        try { sessionStorage.removeItem(lockKey); } catch { setDisabled(true); }
+        const safeErrors: Record<string, string[]> = {};
+        for (const [key, value] of Object.entries(error.errors || {})) {
+          if (["guest_name", "guest_email", "guest_phone", "packages", "event_edition_id", "product_type"].includes(key) && Array.isArray(value)) safeErrors[key] = value.filter((item): item is string => typeof item === "string");
+        }
+        setFieldErrors(safeErrors);
         if (error.errors?.product_type) setDisabled(true);
         if (error.errors?.event_edition_id) router.refresh();
         if (error.errors?.packages) {
@@ -76,7 +99,11 @@ export function EventLanding({ event, locale, preview }: { event: EventEdition |
         setDisabled(true); setUncertain(true);
         setMessage(ar ? "تعذر تأكيد الحجز. يرجى التواصل معنا قبل المحاولة مجدداً." : "We could not confirm whether the booking was created. Please contact us before trying again.");
       }
-    } finally { if (!navigated.current && !sessionStorage.getItem(lockKey)) { inFlight.current = false; setBusy(false); } }
+    } finally {
+      let locked = createStarted;
+      try { locked = Boolean(sessionStorage.getItem(lockKey)); } catch { /* preserve uncertainty */ }
+      if (!navigated.current && !locked) { inFlight.current = false; setBusy(false); }
+    }
   }
   const labels: Record<string, string> = ar ? { sales_not_open: "الحجز لم يفتح بعد", booking_open: "الحجز متاح", sold_out: "نفدت التذاكر", sales_closed: "أُغلق الحجز", archived: "انتهت الفعالية", cancelled: "أُلغيت الفعالية" } : { sales_not_open: "Sales have not opened", booking_open: "Booking open", sold_out: "Sold out", sales_closed: "Sales closed", archived: "Event archived", cancelled: "Event cancelled" };
   return <main className="page-atmosphere min-h-screen px-4 pb-20 pt-24 text-[var(--zalina-text)] sm:px-6 md:pt-32"><div className="mx-auto max-w-6xl space-y-8 md:space-y-12">
