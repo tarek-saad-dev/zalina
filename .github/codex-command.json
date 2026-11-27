@@ -1,6 +1,6 @@
 {
-  "action": "REVIEW",
-  "number": 31,
+  "action": "EXECUTE",
+  "number": 32,
   "requested_by": "tarek-saad-dev",
-  "request_id": "pr-31-m9b-cross-app-review-6"
+  "request_id": "issue-32-production-events-smoke-1"
 }
