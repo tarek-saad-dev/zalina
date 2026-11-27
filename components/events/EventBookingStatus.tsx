@@ -11,7 +11,17 @@ import { isSafePaymentUrl, navigateAfterPaymentInitiation } from "@/components/b
 export function EventBookingStatus({ reference, locale, booking, refresh, fresh, inFlight }: { reference: string; locale: string; booking: EventBooking; refresh: () => Promise<unknown>; fresh: boolean; inFlight: React.MutableRefObject<boolean> }) {
   const ar = locale === "ar";
   const [message, setMessage] = useState("");
-  const [paymentError, setPaymentError] = useState(false);
+  const [failedSnapshot, setFailedSnapshot] = useState<EventBooking | null>(null);
+  const latestBooking = useRef(booking);
+  latestBooking.current = booking;
+  // Only an authoritative new snapshot (not a refresh click or failed GET) unlocks retry.
+  const paymentError = failedSnapshot !== null;
+  useEffect(() => {
+    if (failedSnapshot && fresh && booking.booking_reference === reference && booking !== failedSnapshot) {
+      setFailedSnapshot(null);
+      setMessage("");
+    }
+  }, [booking, fresh, failedSnapshot, reference]);
   const [busy, setBusy] = useState(false);
   const flight = useRef(false);
   const [now, setNow] = useState(Date.now());
@@ -27,7 +37,7 @@ export function EventBookingStatus({ reference, locale, booking, refresh, fresh,
       navigateAfterPaymentInitiation({ paymentUrl: session.payment_url, bookingReference: reference });
       redirecting = true;
     } catch (error) {
-      setPaymentError(true);
+      setFailedSnapshot(latestBooking.current);
       if (error instanceof ApiError && (error.status === 409 || error.status === 422)) void refresh();
       setMessage(ar ? "تعذر بدء الدفع. يرجى تحديث حالة الحجز." : "Payment could not be started. Please refresh your booking status.");
     } finally { if (!redirecting) { flight.current = false; setBusy(false); } }
@@ -44,5 +54,5 @@ export function EventBookingStatus({ reference, locale, booking, refresh, fresh,
     {!!booking.tickets?.length && <p>{ar ? "ستجد ملف التذاكر PDF في رسالة البريد الإلكتروني." : "Your ticket PDF is sent as an email attachment."}</p>}
     {expired && <p role="status" className="rounded-lg border border-white/15 p-4">{ar ? "انتهت مهلة الدفع. يمكنك بدء حجز جديد حسب التوافر." : "The payment window has ended. You can start a new booking subject to availability."}</p>}
     {newBookingPath && <a href={`/${locale}${newBookingPath}`} className="inline-flex min-h-12 items-center rounded-lg border border-[var(--zalina-gold)] px-5 py-3 text-[var(--zalina-gold-highlight)]">{ar ? "حجز جديد" : "Start a new booking"}</a>}
-    {mayPay && <button disabled={busy} onClick={() => void pay()} className="min-h-12 w-full rounded-lg bg-[var(--zalina-gold)] px-6 py-3 font-semibold text-black hover:bg-[var(--zalina-gold-highlight)] disabled:opacity-40 sm:w-auto">{ar ? "المتابعة للدفع" : "Continue to payment"}</button>}</>}{message && <p role="alert">{message}</p>}<button className="block min-h-12 rounded-lg px-3 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--zalina-gold)]" disabled={busy} onClick={() => { setPaymentError(false); void refresh(); }}>{ar ? "تحديث" : "Refresh"}</button></div></main>;
+    {mayPay && <button disabled={busy} onClick={() => void pay()} className="min-h-12 w-full rounded-lg bg-[var(--zalina-gold)] px-6 py-3 font-semibold text-black hover:bg-[var(--zalina-gold-highlight)] disabled:opacity-40 sm:w-auto">{ar ? "المتابعة للدفع" : "Continue to payment"}</button>}</>}{message && <p role="alert">{message}</p>}<button className="block min-h-12 rounded-lg px-3 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--zalina-gold)]" disabled={busy} onClick={() => { void refresh(); }}>{ar ? "تحديث" : "Refresh"}</button></div></main>;
 }

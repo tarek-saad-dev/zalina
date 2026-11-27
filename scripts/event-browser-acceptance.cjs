@@ -102,6 +102,8 @@ module.exports = async function acceptance(browser) {
     await page.waitForURL('**/en/booking/FIXTURE-*',{timeout:90000});
     await text('Confirmed guests: 6').waitFor({state:'visible',timeout:15000});
     await text('Your tickets are being prepared.').waitFor({state:'visible',timeout:15000});
+    await absent(text('Valid for admission'));
+    assert.equal((await context.request.post(fixture + '/finish-fulfillment')).status(),200);
     await text('Valid for admission').nth(2).waitFor({state:'visible',timeout:30000});
     assert.equal(await text('Valid for admission').count(),3);
     await absent(text('Your tickets are being prepared.'));

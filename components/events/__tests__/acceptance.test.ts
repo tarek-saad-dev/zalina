@@ -102,6 +102,27 @@ describe("Event screen acceptance", () => {
     await act(async () => { await button.props.onClick(); });
     expect(mocks.pay).toHaveBeenCalledTimes(1); expect(refresh).toHaveBeenCalledTimes(1); expect(text()).not.toContain("Continue to payment");
   });
+  it("requires a new authoritative status snapshot before allowing a manual payment retry", async () => {
+    const pending = { ...booking, status: "pending_payment", total: "12.50", requires_payment: true, hold_expires_at: "2099-01-01T00:00:00Z" };
+    const refresh = vi.fn(async () => undefined);
+    const props = { reference: pending.booking_reference, locale: "en", booking: pending, refresh, fresh: true, inFlight: { current: false } };
+    mocks.pay.mockRejectedValue(new Error("connection lost"));
+    await act(async () => { rendered = create(React.createElement(EventBookingStatus, props)); });
+    const pay = () => rendered!.root.findAllByType("button").find(b => b.props.children === "Continue to payment");
+    await act(async () => { await pay()!.props.onClick(); });
+    expect(pay()).toBeUndefined();
+    await act(async () => { rendered!.root.findAllByType("button").find(b => b.props.children === "Refresh")!.props.onClick(); });
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(pay()).toBeUndefined();
+    await act(async () => { rendered!.update(React.createElement(EventBookingStatus, { ...props, fresh: false })); });
+    expect(pay()).toBeUndefined();
+    await act(async () => { rendered!.update(React.createElement(EventBookingStatus, { ...props, booking: { ...pending }, fresh: true })); });
+    expect(pay()).toBeDefined();
+    expect(mocks.pay).toHaveBeenCalledTimes(1);
+    await act(async () => { await pay()!.props.onClick(); });
+    expect(mocks.pay).toHaveBeenCalledTimes(2);
+    expect(pay()).toBeUndefined();
+  });
   it("shows pending and failed fulfillment and distinguishes invalidated tickets without offering payment", () => {
     const tickets = [{ ticket_code: "T-1", package_name_en: "Table", package_name_ar: null, guests_per_package: 2, status: "valid" as const }, { ticket_code: "T-2", package_name_en: null, package_name_ar: null, guests_per_package: null, status: "invalidated" as const }];
     const props: React.ComponentProps<typeof EventBookingStatus> = { reference: "EV-TEST-1", locale: "en", booking: { ...booking, status: "paid", ticket_fulfillment_status: "processing" as const, tickets }, refresh: vi.fn(async () => undefined), fresh: true, inFlight: { current: false } };

@@ -17,6 +17,7 @@ http.createServer((req, res) => {
   const path = new URL(req.url, `http://${host}:${port}`).pathname;
   if (path === '/__fixture' && req.method === 'POST') return readJson(req, input => { control = input; counts = { create: 0, pay: 0, availability: 0 }; send(res, 200, counts); });
   if (path === '/__fixture' && req.method === 'GET') return send(res, 200, counts);
+  if (path === '/__fixture/finish-fulfillment' && req.method === 'POST') { control.releaseFulfillment = true; return send(res, 200, counts); }
   if (req.method === 'GET' && path === '/media/assets/draft-fixture') {
     const tokens = new URL(req.url, `http://${host}:${port}`).searchParams.getAll('preview_token');
     if (tokens.length !== 1 || tokens[0] !== 'fixture-only-landing') return send(res, 404, null);
@@ -44,7 +45,7 @@ http.createServer((req, res) => {
     const booking = bookings.get(match[1]);
     if (booking.ticket_fulfillment_status === 'processing' && control.finishOnPoll) {
       counts.fulfillmentPolls = (counts.fulfillmentPolls || 0) + 1;
-      if (counts.fulfillmentPolls >= 2) {
+      if (control.releaseFulfillment && counts.fulfillmentPolls >= 2) {
         booking.ticket_fulfillment_status = 'completed';
         booking.tickets = issuedTickets(match[1]);
       }
