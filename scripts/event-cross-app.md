@@ -21,6 +21,21 @@ node scripts/event-cross-app-browser.cjs
 
 Use the actual verified local ports. The browser opens the frontend and permits ordinary browser requests only to those two origins. This is defense in depth, not a network sandbox. Navigate manually using the supplied fixture paths and tokens; do not put capability URLs, tokens, guest details, payment URLs or response bodies in logs or screenshots. Press Enter in the terminal to close the browser. Browser developer tools or network traces can contain sensitive capabilities: sanitize or omit them from evidence.
 
+## Automated read-only gate
+
+After all prerequisites above are verified, use a maintainer-provided synthetic published edition with at least one purchasable package and sales enabled on the isolated backend:
+
+```sh
+EVENT_CROSS_APP_ISOLATED=yes \
+EVENT_CROSS_APP_FRONTEND=http://127.0.0.1:3000 \
+EVENT_CROSS_APP_BACKEND=http://127.0.0.1:8000 \
+EVENT_CROSS_APP_MODE=read-only \
+EVENT_CROSS_APP_EDITION_SLUG=synthetic-edition \
+node scripts/event-cross-app-browser.cjs
+```
+
+This headless mode checks actual Laravel announcement, edition and availability envelopes and verifies the matching Next.js edition heading, direction, purchase controls and private response cache policy in both languages at desktop/mobile sizes. Browser mutations and off-origin requests are blocked; backend API checks use GET with redirects disabled. The script cannot attest server-side network isolation or prove which process owns a loopback port. It deliberately logs no response body, token, reference, or capability URL. A successful read-only result **does not** establish booking/payment/fulfillment/preview acceptance. Complete those scenarios using the interactive entrypoint with isolated fixtures and mock payment only.
+
 ## Evidence checklist
 
 Record date, exact frontend/backend SHAs, clean status, isolation and mock-payment verification, commands with secrets removed, browser version, viewport, locale, and pass/fail/blocked for each item. Capture sanitized screenshots where useful. Check the actual public response shapes and privacy/cache headers without retaining capability values or guest PII.
