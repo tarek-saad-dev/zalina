@@ -21,6 +21,16 @@ module.exports = async function acceptance(browser) {
       if (title) await text(title).waitFor({ state: 'visible', timeout: 90000 });
       else await absent(text('Fixture announcement'));
       if (mode !== 'banner') await absent(text('Replacement banner'));
+      if (mode !== 'none') {
+        const feature = page.locator('[data-event-announcement="'+mode+'"]');
+        assert.equal(await feature.count(),1);
+        assert.equal(await page.locator((mode==='card'?'.lux-hero-event-slot':'.lux-hero-event-banner')+' [data-event-announcement]').count(),1);
+        await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-desktop.png',fullPage:true});
+        await page.setViewportSize({width:390,height:844});
+        assert.ok(await feature.evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1;}));
+        await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-mobile.png',fullPage:true});
+        await page.setViewportSize({width:1440,height:900});
+      } else assert.equal(await page.locator('[data-event-announcement]').count(),0);
     }
     for (const [state, label] of [['sales_not_open','Sales have not opened'], ['booking_open','Booking open'], ['sold_out','Sold out'], ['sales_closed','Sales closed'], ['archived','Event archived'], ['cancelled','Event cancelled']]) {
       await control({ state }); await goto('/events/fixture'); await text(label).waitFor({ state: 'visible', timeout: 90000 });

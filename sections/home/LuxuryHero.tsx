@@ -37,7 +37,7 @@ const RAIL_KEYS = [
   { num: "04", key: "weddings", href: "#weddings" },
 ] as const;
 
-export function LuxuryHero() {
+export function LuxuryHero({ featuredEvent, eventBanner }: { featuredEvent?: React.ReactNode; eventBanner?: React.ReactNode } = {}) {
   const t = useTranslations("home.hero");
   const isArabic = useLocale() === "ar";
   const heroImage = useCmsImage("home.hero", NEUTRAL_MEDIA_FALLBACK);
@@ -70,7 +70,7 @@ export function LuxuryHero() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full overflow-hidden"
+      className={`relative w-full overflow-hidden${featuredEvent ? " lux-hero--featured" : ""}${eventBanner ? " lux-hero--banner" : ""}`}
       style={{ minHeight: "100vh", background: "transparent" }}
     >
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
@@ -164,11 +164,13 @@ export function LuxuryHero() {
         />
       ))}
 
+      {eventBanner && <div className="lux-hero-event-banner">{eventBanner}</div>}
+
       <motion.div
-        className="relative z-10 flex flex-col min-h-[100svh] px-5 sm:px-8 md:px-12 lg:px-20 pt-[calc(var(--zalina-nav-height)+env(safe-area-inset-top,0px)+1.5rem)] pb-[calc(11.25rem+env(safe-area-inset-bottom,0px))] sm:min-h-screen sm:justify-center sm:pb-[12.5rem] max-sm:justify-start"
+        className="lux-hero-stage relative z-10 flex flex-col min-h-[100svh] px-5 sm:px-8 md:px-12 lg:px-20 pt-[calc(var(--zalina-nav-height)+env(safe-area-inset-top,0px)+1.5rem)] pb-[calc(11.25rem+env(safe-area-inset-bottom,0px))] sm:min-h-screen sm:justify-center sm:pb-[12.5rem] max-sm:justify-start"
         style={{ opacity: fadeOut }}
       >
-        <div className="w-full max-w-7xl mx-auto flex flex-col flex-1 sm:flex-none min-h-0">
+        <div className={`w-full max-w-7xl mx-auto flex flex-col flex-1 sm:flex-none min-h-0${featuredEvent ? " lux-hero-event-grid" : ""}`}>
           <div className="lux-hero-copy flex flex-col flex-1 sm:flex-none mt-2 sm:mt-6 md:mt-10 min-h-0">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -318,6 +320,7 @@ export function LuxuryHero() {
               </Link>
             </motion.div>
           </div>
+          {featuredEvent && <div className="lux-hero-event-slot">{featuredEvent}</div>}
         </div>
       </motion.div>
 

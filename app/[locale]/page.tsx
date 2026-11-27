@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getEventAnnouncement } from "@/lib/api/events";
+import { eventLandingPath, getEventAnnouncement, getEventEdition } from "@/lib/api/events";
+import { isEventAnnouncement, isEventLanding } from "@/lib/api/event-runtime";
 import { EventAnnouncementView } from "@/components/events/EventAnnouncement";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
@@ -53,6 +54,11 @@ export default async function Home({ params }: Props) {
     getEventAnnouncement(apiLocale).catch(() => null),
   ]);
 
+  const activeAnnouncement = announcement && isEventAnnouncement(announcement) && eventLandingPath(announcement.landing_path, announcement.edition_slug) ? announcement : null;
+  // Use authoritative edition dates and sales state; never infer them from announcement copy.
+  const edition = activeAnnouncement ? await getEventEdition(activeAnnouncement.edition_slug, apiLocale).catch(() => null) : null;
+  const details = isEventLanding(edition) && edition.slug === activeAnnouncement?.edition_slug && edition.event_edition_id === activeAnnouncement.event_edition_id && "packages" in edition ? edition : null;
+  const eventAnnouncement = activeAnnouncement ? <EventAnnouncementView announcement={activeAnnouncement} locale={locale} edition={details} /> : null;
   const moments = experiencesToMomentCards(experiences, apiLocale);
 
   // Same Al-Souk cover as /zones Main Zones card (mapZoneToUi / resolveCoverImage)
@@ -72,8 +78,7 @@ export default async function Home({ params }: Props) {
   return (
     <HeroRevealGate>
       <main className="lux-page min-h-screen">
-        <LuxuryHero />
-        {announcement && <EventAnnouncementView announcement={announcement} locale={locale} />}
+        <LuxuryHero featuredEvent={activeAnnouncement?.type === "card" ? eventAnnouncement : null} eventBanner={activeAnnouncement?.type === "banner" ? eventAnnouncement : null} />
         <HeritageStory />
         <SignatureMoments moments={moments} />
         <DayNightExperience />
