@@ -15,14 +15,14 @@ function storage(): Storage | null {
 }
 
 export function savePendingPaymentBooking(
-  booking: ApiBooking
+  booking: ApiBooking | import("@/lib/api/events").EventBooking
 ): PendingPaymentHandoff {
   const handoff: PendingPaymentHandoff = {
     schemaVersion: PAYMENT_HANDOFF_SCHEMA_VERSION,
     booking_reference: booking.booking_reference,
     booking_code: booking.booking_code,
     product_type: booking.product_type,
-    created_at: booking.created_at || new Date().toISOString(),
+    created_at: ("created_at" in booking && booking.created_at) || new Date().toISOString(),
     hold_expires_at: booking.hold_expires_at,
     payment_expires_at: booking.payment_expires_at,
     total: booking.total,
@@ -48,10 +48,11 @@ export function loadPendingPaymentBooking(): PendingPaymentHandoff | null {
   }
 }
 
-export function clearPendingPaymentBooking(): void {
+export function clearPendingPaymentBooking(reference?: string): void {
   const store = storage();
   if (!store) return;
   try {
+    if (reference && loadPendingPaymentBooking()?.booking_reference !== reference) return;
     store.removeItem(PAYMENT_HANDOFF_STORAGE_KEY);
   } catch {
     // ignore
@@ -72,13 +73,14 @@ export function parsePendingPaymentHandoff(
   if (
     c.product_type !== "day_use" &&
     c.product_type !== "bubble_stay" &&
-    c.product_type !== "wedding"
+    c.product_type !== "wedding" &&
+    c.product_type !== "event"
   ) {
     return null;
   }
 
   // Reject accidental PII / payment_url persistence
-  if ("guest_email" in c || "guest_phone" in c || "payment_url" in c) {
+  if ("guest_name" in c || "guest_email" in c || "guest_phone" in c || "payment_url" in c) {
     return null;
   }
 

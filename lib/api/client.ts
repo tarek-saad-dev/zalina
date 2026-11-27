@@ -98,7 +98,8 @@ export async function apiFetch<T>(
       json?.message || `Request failed (${res.status})`,
       res.status,
       json?.errors,
-      requestId
+      requestId,
+      res.headers.get("Retry-After") ?? undefined
     );
   }
 

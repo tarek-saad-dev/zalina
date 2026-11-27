@@ -1,0 +1,50 @@
+name: Events isolated browser QA
+on:
+  push:
+    branches: [codex/issue-30]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  event-browser:
+    if: github.ref == 'refs/heads/codex/issue-30' || github.head_ref == 'codex/issue-30'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:4187
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+      NEXT_PUBLIC_PAYMENT_GATEWAY: mock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install test dependencies
+        run: npm install --no-save --package-lock=false --no-audit --no-fund playwright
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Isolated fixture and browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/event-browser
+          node scripts/event-acceptance-mock.cjs >artifacts/event-browser/mock.log 2>&1 &
+          mock=$!
+          npm run dev -- --hostname 127.0.0.1 >artifacts/event-browser/next.log 2>&1 &
+          app=$!
+          trap 'kill "$mock" "$app" 2>/dev/null || true' EXIT
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:4187/api/v1/events/announcement >/dev/null && curl -fsS http://127.0.0.1:3000/en/events/fixture >/dev/null; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:3000/en/events/fixture >/dev/null
+          node scripts/event-browser-smoke.cjs
+      - name: Browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: event-browser-evidence
+          path: artifacts/event-browser/

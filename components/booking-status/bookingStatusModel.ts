@@ -82,7 +82,7 @@ export function canShowBookingQr(booking: ApiBooking): boolean {
 }
 
 export function shouldPollBooking(booking: ApiBooking | null): boolean {
-  if (!booking) return false;
+  if (!booking || (booking.product_type as string) === "event") return false;
   const bucket = classifyBooking(booking);
   return (
     bucket === "waiting" ||
@@ -91,6 +91,7 @@ export function shouldPollBooking(booking: ApiBooking | null): boolean {
 }
 
 export function isDurableTerminalBooking(booking: ApiBooking): boolean {
+  if ((booking.product_type as string) === "event") return false;
   const bucket = classifyBooking(booking);
   return (
     bucket === "confirmed_ready" ||

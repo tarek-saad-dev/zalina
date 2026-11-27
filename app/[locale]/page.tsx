@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getEventAnnouncement } from "@/lib/api/events";
+import { EventAnnouncementView } from "@/components/events/EventAnnouncement";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   LuxuryHero,
@@ -27,7 +29,7 @@ import {
   localeFromParams,
 } from "@/lib/i18n/metadata";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: { locale: string };
@@ -44,10 +46,11 @@ export default async function Home({ params }: Props) {
   const apiLocale = localeFromParams(locale);
   const t = await getTranslations({ locale, namespace: "home" });
 
-  const [zones, experiences, galleryCatalog] = await Promise.all([
+  const [zones, experiences, galleryCatalog, announcement] = await Promise.all([
     getZones(apiLocale),
     getExperiences(apiLocale),
     loadGalleryCatalog(apiLocale),
+    getEventAnnouncement(apiLocale).catch(() => null),
   ]);
 
   const moments = experiencesToMomentCards(experiences, apiLocale);
@@ -70,6 +73,7 @@ export default async function Home({ params }: Props) {
     <HeroRevealGate>
       <main className="lux-page min-h-screen">
         <LuxuryHero />
+        {announcement && <EventAnnouncementView announcement={announcement} locale={locale} />}
         <HeritageStory />
         <SignatureMoments moments={moments} />
         <DayNightExperience />

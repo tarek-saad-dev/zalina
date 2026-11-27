@@ -1,5 +1,5 @@
-﻿import { setRequestLocale } from "next-intl/server";
-import { BookingStatusPage } from "@/components/booking-status/BookingStatusPage";
+import { setRequestLocale } from "next-intl/server";
+import { EventAwareBookingStatus } from "@/components/events/EventAwareBookingStatus";
 import { buildPageMetadata } from "@/lib/i18n/metadata";
 
 type Props = {
@@ -7,18 +7,17 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-  const meta = await buildPageMetadata(
-    params.locale,
-    "bookingStatus",
-    `/booking/${params.reference}`
-  );
+  // A booking reference is a capability, not a canonical or social-sharing URL.
+  const meta = await buildPageMetadata(params.locale, "bookingStatus", "/booking");
   return {
-    ...meta,
+    title: meta.title,
+    description: meta.description,
+    referrer: "no-referrer" as const,
     robots: { index: false, follow: false },
   };
 }
 
 export default function BookingStatusRoute({ params }: Props) {
   setRequestLocale(params.locale);
-  return <BookingStatusPage routeReference={params.reference} />;
+  return <EventAwareBookingStatus reference={params.reference} locale={params.locale} />;
 }

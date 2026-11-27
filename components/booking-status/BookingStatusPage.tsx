@@ -22,6 +22,8 @@ import { useBookingStatusPoll } from "./useBookingStatusPoll";
 import { useBookingTicket } from "./useBookingTicket";
 import { usePaymentRetry } from "./usePaymentRetry";
 import { sanitizeBookingReference } from "./bookingReference";
+import { EventBookingStatus } from "@/components/events/EventBookingStatus";
+import type { EventBooking } from "@/lib/api/events";
 import { WeddingConciergeUpsell } from "./WeddingConciergeUpsell";
 
 interface BookingStatusPageProps {
@@ -71,6 +73,7 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
     [routeReference]
   );
 
+  const poll = useBookingStatusPoll({ reference, locale, enabled: Boolean(reference) });
   const {
     booking,
     fetchState,
@@ -78,13 +81,9 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
     rateLimitedUntil,
     isPolling,
     refresh,
-  } = useBookingStatusPoll({
-    reference,
-    locale,
-    enabled: Boolean(reference),
-  });
+  } = poll;
 
-  const { ticket, loading: ticketLoading } = useBookingTicket(booking, locale);
+  const { ticket, loading: ticketLoading } = useBookingTicket((booking?.product_type as string) === "event" ? null : booking, locale);
   const paymentRetry = usePaymentRetry(locale);
   const focusRef = useRef<HTMLDivElement>(null);
   const lastBucket = useRef<string | null>(null);
@@ -163,6 +162,10 @@ export function BookingStatusPage({ routeReference }: BookingStatusPageProps) {
         <BookingStatusLoading locale={locale} />
       </StatusShell>
     );
+  }
+
+  if ((booking.product_type as string) === "event") {
+    return <EventBookingStatus reference={reference} locale={locale} booking={booking as unknown as EventBooking} refresh={refresh} fresh={fetchState === "ready" && !errorMessage && !rateLimitedUntil} inFlight={poll.inFlight} />;
   }
 
   const liveMessage =

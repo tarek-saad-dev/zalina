@@ -48,7 +48,7 @@ export interface PendingPaymentHandoff {
   schemaVersion: typeof PAYMENT_HANDOFF_SCHEMA_VERSION;
   booking_reference: string;
   booking_code: string;
-  product_type: BookingProductType;
+  product_type: BookingProductType | "event";
   created_at: string;
   hold_expires_at: string | null;
   payment_expires_at: string | null;
