@@ -64,5 +64,6 @@ const artifacts = 'artifacts/event-browser';
         } finally { await context.close(); }
       }
     }
+    await require('./event-browser-acceptance.cjs')(browser);
   } finally { await browser.close(); }
 })().catch(error=>{console.error(error);process.exitCode=1;});
