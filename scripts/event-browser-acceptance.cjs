@@ -32,7 +32,7 @@ module.exports = async function acceptance(browser) {
           await page.goto('http://127.0.0.1:3000/'+locale, {waitUntil:'domcontentloaded',timeout:90000});
           const card=page.locator('[data-event-announcement="'+mode+'"]');
           await card.waitFor({state:'visible',timeout:30000});
-          await page.locator('div.fixed.inset-0[class*="z-[9999]"]').waitFor({state:'detached',timeout:30000});
+          await page.waitForFunction(() => document.querySelectorAll('div.fixed.inset-0[class*="z-[9999]"]').length === 0, null, {timeout:30000});
           await page.locator('.lux-hero-headline').waitFor({state:'visible'});
           await card.locator('img').evaluate(img=>img.decode());
           await card.getByRole('link',{name:ar?'احجز الآن':'Book now',exact:true}).waitFor({state:'visible',timeout:15000});
@@ -47,7 +47,8 @@ module.exports = async function acceptance(browser) {
           await page.evaluate(()=>document.fonts.ready);
           if(width===390) await card.scrollIntoViewIfNeeded();
           const primary=card.getByRole('link',{name:ar?'احجز الآن':'Book now',exact:true});
-          await primary.scrollIntoViewIfNeeded();
+          await primary.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+          await page.waitForFunction(() => Math.abs(document.querySelector('.lux-hero-stage')?.getBoundingClientRect().width || 0) > 0);
           assert.ok(await primary.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);}), 'Announcement CTA obscured');
           await page.evaluate(()=>window.scrollTo(0,0));
           await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-'+locale+'-'+width+'.png',fullPage:false,animations:'disabled'});
