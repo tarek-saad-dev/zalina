@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowLeft, CalendarDays, Clock3, MapPin, Minus, Plus, Ticket, Users, ShieldCheck } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { createEventBooking, eventQuantitiesValid, getEventAvailability, type EventAvailability, type EventEdition, type EventStatusOnly } from "@/lib/api/events";
 import { eventCanPurchase } from "@/lib/api/event-view";
 import { eventEstimate, eventMediaUrl } from "@/lib/api/event-media";
@@ -106,15 +108,114 @@ export function EventLanding({ event, locale, preview }: { event: EventEdition |
     }
   }
   const labels: Record<string, string> = ar ? { sales_not_open: "الحجز لم يفتح بعد", booking_open: "الحجز متاح", sold_out: "نفدت التذاكر", sales_closed: "أُغلق الحجز", archived: "انتهت الفعالية", cancelled: "أُلغيت الفعالية" } : { sales_not_open: "Sales have not opened", booking_open: "Booking open", sold_out: "Sold out", sales_closed: "Sales closed", archived: "Event archived", cancelled: "Event cancelled" };
-  return <main className="page-atmosphere min-h-screen px-4 pb-20 pt-24 text-[var(--zalina-text)] sm:px-6 md:pt-32"><div className="mx-auto max-w-6xl space-y-8 md:space-y-12">
-    {preview && <p className="text-[#d4af37]">{ar ? "معاينة فقط — الحجز غير متاح" : "Preview only — booking is disabled"}</p>}
-    <header className="space-y-4 border-b border-[var(--border-gold-soft)] pb-7"><p role="status" className="inline-flex rounded-full border border-[var(--border-gold-soft)] bg-[var(--zalina-gold-soft)] px-4 py-2 text-sm text-[var(--zalina-gold-highlight)]">{labels[event.availability_state]}</p><h1 className="text-[length:var(--zalina-text-section)] font-medium leading-tight">{ar ? event.name_ar : event.name_en}</h1></header>
-    {uncertain && <p role="alert">{ar ? "قد يكون الحجز قد أُنشئ. تواصل معنا قبل إعادة المحاولة." : "A booking may have been created. Contact us before trying again."}</p>}
-    {full && <>{eventMediaUrl(event.cover_url, preview) && <img src={eventMediaUrl(event.cover_url, preview)!} alt="" referrerPolicy="no-referrer" className="aspect-[16/10] max-h-[35rem] w-full rounded-2xl object-cover shadow-2xl md:aspect-[21/9]" />}<p className="max-w-3xl whitespace-pre-line text-[length:var(--zalina-text-body)] leading-relaxed text-[var(--zalina-text-muted)]">{ar ? event.description_ar : event.description_en}</p><p>{date(event.event_starts_at)}{event.event_ends_at && ` — ${date(event.event_ends_at)}`}</p>
-      {event.admission_opens_at && <p>{ar ? "الدخول" : "Admission"}: {date(event.admission_opens_at)}{event.admission_closes_at && ` — ${date(event.admission_closes_at)}`}</p>}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">{event.gallery.map((image, i) => { const src = eventMediaUrl(image.url, preview); return src ? <img key={i} src={src} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" className="aspect-[4/3] w-full rounded-xl object-cover" /> : null; })}</div>
-      <form id="event-packages" onSubmit={submit} className="space-y-6 scroll-mt-28" aria-busy={busy}><div className="grid gap-4 md:grid-cols-2">{packages.filter(p => p.is_active).map(p => <div key={p.id} className="min-w-0 rounded-2xl border border-[var(--border-gold-soft)] bg-[var(--bg-surface)] p-5 shadow-lg transition-colors hover:border-[var(--zalina-gold)] sm:p-6">{eventMediaUrl(p.image_url, preview) && <img src={eventMediaUrl(p.image_url, preview)!} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" className="mb-4 aspect-[4/3] w-full rounded-lg object-cover" />}<h2 className="text-xl">{ar ? p.name_ar : p.name_en}</h2><p className="mt-2 opacity-75">{ar ? p.description_ar : p.description_en}</p><p className="mt-2">{p.website_price} {event.currency} · {p.guests_per_package} {ar ? "ضيوف" : "guests"}</p>{allowed && (p.is_purchasable || (quantities[p.id] || 0) > 0) && <label className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">{ar ? "الكمية" : "Quantity"}<input className="min-h-12 w-24 rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-center tabular-nums focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--zalina-gold)]" type="number" min="0" step="1" disabled={busy} aria-label={(ar ? "كمية " : "Quantity for ") + (ar ? p.name_ar : p.name_en)} value={quantities[p.id] || 0} onChange={e => setQuantities(previous => ({ ...previous, [p.id]: Number(e.target.value) }))} /></label>}</div>)}</div>
-      {!preview && event.purchase_enabled && !availability && <button type="button" disabled={refreshing || clock < retryUntil} onClick={() => void refreshAvailability()} className="min-h-12 rounded-lg px-3 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--zalina-gold)] disabled:opacity-50">{ar ? "تحديث التوافر" : "Refresh availability"}</button>}
-      {allowed && <>{Object.values(quantities).some(q => q > 0) && !valid && <p role="alert">{ar ? "يرجى تعديل الكميات حسب السعة المتاحة." : "Please adjust quantities to fit the available capacity."}</p>}<p aria-live="polite" className="rounded-xl border border-[var(--border-gold-soft)] bg-[var(--bg-surface)] p-5 text-base font-medium leading-relaxed tabular-nums">{ar ? "تقدير الضيوف" : "Estimated guests"}: {guests} · {ar ? "الإجمالي التقديري" : "Estimated total"}: {estimate ?? "—"} {event.currency}</p><p className="opacity-70">{ar ? "الأسعار تقديرية؛ المبلغ النهائي يؤكده الحجز." : "Prices are estimates; your booking confirms the final total."}</p><div className="grid gap-4 md:grid-cols-3">{[["name", ar ? "الاسم" : "Name", "text"], ["email", ar ? "البريد الإلكتروني" : "Email", "email"], ["phone", ar ? "الهاتف" : "Phone", "tel"]].map(([name, label, type]) => <label key={name}>{label}<input required name={name} type={type} aria-invalid={Boolean(fieldErrors[`guest_${name}`]?.length)} aria-describedby={fieldErrors[`guest_${name}`]?.length ? `event-guest-${name}-errors` : undefined} autoComplete={name === "name" ? "name" : name === "email" ? "email" : "tel"} disabled={busy} className="mt-2 block min-h-12 w-full rounded-lg border border-white/20 bg-[var(--bg-surface)] p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--zalina-gold)]" />{!!fieldErrors[`guest_${name}`]?.length && <span id={`event-guest-${name}-errors`} className="block text-sm text-red-300">{fieldErrors[`guest_${name}`].map((error, i) => <span key={i} className="block">{error}</span>)}</span>}</label>)}</div><button disabled={!valid || busy} className="min-h-12 w-full rounded-lg bg-[var(--zalina-gold)] px-6 py-3 font-semibold text-black transition-colors hover:bg-[var(--zalina-gold-highlight)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--zalina-gold)] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto">{busy ? (ar ? "جارٍ الحجز…" : "Booking…") : (ar ? "احجز الآن" : "Book now")}</button></>}{message && <p role="alert">{message}</p>}</form></>}
-  </div></main>;
+  const cover = full ? eventMediaUrl(event.cover_url, preview) : null;
+  const gallery = full ? event.gallery.map(image => eventMediaUrl(image.url, preview)).filter((url): url is string => Boolean(url)) : [];
+  const description = full ? (ar ? event.description_ar : event.description_en) : null;
+  const selected = packages.filter(p => (quantities[p.id] || 0) > 0);
+  const hasSelection = Object.values(quantities).some(q => q > 0);
+  const canShowBooking = full && !preview && !disabled && event.public_sales_enabled && eventCanPurchase(event);
+  const localizedDay = full && event.event_starts_at ? new Intl.DateTimeFormat(ar ? "ar-EG" : "en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" }).format(new Date(event.event_starts_at)) : null;
+  const time = (value: string | null) => value ? new Intl.DateTimeFormat(ar ? "ar-EG" : "en-GB", { hour: "numeric", minute: "2-digit", timeZone: "Africa/Cairo" }).format(new Date(value)) : "";
+  const changeQuantity = (id: number, value: number) => setQuantities(previous => ({ ...previous, [id]: value }));
+  return (
+    <main className="event-landing">
+      <header className={`event-landing-hero${cover ? " event-landing-hero--media" : ""}${full ? "" : " event-landing-hero--status"}`}>
+        {cover && <img className="event-landing-hero__image" src={cover} alt="" referrerPolicy="no-referrer" fetchPriority="high" />}
+        <div className="event-landing-hero__shade" aria-hidden="true" />
+        <div className="event-landing-container event-landing-hero__inner">
+          {!preview && <Link href="/" className="event-landing-back"><ArrowLeft size={17} className="rtl:-scale-x-100" aria-hidden="true"/>{ar ? "العودة إلى زالينا" : "Back to Zalina"}</Link>}
+          {preview && <p className="event-preview-notice">{ar ? "معاينة فقط — الحجز غير متاح" : "Preview only — booking is disabled"}</p>}
+          <div className="event-landing-hero__copy">
+            <div className="event-eyebrow"><span aria-hidden="true"/>{ar ? "فعاليات زالينا" : "Zalina experiences"}</div>
+            <p role="status" className="event-landing-status">{labels[event.availability_state]}</p>
+            <h1>{ar ? event.name_ar : event.name_en}</h1>
+            {full && <>
+              <div className="event-landing-hero__details">
+                {localizedDay && <span><CalendarDays size={19} aria-hidden="true"/>{localizedDay}</span>}
+                {event.event_starts_at && <span><Clock3 size={19} aria-hidden="true"/>{time(event.event_starts_at)}{event.event_ends_at && ` – ${time(event.event_ends_at)}`}</span>}
+                <span><MapPin size={19} aria-hidden="true"/>{ar ? "زالينا، الأقصر، مصر" : "Zalina, Luxor, Egypt"}</span>
+              </div>
+              {canShowBooking && <a href="#event-packages" className="event-landing-primary event-hero-cta">{ar ? "اختر باقتك" : "Explore packages"}<ArrowDown size={18} aria-hidden="true"/></a>}
+            </>}
+          </div>
+        </div>
+      </header>
+      {uncertain && <div className="event-landing-container event-landing-alert" role="alert">{ar ? "قد يكون الحجز قد أُنشئ. تواصل معنا قبل إعادة المحاولة." : "A booking may have been created. Contact us before trying again."}</div>}
+      {full && <div className="event-landing-container event-landing-body">
+        <section className="event-overview" aria-labelledby="event-overview-title">
+          <div className="event-overview__copy">
+            <div className="event-eyebrow"><span aria-hidden="true"/>{ar ? "التجربة" : "The experience"}</div>
+            <h2 id="event-overview-title">{ar ? "عن الفعالية" : "About the event"}</h2>
+            {description && <p>{description}</p>}
+          </div>
+          <div className="event-info-panel">
+            <div className="event-info-row"><CalendarDays aria-hidden="true"/><div><strong>{ar ? "موعد الفعالية" : "Event schedule"}</strong><p>{event.event_starts_at ? date(event.event_starts_at) : (ar ? "لم يحدد بعد" : "To be announced")}{event.event_ends_at && <><br/>{ar ? "حتى " : "Until "}{date(event.event_ends_at)}</>}</p></div></div>
+            {event.admission_opens_at && <div className="event-info-row"><Clock3 aria-hidden="true"/><div><strong>{ar ? "الدخول" : "Admission"}</strong><p>{date(event.admission_opens_at)}{event.admission_closes_at && <><br/>{ar ? "حتى " : "Until "}{date(event.admission_closes_at)}</>}</p></div></div>}
+            <div className="event-info-row"><MapPin aria-hidden="true"/><div><strong>{ar ? "المكان" : "Location"}</strong><p>{ar ? "قرية زالينا العربية، الأقصر، مصر" : "Zalina Arabian Village, Luxor, Egypt"}</p></div></div>
+          </div>
+        </section>
+        {gallery.length > 0 && <section className="event-gallery-section" aria-labelledby="event-gallery-title">
+          <div className="event-eyebrow"><span aria-hidden="true"/>{ar ? "لحظات من زالينا" : "A glimpse of Zalina"}</div>
+          <h2 id="event-gallery-title">{ar ? "معرض الفعالية" : "Event gallery"}</h2>
+          <div className="event-gallery-grid">{gallery.map((src, index) => <img key={index} src={src} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"/>)}</div>
+        </section>}
+        <form id="event-packages" onSubmit={submit} className="event-booking-form" aria-busy={busy}>
+          <div className="event-booking-intro">
+            <div className="event-eyebrow"><span aria-hidden="true"/>{ar ? "احجز تجربتك" : "Your experience"}</div>
+            <h2>{ar ? "اختر باقاتك" : "Choose your packages"}</h2>
+            <p>{ar ? "اختر باقة واحدة أو أكثر وحدد الكميات المناسبة لمجموعتك." : "Choose one or more packages and select the quantities for your group."}</p>
+          </div>
+          <div className={`event-booking-grid${allowed ? " event-booking-grid--checkout" : ""}`}>
+            <div className="event-package-list">
+              {packages.filter(p => p.is_active).map(p => {
+                const name = ar ? p.name_ar : p.name_en;
+                const image = eventMediaUrl(p.image_url, preview);
+                const quantity = quantities[p.id] || 0;
+                const nextValid = eventQuantitiesValid(packages.map(item => ({ ...item, is_purchasable: item.is_active && item.is_purchasable })), { ...quantities, [p.id]: quantity + 1 }, capacity);
+                const canSelect = allowed && (p.is_purchasable || quantity > 0);
+                return <article key={p.id} className={`event-package-card${quantity > 0 ? " event-package-card--selected" : ""}${image ? " event-package-card--media" : ""}`}>
+                  {image && <div className="event-package-image"><img src={image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"/></div>}
+                  <div className="event-package-content">
+                    <div className="event-package-top"><span className="event-package-kicker"><Ticket size={14} aria-hidden="true"/>{ar ? "باقة دخول" : "Event package"}</span>{allowed && !p.is_purchasable && <span className="event-package-unavailable">{ar ? "غير متاحة" : "Unavailable"}</span>}</div>
+                    <h3>{name}</h3>
+                    {(ar ? p.description_ar : p.description_en) && <p className="event-package-description">{ar ? p.description_ar : p.description_en}</p>}
+                    <div className="event-package-guests"><Users size={17} aria-hidden="true"/>{p.guests_per_package} {ar ? "ضيف لكل باقة" : p.guests_per_package === 1 ? "guest per package" : "guests per package"}</div>
+                    <div className="event-package-bottom">
+                      <div className="event-package-price"><strong>{p.website_price}</strong> <span>{event.currency}</span><small>{ar ? "لكل باقة" : "per package"}</small></div>
+                      {canSelect && <div className="event-quantity-group">
+                        <span>{ar ? "الكمية" : "Quantity"}</span>
+                        <div className="event-quantity-stepper">
+                          <button type="button" disabled={busy || quantity <= 0} aria-label={(ar ? "تقليل كمية " : "Decrease quantity for ") + name} onClick={() => changeQuantity(p.id, Math.max(0, quantity - 1))}><Minus size={17} aria-hidden="true"/></button>
+                          <input type="number" min="0" step="1" inputMode="numeric" disabled={busy} aria-label={(ar ? "كمية " : "Quantity for ") + name} value={quantity} onChange={e => changeQuantity(p.id, Number(e.target.value))}/>
+                          <button type="button" disabled={busy || !nextValid} aria-label={(ar ? "زيادة كمية " : "Increase quantity for ") + name} onClick={() => changeQuantity(p.id, quantity + 1)}><Plus size={17} aria-hidden="true"/></button>
+                        </div>
+                      </div>}
+                    </div>
+                  </div>
+                </article>;
+              })}
+              {!packages.some(p => p.is_active) && <p className="event-empty-selection">{ar ? "لا توجد باقات متاحة للعرض حالياً." : "There are no packages to display at the moment."}</p>}
+              {!preview && event.purchase_enabled && !availability && <button type="button" disabled={refreshing || clock < retryUntil} onClick={() => void refreshAvailability()} className="event-availability-refresh">{ar ? "تحديث التوافر" : "Refresh availability"}</button>}
+            </div>
+            {allowed && <aside className="event-order-panel" aria-label={ar ? "ملخص الحجز" : "Booking summary"}>
+              <div className="event-eyebrow"><span aria-hidden="true"/>{ar ? "حجزك" : "Your reservation"}</div>
+              <h3>{ar ? "ملخص الحجز" : "Booking summary"}</h3>
+              {selected.length > 0 ? <div className="event-order-lines">{selected.map(p => <div key={p.id}><span>{quantities[p.id]} × {ar ? p.name_ar : p.name_en}</span><strong>{eventEstimate([{website_price:p.website_price,quantity:quantities[p.id]}]) ?? "—"} {event.currency}</strong></div>)}</div> : <p className="event-empty-selection">{ar ? "لم تختر أي باقات بعد." : "No packages selected yet."}</p>}
+              {hasSelection && !valid && <p role="alert" className="event-inline-error">{ar ? "يرجى تعديل الكميات حسب السعة المتاحة." : "Please adjust quantities to fit the available capacity."}</p>}
+              <p aria-live="polite" className="event-order-estimate">{ar ? "تقدير الضيوف" : "Estimated guests"}: {guests} · {ar ? "الإجمالي التقديري" : "Estimated total"}: {estimate ?? "—"} {event.currency}</p>
+              <p className="event-order-note">{ar ? "الأسعار تقديرية؛ المبلغ النهائي يؤكده الحجز." : "Prices are estimates; your booking confirms the final total."}</p>
+              <div className="event-guest-fields">
+                <h4>{ar ? "بيانات التواصل" : "Guest details"}</h4>
+                {[[ "name", ar ? "الاسم" : "Name", "text"],["email", ar ? "البريد الإلكتروني" : "Email", "email"],["phone", ar ? "الهاتف" : "Phone", "tel"]].map(([name, label, type]) => <label key={name}>{label}<input required name={name} type={type} aria-invalid={Boolean(fieldErrors[`guest_${name}`]?.length)} aria-describedby={fieldErrors[`guest_${name}`]?.length ? `event-guest-${name}-errors` : undefined} autoComplete={name === "name" ? "name" : name === "email" ? "email" : "tel"} disabled={busy} />{!!fieldErrors[`guest_${name}`]?.length && <span id={`event-guest-${name}-errors`} className="event-inline-error">{fieldErrors[`guest_${name}`].map((error, index) => <span key={index} className="block">{error}</span>)}</span>}</label>)}
+              </div>
+              <button disabled={!valid || busy} className="event-landing-primary event-order-submit">{busy ? (ar ? "جارٍ الحجز…" : "Booking…") : (ar ? "احجز الآن" : "Book now")}</button>
+              <p className="event-order-reassurance"><ShieldCheck size={16} aria-hidden="true"/>{ar ? "يتم تأكيد التوافر والسعر قبل إتمام الحجز" : "Availability and price confirmed at booking"}</p>
+            </aside>}
+          </div>
+          {message && <p role="alert" className="event-landing-alert">{message}</p>}
+        </form>
+      </div>}
+      <footer className="event-landing-footer"><span>ZALINA ARABIAN VILLAGE</span><span>{ar ? "الأقصر، مصر" : "Luxor, Egypt"}</span></footer>
+    </main>
+  );
 }
