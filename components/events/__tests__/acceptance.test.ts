@@ -32,6 +32,15 @@ describe("Event screen acceptance", () => {
     act(() => rendered!.update(React.createElement(EventAnnouncementView, { announcement: { ...announcement, landing_path: "//evil.invalid" }, locale: "en" })));
     expect(rendered!.toJSON()).toBeNull();
   });
+  it("uses authoritative edition details and hides booking CTA in preview or closed sales", () => {
+    const dated = { ...event, event_starts_at: "2027-01-01T18:00:00Z" };
+    act(() => { rendered = create(React.createElement(EventAnnouncementView, { announcement, locale: "en", edition: dated })); });
+    expect(text()).toContain("Booking open"); expect(text()).toContain("/events/sample#event-packages"); expect(text()).toContain("2027");
+    act(() => rendered!.update(React.createElement(EventAnnouncementView, { announcement, locale: "en", edition: { ...dated, purchase_enabled: false } })));
+    expect(text()).not.toContain("#event-packages");
+    act(() => rendered!.update(React.createElement(EventAnnouncementView, { announcement, locale: "en", edition: dated, preview: true })));
+    expect(text()).toContain("Preview"); expect(rendered!.root.findAllByType("a")).toHaveLength(0); expect(text()).not.toContain("2027");
+  });
   it.each(["sales_not_open", "booking_open", "sold_out", "sales_closed", "archived", "cancelled"] as const)("renders %s without commercial content for status-only editions", async state => {
     storage(); mocks.availability.mockResolvedValue(available);
     const value: EventEdition | EventStatusOnly = state === "archived" || state === "cancelled" ? { ...event, availability_state: state, is_cancelled: state === "cancelled", purchase_enabled: false as const } : { ...event, availability_state: state };

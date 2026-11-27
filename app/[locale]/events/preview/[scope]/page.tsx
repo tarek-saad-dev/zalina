@@ -12,6 +12,6 @@ export default async function Page({ params, searchParams }: { params: { locale:
   try {
     const result = await getEventPreview(params.scope, token, params.locale);
     if (!result || !isEventAnnouncement(result, true) || !("type" in result) || result.is_preview !== true || result.preview_scope !== params.scope || result.type !== params.scope) notFound();
-    return <main className="page-atmosphere min-h-screen"><EventAnnouncementView announcement={result} locale={params.locale} preview /></main>;
+    return <main className="page-atmosphere min-h-screen event-feature-preview-stage"><EventAnnouncementView announcement={result} locale={params.locale} preview /></main>;
   } catch { notFound(); }
 }

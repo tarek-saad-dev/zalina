@@ -18,13 +18,17 @@ http.createServer((req, res) => {
   if (path === '/__fixture' && req.method === 'POST') return readJson(req, input => { control = input; counts = { create: 0, pay: 0, availability: 0 }; send(res, 200, counts); });
   if (path === '/__fixture' && req.method === 'GET') return send(res, 200, counts);
   if (path === '/__fixture/finish-fulfillment' && req.method === 'POST') { control.releaseFulfillment = true; return send(res, 200, counts); }
+  if (req.method === 'GET' && path === '/media/assets/announcement-fixture') {
+    res.writeHead(200, {'content-type':'image/svg+xml','cache-control':'no-store'});
+    return res.end('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400"><defs><linearGradient id="g" x2="0" y2="1"><stop stop-color="#101d38"/><stop offset="1" stop-color="#ae6d31"/></linearGradient></defs><rect width="800" height="400" fill="url(#g)"/><circle cx="635" cy="70" r="44" fill="#edc980"/><path d="M0 330 L170 170 L340 330 L455 235 L610 330 L800 175 V400 H0Z" fill="#252022"/><path d="M270 400 V292 Q400 105 530 292 V400Z" fill="#ad7940" stroke="#edc980" stroke-width="7"/></svg>');
+  }
   if (req.method === 'GET' && path === '/media/assets/draft-fixture') {
     const tokens = new URL(req.url, `http://${host}:${port}`).searchParams.getAll('preview_token');
     if (tokens.length !== 1 || tokens[0] !== 'fixture-only-landing') return send(res, 404, null);
     res.writeHead(200, {'content-type':'image/svg+xml','cache-control':'private, no-store','x-robots-tag':'noindex, nofollow'});
     return res.end('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#c9a35c"/></svg>');
   }
-  if (req.method === 'GET' && path === '/api/v1/events/announcement') return send(res, 200, control.announcement === 'none' ? null : { ...announcement, type: control.announcement || 'card', title_en: control.title || announcement.title_en });
+  if (req.method === 'GET' && path === '/api/v1/events/announcement') return send(res, 200, control.announcement === 'none' ? null : { ...announcement, type: control.announcement || 'card', title_en: control.title || announcement.title_en, image_url: '/media/assets/announcement-fixture', description_en: 'A festive evening with dining and live entertainment.', description_ar: 'أمسية احتفالية مع العشاء والعروض الحية.' });
   if (req.method === 'GET' && path === '/api/v1/events/editions/fixture') {
     if (control.state === 'draft' || control.state === 'feature_disabled') return send(res, 404, null);
     const state = control.state || 'booking_open';

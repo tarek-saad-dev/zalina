@@ -21,6 +21,44 @@ module.exports = async function acceptance(browser) {
       if (title) await text(title).waitFor({ state: 'visible', timeout: 90000 });
       else await absent(text('Fixture announcement'));
       if (mode !== 'banner') await absent(text('Replacement banner'));
+      if (mode !== 'none') {
+        const feature = page.locator('[data-event-announcement="'+mode+'"]');
+        assert.equal(await feature.count(),1);
+        assert.equal(await page.locator((mode==='card'?'.lux-hero-event-slot':'.lux-hero-event-banner')+' [data-event-announcement]').count(),1);
+        // A Playwright visible locator may still be covered by the cinematic loader.
+        const capture = async (locale, width) => {
+          const ar = locale === 'ar';
+          await page.setViewportSize({width,height:width===390?844:900});
+          await page.goto('http://127.0.0.1:3000/'+locale, {waitUntil:'domcontentloaded',timeout:90000});
+          const card=page.locator('[data-event-announcement="'+mode+'"]');
+          await card.waitFor({state:'visible',timeout:30000});
+          await page.waitForFunction(() => document.querySelectorAll('div.fixed.inset-0[class*="z-[9999]"]').length === 0, null, {timeout:30000});
+          await page.locator('.lux-hero-headline').waitFor({state:'visible'});
+          await card.locator('img').evaluate(img=>img.decode());
+          await card.getByRole('link',{name:ar?'احجز الآن':'Book now',exact:true}).waitFor({state:'visible',timeout:15000});
+          assert.equal(await page.locator('html').getAttribute('dir'),ar?'rtl':'ltr');
+          assert.ok(await card.evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&r.width>100&&r.height>100;}),'Announcement outside viewport width');
+          const grid=await page.locator('.lux-hero-copy').boundingBox(), box=await card.boundingBox();
+          assert.ok(grid&&box);
+          if(mode==='card'&&width===1440) {
+            assert.ok(ar?box.x+box.width<=grid.x+1:grid.x+grid.width<=box.x+1,'Hero and card overlap');
+          } else if(mode==='card') assert.ok(box.y>=grid.y+grid.height-1,'Mobile card overlaps hero copy');
+          else assert.ok(box.y+box.height<=grid.y+1,'Banner overlaps hero copy');
+          await page.evaluate(()=>document.fonts.ready);
+          if(width===390) await card.scrollIntoViewIfNeeded();
+          const primary=card.getByRole('link',{name:ar?'احجز الآن':'Book now',exact:true});
+          await primary.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+          await page.waitForFunction(() => Math.abs(document.querySelector('.lux-hero-stage')?.getBoundingClientRect().width || 0) > 0);
+          assert.ok(await primary.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);}), 'Announcement CTA obscured');
+          await page.evaluate(()=>window.scrollTo(0,0));
+          await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-'+locale+'-'+width+'.png',fullPage:false,animations:'disabled'});
+          if(width===390) await card.screenshot({path:'artifacts/event-browser/home-'+mode+'-'+locale+'-mobile-detail.png',animations:'disabled'});
+          console.log('PASS announcement layout '+mode+' '+locale+'-'+width);
+        };
+        for(const locale of ['en','ar']) for(const width of [1440,390]) await capture(locale,width);
+        await page.setViewportSize({width:1440,height:900});
+        await goto('/');
+      } else assert.equal(await page.locator('[data-event-announcement]').count(),0);
     }
     for (const [state, label] of [['sales_not_open','Sales have not opened'], ['booking_open','Booking open'], ['sold_out','Sold out'], ['sales_closed','Sales closed'], ['archived','Event archived'], ['cancelled','Event cancelled']]) {
       await control({ state }); await goto('/events/fixture'); await text(label).waitFor({ state: 'visible', timeout: 90000 });
