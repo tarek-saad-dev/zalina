@@ -168,7 +168,7 @@ export function LuxuryHero({ featuredEvent, eventBanner }: { featuredEvent?: Rea
 
       <motion.div
         className="lux-hero-stage relative z-10 flex flex-col min-h-[100svh] px-5 sm:px-8 md:px-12 lg:px-20 pt-[calc(var(--zalina-nav-height)+env(safe-area-inset-top,0px)+1.5rem)] pb-[calc(11.25rem+env(safe-area-inset-bottom,0px))] sm:min-h-screen sm:justify-center sm:pb-[12.5rem] max-sm:justify-start"
-        style={{ opacity: fadeOut }}
+        style={{ opacity: featuredEvent || eventBanner ? 1 : fadeOut }}
       >
         <div className={`w-full max-w-7xl mx-auto flex flex-col flex-1 sm:flex-none min-h-0${featuredEvent ? " lux-hero-event-grid" : ""}`}>
           <div className="lux-hero-copy flex flex-col flex-1 sm:flex-none mt-2 sm:mt-6 md:mt-10 min-h-0">

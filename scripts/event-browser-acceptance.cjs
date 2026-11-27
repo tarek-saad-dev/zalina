@@ -25,10 +25,14 @@ module.exports = async function acceptance(browser) {
         const feature = page.locator('[data-event-announcement="'+mode+'"]');
         assert.equal(await feature.count(),1);
         assert.equal(await page.locator((mode==='card'?'.lux-hero-event-slot':'.lux-hero-event-banner')+' [data-event-announcement]').count(),1);
-        await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-desktop.png',fullPage:true});
+        await feature.locator('img').evaluate(img=>img.decode());
+        await feature.getByRole('link',{name:'Book now',exact:true}).waitFor({state:'visible',timeout:15000});
+        await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-desktop.png'});
         await page.setViewportSize({width:390,height:844});
         assert.ok(await feature.evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1;}));
-        await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-mobile.png',fullPage:true});
+        await feature.scrollIntoViewIfNeeded();
+        assert.equal(await feature.evaluate(el=>getComputedStyle(el.closest('.lux-hero-stage')||el).opacity),'1');
+        await page.screenshot({path:'artifacts/event-browser/home-'+mode+'-mobile.png'});
         await page.setViewportSize({width:1440,height:900});
       } else assert.equal(await page.locator('[data-event-announcement]').count(),0);
     }

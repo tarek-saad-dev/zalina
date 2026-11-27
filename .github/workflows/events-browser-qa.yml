@@ -1,14 +1,14 @@
 name: Events isolated browser QA
 on:
   push:
-    branches: [codex/issue-30]
+    branches: [codex/issue-30, codex/issue-33]
   pull_request:
     branches: [main]
 permissions:
   contents: read
 jobs:
   event-browser:
-    if: github.ref == 'refs/heads/codex/issue-30' || github.head_ref == 'codex/issue-30'
+    if: github.ref == 'refs/heads/codex/issue-30' || github.ref == 'refs/heads/codex/issue-33' || (github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'codex/issue-30' || github.head_ref == 'codex/issue-33'))
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
