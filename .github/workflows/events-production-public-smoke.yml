@@ -1,0 +1,21 @@
+name: Production public read-only smoke
+on:
+  push:
+    branches: [codex/issue-32]
+permissions:
+  contents: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify script syntax
+        run: node --check scripts/event-production-public-smoke.cjs
+      - name: Read-only public HTTP checks
+        run: node scripts/event-production-public-smoke.cjs
