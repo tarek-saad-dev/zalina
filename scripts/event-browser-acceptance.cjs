@@ -82,7 +82,35 @@ module.exports = async function acceptance(browser) {
     await text('Ticket fulfillment failed. Please contact support for help.').waitFor({ state:'visible', timeout:90000 });
     await text('Invalidated — not valid for admission').waitFor({ state:'visible', timeout:90000 });
     await absent(text('Valid for admission')); await absent(page.getByRole('button', { name:'Continue to payment' })); assert.equal((await counts()).pay, 0);
+    await control({draftMedia:true});
+    await goto('/events/fixture?preview_token=fixture-only-landing');
+    const draftImage = page.locator('img[src*="/media/assets/draft-fixture"]');
+    await draftImage.waitFor({state:'visible',timeout:15000});
+    await page.waitForFunction(() => Array.from(document.images).some(img => img.src.includes('/media/assets/draft-fixture') && img.complete && img.naturalWidth > 0));
+    assert.equal(await draftImage.getAttribute('referrerpolicy'),'no-referrer');
+    assert.equal((await context.request.get('http://127.0.0.1:4187/media/assets/draft-fixture')).status(),404);
+    assert.equal((await context.request.get('http://127.0.0.1:4187/media/assets/draft-fixture?preview_token=fixture-only-card')).status(),404);
+    await absent(page.getByRole('button',{name:'Book now',exact:true}));
+    await control({finishOnPoll:true});
+    await goto('/events/fixture');
+    await page.locator('input[type=number]').first().fill('1');
+    await page.locator('input[type=number]').nth(1).fill('2');
+    await fill();
+    await page.getByRole('button',{name:'Book now',exact:true}).click();
+    await page.waitForURL('**/events/booking/FIXTURE-*',{timeout:90000});
+    await page.getByRole('button',{name:'Continue to payment',exact:true}).click();
+    await page.waitForURL('**/en/booking/FIXTURE-*',{timeout:90000});
+    await text('Confirmed guests: 6').waitFor({state:'visible',timeout:15000});
+    await text('Your tickets are being prepared.').waitFor({state:'visible',timeout:15000});
+    await text('Valid for admission').nth(2).waitFor({state:'visible',timeout:30000});
+    assert.equal(await text('Valid for admission').count(),3);
+    await absent(text('Your tickets are being prepared.'));
+    await absent(page.getByRole('button',{name:'Continue to payment'}));
+    const completed = await counts();
+    assert.equal(completed.create,1); assert.equal(completed.pay,1); assert.ok(completed.fulfillmentPolls >= 2);
+    await page.screenshot({path:'artifacts/event-browser/advanced-multiple-tickets.png',fullPage:true});
     console.log('PASS advanced loopback acceptance: announcements, states, preview, mixed capacity race, repeated 429, expiry and 409');
+    console.log('PASS protected draft media and delayed three-ticket fulfillment');
   } catch (error) { await page.screenshot({ path:'artifacts/event-browser/advanced-failure.png', fullPage:true }).catch(() => {}); throw error; }
   finally { await context.close(); }
 };
