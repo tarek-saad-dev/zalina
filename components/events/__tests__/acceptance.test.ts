@@ -39,6 +39,19 @@ describe("Event screen acceptance", () => {
     expect(text()).toContain(state === "archived" ? "Event archived" : state === "cancelled" ? "Event cancelled" : state === "sold_out" ? "Sold out" : state === "sales_closed" ? "Sales closed" : state === "sales_not_open" ? "Sales have not opened" : "Booking open");
     if (state === "archived" || state === "cancelled") expect(text()).not.toContain("Package 1");
   });
+  it("allows only one availability refresh while a request is pending", async () => {
+    storage();
+    let finish!: (value: EventAvailability) => void;
+    const pending = new Promise<EventAvailability>(resolve => { finish = resolve; });
+    mocks.availability.mockReturnValue(pending);
+    await act(async () => { rendered = create(React.createElement(EventLanding, { event, locale: "en", preview: false })); });
+    const button = rendered!.root.findAllByType("button").find(b => b.props.children === "Refresh availability")!;
+    expect(button.props.disabled).toBe(true);
+    await act(async () => { button.props.onClick(); button.props.onClick(); });
+    expect(mocks.availability).toHaveBeenCalledTimes(1);
+    await act(async () => { finish(available); });
+    expect(rendered!.root.findAllByType("input").filter(i => i.props.type === "number")).toHaveLength(2);
+  });
   it("blocks preview purchases and does not fetch availability", async () => {
     storage(); await act(async () => { rendered = create(React.createElement(EventLanding, { event, locale: "ar", preview: true })); });
     expect(text()).toContain("معاينة"); expect(rendered!.root.findAllByType("button")).toHaveLength(0); expect(mocks.availability).not.toHaveBeenCalled();

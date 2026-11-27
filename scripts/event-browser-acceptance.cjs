@@ -54,9 +54,26 @@ module.exports = async function acceptance(browser) {
     seen = await counts(); assert.equal(seen.create, 2); assert.equal(seen.pay, 0);
     await control({ rateLimit: 2 }); await goto('/events/fixture');
     const refresh = page.getByRole('button', { name: 'Refresh availability' });
-    await refresh.waitFor({ state: 'visible', timeout: 90000 }); await refresh.waitFor({ state: 'visible' });
-    await page.waitForTimeout(1200); await refresh.click(); await page.waitForTimeout(1200); await refresh.click();
-    await page.locator('input[type=number]').first().waitFor({ state: 'visible', timeout: 90000 }); assert.equal((await counts()).availability, 3);
+    const waitCount = async expected => {
+      const until = Date.now() + 15000;
+      while (Date.now() < until) {
+        const seen = (await counts()).availability;
+        if (seen === expected) return;
+        assert.ok(seen < expected, 'Unexpected duplicate availability request: ' + seen);
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      assert.equal((await counts()).availability, expected);
+    };
+    // Wait for hydration and each actual rate-limited response, not arbitrary sleeps.
+    await waitCount(1);
+    for (let expected = 2; expected <= 3; expected++) {
+      await refresh.waitFor({ state: 'visible', timeout: 15000 });
+      await text('Unable to refresh availability. Please try again later.').waitFor({ state: 'visible', timeout: 15000 });
+      assert.equal((await counts()).availability, expected - 1);
+      await refresh.click({ timeout: 15000 }); // Playwright waits for the cooldown-disabled button.
+      await waitCount(expected);
+    }
+    await page.locator('input[type=number]').first().waitFor({ state: 'visible', timeout: 15000 }); assert.equal((await counts()).availability, 3);
     await control({ expired: true }); await goto('/events/fixture'); await page.locator('input[type=number]').nth(1).fill('1'); await fill(); await page.getByRole('button', { name:'Book now', exact:true }).click(); await page.waitForURL('**/events/booking/FIXTURE-*', { timeout:90000 }); await text('Status: Awaiting payment').waitFor({ state:'visible', timeout:90000 }); await absent(page.getByRole('button', { name:'Continue to payment' })); assert.equal((await counts()).pay, 0);
     await page.goto(page.url() + '?success=true', { waitUntil:'domcontentloaded' }); await text('Status: Awaiting payment').waitFor({ state:'visible', timeout:90000 }); await absent(text('Status: Confirmed'));
     await control({ payConflict: true }); await goto('/events/fixture'); await page.locator('input[type=number]').nth(1).fill('1'); await fill(); await page.getByRole('button', { name:'Book now', exact:true }).click(); await page.waitForURL('**/events/booking/FIXTURE-*', { timeout:90000 }); await page.getByRole('button', { name:'Continue to payment' }).click(); await text('Your tickets are being prepared.').waitFor({ state:'visible', timeout:90000 }); await absent(page.getByRole('button', { name:'Continue to payment' })); assert.equal((await counts()).pay, 1);
