@@ -28,7 +28,7 @@ describe("generic payment return recovery", () => {
     savePendingPaymentBooking(booking);
     expect(loadPendingPaymentBooking()?.product_type).toBe(product_type);
     expect(resolveBookingReference({ routeReference: null })).toEqual({ reference: "ZALINA-TEST-001", source: "handoff" });
-    const serialized = [...data.values()].join("");
+    const serialized = Array.from(data.values()).join("");
     for (const key of ["guest_name", "guest_email", "guest_phone", "payment_url"]) expect(serialized).not.toContain(key);
     expect(resolveBookingReference({ routeReference: "ZALINA-TEST-002" })).toEqual({ reference: "ZALINA-TEST-002", source: "route" });
     clearPendingPaymentBooking("ZALINA-TEST-002");
