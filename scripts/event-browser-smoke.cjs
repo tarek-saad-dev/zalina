@@ -25,6 +25,14 @@ const artifacts = 'artifacts/event-browser';
           await visible(page.getByRole('heading', {name: ar ? 'فعالية تجريبية' : 'Fixture event', exact:true}));
           assert.equal(await page.locator('html').getAttribute('dir'), ar ? 'rtl' : 'ltr');
           await visible(page.locator('input[type=number]').first());
+          assert.equal(await page.locator('html').getAttribute('lang'), locale);
+          assert.equal(await page.locator('main h1').count(), 1);
+          const quantity = page.getByRole('spinbutton', {name: ar ? 'كمية باقة 1' : 'Quantity for Package 1', exact:true});
+          await quantity.focus();
+          assert.equal(await quantity.evaluate(el => el === document.activeElement), true);
+          assert.ok(await quantity.evaluate(el => el.getBoundingClientRect().height >= 44));
+          assert.equal(await page.locator('input[name=email]').getAttribute('autocomplete'), 'email');
+          assert.equal(await page.locator('input[name=phone]').getAttribute('autocomplete'), 'tel');
           await page.screenshot({path:artifacts+'/'+tag+'-landing.png', fullPage:true});
           // Free booking: no payment initiation.
           await page.locator('input[type=number]').first().fill('1');
@@ -48,6 +56,11 @@ const artifacts = 'artifacts/event-browser';
           await page.getByRole('button',{name:ar?'المتابعة للدفع':'Continue to payment',exact:true}).click();
           await page.waitForURL(base+'/'+locale+'/booking/FIXTURE-*',{timeout:90000});
           await visible(page.getByText(ar?'صالحة للدخول':'Valid for admission',{exact:true}));
+          assert.match(await page.locator('meta[name=robots]').getAttribute('content'), /noindex.*nofollow/);
+          assert.equal(await page.locator('meta[name=referrer]').getAttribute('content'), 'no-referrer');
+          assert.equal(await page.locator('link[rel=canonical]').count(),0);
+          assert.equal(await page.locator('meta[property="og:url"]').count(),0);
+          assert.ok(await page.locator('main [role=status]').count() > 0);
           await page.screenshot({path:artifacts+'/'+tag+'-paid.png',fullPage:true});
           // All three preview scopes; booking buttons must be absent.
           for (const scope of ['landing','card','banner']) {

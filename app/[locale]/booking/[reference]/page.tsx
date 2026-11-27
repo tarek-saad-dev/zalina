@@ -7,13 +7,12 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-  const meta = await buildPageMetadata(
-    params.locale,
-    "bookingStatus",
-    `/booking/${params.reference}`
-  );
+  // A booking reference is a capability, not a canonical or social-sharing URL.
+  const meta = await buildPageMetadata(params.locale, "bookingStatus", "/booking");
   return {
-    ...meta,
+    title: meta.title,
+    description: meta.description,
+    referrer: "no-referrer" as const,
     robots: { index: false, follow: false },
   };
 }
