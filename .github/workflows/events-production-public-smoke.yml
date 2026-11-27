@@ -7,7 +7,7 @@ permissions:
 jobs:
   public-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,3 +19,17 @@ jobs:
         run: node --check scripts/event-production-public-smoke.cjs
       - name: Read-only public HTTP checks
         run: node scripts/event-production-public-smoke.cjs
+      - name: Install browser QA dependencies
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify actual public browser interaction
+        run: node scripts/event-production-browser.cjs
+      - name: Upload public QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-events-browser-evidence
+          path: artifacts/event-production-browser/
+          if-no-files-found: ignore
+          retention-days: 7
