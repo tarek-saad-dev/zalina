@@ -1,10 +1,12 @@
 # Isolated Event browser fixture
 
-This fixture is in-memory and never calls an upstream service. It provides a homepage card, `/en/events/fixture` and `/ar/events/fixture`, availability, and free or pending-payment booking responses. Payment is deliberately unavailable. It is not Laravel and cannot verify payment or integration behavior.
+The in-memory API listens only on 127.0.0.1:4187, never calls an upstream service, and uses a synthetic payment-provider return (HTTP on loopback in Next dev only). It is not Laravel or Paymob. Do not enter real customer data.
 
-1. Install dependencies: `npm install --package-lock=false --no-audit --no-fund`.
-2. In one terminal run `node scripts/event-acceptance-mock.cjs`.
-3. In another, explicitly override both production defaults: `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:4187 NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000 NEXT_PUBLIC_PAYMENT_GATEWAY=mock npm run dev -- --hostname 127.0.0.1`.
-4. With browser network access restricted to loopback, inspect `/en`, `/ar`, and the two fixture edition routes at 1440×900 and 390×844. Exercise the free booking and pending-payment states. Do not use real customer details.
+Run locally:
+1. `npm install --no-save --package-lock=false --no-audit --no-fund playwright`
+2. `npx playwright install chromium`
+3. `node scripts/event-acceptance-mock.cjs`
+4. `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:4187 NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000 NEXT_PUBLIC_PAYMENT_GATEWAY=mock npm run dev -- --hostname 127.0.0.1`
+5. `node scripts/event-browser-smoke.cjs`
 
-Other API paths return 404. Preview, provider return, rate limiting, and other sales states require additional fixtures; this harness does not establish acceptance for them.
+The browser blocks non-loopback requests; screenshots and logs go to artifacts/event-browser. Runs en/ar at 1440x900 and 390x844, exercises free booking, simulated paid return and landing/card/banner previews. The branch-only hosted CI workflow is intended to run outside the Codex sandbox. A successful run would establish only these fixture-backed scenarios, not actual Paymob/Laravel behavior, and not full acceptance. Other sales states, rate limits, capacity contention, homepage behavior and real backend remain separate gates.

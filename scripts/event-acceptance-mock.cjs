@@ -16,6 +16,26 @@ http.createServer((req, res) => {
   }
   const match = path.match(/^\/api\/v1\/bookings\/(FIXTURE-\d+)$/);
   if (req.method === 'GET' && match && bookings.has(match[1])) return send(res, 200, bookings.get(match[1]));
-  // Payment is deliberately unavailable: this fixture never redirects to a provider.
+  // Test-only mock provider. No external requests or credentials.
+  const pay = path.match(/^\/api\/v1\/bookings\/(FIXTURE-\d+)\/pay$/);
+  if (req.method === 'POST' && pay && bookings.has(pay[1])) {
+    const booking = bookings.get(pay[1]);
+    if (booking.status !== 'pending_payment' || !booking.requires_payment) return send(res, 409, null);
+    const locale = req.headers['accept-language'] === 'ar' ? 'ar' : 'en';
+    return send(res, 200, { payment_url: `http://${host}:${port}/mock-pay/${pay[1]}?locale=${locale}` });
+  }
+  const provider = path.match(/^\/mock-pay\/(FIXTURE-\d+)$/);
+  if (req.method === 'GET' && provider && bookings.has(provider[1])) {
+    const booking = bookings.get(provider[1]);
+    booking.status = 'confirmed'; booking.requires_payment = false; booking.ticket_fulfillment_status = 'completed';
+    booking.tickets = [{ ticket_code: 'T-' + provider[1], status: 'valid', package_name_en: 'Package 2', package_name_ar: 'باقة 2', guests_per_package: 2, valid_from: null, valid_to: null }];
+    const locale = new URL(req.url, `http://${host}:${port}`).searchParams.get('locale') === 'ar' ? 'ar' : 'en';
+    res.writeHead(303, { location: `http://127.0.0.1:3000/${locale}/booking`, 'cache-control': 'no-store' }); return res.end();
+  }
+  const preview = path.match(/^\/api\/v1\/events\/preview\/(landing|card|banner)$/);
+  if (req.method === 'GET' && preview) {
+    if (req.headers['x-event-preview-token'] !== 'fixture-only-' + preview[1]) return send(res, 404, null);
+    return send(res, 200, preview[1] === 'landing' ? { ...edition, is_preview: true, preview_scope: 'landing', purchase_enabled: false } : { ...announcement, type: preview[1], is_preview: true, preview_scope: preview[1] });
+  }
   send(res, 404, null);
 }).listen(port, host, () => process.stdout.write(`Fixture API listening on http://${host}:${port}\n`));
